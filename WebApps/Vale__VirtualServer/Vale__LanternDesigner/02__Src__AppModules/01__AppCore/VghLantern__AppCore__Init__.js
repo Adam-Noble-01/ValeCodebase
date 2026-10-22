@@ -78,12 +78,19 @@
     // needs its card previews before the first paint. Each index is a few
     // kilobytes; the asset files they point at are the large ones, and those
     // are still fetched on demand.
+    //
+    // The ridge and hip indexes joined them in v0.9.0: the glazing panel layout
+    // reads each core's web width synchronously to stop the glass 3mm short of
+    // it, and the drawings, the SketchUp export and the specification can all cut
+    // panels before any 3D view has been opened to load those two on demand.
     async function VghLantern__AppCore__LoadDataLibraries() {
         var ComponentIndexLoader   =  window.VghLantern__AppData__ComponentIndexLoader;
         var ProfileIndexLoader     =  window.VghLantern__AppData__ProfileIndexLoader;
         var GlazeBarSystemLoader         =  window.VghLantern__AppData__GlazeBarSystemLoader;
         var BaseFrameSystemLoader        =  window.VghLantern__AppData__BaseFrameSystemLoader;
         var InteriorJoinerySystemLoader  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
+        var RidgeSystemLoader            =  window.VghLantern__AppData__RidgeSystemLoader;
+        var HipSystemLoader              =  window.VghLantern__AppData__HipSystemLoader;
 
         var pending  =  [];
         if (ComponentIndexLoader)         pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
@@ -91,6 +98,8 @@
         if (GlazeBarSystemLoader)         pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
         if (BaseFrameSystemLoader)        pending.push(BaseFrameSystemLoader.VghLantern__BaseFrameSystemLoader__LoadIndex());
         if (InteriorJoinerySystemLoader)  pending.push(InteriorJoinerySystemLoader.VghLantern__InteriorJoinerySystemLoader__LoadIndex());
+        if (RidgeSystemLoader)            pending.push(RidgeSystemLoader.VghLantern__RidgeSystemLoader__LoadIndex());
+        if (HipSystemLoader)              pending.push(HipSystemLoader.VghLantern__HipSystemLoader__LoadIndex());
         await Promise.all(pending);
     }
     // ------------------------------------------------------------

@@ -19,6 +19,14 @@
 // TOKENS     : __RECIPIENT_NAMES_HTML__, __PROJECT_META_HTML__,
 //              __SPECIAL_NOTES_BLOCK__, __INSTALL_GUIDE_URL__
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 22-Oct-2026 - Theia's card (ValeVision3D v2.76.5)
+// - The greeting is plain, the names joined with "and" ("Hi Derek, Roger and
+//   Sally,"), as Theia's client email. The special notes card keeps 20px
+//   under it, over the help button, as Theia's.
+//
 // =============================================================================
 
 
@@ -92,22 +100,22 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Join Escaped Recipient Fragments (Oxford-style last join)
+    // HELPER FUNCTION | Join Escaped Recipient Fragments ("Derek, Roger and Sally")
     // ------------------------------------------------------------
     function Na__Feature__AppNotificationEmail__JoinRecipientNamesHtml(escapedParts) {
         if (escapedParts.length === 0) return '';
         if (escapedParts.length === 1) return escapedParts[0];
         if (escapedParts.length === 2) {
-            return `${escapedParts[0]} &amp; ${escapedParts[1]}`;
+            return `${escapedParts[0]} and ${escapedParts[1]}`;
         }
         const head = escapedParts.slice(0, -1).join(', ');
         const tail = escapedParts[escapedParts.length - 1];
-        return `${head} &amp; ${tail}`;
+        return `${head} and ${tail}`;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Greeting Line HTML
+    // HELPER FUNCTION | Build Greeting Line HTML (plain, as Theia's: "Hi Derek and Sally,")
     // ------------------------------------------------------------
     function Na__Feature__AppNotificationEmail__BuildRecipientGreetingHtml(recipientsRaw) {
         const parts = String(recipientsRaw || '')
@@ -116,7 +124,7 @@
             .filter(Boolean);
         const escaped = parts.map(Na__Feature__AppNotificationEmail__EscapeHtml);
         const inner = Na__Feature__AppNotificationEmail__JoinRecipientNamesHtml(escaped);
-        return `Hi <strong>${inner}</strong>,`;
+        return `Hi ${inner},`;
     }
     // ------------------------------------------------------------
 
@@ -145,7 +153,7 @@
         const codeEsc = Na__Feature__AppNotificationEmail__EscapeHtml(projectCode);
         const nameEsc = Na__Feature__AppNotificationEmail__EscapeHtml(projectName);
         return `
-                                        <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 14px; color: #172b3a; font-size: 15px; line-height: 1.55; font-family: Arial, sans-serif;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 14px; color: #172b3a; font-size: 15px; line-height: 1.55; font-family: Arial, sans-serif;">
                                             <tr>
                                                 <td style="font-weight: 700; padding: 0 0 5px 0; vertical-align: baseline; white-space: nowrap;">Project Code</td>
                                                 <td style="padding: 0 0 5px 0; vertical-align: baseline; white-space: nowrap;">&nbsp;&nbsp;:&nbsp;&nbsp;</td>
@@ -169,7 +177,7 @@
 
         const bodyHtml = Na__Feature__AppNotificationEmail__EscapeHtml(trimmed).replace(/\r\n|\n|\r/g, '<br>');
         return `
-                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin: 0 0 14px;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%; margin: 0 0 20px;">
                                             <tr>
                                                 <td style="border-left: 4px solid #172b3a; padding: 12px 16px 12px 18px; background-color: #f8fafb; font-family: Arial, sans-serif;">
                                                     <p style="margin: 0 0 8px; padding: 0; color: #172b3a; font-size: 13px; font-weight: 700; line-height: 1.4;">

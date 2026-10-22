@@ -236,6 +236,8 @@
             "ShowSkeletonModeLabel"           : true,
             "ShowSkeletonModeLabelNote"       : "Read-only readout of the active MeshBuilders.SkeletonMode, so a reviewer can see whether they are looking at swept sections or bare centrelines.",
             "ShowLanternSelector"             : true,
+            "ShowMeasureTools"                : true,
+            "ShowMeasureToolsNote"            : "Adds the Measure section to the 3D View Tools menu: Vertex to Vertex and Face to Face, their precision and the list of dimensions taken (28__System__MeasureTool3d; its own switches are in Na__Measure3d__Config.json). The editor's small 3D panel and the drawing sheet viewports never offer it.",
             "AllowBelowGroundOrbit"           : true,
             "AllowBelowGroundOrbitNote"       : "Lets the 3D View orbit under the ground plane so the underside of the lantern can be inspected, and drops the ground grid while the camera is down there. Deliberately granted to this mode alone: the Lantern Editor panel and the drawing sheet viewports stay clamped above the horizon by Camera.MaxPolarAngleDegrees, because a sheet view photographed from underneath is never what the sheet wants. Angle limit is Camera.BelowGroundMaxPolarAngleDegrees.",
             "DisposeOnModeExit"               : false,

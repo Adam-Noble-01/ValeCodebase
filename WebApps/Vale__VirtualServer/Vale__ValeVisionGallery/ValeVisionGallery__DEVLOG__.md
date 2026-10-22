@@ -1,5 +1,16 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.5.4, 22-Oct-2026: The Display Name Alias Names the Project in Theia Too
+
+**Asked by Adam:** ValeVision Theia must use the same alias for a project as the Gallery.
+
+**Changes:**
+- The Gallery API and the Theia API now name a project by one shared rule: the Display Name Alias, else the
+  Project Name, else the folder name (`Na__Library__DisplayName`, `ValeShared__Library__` 1.3.0). Theia's own
+  project title, which could override the alias, is retired (Theia 1.7.1).
+- The help under Advanced: Display Name Alias says Theia shows it too.
+- Files: `Server__Api/Api__ValeVisionGallery/wsgi.py` 1.2.1, `Na__Feature__ProjectEditor__Form.jsx` 1.0.1.
+
 ## Version 1.5.3, 16-Oct-2026: My Projects Is for Employees Only
 
 **Asked by Adam.** James Watchorn (head of sales, Management level) opened the gallery on My

@@ -57,6 +57,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.3.0 (Update All Thumbnails on Falla Scheme-02, v2.76.4)
+// - The 3D capture runs the live loop's effect chain first: fog and SSAO
+//   camera uniforms, then the depth pre-pass. It rendered with whatever the
+//   loop last set, and a batch captures straight after a jump, so the fog was
+//   worked out from the previous scene's camera (Patio View came out white).
+// - ApplyToScene writes the path AND a version (the upload's time) onto the
+//   record. A re-render keeps the file name, and the 4-hour browser cache kept
+//   showing the old picture, or a 404 cached before the file existed (Full
+//   Context); the version goes on the URL as ?v= (ResolveThumbnailUrlPair).
+//
 // 07-Oct-2026 - Version 1.2.0 (keyframe to Presentation scene, v2.74.0)
 // - UploadBlob: the upload half of CaptureAndUpload, which now calls it. A
 //   keyframe made into a scene brings its own still, rendered by the Video
@@ -101,6 +111,13 @@
     import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Fog Pass Camera Sync (the capture's own, as the image export does)
+    // @delegate: ../29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js
+    // ------------------------------------------------------------
+    import { Na__FogPlaneSystem__GetFogPass } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
+    import { Na__FogPlane__UpdateFogPassPerFrame } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -112,6 +129,12 @@
     // ------------------------------------------------------------
     const Na__PmThumb__DEFAULT_WIDTH   = 480;    // <-- Target thumbnail width in pixels
     const Na__PmThumb__WEBP_QUALITY    = 0.80;   // <-- WebP quality (0-1)
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Scene Record Keys a Capture Writes
+    // ------------------------------------------------------------
+    const Na__PmThumb__URL_KEY         = 'PresentationMode__Scene__ThumbnailUrl';
+    const Na__PmThumb__VERSION_KEY     = 'PresentationMode__Scene__ThumbnailVersion';   // <-- Upload time (ms); read by ResolveThumbnailUrlPair
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -231,6 +254,18 @@
             if (typeof Na__PmThumb__FrameRenderer === 'function' && Na__PmThumb__FrameRenderer() === true) {
                 // DRAWING FRAME | The composer preset renders the drawing exactly as the viewport shows it
             } else if (pipelineState && pipelineState.composer) {
+                // EFFECT CHAIN | The live loop's per-frame sync, for THIS camera
+                // pose. A batch captures straight after a jump, before the loop
+                // has drawn it, and the fog would rebuild the scene along the
+                // previous scene's rays. The MaxEngine extras are absent under
+                // PureEngine.
+                Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), Na__PmThumb__Camera);
+                if (typeof pipelineState.updateAoUniforms === 'function') {
+                    pipelineState.updateAoUniforms(Na__PmThumb__Camera);     // <-- SSAO camera matrices
+                }
+                if (typeof pipelineState.renderDepthPrePass === 'function') {
+                    pipelineState.renderDepthPrePass();                      // <-- Depth for SSAO and fog, of this pose
+                }
                 if (typeof pipelineState.renderProfileNormals === 'function') {
                     pipelineState.renderProfileNormals();                    // <-- Profile lines normals pre-pass
                 }
@@ -302,7 +337,7 @@
     // The upload half of CaptureAndUpload, for a picture rendered somewhere
     // other than the live viewport: the Video Studio's keyframe still, when
     // a keyframe becomes a Presentation scene. Same path, same contract.
-    // Returns { ok, relUrl, publicUrl } or { ok: false, error }.
+    // Returns { ok, relUrl, publicUrl, version } or { ok: false, error }.
     // ------------------------------------------------------------
     async function Na__PresentationMode__Thumbnail__UploadBlob(sceneId, blob, projectCode, showToast) {
         if (!sceneId || !projectCode) return { ok : false, error : 'missing scene id or project code' };
@@ -314,11 +349,27 @@
             if (!result || result.ok !== true) {
                 return { ok : false, error : (result && result.error) || 'thumbnail upload failed' };   // <-- Never a path the server did not take
             }
-            return { ok : true, relUrl : relUrl, publicUrl : result.publicUrl || null };
+            return { ok : true, relUrl : relUrl, publicUrl : result.publicUrl || null, version : Date.now() };
         } catch (error) {
             console.error('[ValeVision3D] Thumbnail upload error:', error);
             return { ok : false, error : error.message };
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Write a Successful Capture onto Its Scene Record
+    // ------------------------------------------------------------
+    // The path AND the version, always together: the file name never changes
+    // between renders, so without the version the browser keeps the picture
+    // (or the 404) it cached last time. Returns false and writes nothing for a
+    // capture that did not land on the server.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Thumbnail__ApplyToScene(scene, result) {
+        if (!scene || !result || result.ok !== true || !result.relUrl) return false;
+        scene[Na__PmThumb__URL_KEY]     = result.relUrl;
+        scene[Na__PmThumb__VERSION_KEY] = Number(result.version) || Date.now();
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -336,7 +387,8 @@
         Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp,
         Na__PresentationMode__Thumbnail__SetFrameRenderer,
         Na__PresentationMode__Thumbnail__CaptureAndUpload,
-        Na__PresentationMode__Thumbnail__UploadBlob
+        Na__PresentationMode__Thumbnail__UploadBlob,
+        Na__PresentationMode__Thumbnail__ApplyToScene
     };
     // ------------------------------------------------------------
 

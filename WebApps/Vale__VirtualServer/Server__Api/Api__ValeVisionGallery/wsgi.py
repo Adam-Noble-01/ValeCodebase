@@ -45,6 +45,10 @@ RUN (server): gunicorn --bind 127.0.0.1:${VALE_PORT} wsgi:app   (systemd vale@Va
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+22-Oct-2026 - Version 1.2.1
+- displayName comes from Na__Library__DisplayName (ValeShared__Library__ 1.3.0),
+  the same rule ValeVision Theia names projects by. No change to what is shown.
+
 08-Oct-2026 - Version 1.2.0
 - Activity ledger: project saves (which fields) and show / hide are recorded;
   /api/activity mounted (ValeShared__Activity__ 1.0.0).
@@ -73,9 +77,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "Api__Shared"))
 from ValeShared__Accounts__ import Na__Accounts__Blueprint                  # noqa: E402
 from ValeShared__Activity__ import Na__Activity__Blueprint, Na__Activity__Record  # noqa: E402
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require     # noqa: E402
-from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__Find, Na__Library__ListProjects,  # noqa: E402
-                                   Na__Library__ProjectDataPath, Na__Library__ReadJson, Na__Library__Url,
-                                   Na__Library__WriteJson, Na__Library__Year)
+from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__DisplayName, Na__Library__Find,  # noqa: E402
+                                   Na__Library__ListProjects, Na__Library__ProjectDataPath, Na__Library__ReadJson,
+                                   Na__Library__Url, Na__Library__WriteJson, Na__Library__Year)
 from ValeShared__TheiaVideo__ import Na__Theia__HasVideos, Na__Theia__Summary       # noqa: E402
 
 
@@ -129,7 +133,7 @@ def Na__Gallery__Record(pid: str, folder: Path, data: dict, light: bool) -> dict
     out["missingImages"] = [n for n in (data.get("images") or []) if n not in full]
     out["folderId"] = pid                                                      # <-- The library id: the folder name
     out["year"] = Na__Library__Year(folder)
-    out["displayName"] = (data.get("projectNameAlias") or "").strip() or data.get("projectName") or pid
+    out["displayName"] = Na__Library__DisplayName(data, pid)                  # <-- The name Theia shows too
     out["basePath"] = Na__Library__Url(folder / NA__GALLERY__FULL).rstrip("/")
     out["thumbBasePath"] = Na__Library__Url(folder / NA__GALLERY__THUMBS).rstrip("/")
     out["jpg524BasePath"] = Na__Library__Url(folder / NA__GALLERY__JPG524).rstrip("/")

@@ -76,7 +76,9 @@
     "GlazeBarCoreExtensionAlongPitchMm": 42.5,
     "GlazeBarCapExtensionAlongPitchMm": 170,
     "GlazeBarTrimPlumbCutInsetMm": 18,
-    "InterfaceNote": "Measured at the eaves end of every glazing bar. The aluminium core extends 42.5mm along the pitch past the eaves datum and is welded to the eaves extrusion; the decorative cap extends 170mm along the pitch past the datum; the timber trim stops short of the datum with a clean vertical plumb cut whose plane sits 18mm horizontally inboard of the datum point. The along-pitch values are constant at every roof pitch - the plan and vertical projections follow from the pitch."
+    "InterfaceNote": "Measured at the eaves end of every glazing bar. The aluminium core extends 42.5mm along the pitch past the eaves datum and is welded to the eaves extrusion; the decorative cap extends 170mm along the pitch past the datum; the timber trim stops short of the datum with a clean vertical plumb cut whose plane sits 18mm horizontally inboard of the datum point. The along-pitch values are constant at every roof pitch - the plan and vertical projections follow from the pitch.",
+    "GlassStopAlongPitchMm": 42.875,
+    "GlassStopNote": "The inner face of the eaves extrusion 46_1002's glazing upstand, measured along the pitch past the eaves datum: in the extrusion's own unrotated frame (x along the slope, y out of it) the upstand face stands at x = -42.875 from y 9.36 to 17.22, inside the glass band, with its fins rising to 25.365. MEASURED from the asset's Plan2D__Top with the app's own SectionLoopBuilder on 20-Oct-2026; measure it again if the extrusion is re-exported. The glazing unit stops the glaze bar index's EdgeClearanceMm short of it (39.875mm past the datum); only the top pane runs on over the fins to the cap ends (v0.9.0)."
   },
   "VghLantern__BaseFrameSystem__Parts": [
     {

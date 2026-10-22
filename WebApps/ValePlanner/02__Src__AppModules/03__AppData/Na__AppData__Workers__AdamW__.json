@@ -3547,9 +3547,25 @@
           "id": "new-1792483307139",
           "date": "2026-10-20",
           "startTime": "09:15",
-          "endTime": "12:15",
+          "endTime": "10:00",
           "title": "Whitecard |  Hazelton",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1792579777747",
+          "date": "2026-10-20",
+          "startTime": "12:00",
+          "endTime": "16:30",
+          "title": "MaxModel__Fella",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1792654939160",
+          "date": "2026-10-20",
+          "startTime": "16:30",
+          "endTime": "17:30",
+          "title": "Assets |  Plants",
+          "color": "na-shift-color-amber"
         }
       ]
     }

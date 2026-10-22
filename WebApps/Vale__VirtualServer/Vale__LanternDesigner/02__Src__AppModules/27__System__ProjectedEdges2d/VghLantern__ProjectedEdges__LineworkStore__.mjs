@@ -105,7 +105,11 @@
     // asset replaced. Every stored block then reads as belonging to an older model
     // and is re-rendered rather than restored. Bumping needlessly costs one render;
     // not bumping when it was needed costs a wrong drawing nobody questions.
-    const MODEL_BUILD_TOKEN  =  '2026-08-21-bar-cap-localxyz';
+    //
+    // 20-Oct-2026 (v0.9.0): the glass is now cut into panels between the bars and
+    // hips, stopping short of the eaves upstand with the top pane run on, rather
+    // than one slab per slope through every member.
+    const MODEL_BUILD_TOKEN  =  '2026-10-20-glazing-panels';
     // ------------------------------------------------------------
 
 

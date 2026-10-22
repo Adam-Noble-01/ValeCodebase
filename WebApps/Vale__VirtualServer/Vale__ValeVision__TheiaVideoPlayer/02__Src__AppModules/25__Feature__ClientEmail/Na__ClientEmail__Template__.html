@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION THEIA - CLIENT DELIVERY EMAIL (RUNTIME TEMPLATE)
+     =============================================================================
+
+     FILE       : Na__ClientEmail__Template__.html
+     NAMESPACE  : ValeVision Theia
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Tokenised HTML for the email that invites a client to watch
+                  their project's videos in Theia
+     CREATED    : 22-Oct-2026
+
+     DESCRIPTION:
+     - ValeVision 3D's notification email card, for Theia: a 2px navy frame;
+       a banner (the Vale pavilion mark, then "ValeVision" and "By Vale Garden
+       Houses" in a serif, as ValeVision 3D's banner picture); Project Code /
+       Project Name; the greeting; the invitation; the optional special
+       notes; one button to the client link; the grey copyright footer.
+     - The pavilion mark is a PNG (Outlook cannot show SVG): 176 x 240 on
+       white, cropped to the mark, shown at 44 x 60. Its SVG sits beside it in
+       AppAssets__CommonApplicationAssets/Logo__ValeGardenHouses/.
+     - No closing line: the sender's own close and Outlook signature follow
+       the card (Adam, 22-Oct-2026).
+     - Pasted into Outlook from a browser (Ctrl+A, Ctrl+C), so every style
+       that matters is inline. The <style> block only frames the page in the
+       browser and guards against mail apps' dark modes.
+     - The button's padding is on its cell, not the link: Outlook ignores
+       padding on a link, and a pasted email keeps no Outlook-only styles.
+     - Every address is the production one (app.valegardenhouses.com).
+
+     TOKENS (replaced by Na__ClientEmail__Builder__.js):
+     - __EMAIL_SUBJECT__        the page title: the suggested subject line
+     - __PROJECT_META_HTML__    Project Code / Project Name (two lines)
+     - __GREETING_HTML__        Dear Mr and Mrs Holt,
+     - __VIDEOS_READY_TEXT__    Your project videos are ready ... (one video: "video is")
+     - __SPECIAL_NOTES_BLOCK__  the special notes card, or nothing
+     - __THEIA_URL__            the client link (/theia/?project=<id>&share=<token>)
+     - __BUTTON_LABEL__         View Your Project Videos (one video: "Video")
+     - __VIDEOS_OPEN_TEXT__     They open in any web browser ... (one video: "It opens")
+     - __LINK_EXPIRY_HTML__     "This link works until 22-Nov-2026." or nothing
+     - __YEAR__                 the copyright year
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta Tags and Template Styles -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>__EMAIL_SUBJECT__</title>
+    <style>
+        /* ----------------------------------------------------------------- */
+        /* REGION | Core Email Card Layout Styles */
+        /* ----------------------------------------------------------------- */
+        :root {
+            color-scheme                   : light;
+        }
+
+        body {
+            font-family                    : Arial, sans-serif;
+            background-color               : #f5f5f5;
+            padding-top                    : 8vh;
+            padding-bottom                 : 8vh;
+            padding-left                   : 10px;
+            padding-right                  : 10px;
+            margin                         : 0;
+            display                        : flex;
+            justify-content                : center;
+            align-items                    : flex-start;
+            min-height                     : 100vh;
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* SUB REGION | Adaptive Layout Styles (Phone / Narrow Width) */
+        /* ----------------------------------------------------------------- */
+        @media only screen and (max-width: 432px) {
+            .theia-email-banner-cell {
+                padding                    : 20px 18px 6px !important;
+            }
+
+            .theia-email-content-cell {
+                padding                    : 14px 18px 22px !important;
+            }
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* REGION | Email Client Dark-Mode Safety Overrides */
+        /* ----------------------------------------------------------------- */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color           : #f5f5f5 !important;
+            }
+
+            .theia-email-root .theia-email-white,
+            .theia-email-root .theia-email-white td {
+                background-color           : #ffffff !important;
+            }
+
+            .theia-email-root .theia-email-inner,
+            .theia-email-root .theia-email-inner td {
+                background-color           : #ffffff !important;
+                color                      : #172b3a !important;
+            }
+
+            .theia-email-root .theia-email-inner a {
+                color                      : #336699 !important;
+            }
+
+            .theia-email-root .theia-email-inner td.theia-email-button-cell {
+                background-color           : #172b3a !important;
+            }
+
+            .theia-email-root .theia-email-inner a.theia-email-button {
+                color                      : #ffffff !important;
+            }
+
+            .theia-email-root .theia-email-footer {
+                background-color           : #f5f5f5 !important;
+                color                      : #656565 !important;
+                border-top-color           : #e0e0e0 !important;
+            }
+        }
+
+        [data-ogsc] .theia-email-root .theia-email-white,
+        [data-ogsc] .theia-email-root .theia-email-white td,
+        [data-ogsc] .theia-email-root .theia-email-inner,
+        [data-ogsc] .theia-email-root .theia-email-inner td {
+            background-color               : #ffffff !important;
+        }
+
+        [data-ogsc] .theia-email-root .theia-email-inner,
+        [data-ogsc] .theia-email-root .theia-email-inner td {
+            color                          : #172b3a !important;
+        }
+
+        [data-ogsc] .theia-email-root .theia-email-inner td.theia-email-button-cell {
+            background-color               : #172b3a !important;
+        }
+
+        [data-ogsc] .theia-email-root .theia-email-inner a.theia-email-button {
+            color                          : #ffffff !important;
+        }
+
+        [data-ogsc] .theia-email-root .theia-email-footer {
+            background-color               : #f5f5f5 !important;
+            color                          : #656565 !important;
+        }
+        /* endregion --------------------------------------------------------- */
+    </style>
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Email Card HTML Markup -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+                <!-- ========================================================= -->
+                <!-- VALEVISION THEIA CLIENT EMAIL - START                     -->
+                <!-- ========================================================= -->
+                <table class="theia-email-root" role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; max-width: 440px; width: 100%; margin: 10px auto 20px; border: 2px solid #172b3a;">
+                    <tr>
+                        <td class="theia-email-white" bgcolor="#ffffff" style="background-color: #ffffff !important; padding: 0;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+                                <tr>
+                                    <td class="theia-email-banner-cell" align="left" bgcolor="#ffffff" style="background-color: #ffffff !important; padding: 22px 24px 6px; text-align: left;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td valign="middle" style="padding: 0 14px 0 0; vertical-align: middle;">
+                                                    <img src="https://app.valegardenhouses.com/AppAssets__CommonApplicationAssets/Logo__ValeGardenHouses/Logo__ValeGardenHouses__PavilionMark__Navy__EmailLogo__.png"
+                                                         alt=""
+                                                         width="44"
+                                                         height="60"
+                                                         border="0"
+                                                         style="display: block; width: 44px; height: 60px;">
+                                                </td>
+                                                <td valign="middle" style="vertical-align: middle;">
+                                                    <p style="margin: 0; padding: 0; color: #172b3a; font-size: 24px; line-height: 1.2; font-family: Georgia, 'Times New Roman', serif;">
+                                                        ValeVision
+                                                    </p>
+                                                    <p style="margin: 3px 0 0; padding: 0; color: #9aa3ad; font-size: 14px; line-height: 1.3; font-family: Georgia, 'Times New Roman', serif;">
+                                                        By Vale Garden Houses
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="theia-email-content-cell theia-email-inner" bgcolor="#ffffff" style="background-color: #ffffff !important; color: #172b3a; padding: 16px 26px 26px;">
+                                        __PROJECT_META_HTML__
+                                        <p style="margin: 10px 0 12px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            __GREETING_HTML__
+                                        </p>
+                                        <p style="margin: 0 0 20px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            You are invited to view your project in <strong>ValeVision&nbsp;Theia</strong>, Vale Garden Houses' video platform. __VIDEOS_READY_TEXT__
+                                        </p>
+                                        __SPECIAL_NOTES_BLOCK__
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+                                            <tr>
+                                                <td class="theia-email-button-cell" align="center" bgcolor="#172b3a" style="background-color: #172b3a; padding: 12px 26px; border-radius: 4px;">
+                                                    <a class="theia-email-button" href="__THEIA_URL__" target="_blank" style="color: #ffffff; font-size: 14px; font-weight: 600; line-height: 1.4; text-decoration: none; font-family: Arial, sans-serif;">__BUTTON_LABEL__</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <p style="margin: 20px 0 0; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            __VIDEOS_OPEN_TEXT__
+                                        </p>
+                                        __LINK_EXPIRY_HTML__
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theia-email-footer" align="center" bgcolor="#f5f5f5" style="background-color: #f5f5f5 !important; padding: 14px 30px; border-top: 1px solid #e0e0e0;">
+                            <p align="center" style="margin: 0; padding: 0; color: #656565; font-size: 12px; line-height: 1.5; font-family: Arial, sans-serif;">
+                                &copy; __YEAR__ Vale Garden Houses | All Rights Reserved
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <!-- ========================================================= -->
+                <!-- VALEVISION THEIA CLIENT EMAIL - END                       -->
+                <!-- ========================================================= -->
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+</html>

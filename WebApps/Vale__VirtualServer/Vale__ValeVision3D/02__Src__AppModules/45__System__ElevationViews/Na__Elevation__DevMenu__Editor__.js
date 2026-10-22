@@ -93,6 +93,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 2.1.1 (v2.76.4)
+// - The card's thumbnail is written through ApplyToScene (its path and
+//   version), so a re-captured elevation shows at once, not the cached copy.
+//
 // 20-Sep-2026 - Version 2.1.0 (Elevation Depth Fog)
 // - onFogChange: an edit to the open row's Fog block. The fog layer reads the
 //   record on every frame it draws, so nothing is rebuilt - a frame is asked
@@ -153,7 +157,8 @@
         Na__PresentationMode__ProjectJson__BroadcastScenesChanged
     } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     import {
-        Na__PresentationMode__Thumbnail__CaptureAndUpload
+        Na__PresentationMode__Thumbnail__CaptureAndUpload,
+        Na__PresentationMode__Thumbnail__ApplyToScene
     } from '../21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
     import { Na__PresentationMode__DevMenu__Confirm } from '../21__System__PresentationMode/Na__PresentationMode__DevMenu__Modal__.js';
     // ------------------------------------------------------------
@@ -1057,8 +1062,7 @@
                 if (scene) {
                     try {
                         const shot = await Na__PresentationMode__Thumbnail__CaptureAndUpload(scene.PresentationMode__Scene__Id);
-                        if (shot.ok) scene.PresentationMode__Scene__ThumbnailUrl = shot.relUrl;
-                        else Na__ElevDev__Toast('Thumbnail upload failed (' + shot.error + ') - the elevation is still being updated.', true);
+                        if (!Na__PresentationMode__Thumbnail__ApplyToScene(scene, shot)) Na__ElevDev__Toast('Thumbnail upload failed (' + shot.error + ') - the elevation is still being updated.', true);
                     } catch (shotError) {
                         console.error('[ValeVision3D] Elevation thumbnail error:', shotError);
                         Na__ElevDev__Toast('Thumbnail error - see console. The elevation is still being updated.', true);

@@ -58,6 +58,10 @@
 // - UploadThumbnailBlob: a scene made from a Video Studio keyframe brings its
 //   own still, so only the upload is needed.
 //
+// 22-Oct-2026 - Version 1.2.1 (v2.76.4)
+// - Both thumbnail writes go through ApplyToScene: the path and its version,
+//   so the carousel fetches the new picture instead of a cached one.
+//
 // =============================================================================
 
 
@@ -88,7 +92,8 @@
     // ------------------------------------------------------------
     import {
         Na__PresentationMode__Thumbnail__CaptureAndUpload,
-        Na__PresentationMode__Thumbnail__UploadBlob
+        Na__PresentationMode__Thumbnail__UploadBlob,
+        Na__PresentationMode__Thumbnail__ApplyToScene
     } from './Na__PresentationMode__Thumbnail__Renderer.js';
     // ------------------------------------------------------------
 
@@ -145,7 +150,7 @@
                 return false;
             }
 
-            scene.PresentationMode__Scene__ThumbnailUrl = result.relUrl;    // <-- Update working scene with saved path
+            Na__PresentationMode__Thumbnail__ApplyToScene(scene, result);   // <-- Working scene gets the saved path and its version
             showToast && showToast(`Thumbnail saved: ${result.relUrl}`);
             return true;
         } catch (error) {
@@ -173,7 +178,7 @@
             return false;
         }
 
-        scene.PresentationMode__Scene__ThumbnailUrl = result.relUrl;
+        Na__PresentationMode__Thumbnail__ApplyToScene(scene, result);
         showToast && showToast(`Thumbnail saved: ${result.relUrl}`);
         return true;
     }

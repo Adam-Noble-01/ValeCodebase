@@ -23,9 +23,15 @@
 
    WHY THE LIBRARY IS MARKDOWN FILES RATHER THAN JSON:
    Terms are prose, and prose in JSON means escaped quotes, no line breaks and a
-   single unterminated string breaking the whole application at boot. A .md file is
+   single unterminated string breaking the whole application at boot. A text file is
    opened, edited and saved by anyone, and a mistake in one file costs that one
    section rather than the app.
+
+   WHY .txt AND NOT .md (20-Oct-2026):
+   The files are written in the same light markdown, but saved as .txt in
+   07__Data__TermsAndConditionsLibrary. The server never received or served a .md:
+   the Server Manager's sync leaves *.md out of every web app and nginx denies the
+   extension, so the terms loaded on the PC and 404'd live. Keep them .txt.
 
    WHY A FAILED FETCH IS NOT CACHED AS AN EMPTY SECTION:
    A dropped connection on first load would otherwise permanently blank a section for

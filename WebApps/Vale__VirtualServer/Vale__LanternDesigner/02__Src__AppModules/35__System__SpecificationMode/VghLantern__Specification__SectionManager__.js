@@ -29,10 +29,19 @@
    | areas      | ScheduleRenderer BuildPerLantern('areas')         |
    | components | ScheduleRenderer BuildPerLantern('components')    |
    | finish     | ScheduleRenderer BuildFinishSchedule              |
+   | glazingPanels | GlazingScheduleRenderer BuildSectionHtml (on demand) |
    | notes      | JobNotes host - moved into the section body       |
 
    An unrecognised renderer key logs a warning and prints nothing, so a config
    typo degrades one section rather than blanking the document.
+
+   ON-DEMAND SECTIONS (v0.10.0):
+   The Glazing Panels section cuts every lantern's glass and draws a plan and a cut
+   drawing per panel type, so it is built only when it is on screen: a collapsed
+   one is left empty and filled the moment it is opened, and the static describe
+   used by the issue check never builds it (the pack prints the glazing schedule on
+   its own pages). Adam, 20-Oct-2026: "only compute the glass panel drawings diagram
+   and table when the specf section opens".
 
    ============================================================================= */
 
@@ -62,9 +71,12 @@ const VghLantern__Specification__SectionManager = (function() {
     const CSS_EMPTY_STATE   =  'VghLantern__Spec__EmptyState';
 
     const ATTR_SECTION_KEY  =  'data-vghlantern-spec-section';
+    const ATTR_DEFERRED     =  'data-vghlantern-spec-deferred';                // <-- On a collapsed on-demand section whose body has not been built
     const VAR_DOC_MAX_WIDTH =  '--VghLantern_SpecDocumentMaxWidth';
 
     const NOTES_RENDERER    =  'notes';                                        // <-- The one section whose body is a live editor, not static markup
+    const GLAZING_RENDERER  =  'glazingPanels';
+    const ON_DEMAND_RENDERERS =  [GLAZING_RENDERER];                           // <-- Built only while open: see ON-DEMAND SECTIONS in the header
     // ------------------------------------------------------------
 
 
@@ -175,6 +187,16 @@ const VghLantern__Specification__SectionManager = (function() {
             case 'finish':
                 return Schedules.VghLantern__Specification__ScheduleRenderer__BuildFinishSchedule(documentModel);
 
+            case GLAZING_RENDERER:
+                // The static describe is read only for the model's warnings, and the
+                // pack prints the glazing schedule on pages of its own, so it never
+                // cuts and draws every lantern's glass just to throw it away.
+                if (isStatic) return '';
+                var GlazingRenderer  =  window.VghLantern__Specification__GlazingScheduleRenderer;
+                return GlazingRenderer
+                    ? GlazingRenderer.VghLantern__Specification__GlazingScheduleRenderer__BuildSectionHtml(documentModel)
+                    : '';
+
             case NOTES_RENDERER:
                 if (!isStatic) return '';                                      // <-- The live notes host is moved in after render
                 var JobNotes  =  window.VghLantern__Specification__JobNotes;
@@ -192,10 +214,12 @@ const VghLantern__Specification__SectionManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__SectionManager__BuildSection(section, documentModel, isStatic) {
         var isCollapsed  =  isStatic ? false : VghLantern__SectionManager__IsCollapsed(section);
-        var body         =  VghLantern__SectionManager__BuildSectionBody(section, documentModel, isStatic);
+        var isDeferred   =  isCollapsed && ON_DEMAND_RENDERERS.indexOf(section.Renderer) !== -1;
+        var body         =  isDeferred ? '' : VghLantern__SectionManager__BuildSectionBody(section, documentModel, isStatic);
 
         return '<section class="' + CSS_SECTION + (isCollapsed ? ' ' + CSS_COLLAPSED : '') + '" ' +
-               ATTR_SECTION_KEY + '="' + VghLantern__SectionManager__Escape(section.Key) + '">' +
+               ATTR_SECTION_KEY + '="' + VghLantern__SectionManager__Escape(section.Key) + '"' +
+               (isDeferred ? ' ' + ATTR_DEFERRED + '="true"' : '') + '>' +
                '<button type="button" class="' + CSS_SECTION_HEAD + '" ' +
                'aria-expanded="' + (isCollapsed ? 'false' : 'true') + '">' +
                '<span class="' + CSS_CARET + '">' + (isCollapsed ? '\u25B8' : '\u25BE') + '</span>' +
@@ -327,6 +351,27 @@ const VghLantern__Specification__SectionManager = (function() {
 // REGION | Initialisation and Event Wiring
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | Build the Body of an On-Demand Section as It Opens
+    // ------------------------------------------------------------
+    // From the model the last render built, which is the one on screen.
+    function VghLantern__SectionManager__FillDeferredBody(sectionElement, key) {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        var body           =  sectionElement.querySelector('.' + CSS_SECTION_BODY);
+        sectionElement.removeAttribute(ATTR_DEFERRED);
+        if (!DocumentModel || !body || !VghLantern__SectionManager__CachedModel) return;
+
+        var sections  =  DocumentModel.VghLantern__Specification__DocumentModel__ListSections();
+        var i;
+        for (i = 0; i < sections.length; i++) {
+            if (sections[i].Key === key) {
+                body.innerHTML  =  VghLantern__SectionManager__BuildSectionBody(sections[i], VghLantern__SectionManager__CachedModel, false);
+                return;
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Toggle a Section Open or Closed
     // ------------------------------------------------------------
     function VghLantern__SectionManager__ToggleSection(sectionElement) {
@@ -335,6 +380,10 @@ const VghLantern__Specification__SectionManager = (function() {
 
         var isCollapsed  =  !sectionElement.classList.contains(CSS_COLLAPSED);
         VghLantern__SectionManager__CollapseState[key]  =  isCollapsed;
+
+        if (!isCollapsed && sectionElement.hasAttribute(ATTR_DEFERRED)) {
+            VghLantern__SectionManager__FillDeferredBody(sectionElement, key);
+        }
 
         sectionElement.classList.toggle(CSS_COLLAPSED, isCollapsed);
 

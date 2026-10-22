@@ -1,6 +1,89 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.76.6 - 22-Oct-2026 - The Email Banner's 3 Sits on the Line
+### Adam: "the 3 and D arent aligned see?"
+
+**What was wrong**
+- The banner's "ValeVision 3D" was set in Georgia, whose figures are old-style: measured at 100 px, its 3 runs from
+  18 px below the baseline to 54 px above it, while the D runs from the baseline to 69 px. So the 3 dropped below the
+  line and stood shorter than the D.
+
+**What changed**
+- "3D" is set in Cambria, then Times New Roman (`Cambria, 'Times New Roman', Times, serif`): both have lining figures,
+  their 3 from -1 to 68 px against the D's 0 to 67 px. "ValeVision" stays in Georgia, as Theia's banner. Cambria is the
+  closest of the three measured (Cambria, Palatino Linotype, Times New Roman) to Georgia's weight; a Mac or phone without
+  it uses Times New Roman.
+- The notification and link email templates and the `60__DistributionEmails` hand copy (re-synced from the link
+  email's template).
+
+**Tested**: both emails built in Node from the real templates: the banner carries the Cambria "3D", no token left.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.76.5 - 22-Oct-2026 - The Emails Take Theia's Card: the Vale Pavilion Mark and "ValeVision 3D"
+### Adam: "Do the ValeVision 3D One as I hate the current logo instead reformat that system to be like this but write ValeVision 3D"
+
+**What changed**
+- Both emails the Share Project Link form makes (the app notification email, and the legacy link email behind Send
+  email and "Link email (legacy)"), and the hand-edit copy in `60__DistributionEmails`, take ValeVision Theia's client
+  email card (Theia 1.7.0): 440 px wide, a 2 px navy frame, a banner of the Vale pavilion mark with "ValeVision 3D" and
+  "By Vale Garden Houses" in Georgia. The old banner pictures (`FeatureLogo__ValeVision3d__EmailLogo__NotificationEmailHeader__1.3.0__.png`,
+  `FeatureLogo__ValeVision3d__ClickHereVersion__NoBorder__1.0.0__.png`) are no longer used by any email; they stay in the
+  shared assets.
+- **The greeting** (Adam's choice): "Hi Derek, Roger and Sally," in plain text, the names joined with "and" (it was
+  bold, joined with "&").
+- **The notification email:** the same words; the white outline "Need Help Installing The ValeVision App?" button
+  stays (Adam's choice), its padding and outline now on its cell (Outlook ignores padding on a link).
+- **The link email:** Project Code / Name first, then the greeting, "Access Your Project Via ValeVision 3D" and its
+  four points, the special notes, a navy **Open Project in ValeVision 3D** button (the banner picture used to be the
+  link), then the grey development line.
+- **The link email's project link is the production address,** `https://app.valegardenhouses.com/valevision/?project=<id>`.
+  It was built from the page's own address, so an email sent from a localhost session mailed a localhost link.
+
+**Modules**
+- `Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html`, `Na__Feature__AppNotificationEmail__GenerateEmail__Logic__`.
+- `Na__Feature__ShareProjectLink__ProjectEmail__Template__.html`, `Na__Feature__ShareProjectLink__GenerateEmail__Logic__`,
+  `Na__Feature__ShareProjectLink__UrlGeneratorLogic__`.
+- `60__DistributionEmails/Distro__InviteEmailEmbedCard__ValeVision3d.html`, rebuilt from the link email's template.
+- The mark: `AppAssets__CommonApplicationAssets/Logo__ValeGardenHouses/` (pushed with Theia 1.7.0, 22-Oct-2026).
+
+**Tested**: the three modules parse; both emails built in Node from the real templates: no token left, the plain
+greeting, the "ValeVision 3D" banner, the hosted mark, no old logo, the right links (the install guide; the
+production project address). Not yet sent or pasted into Outlook.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.76.4 - 22-Oct-2026 - Update All Thumbnails: No Fogged-Out Views, No Stale Pictures
+### Adam: "Update thumbnails fails see" (Falla Scheme-02: Full Context a broken image, Patio View blank)
+
+**What was wrong**
+- **Patio View came out white.** The fog shader rebuilds each pixel's world position from the camera's world matrix,
+  copied once a frame BEFORE the render, and three.js only refreshes that matrix inside a render. The live loop was one
+  frame behind, which nobody sees; the batch jumps the camera to a scene and captures at once, so the fog was worked out
+  along the PREVIOUS scene's rays. Patio View looks straight at fog plane A (X 3248 mm), and nearly the whole picture
+  landed on the fog side. The thumbnail capture also never synced the fog or SSAO itself, as the image export and the
+  Video Studio do.
+- **Full Context showed a 404.** All six uploads reached the server (checked: 200 at 12:07 UTC). Re-rendering keeps the
+  file name (`su_scene_1.webp`), and the browser had already cached a 404 for that name under Cloudflare's 4-hour
+  `max-age`. The same cache would show an OLD picture after any re-render, for any viewer.
+
+**What changed**
+- `Na__FogPlane__UpdateFogPassPerFrame` refreshes the camera's world matrix before copying it (every caller: the loop,
+  image export, Video Studio, thumbnails); the loop applies the camera constraint before the uniforms.
+- The thumbnail capture runs the loop's effect chain for its own pose: fog uniforms, SSAO uniforms, depth pre-pass.
+- **A thumbnail version.** Every upload writes `PresentationMode__Scene__ThumbnailVersion` (upload time, ms) with the
+  path, through the renderer's new `ApplyToScene` (batch, single scene, keyframe scene, floor plan and elevation cards).
+  `ResolveThumbnailUrlPair` puts it on the URL as `?v=`. Records without one (SketchUp IMG## thumbnails) are unchanged.
+
+**Modules**
+- `Na__FogPlaneSystem__FogShaderEffect` 1.1.0, `Na__FogPlaneSystem__SystemLogic` 1.1.0,
+  `Na__PresentationMode__Thumbnail__Renderer` 1.3.0, `Na__PresentationMode__ProjectJson__SceneData` 1.3.0,
+  `Na__PresentationMode__DevMenu__BatchOps__` 1.1.1, `Na__PresentationMode__DevMenu__ScenePersistence__` 1.2.1,
+  `Na__Elevation__DevMenu__Editor__` 2.1.1, `Na__FloorPlan__DevMenu__Editor__` 2.0.1. TrueVision's twin renderer is
+  not changed.
+
+**Tested**: every changed module parses. Not run in a browser: run Update All Thumbnails on Falla Scheme-02 again.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.76.3 - 09-Oct-2026 - Open Drawing, and a Quieter Delete
 ### Adam: "Make button say Open Drawing and the red button a little more muted until hovered over, it's too eye grabbing"
 

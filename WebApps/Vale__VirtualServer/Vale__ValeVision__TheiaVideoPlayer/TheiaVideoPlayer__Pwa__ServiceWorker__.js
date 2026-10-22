@@ -57,7 +57,7 @@
 
    ============================================================================= */
 
-const THEIA_VERSION        = '2026-10-08-2';
+const THEIA_VERSION        = '2026-10-22-1';
 const THEIA_SHELL          = 'theia-shell-' + THEIA_VERSION;
 const THEIA_MEDIA          = 'theia-media-v1';
 const THEIA_IMAGES         = 'theia-images-v1';

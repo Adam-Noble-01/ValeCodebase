@@ -22,13 +22,14 @@
 # - A VIDEO DROPPED INTO THE FOLDER is written into the data file ("adopted") the
 #   first time a manager edits it, orders it or gives it a poster.
 # - Every write keeps the previous data file as a revision (ValeShared__Library__).
+# - A PROJECT IS NAMED IN THE GALLERY, never here: its title is the Gallery's
+#   Display Name Alias, else its projectName (Na__Library__DisplayName).
 #
 # ROUTES:
 #   GET    /api/health
 #   GET    /api/config                                 the player, cache and connection settings (public)
 #   GET    /api/projects                               projects with videos (Employee)
 #   GET    /api/projects/<id>/videos[?share=&view=1]   the videos, for the asker's audience
-#   PATCH  /api/projects/<id>/library                  {title}                       (Management)
 #   PATCH  /api/projects/<id>/videos/<video>           {title, description, visible} (Management)
 #   POST   /api/projects/<id>/videos/order             {order: [ids]}                (Management)
 #   POST   /api/projects/<id>/videos/sync              from ValeVision 3D            (Management)
@@ -38,6 +39,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 22-Oct-2026 - Version 1.1.0
+# - PATCH api/projects/<id>/library removed: it gave a project a Theia-only title
+#   that overrode the Gallery's Display Name Alias. Nothing called it.
+#
 # 07-Oct-2026 - Version 1.0.0
 # - Initial build.
 #
@@ -257,29 +262,6 @@ def project_videos(pid):
     response = jsonify(library_answer(folder, audience, user, share, only_ids))
     response.headers['Cache-Control'] = 'no-store'
     return response
-
-
-@theia_videos_api.patch('/api/projects/<pid>/library')
-@Na__Auth__Require(theia_core.EDIT_LEVEL)
-def edit_library(pid):
-    """The project's title in Theia (blank: the project's own name)."""
-    folder, missing = _project_or_404(pid)
-    if missing:
-        return missing
-    body = request.get_json(silent=True) or {}
-    with Na__Library__Locked(theia.Na__Theia__DataPath(folder)):
-        library = theia.Na__Theia__Library(folder)
-        data = library['data']
-        if 'title' in body:
-            data['TheiaVideo__Library__ProjectTitle'] = _clean_text(body.get('title'), MAX_TITLE)
-        try:
-            theia.Na__Theia__WriteData(folder, data, theia_core.user_code(), expected_rev=body.get('_rev'))
-        except Na__Library__Conflict:
-            return theia_core.fail('Someone else changed these videos since you opened them. Reload and try again.', 409,
-                                   **library_answer(folder, 'manager', Na__Auth__CurrentUser()))
-    theia_core.activity('video.library', 'Renamed the project in Theia', folder,
-                        target=data.get('TheiaVideo__Library__ProjectTitle') or '')
-    return jsonify(library_answer(folder, 'manager', Na__Auth__CurrentUser()))
 
 
 @theia_videos_api.patch('/api/projects/<pid>/videos/<vid>')

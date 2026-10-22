@@ -619,3 +619,357 @@
     /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Measure Section and Measure Bar
+ * -----------------------------------------------------------------------------
+ * The 3D measure tool's section in the tools menu (Viewport3d__Controls) and the
+ * bar along the foot of the view while a tool is on (Viewport3d__MeasureBar). The
+ * dimensions themselves are drawn by 28__System__MeasureTool3d in its own sheet.
+ * ----------------------------------------------------------------------------- */
+
+    /* BUTTON | A Tool Button With Its Icon */
+    /* ------------------------------------------------------------ */
+    /* TrueVision's measure icons are Vale blue line art; on the active (Vale blue)
+       button a filter turns them white rather than keeping a second set. */
+    .VghLantern__Viewport3d__MenuBtn--tool {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+    }
+
+    .VghLantern__Viewport3d__MenuToolIcon {
+        flex                               : 0 0 auto;
+        width                              : 24px;
+        height                             : 24px;
+        pointer-events                     : none;
+    }
+
+    .VghLantern__Viewport3d__MenuBtn--active .VghLantern__Viewport3d__MenuToolIcon {
+        filter                             : brightness(0) invert(1);
+    }
+
+    .VghLantern__Viewport3d__MenuBtn:disabled,
+    .VghLantern__Viewport3d__MenuBtn:disabled:hover {
+        background-color                   : var(--Vale_BackgroundWhite);
+        opacity                            : 0.45;
+        cursor                             : default;
+    }
+
+    /* Clear All armed: red, and saying so, until the second press or the timeout. */
+    .VghLantern__Viewport3d__MenuBtn--confirm,
+    .VghLantern__Viewport3d__MenuBtn--confirm:hover {
+        color                              : var(--VghLantern_MeasureDelete);
+        background-color                   : var(--VghLantern_ErrorBackground);
+        border-color                       : var(--VghLantern_MeasureDelete);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | A Label Carrying the Vale "i", and Choices Side by Side */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__MenuGroupHead {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+    }
+
+    .VghLantern__Viewport3d__MenuChoiceRow {
+        display                            : flex;
+        gap                                : 6px;
+    }
+
+    .VghLantern__Viewport3d__MenuChoiceRow .VghLantern__Viewport3d__MenuBtn {
+        flex                               : 1 1 0;
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LIST | The Dimensions Taken */
+    /* ------------------------------------------------------------ */
+    /* Scrolls inside the section once an audit runs long, rather than pushing the
+       rest of the menu off the canvas. */
+    .VghLantern__Viewport3d__MeasureList {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+        max-height                         : calc(260px * var(--Vale_UIScale));
+        margin-bottom                      : 6px;
+        overflow-y                         : auto;
+    }
+
+    .VghLantern__Viewport3d__MeasureEmpty {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Viewport3d__MeasureRow {
+        display                            : flex;
+        align-items                        : stretch;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+
+    .VghLantern__Viewport3d__MeasureRow--selected {
+        border-color                       : var(--Vale_PrimaryBrand);
+        box-shadow                         : inset 3px 0 0 var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Viewport3d__MeasureRowMain {
+        display                            : flex;
+        flex                               : 1 1 auto;
+        flex-direction                     : column;
+        gap                                : 2px;
+        min-width                          : 0;
+        padding                            : 6px 8px;
+        font-family                        : var(--Vale_FontFamily);
+        text-align                         : left;
+        background                         : transparent;
+        border                             : none;
+        cursor                             : pointer;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowMain:hover {
+        background-color                   : rgba(23, 43, 58, 0.05);
+    }
+
+    .VghLantern__Viewport3d__MeasureRowTop {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowNumber {
+        flex                               : 0 0 auto;
+        min-width                          : 1.4em;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowValue {
+        flex                               : 1 1 auto;
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowNote {
+        overflow                           : hidden;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        white-space                        : nowrap;
+        text-overflow                      : ellipsis;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowDelete {
+        display                            : inline-flex;
+        flex                               : 0 0 auto;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 30px;
+        padding                            : 0;
+        color                              : var(--Vale_TextSubtle);
+        background                         : transparent;
+        border                             : none;
+        border-left                        : 1px solid var(--Vale_BorderLight);
+        cursor                             : pointer;
+    }
+
+    .VghLantern__Viewport3d__MeasureRowDelete:hover {
+        color                              : var(--VghLantern_MeasureDelete);
+        background-color                   : var(--VghLantern_ErrorBackground);
+    }
+
+    .VghLantern__Viewport3d__MeasureRowDelete .VghLantern__Viewport3d__MenuIcon {
+        width                              : 14px;
+        height                             : 14px;
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHIP | The Axis a Dimension Runs Along, in That Axis's Colour */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__MeasureAxis {
+        flex                               : 0 0 auto;
+        padding                            : 1px 7px;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        white-space                        : nowrap;
+        background-color                   : var(--VghLantern_MeasureFree);
+        border-radius                      : 10px;
+    }
+
+    .VghLantern__Viewport3d__MeasureAxis--x {
+        background-color                   : var(--VghLantern_MeasureAxisRed);
+    }
+
+    .VghLantern__Viewport3d__MeasureAxis--y {
+        background-color                   : var(--VghLantern_MeasureAxisGreen);
+    }
+
+    .VghLantern__Viewport3d__MeasureAxis--z {
+        background-color                   : var(--VghLantern_MeasureAxisBlue);
+    }
+
+    .VghLantern__Viewport3d__MeasureAxis--square {
+        background-color                   : var(--VghLantern_MeasureSquare);
+    }
+
+    .VghLantern__Viewport3d__MeasureAxis--free {
+        background-color                   : var(--VghLantern_MeasureFree);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BAR | Along the Foot of the View While a Tool Is On */
+    /* ------------------------------------------------------------ */
+    /* Centred under the model, clear of the tools menu on the right and the
+       setting-out key on the left, and only as wide as its words. */
+    .VghLantern__Viewport3d__MeasureBar {
+        position                           : absolute;
+        bottom                             : var(--Vale_Spacing_Medium);
+        left                               : 50%;
+        z-index                            : var(--VghLantern_ViewportOverlayZIndex);
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 12px;
+        max-width                          : calc(100% - (2 * var(--Vale_Spacing_Medium)));
+        padding                            : 8px 8px 8px 12px;
+        font-family                        : var(--Vale_FontFamily);
+        color                              : var(--Vale_PrimaryBrand);
+        background                         : rgba(255, 255, 255, 0.96);
+        border                             : 1px solid rgba(0, 0, 0, 0.12);
+        border-radius                      : 10px;
+        box-shadow                         : 0 6px 18px rgba(0, 0, 0, 0.15);
+        transform                          : translateX(-50%);
+    }
+
+    .VghLantern__Viewport3d__MeasureBar[hidden],
+    .VghLantern__Viewport3d__MeasureBarLive[hidden],
+    .VghLantern__Viewport3d__MeasureBarBtn[hidden] {
+        display                            : none;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarIcon {
+        flex                               : 0 0 auto;
+        width                              : 28px;
+        height                             : 28px;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarWords {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 2px;
+        min-width                          : 0;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarText {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__Viewport3d__MeasureBar--flash .VghLantern__Viewport3d__MeasureBarText {
+        color                              : var(--VghLantern_WarningOrange);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarLive {
+        display                            : flex;
+        align-items                        : baseline;
+        gap                                : 10px;
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarValue {
+        font-size                          : calc(18px * var(--Vale_UIScale));
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarState {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_MeasureFree);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarState--x {
+        color                              : var(--VghLantern_MeasureAxisRed);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarState--y {
+        color                              : var(--VghLantern_MeasureAxisGreen);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarState--z {
+        color                              : var(--VghLantern_MeasureAxisBlue);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarState--square {
+        color                              : var(--VghLantern_MeasureSquare);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarBtns {
+        display                            : flex;
+        flex                               : 0 0 auto;
+        gap                                : 6px;
+        margin-left                        : 4px;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarBtn {
+        height                             : 32px;
+        padding                            : 0 12px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        white-space                        : nowrap;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+    }
+
+    .VghLantern__Viewport3d__MeasureBarBtn:hover {
+        background-color                   : rgba(23, 43, 58, 0.06);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarBtn--done {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        border-color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Viewport3d__MeasureBarBtn--done:hover {
+        background-color                   : var(--Vale_PrimaryBrand_Dark);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * PHONE | The Measure Bar Takes the Width
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 480px) {
+        .VghLantern__Viewport3d__MeasureBar {
+            right                          : var(--Vale_Spacing_Small);
+            left                           : var(--Vale_Spacing_Small);
+            flex-wrap                      : wrap;
+            max-width                      : none;
+            transform                      : none;
+        }
+
+        .VghLantern__Viewport3d__MeasureBarBtns {
+            margin-left                    : auto;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

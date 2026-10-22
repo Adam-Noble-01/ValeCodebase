@@ -52,6 +52,41 @@ ValeVision and ValeVision 3D.
   id, the next drawing number and its name numbered on ("Kitchen (2)"). It replaced the Quantity slider: each lantern
   is its own named, numbered lantern for the cut sheets. A lantern saved with a Quantity above 1 keeps it (and its
   takeoff) and shows the retired slider until it is set back to 1.
+- **Glazing panels (v0.9.0):** the glass is cut into panels between the glaze bars, hips, ridge and eaves (and any
+  transom), each edge 3mm off the upright web of the member's aluminium core, rather than one slab per slope. At the
+  eaves the unit stops 3mm short of the eaves extrusion upstand and its top pane runs on to the glaze bar cap ends
+  (a provisional 6mm). Identical panels share a code, GZ01 the largest; a pane and its mirror image are two codes. The
+  cut lives in `02__Src__AppModules\04__MathUtils__LanternGeometry\VghLantern__Geometry__GlazingPanelLayout__.js`; the
+  3D view, the projected drawings and the SketchUp export (payload 1.2.0) all build from it, and hovering a pane in the
+  3D View names its code and sizes. Its numbers live in the system indexes: the glass build-up and the 3mm in the glaze
+  bar index's `GlazingInterface`, each core's web on its own index entry, the eaves glass stop in the base frame's
+  `EavesInterface`. `60__Dev__WebBuildUtils\VghLantern__DevCheck__GlazingPanels__.cjs` re-measures those from the
+  assets and proves the cut.
+- **Roof Glazing Panel Units (v0.10.0):** the glazing department's sheet for each lantern: a top-down plan with an
+  RU bubble on every unit (each slope's bubbles on one line just inside its eaves), and a table with one row per unit
+  type - its straight-on cut drawing (overall width and length, the oversail, every other cut edge, every corner that
+  is not square; a long narrow pane is drawn broken through its plain middle), code, quantity, length and width
+  rounded DOWN to the millimetre (the sealed unit's beneath when it differs), area in m2, glass type, thickness and
+  cavity - closed by the total glass of every unit. It shows in the Specification tab's **Roof Glazing Panel Units**
+  section and on a page of the same name per lantern in Preview and Send (its own switch, after the cutting list); the
+  old per-slope Glazing Areas section is off, on the tab and in the pack. **RU** (Roof glazing Unit) is Vale's standard
+  code for these (GZ in v0.9.0). Nothing is built until one of those draws it: the tab when the section is on screen,
+  the pack as its pages are drawn, each cached per lantern state. Built by
+  `35__System__SpecificationMode\VghLantern__Specification__GlazingSchedule__.js` (what is drawn, as paper millimetre
+  primitives) and drawn by `...GlazingScheduleRenderer__.js` (SVG on screen, native jsPDF in the file, and the pack page
+  layout both follow, so the preview and the PDF break at the same rows). Thickness and cavity come from
+  `VghLantern__Glazing__Options__Config__BuildUps` in the main config, provisional typical values marked * until Vale's
+  glazing panel design confirms them. `60__Dev__WebBuildUtils\VghLantern__DevCheck__GlazingSchedule__.cjs` proves it.
+- **Measuring in the 3D View (v0.10.1):** the **Measure** section of the 3D View Tools menu audits the built model.
+  **Vertex to Vertex** boxes the corner nearest the cursor (AutoCAD's endpoint square); **Face to Face** puts a ring on
+  the face under it (Polycam's reticle). From the first point the red, green and blue axes (SketchUp's colours: model
+  X, Y, Z, which three.js draws as X, Z and Y) run dashed and the free line is purple; within 6 degrees of an axis, or
+  square to the first face (magenta), it snaps and the dimension is dead straight, and a snapped face to face measures
+  to the second face's plane, so a gap between parallel faces is exact wherever you click. Arrow keys lock as in
+  SketchUp, Shift holds the nearest axis, Alt measures free. Whole millimetres by default, 0.01 mm for forensic work.
+  Dimensions are drawn over the canvas, never into the scene, so none can reach a sheet, and are never saved; they go
+  when the lantern changes. The system is `02__Src__AppModules\28__System__MeasureTool3d` (settings in
+  `Na__Measure3d__Config.json`); the icons are TrueVision's, in `01__AppAssets__VghLantern\06__UiIcons__MenuIcons__MeasureTools`.
 - **Info tips (v0.8.0):** the small Vale blue "i" opens a Vale tooltip (hover, or a click or tap to pin it) saying what
   a control means, so the panel itself can stay short. Any element with `data-vgh-tip="<key>"` opens one;
   `VghLantern__AppCore__InfoTooltip.VghLantern__InfoTooltip__IconMarkup(key, label)` writes the "i"; the words live in

@@ -17,6 +17,17 @@
 // - A shared fall-off distance controls the transition from clear to full fog.
 // - Replaces the old orbit-anchored radial fog system.
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.1.0 (thumbnails whited out by fog, v2.76.4)
+// - UpdateFogPassPerFrame brings the camera's world matrix up to date before
+//   copying it. three.js only refreshes it inside a render, so a camera moved
+//   since its last frame handed the fog its OLD pose: the live loop ran one
+//   frame behind, and a capture straight after a jump (Update All Thumbnails)
+//   rebuilt every world position along the previous scene's rays. Falla
+//   Scheme-02's Patio View, looking straight at plane A, came out white.
+//
 // =============================================================================
 
 
@@ -174,9 +185,14 @@
 
     // FUNCTION | Update Fog Pass Camera Uniforms Each Frame
     // ------------------------------------------------------------
+    // The world matrix is refreshed HERE, not trusted: three.js updates it only
+    // inside a render, and every caller runs before its render, often straight
+    // after the camera was placed. A stale matrix fogs the wrong half of the view.
+    // ------------------------------------------------------------
     function Na__FogPlane__UpdateFogPassPerFrame(fogPass, camera) {
         if (!fogPass || !camera) return;
 
+        camera.updateMatrixWorld();                                          // <-- The pose the camera has NOW, not at its last render
         fogPass.uniforms['uCameraFar'].value = camera.far;
         fogPass.uniforms['uInverseProjectionMatrix'].value.copy(camera.projectionMatrixInverse);
         fogPass.uniforms['uCameraWorldMatrix'].value.copy(camera.matrixWorld);

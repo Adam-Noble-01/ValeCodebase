@@ -336,6 +336,72 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Glazing Schedule Page
+ * -----------------------------------------------------------------------------
+ *
+ * Laid out in millimetres by GlazingScheduleRenderer.LayoutPages, the layout the PDF
+ * painter draws, so every block is placed at the top it was given rather than left
+ * to flow. That is what makes this page and the exported one break at the same rows.
+ * Rows and the heading carry their heights inline from the same layout.
+ *
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__GlazingPage {
+        position                    : relative;
+        display                     : block;
+    }
+
+    .VghLantern__DocPreview__GlazingBlock {
+        position                    : absolute;
+        left                        : 0;
+        right                       : 0;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__Table {
+        margin                      : 0;
+    }
+
+    /* Wraps, unlike the Specification tab's headings: on A4 'Glass Thickness' takes
+       two lines, which is what the layout's heading height allows for. */
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__TableHeadCell {
+        vertical-align              : middle;
+        white-space                 : normal;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingNote {
+        margin                      : 0;
+        font-size                   : 3mm;
+        line-height                 : 1.35;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingPlan {
+        margin                      : 0;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingPlanCaption {
+        margin-bottom               : 0;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingDrawingCell {
+        width                       : auto;
+    }
+
+    /* The value centred in the row and its column's name in the cell's top corner,
+       inset by the print cell padding; the sizes are the variables on the table. */
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingTable .VghLantern__Spec__GlazingTextCell {
+        vertical-align              : middle;
+    }
+
+    .VghLantern__DocPreview__GlazingPage .VghLantern__Spec__GlazingCellLabel {
+        top                         : 1.1mm;
+        left                        : 1.4mm;
+        right                       : 1.4mm;
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Pack Preparation Overlay
  * ----------------------------------------------------------------------------- */
 

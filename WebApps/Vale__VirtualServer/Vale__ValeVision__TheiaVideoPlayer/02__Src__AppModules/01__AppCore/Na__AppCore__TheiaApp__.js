@@ -37,6 +37,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.0.6
+// - "Create email HTML…" in the account menu under Developer tools (App Admins,
+//   with a project open): the client delivery email (25__Feature__ClientEmail).
+//
 // 07-Oct-2026 - Version 1.0.5
 // - window.ValeAppUpdate__CanReload: after a source push, Theia reloads by itself
 //   when it comes back to the screen with no video playing, no dialog and no
@@ -97,6 +101,7 @@
     import { Na__Share__Open, Na__Share__Copy, Na__Share__Url } from '../22__Feature__ShareLinks/Na__ShareLinks__Dialog__.js';
     import { Na__ProjectIndex__Render } from '../23__Feature__ProjectIndex/Na__ProjectIndex__Page__.js';
     import { Na__Posters__FillMissing } from '../24__Feature__Posters/Na__Posters__FromVideo__.js';
+    import { Na__ClientEmail__Open } from '../25__Feature__ClientEmail/Na__ClientEmail__Dialog__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -587,7 +592,8 @@
                 { label: 'All project videos', onClick: () => { window.location.href = Na__Share__Url({}); } },
                 ...(projectId ? [
                     { label: 'Copy a staff link to this video', onClick: () => Na__Share__Copy(Na__Share__Url({ project: projectId, video: S.current ? S.current.id : '' }), 'Staff link copied (Vale staff only)') },
-                    { label: 'Share with a client…', onClick: () => S.project && Na__Share__Open({ project: S.project, videos: S.videos, video: S.current, time: S.controller ? S.controller.video.currentTime : 0 }) }
+                    { label: 'Share with a client…', onClick: () => S.project && Na__Share__Open({ project: S.project, videos: S.videos, video: S.current, time: S.controller ? S.controller.video.currentTime : 0 }) },
+                    { label: 'Create email HTML…', adminOnly: true, section: 'Developer tools', onClick: () => S.project && Na__ClientEmail__Open({ project: S.project, videos: Na__Theia__Playable() }) }
                 ] : []),
                 { label: 'Clear saved videos on this device', adminOnly: true, section: 'Developer tools', onClick: async () => {
                     const r = await Na__MediaCache__Evict([], 0);

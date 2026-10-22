@@ -75,6 +75,18 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     const EMPTY_CUTTING_LIST_TEXT  =  'This lantern has no cut pieces to schedule.';
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Glazing Schedule Line Estimate
+    // ------------------------------------------------------------
+    // The glazing page is laid out before anything is drawn, so a wrapped line count
+    // has to be estimated rather than measured. A generous average Helvetica advance,
+    // as a fraction of type size, over-counts lines rather than under-counting them:
+    // an over-count leaves a little air, an under-count would overprint the plan.
+    const GLAZING_AVERAGE_ADVANCE  =  0.6;
+    const GLAZING_CAP_HEIGHT       =  0.717;                                   // <-- Helvetica's cap height as a share of type size, to centre a line in a row
+    const GLAZING_TOTAL_RULE_MM    =  0.35;                                    // <-- The rule over a totals row, as the preview's print table draws it
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -349,8 +361,34 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
 
         if (viewState.ShowTakeoffSchedule) {
             VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Linear, entry.Takeoff.Linear);
-            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Area,   entry.Takeoff.Areas);
+            if (VghLantern__SpecPainter__ShowsAreas()) {
+                VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Area, entry.Takeoff.Areas);
+            }
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether the Specification Still Prints Glazing Areas
+    // ------------------------------------------------------------
+    // The same answer the preview takes: the Specification's own section switch, so
+    // the gross areas leave the tab, the preview and the file together (off since
+    // v0.10.0, when each roof glazing unit took on its own area and the total glass).
+    function VghLantern__SpecPainter__ShowsAreas() {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        if (!DocumentModel) return false;
+        return DocumentModel.VghLantern__Specification__DocumentModel__ListSections().some(function(section) {
+            return section.Renderer === 'areas';
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Masthead's Second Line
+    // ------------------------------------------------------------
+    function VghLantern__SpecPainter__MetaLine(model) {
+        return [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
+            .filter(function(part) { return !!part; }).join('  |  ');
     }
     // ------------------------------------------------------------
 
@@ -365,10 +403,7 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
         VghLantern__SpecPainter__WriteHeading(cursor,
             model.Meta.DocumentTitle + (titleSuffix ? ('  -  ' + titleSuffix) : ''), style.TitlePt);
 
-        VghLantern__SpecPainter__WriteParagraph(cursor,
-            [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
-                .filter(function(part) { return !!part; }).join('  |  '),
-            style.BodyPt);
+        VghLantern__SpecPainter__WriteParagraph(cursor, VghLantern__SpecPainter__MetaLine(model), style.BodyPt);
     }
     // ------------------------------------------------------------
 
@@ -384,6 +419,245 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
             if (model.Lanterns[i].LanternIndex === lanternIndex) return model.Lanterns[i];
         }
         return null;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Glazing Schedule
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Estimate How Many Lines a Text Wraps To
+    // ------------------------------------------------------------
+    function VghLantern__SpecPainter__EstimateLines(text, fontSizePt, widthMm) {
+        if (!text) return 0;
+        var runMm  =  String(text).length * fontSizePt * PT_TO_MM * GLAZING_AVERAGE_ADVANCE;
+        return Math.max(1, Math.ceil(runMm / Math.max(1, widthMm)));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Frame One Lantern's Glazing Schedule Is Laid Out In
+    // ------------------------------------------------------------
+    // Shared with the preview (PrintDocumentRenderer), which lays its pages out in this
+    // same frame, so the file and the preview break at the same rows. The masthead and
+    // the note are sized from this painter's own type, which is how this file writes
+    // them; the preview sets both smaller, so they always fit the space kept here.
+    // Returns { UsableHeightMm, MastheadMm, NoteMm, MastheadSuffix }.
+    function VghLantern__DocPreview__SpecificationPdfPainter__GlazingPageFrame(page, model, entry, schedule) {
+        var Renderer  =  window.VghLantern__Specification__GlazingScheduleRenderer;
+        var style     =  VghLantern__SpecPainter__ResolveStyle();
+        var text      =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__PageText(schedule);
+        var titleMm   =  VghLantern__SpecPainter__LineHeightMm(style.TitlePt, style);
+        var bodyMm    =  VghLantern__SpecPainter__LineHeightMm(style.BodyPt, style);
+        var noteText  =  text.Message || text.Note;
+        var metaLines =  Math.max(1, VghLantern__SpecPainter__EstimateLines(VghLantern__SpecPainter__MetaLine(model), style.BodyPt, page.BodyWidthMm));
+        var noteLines =  VghLantern__SpecPainter__EstimateLines(noteText, style.BodyPt, page.BodyWidthMm);
+
+        // The advances WriteHeading and WriteParagraph make: a heading moves on 1.4
+        // lines, a paragraph its lines plus 0.4 of one.
+        return {
+            UsableHeightMm : page.HeightMm - (page.MarginMm * 2) - style.FooterReserveMm,
+            MastheadMm     : (titleMm * 1.4) + (bodyMm * (metaLines + 0.4)),
+            NoteMm         : noteLines ? bodyMm * (noteLines + 0.4) : 0,
+            MastheadSuffix : entry.Title + '  -  ' + text.TitleSuffix
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Write a Cell's Lines From a Top Edge, Honouring Its Alignment
+    // ------------------------------------------------------------
+    function VghLantern__SpecPainter__WriteCellLines(doc, lines, cellX, column, topMm, lineMm, padMm) {
+        var k, baseline;
+        for (k = 0; k < lines.length; k++) {
+            baseline  =  topMm + (lineMm * k) + (lineMm * 0.8);
+            if (column.Align === 'right') {
+                doc.text(String(lines[k]), cellX + column.WidthMm - padMm, baseline, { align: 'right' });
+            } else {
+                doc.text(String(lines[k]), cellX + padMm, baseline);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Write the Panel Table Rows One Page Holds
+    // ------------------------------------------------------------
+    // The header band, then each panel row at the fixed height the layout gave it:
+    // the cut drawing drawn natively into its column by the schedule's own renderer,
+    // and in every text column the column's name faint at the top with the value,
+    // larger, centred in the row's height and any second line smaller and lighter
+    // beneath it, as the preview's cells are. Alternate rows are shaded as the other
+    // tables in the pack are.
+    function VghLantern__SpecPainter__WriteGlazingTable(cursor, schedule, rowIndices, columns, metrics, Renderer, withTotal) {
+        var doc       =  cursor.Doc;
+        var style     =  cursor.Style;
+        var lineMm    =  VghLantern__SpecPainter__LineHeightMm(style.BodyPt, style);
+        var valuePt   =  metrics.ValueFontMm / PT_TO_MM;
+        var valueMm   =  metrics.ValueFontMm * metrics.CellLineRatio;
+        var subPt     =  metrics.SecondaryFontMm / PT_TO_MM;
+        var subMm     =  metrics.SecondaryFontMm * metrics.CellLineRatio;
+        var labelPt   =  metrics.LabelFontMm / PT_TO_MM;
+        var labelMm   =  metrics.LabelFontMm * 1.2;
+        var padMm     =  metrics.CellPaddingMm;
+        var y         =  cursor.Y;
+        var i, c, x, column, lines, row, cellLines, main, sub, widthMm, blockTop;
+
+        // HEADER | Each label wrapped to its column, centred in the band's height.
+        doc.setFillColor(style.HeaderBackground);
+        doc.rect(cursor.X, y, cursor.WidthMm, metrics.HeaderHeightMm, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(style.BodyPt);
+        doc.setTextColor(style.HeaderTextColour);
+
+        x  =  cursor.X;
+        for (c = 0; c < columns.length; c++) {
+            column  =  columns[c];
+            lines   =  doc.splitTextToSize(String(column.Label), Math.max(1, column.WidthMm - (padMm * 2))).slice(0, 2);
+            VghLantern__SpecPainter__WriteCellLines(doc, lines, x, column,
+                y + ((metrics.HeaderHeightMm - (lines.length * lineMm)) / 2), lineMm, padMm);
+            x  +=  column.WidthMm;
+        }
+        y  +=  metrics.HeaderHeightMm;
+
+        // ROWS | A row never splits: the layout only gave this page the rows it holds.
+        for (i = 0; i < rowIndices.length; i++) {
+            row  =  schedule.Rows[rowIndices[i]];
+            if (!row) continue;
+
+            if (i % 2 === 1) {
+                doc.setFillColor(style.AltRowBackground);
+                doc.rect(cursor.X, y, cursor.WidthMm, metrics.RowHeightMm, 'F');
+            }
+
+            x  =  cursor.X;
+            for (c = 0; c < columns.length; c++) {
+                column  =  columns[c];
+
+                if (column.Key === 'Drawing') {
+                    Renderer.VghLantern__Specification__GlazingScheduleRenderer__DrawToPdf(doc, row.Drawing, x, y + metrics.RowPaddingMm);
+                    x  +=  column.WidthMm;
+                    continue;
+                }
+
+                cellLines  =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__CellLines(column.Key, row, schedule);
+                widthMm    =  Math.max(1, column.WidthMm - (padMm * 2));
+
+                // THE LABEL | The column's name, faint, in the top of the cell.
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(labelPt);
+                doc.setTextColor(metrics.LabelColour);
+                VghLantern__SpecPainter__WriteCellLines(doc, doc.splitTextToSize(String(column.Label), widthMm).slice(0, 2),
+                    x, column, y + padMm, labelMm, padMm);
+
+                // THE VALUE | Measured first, so the value and its second line sit
+                // centred in the row's height together.
+                doc.setFont('helvetica', column.Key === 'Code' ? 'bold' : 'normal');
+                doc.setFontSize(valuePt);
+                main  =  doc.splitTextToSize(String(cellLines[0] === undefined ? '' : cellLines[0]), widthMm);
+                sub   =  [];
+                if (cellLines.length > 1 && cellLines[1]) {
+                    doc.setFontSize(subPt);
+                    sub  =  doc.splitTextToSize(String(cellLines[1]), widthMm);
+                }
+                blockTop  =  y + ((metrics.RowHeightMm - ((main.length * valueMm) + (sub.length * subMm))) / 2);
+
+                doc.setFontSize(valuePt);
+                doc.setTextColor(style.BodyColour);
+                VghLantern__SpecPainter__WriteCellLines(doc, main, x, column, blockTop, valueMm, padMm);
+
+                if (sub.length) {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(subPt);
+                    doc.setTextColor(metrics.SecondaryColour);
+                    VghLantern__SpecPainter__WriteCellLines(doc, sub, x, column, blockTop + (main.length * valueMm), subMm, padMm);
+                }
+
+                x  +=  column.WidthMm;
+            }
+
+            y  +=  metrics.RowHeightMm;
+        }
+
+        // THE TOTAL | The total glass closes the table: a brand rule above it, as the
+        // preview's totals row has, and the label set against the figure under the
+        // Area column, both bold.
+        if (withTotal) {
+            var at        =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__TotalColumn(columns);
+            var baseline  =  y + (metrics.TotalRowHeightMm / 2) + ((metrics.ValueFontMm * GLAZING_CAP_HEIGHT) / 2);
+            var areaX     =  cursor.X;
+
+            doc.setDrawColor(style.HeaderBackground);
+            doc.setLineWidth(GLAZING_TOTAL_RULE_MM);
+            doc.line(cursor.X, y, cursor.X + cursor.WidthMm, y);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(valuePt);
+            doc.setTextColor(style.BodyColour);
+
+            if (at > 0) {
+                for (c = 0; c < at; c++) areaX  +=  columns[c].WidthMm;
+                doc.text(String(schedule.TotalLabel), areaX - padMm, baseline, { align: 'right' });
+                doc.text(String(schedule.TotalAreaText), areaX + columns[at].WidthMm - padMm, baseline, { align: 'right' });
+            } else {
+                doc.text(String(schedule.TotalLabel) + '  ' + String(schedule.TotalAreaText), cursor.X + padMm, baseline);
+            }
+            y  +=  metrics.TotalRowHeightMm;
+        }
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(style.BodyPt);
+        cursor.Y  =  y;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Write One Laid-Out Block of a Glazing Page
+    // ------------------------------------------------------------
+    // The cursor is put at the block's own top first, so every block lands exactly
+    // where the layout placed it whatever the block before it advanced by.
+    function VghLantern__SpecPainter__WriteGlazingBlock(cursor, block, sheet) {
+        var Renderer  =  sheet.Renderer;
+        var style     =  cursor.Style;
+        var doc       =  cursor.Doc;
+
+        cursor.Y  =  cursor.MarginMm + block.TopMm;
+
+        if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_MASTHEAD) {
+            VghLantern__SpecPainter__WriteMasthead(cursor, sheet.Model, sheet.Frame.MastheadSuffix);
+            return;
+        }
+
+        if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_NOTE) {
+            VghLantern__SpecPainter__WriteParagraph(cursor, sheet.Text.Note, style.BodyPt);
+            return;
+        }
+
+        if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_MESSAGE) {
+            VghLantern__SpecPainter__WriteParagraph(cursor, sheet.Text.Message, style.BodyPt);
+            return;
+        }
+
+        if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_PLAN) {
+            var plan  =  sheet.Schedule.Plan;
+            Renderer.VghLantern__Specification__GlazingScheduleRenderer__DrawToPdf(
+                doc, plan, cursor.X + ((cursor.WidthMm - plan.WidthMm) / 2), cursor.Y);
+
+            // The caption sits in the band under the plan the layout reserved for it.
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(sheet.Metrics.CaptionFontMm / PT_TO_MM);
+            doc.setTextColor(sheet.Metrics.SecondaryColour);
+            doc.text(sheet.Text.Caption, cursor.X + (cursor.WidthMm / 2),
+                     cursor.Y + plan.HeightMm + sheet.Metrics.CaptionGapMm + (sheet.Metrics.CaptionFontMm * 0.95),
+                     { align: 'center' });
+            return;
+        }
+
+        if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_TABLE) {
+            VghLantern__SpecPainter__WriteGlazingTable(cursor, sheet.Schedule, block.RowIndices, sheet.Columns, sheet.Metrics, Renderer, !!block.HasTotal);
+        }
     }
     // ------------------------------------------------------------
 
@@ -484,6 +758,49 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Paint One Lantern's Glazing Schedule Onto an Already-Opened PDF Page
+    // ------------------------------------------------------------
+    // The glazing department's sheet, closing that lantern's set: page by page as
+    // GlazingScheduleRenderer.LayoutPages laid it out, which is the layout the preview
+    // drew, so the file breaks where the preview showed it breaking. This is the
+    // pack's failsafe build: the schedule is cut and drawn here unless the preview or
+    // the Specification tab already built it for an unchanged lantern.
+    function VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternGlazingSchedule(doc, pageContext, page, model, lanternIndex) {
+        var Schedule  =  window.VghLantern__Specification__GlazingSchedule;
+        var Renderer  =  window.VghLantern__Specification__GlazingScheduleRenderer;
+        if (!doc || !page || !model || !Schedule || !Renderer) return false;
+
+        var entry  =  VghLantern__SpecPainter__FindLantern(model, lanternIndex);
+        if (!entry) return false;
+
+        var style     =  VghLantern__SpecPainter__ResolveStyle();
+        var cursor    =  VghLantern__SpecPainter__CreateCursor(doc, pageContext, page, style);
+        var schedule  =  Schedule.VghLantern__Specification__GlazingSchedule__ForLanternIndex(lanternIndex);
+        var frame     =  VghLantern__DocPreview__SpecificationPdfPainter__GlazingPageFrame(page, model, entry, schedule);
+        var sheet     =  {
+            Renderer : Renderer,
+            Model    : model,
+            Schedule : schedule,
+            Frame    : frame,
+            Text     : Renderer.VghLantern__Specification__GlazingScheduleRenderer__PageText(schedule),
+            Metrics  : Renderer.VghLantern__Specification__GlazingScheduleRenderer__PageMetrics(),
+            Columns  : Renderer.VghLantern__Specification__GlazingScheduleRenderer__ResolveColumns(page.BodyWidthMm)
+        };
+        var layout  =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__LayoutPages(schedule, frame);
+        var p, b;
+
+        for (p = 0; p < layout.length; p++) {
+            if (p > 0) pageContext.AddOverflowPage();
+            for (b = 0; b < layout[p].Blocks.length; b++) {
+                VghLantern__SpecPainter__WriteGlazingBlock(cursor, layout[p].Blocks[b], sheet);
+            }
+        }
+
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Page Descriptor for the Project Summary
     // ------------------------------------------------------------
     // One descriptor covers the whole summary however long it runs; the painter asks
@@ -548,6 +865,27 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Page Descriptor for One Lantern's Glazing Schedule
+    // ------------------------------------------------------------
+    // Returns null only for a lantern the model does not hold, as the cutting list
+    // does. A lantern with no glazing panels still gets its page, saying so, for the
+    // same page-count reason. Nothing is cut or drawn until the writer paints it.
+    function VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternGlazingSchedulePage(page, model, lanternIndex) {
+        if (!page || !model) return null;
+        if (!VghLantern__SpecPainter__FindLantern(model, lanternIndex)) return null;
+
+        return {
+            Kind     : PAGE_KIND,
+            WidthMm  : page.WidthMm,
+            HeightMm : page.HeightMm,
+            Paint    : function(doc, pageContext) {
+                return VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternGlazingSchedule(doc, pageContext, page, model, lanternIndex);
+            }
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
@@ -555,10 +893,15 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
         VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary    : VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary,
         VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern           : VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern,
         VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList: VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList,
+        VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternGlazingSchedule :
+            VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternGlazingSchedule,
+        VghLantern__DocPreview__SpecificationPdfPainter__GlazingPageFrame       : VghLantern__DocPreview__SpecificationPdfPainter__GlazingPageFrame,
         VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage: VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage,
         VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage       : VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage,
         VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage :
-            VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage
+            VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage,
+        VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternGlazingSchedulePage :
+            VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternGlazingSchedulePage
     };
 
 // endregion -------------------------------------------------------------------

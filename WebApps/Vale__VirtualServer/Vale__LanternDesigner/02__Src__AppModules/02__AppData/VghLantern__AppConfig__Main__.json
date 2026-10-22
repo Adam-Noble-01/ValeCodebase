@@ -2,7 +2,7 @@
     "VghLantern__Application__Config": {
         "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
         "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
-        "VghLantern__Application__Config__AppVersion": "0.8.1",
+        "VghLantern__Application__Config__AppVersion": "0.10.1",
         "VghLantern__Application__Config__PublicUrl": "https://app.valegardenhouses.com/lantern-designer/",
         "VghLantern__Application__Config__ApiBase": "api/",
         "VghLantern__Application__Config__ProjectDataHome": "Vale__Projects__MasterLibrary/ValeProjects__<year>/<project id>/LanternDesigner/VghLantern__ProjectFile__<project id>__.json",
@@ -144,7 +144,14 @@
             "Blue Solar Control",
             "Opaque"
         ],
-        "VghLantern__Glazing__Options__Config__DefaultGlazingSpec": ""
+        "VghLantern__Glazing__Options__Config__DefaultGlazingSpec": "",
+        "VghLantern__Glazing__Options__Config__BuildUps": {
+            "Double Glazed Toughened"     : { "Provisional": true, "Layers": [ { "Kind": "pane", "ThicknessMm": 6, "Glass": "toughened" }, { "Kind": "cavity", "WidthMm": 16, "Fill": "argon" }, { "Kind": "pane", "ThicknessMm": 6,   "Glass": "toughened" } ] },
+            "Double Glazed Laminate Over" : { "Provisional": true, "Layers": [ { "Kind": "pane", "ThicknessMm": 6, "Glass": "toughened" }, { "Kind": "cavity", "WidthMm": 16, "Fill": "argon" }, { "Kind": "pane", "ThicknessMm": 6.4, "Glass": "laminated" } ] },
+            "Triple Glazed Toughened"     : { "Provisional": true, "Layers": [ { "Kind": "pane", "ThicknessMm": 4, "Glass": "toughened" }, { "Kind": "cavity", "WidthMm": 8,  "Fill": "argon" }, { "Kind": "pane", "ThicknessMm": 4,   "Glass": "toughened" }, { "Kind": "cavity", "WidthMm": 8, "Fill": "argon" }, { "Kind": "pane", "ThicknessMm": 4, "Glass": "toughened" } ] },
+            "Self Cleaning Double Glazed" : { "Provisional": true, "Layers": [ { "Kind": "pane", "ThicknessMm": 6, "Glass": "self cleaning toughened" }, { "Kind": "cavity", "WidthMm": 16, "Fill": "argon" }, { "Kind": "pane", "ThicknessMm": 6, "Glass": "toughened" } ] }
+        },
+        "VghLantern__Glazing__Options__Config__BuildUpsNote": "PROVISIONAL typical sealed unit build-ups, agreed with Adam on 20-Oct-2026 to fill the glazing schedule's Glass Thickness and Cavity Spec columns until Vale's glazing panel design gives the real ones; every entry prints marked provisional while Provisional is true. Keyed by the glazing spec names above. Layers run outside to inside. Only the glazing schedule reads these: the 3D unit stays the glaze bar index's 28mm, so a build-up that totals 28.4mm is the schedule's figure, not the model's."
     },
     "VghLantern__Finish__Options__Config__MigrationNote": "MIGRATED. The finish palette now lives in 02__Src__AppModules/02__AppData/Na__PbrMaterials__Config.json, where each finish carries its full PBR surface response instead of only a hex colour. AppCore__ConfigLoader derives the FinishOptions section from that file at load time, so every existing consumer is unchanged.",
     "VghLantern__Validation__Config": {

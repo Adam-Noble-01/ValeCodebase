@@ -1,5 +1,68 @@
 # ValeVision Theia: DEVLOG
 
+## Version 1.7.1, 22-Oct-2026: Projects Are Named as in the Gallery
+
+**Asked by Adam:** Theia must use the same Display Name Alias for a project as ValeVision Gallery.
+
+- **One rule on the server** for both apps: the Display Name Alias set in the Gallery's Project Editor, else the
+  Project Name, else the folder name (`Na__Library__DisplayName`, `ValeShared__Library__` 1.3.0). The project list,
+  the breadcrumbs, the heading over a video ("64561 - Falla | Scheme – 01"), the browser tab, the Share dialog and
+  the client email all show it.
+- **Theia's own project title is retired.** The data file's `TheiaVideo__Library__ProjectTitle` won over the alias,
+  so the two apps could name one project differently. It is no longer read or written, and its route
+  (`PATCH api/projects/<id>/library`, which nothing called) is gone.
+- The Gallery editor's help under Display Name Alias now says Theia shows it too.
+- No change to the page itself, so no update for devices: it takes effect once the Theia and Gallery services are
+  restarted on the server.
+- Files: `ValeShared__Library__.py` 1.3.0, `ValeShared__TheiaVideo__.py` 1.1.0, `TheiaVideoPlayer__Api__Videos__.py`
+  1.1.0, Gallery `wsgi.py` 1.2.1, `Na__Feature__ProjectEditor__Form.jsx` 1.0.1.
+
+## Version 1.7.0, 22-Oct-2026: Client Delivery Email (App Admins)
+
+**Asked by Adam:** a project delivery email for Theia, like ValeVision 3D's, made from his developer account:
+the Project Code, an addressee and special notes as in ValeVision 3D's email form, and "Dear ..." wording fit for
+a luxury client. It sits in the account menu.
+
+- **Where:** account menu, **Developer tools**, **Create email HTML…** (App Admins, with a project open).
+- **The form:** Addressed to (Dear …), names separated by commas joined with "and"; the client link; Special notes
+  (optional).
+- **The client link** (Adam's choice): by default a new client link that never expires, labelled
+  "<addressee> - Email 22-Oct-26", so the Share dialog shows who has it. The dropdown lists the project's active
+  client links to reuse instead; one ending within 30 days is flagged in amber. Once made, the new link becomes the
+  choice, so making the email again (a typo fixed) reuses it rather than making a second.
+- **The email** (ValeVision 3D's notification card): the Vale pavilion mark with "ValeVision" and "By Vale Garden
+  Houses" in Georgia (as ValeVision 3D's banner picture); Project Code / Project Name; "Dear Mr and Mrs Holt,"; "You
+  are invited to view your project in ValeVision Theia, Vale Garden Houses' video platform. Your project videos are
+  ready to watch in full quality."; the special notes card; a navy **View Your Project Videos** button; "They open in
+  any web browser, with nothing to install and no account needed."; "This link works until …" only for a link with
+  an end date; the copyright footer. One video: "video is", "View Your Project Video", "It opens".
+- **Adam's choices:** the short wording; no closing line in the card (his own close and Outlook signature follow);
+  no video still (the posters are WebP, which classic Outlook on Windows cannot show).
+- **The link in the email is always the production one** (`https://app.valegardenhouses.com/theia/?project=<id>&share=<token>`).
+  On a local copy of Theia the dialog warns that a new link made there exists only on that PC.
+- **After Generate:** the HTML downloads as `ValeVisionTheia__ClientEmail__<id>__<DD-Mmm-YYYY>__.html`; the dialog
+  shows the subject line ("Your Project Videos | Holt - 64135") with Copy, and **Open the email**, a new tab to
+  press Ctrl+A, Ctrl+C in and paste into a new Outlook email.
+- **Activity ledger:** `link.email` with the file, the link and who it is to.
+- **The same day, on Adam's notes:** the banner reads "ValeVision" (no "Theia"), and the Vale pavilion mark replaces
+  the Theia monitor icon at the top left.
+
+**Changes:**
+- New `25__Feature__ClientEmail`: `Na__ClientEmail__Template__.html` (tokenised, Outlook-safe: inline styles, the
+  button's padding on its cell), `Na__ClientEmail__Builder__` 1.0.0 (one-pass token fill, escaping, subject, file
+  name), `Na__ClientEmail__Dialog__` 1.0.0.
+- New shared asset folder `AppAssets__CommonApplicationAssets\Logo__ValeGardenHouses\`: Adam's
+  `Logo__ValeGardenHouses__PavilionMark__Navy__.svg` (copied from `Vale__Presentations\SystemIdea__ObjectLibray\01_Assets`)
+  and `...__EmailLogo__.png`, rendered by Inkscape (Outlook cannot show SVG): 176 x 240 on white, cropped to the
+  mark, shown at 44 x 60.
+- `Na__AppCore__TheiaApp__` 1.0.6: the menu item.
+- The dialog stylesheet: the email dialog's form, notes, warnings and result.
+- Service worker `2026-10-22-1`.
+
+**Checked:** the modules parse (`node --check`); the builder, run in Node against the real template: greetings
+("Derek, Roger , Sally," -> "Derek, Roger and Sally"), singular and plural wording, the end-date line, notes
+escaped (`<b>`, `$`, a typed `__THEIA_URL__` stay as typed), no token left. The dialog itself is for Adam to try.
+
 ## Version 1.6.0, 08-Oct-2026: Share Dialog - Client and Staff Links Can't Be Mixed Up
 
 **Asked by Adam:** the Share dialog was hard to read, and sales could send a client the wrong kind of link. Each

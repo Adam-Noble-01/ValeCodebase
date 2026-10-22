@@ -59,6 +59,7 @@
 @import url('../02__Src__AppModules/10__System__DocumentManagementMode/VghLantern__DocManagement__Styles__Main__.css');
 @import url('../02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Styles__Main__.css');
 @import url('../02__Src__AppModules/25__System__Viewport3dMode/VghLantern__Viewport3d__Styles__Main__.css');
+@import url('../02__Src__AppModules/28__System__MeasureTool3d/VghLantern__Measure3d__Styles__Main__.css');
 @import url('../02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__Styles__Main__.css');
 @import url('../02__Src__AppModules/35__System__SpecificationMode/VghLantern__Specification__Styles__Main__.css');
 @import url('../02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__Styles__Main__.css');

@@ -6,19 +6,27 @@
    NAMESPACE  : VghLantern
    MODULE     : Env3d - MeshBuilder Glazing
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Build translucent glass faces from solved skeleton faces
+   PURPOSE    : Build the translucent glazing panels from the solved glazing panel layout
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Builds each solved glazing face as a translucent SLAB of the configured
-     thickness, not a single plane.
+   - Builds every glazing PANEL as a translucent slab: one sealed unit between
+     its bars and hips, cut by VghLantern__Geometry__GlazingPanelLayout, which
+     is the one place the glass is divided. This module lifts the outlines that
+     layout hands it and adds nothing to them.
    - The slab is seated on the GLAZE BAR DATUM the way the real unit is. Its
-     INNER face sits GlazingInnerFaceOffsetMm ABOVE the datum, which is the
-     depth of the core's glazing leg and the setting tape the pane beds onto,
-     and the unit's thickness is then measured outward from that bedding face.
-   - Draws whole slopes rather than individual panes between bars. At review
-     scale the bar meshes already delineate the panes, so per-pane glass would
-     multiply geometry for no visual gain.
+     INNER face sits the bedding offset ABOVE the datum, which is the depth of
+     the core's glazing leg and the setting tape the pane beds onto, and the
+     unit's thickness is then measured outward from that bedding face. Both
+     numbers come from the panel set's Meta, so the slab is lifted by exactly
+     what the panel was cut for.
+   - Where the top pane oversails the eaves extrusion upstand (the stepped edge
+     Adam sketched on 20-Oct-2026), a second, thinner slab carries the top pane
+     on to the cap ends. The unit and its lip are one panel to the inspector.
+   - Until v0.9.0 this drew whole slopes rather than panels ("at review scale the
+     bar meshes already delineate the panes"). That slab ran through every bar
+     web and core, and the glazing schedule needs real panels, so it is kept
+     only as the fallback for a lantern with no bar set to cut by.
 
    ---------------------------------------------------------------------------
 
@@ -44,8 +52,10 @@
    seen from indoors.
 
    TRIANGULATION AND WINDING:
-   Solver faces are convex quads or triangles, so a fan from the first vertex is
-   both correct and cheap - no general tessellator, no dependency. A slab does
+   Solver faces are convex quads or triangles, and every panel the layout cuts
+   is convex by construction (a convex slope clipped by half planes), so a fan
+   from the first vertex is both correct and cheap - no general tessellator, no
+   dependency. A slab does
    need its winding to be right, though, where a plane did not: computeVertexNormals
    derives normals from winding, so a reversed cap would light as though the sky
    were underneath the roof. The point ring is therefore normalised to an
@@ -77,6 +87,22 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     const FACE_ROLE_GLAZING     =  'glazingFace';                            // <-- Only glazing faces get glass
     const MIN_FACE_POINTS       =  3;                                        // <-- A face needs at least a triangle
     const VERTICES_PER_TRIANGLE =  3;                                        // <-- The vertex sink is a flat triangle list
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | The System Indexes the Panel Cut Reads
+    // ------------------------------------------------------------
+    // The panel layout reads the glass build-up, the core webs and the eaves glass
+    // stop synchronously from these four. Init loads all four at boot; awaiting
+    // them here as well (each load is memoised, so this is a resolved promise by
+    // then) means a surface built before boot finished still cuts with the index
+    // numbers rather than the layout's fallbacks.
+    const PANEL_CUT_LOADERS  =  [
+        { Global : 'VghLantern__AppData__GlazeBarSystemLoader',  Fn : 'VghLantern__GlazeBarSystemLoader__LoadIndex'  },
+        { Global : 'VghLantern__AppData__RidgeSystemLoader',     Fn : 'VghLantern__RidgeSystemLoader__LoadIndex'     },
+        { Global : 'VghLantern__AppData__HipSystemLoader',       Fn : 'VghLantern__HipSystemLoader__LoadIndex'       },
+        { Global : 'VghLantern__AppData__BaseFrameSystemLoader', Fn : 'VghLantern__BaseFrameSystemLoader__LoadIndex' }
+    ];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -299,16 +325,97 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
 // REGION | Glazing Assembly
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Build Every Glazing Face Into the Glazing Group
+    // HELPER FUNCTION | Wait for the System Indexes the Panel Cut Reads
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__MeshBuilder__Glazing__Build(targetGroup, skeleton) {
-        if (!targetGroup || !skeleton || !Array.isArray(skeleton.Faces)) return;
+    // Each loader's LoadIndex is memoised and resolves null rather than throwing
+    // when its index cannot load, so this never rejects; a missing loader is
+    // skipped and the layout falls back to its documented numbers for it.
+    async function VghLantern__Env3d__GlazingBuilder__AwaitSystemIndexes() {
+        const pending  =  [];
+        for (let i = 0; i < PANEL_CUT_LOADERS.length; i++) {
+            const loader  =  window[PANEL_CUT_LOADERS[i].Global];
+            const load    =  loader ? loader[PANEL_CUT_LOADERS[i].Fn] : null;
+            if (typeof load === 'function') pending.push(load());
+        }
+        await Promise.all(pending);
+    }
+    // ------------------------------------------------------------
 
-        const innerFaceWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInnerFaceOffsetMm'));
-        const thicknessWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingThicknessMm'));
+
+    // HELPER FUNCTION | Cut the Lantern's Glass Into Panels
+    // ------------------------------------------------------------
+    // Null when there is nothing to cut by - no layout module, or no bar set -
+    // which sends the build down the whole slope fallback rather than leaving the
+    // roof with no glass at all.
+    function VghLantern__Env3d__GlazingBuilder__PanelSet(skeleton, barSet, lantern) {
+        const Layout  =  window.VghLantern__Geometry__GlazingPanelLayout;
+        if (!Layout || !barSet) return null;
+
+        const panelSet  =  Layout.VghLantern__GlazingPanelLayout__Layout(skeleton, barSet, lantern);
+        if (!panelSet || !Array.isArray(panelSet.Panels) || panelSet.Panels.length === 0) return null;
+
+        if (panelSet.Warnings.length > 0) {
+            console.warn('[VghLantern__Env3d__MeshBuilder__Glazing] Panel layout warnings:', panelSet.Warnings);
+        }
+        return panelSet;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build Every Glazing Panel Into the Vertex Sink
+    // ------------------------------------------------------------
+    // Each panel is its unit slab and, where the top pane oversails, the thinner
+    // lip slab carrying it on to the cap ends. Both are pushed inside one span, so
+    // the inspector names the panel - its code and its sizes - wherever on it the
+    // cursor lands. The outlines lie ON the glaze bar datum; the unit's ring goes
+    // in at its outer face and the slab closes back down onto the bedding face,
+    // and the lip shares that outer face and closes down by the top pane only.
+    function VghLantern__Env3d__GlazingBuilder__BuildPanels(panelSet, vertices, spans) {
+        const meta            =  panelSet.Meta;
+        const outerFaceWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(meta.BeddingOffsetMm + meta.UnitThicknessMm);
+        const unitWorld       =  VghLantern__Env3d__ConfigAccess__MmToWorld(meta.UnitThicknessMm);
+        const lipWorld        =  VghLantern__Env3d__ConfigAccess__MmToWorld(meta.OuterPaneThicknessMm);
+
+        for (let i = 0; i < panelSet.Panels.length; i++) {
+            const panel  =  panelSet.Panels[i];
+            if (!Array.isArray(panel.Outline3d) || panel.Outline3d.length < MIN_FACE_POINTS) continue;
+
+            const triangleStart  =  vertices.length / VERTICES_PER_TRIANGLE;
+
+            const unitRing  =  VghLantern__Env3d__GlazingBuilder__OffsetFacePoints({ Points : panel.Outline3d }, outerFaceWorld);
+            VghLantern__Env3d__GlazingBuilder__BuildSlab(unitRing, VghLantern__Env3d__GlazingBuilder__FaceNormal(unitRing), unitWorld, vertices);
+
+            if (lipWorld > 0 && Array.isArray(panel.LipOutline3d) && panel.LipOutline3d.length >= MIN_FACE_POINTS) {
+                const lipRing  =  VghLantern__Env3d__GlazingBuilder__OffsetFacePoints({ Points : panel.LipOutline3d }, outerFaceWorld);
+                VghLantern__Env3d__GlazingBuilder__BuildSlab(lipRing, VghLantern__Env3d__GlazingBuilder__FaceNormal(lipRing), lipWorld, vertices);
+            }
+
+            spans.push({
+                Record    : panel,
+                SpanStart : triangleStart,
+                SpanCount : (vertices.length / VERTICES_PER_TRIANGLE) - triangleStart
+            });
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build Each Whole Slope as One Slab (the Fallback)
+    // ------------------------------------------------------------
+    // The pre-v0.9.0 glass: one slab per solved slope, run past the datum to the
+    // cap ends. It passes through every bar web and core, so it is no longer the
+    // model; it stays as the fallback for a lantern with no bar set to cut by, so
+    // such a roof still shows glass. Lifted by the panel layout's build-up numbers
+    // when that module is loaded, so the two paths never seat glass differently.
+    // Do not delete it on the grounds that a normal lantern never reaches it.
+    function VghLantern__Env3d__GlazingBuilder__BuildWholeSlopes(skeleton, vertices, spans) {
+        const Layout          =  window.VghLantern__Geometry__GlazingPanelLayout;
+        const numbers         =  Layout ? Layout.VghLantern__GlazingPanelLayout__Interface() : null;
+        const innerFaceWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(numbers ? numbers.BeddingOffsetMm
+                                     : VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInnerFaceOffsetMm'));
+        const thicknessWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(numbers ? numbers.UnitThicknessMm
+                                     : VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingThicknessMm'));
         const outerFaceWorld  =  innerFaceWorld + thicknessWorld;             // <-- Ring goes in at the outer face; the slab closes back down onto the bedding face
-        const vertices        =  [];
-        const spans           =  [];
 
         for (let i = 0; i < skeleton.Faces.length; i++) {
             const face  =  skeleton.Faces[i];
@@ -333,6 +440,30 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
                 SpanStart : triangleStart,
                 SpanCount : (vertices.length / VERTICES_PER_TRIANGLE) - triangleStart
             });
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build Every Glazing Panel Into the Glazing Group
+    // ------------------------------------------------------------
+    // ASYNC since v0.9.0, because the panel cut reads four system indexes and a
+    // surface can be built before boot has finished loading them. Both callers -
+    // the render pipeline and the projected edges stage - await it in their own
+    // build order, so the glass still lands first.
+    export async function VghLantern__Env3d__MeshBuilder__Glazing__Build(targetGroup, skeleton, barSet, lantern) {
+        if (!targetGroup || !skeleton || !Array.isArray(skeleton.Faces)) return;
+
+        await VghLantern__Env3d__GlazingBuilder__AwaitSystemIndexes();
+
+        const vertices  =  [];
+        const spans     =  [];
+        const panelSet  =  VghLantern__Env3d__GlazingBuilder__PanelSet(skeleton, barSet, lantern);
+
+        if (panelSet) {
+            VghLantern__Env3d__GlazingBuilder__BuildPanels(panelSet, vertices, spans);
+        } else {
+            VghLantern__Env3d__GlazingBuilder__BuildWholeSlopes(skeleton, vertices, spans);
         }
 
         if (vertices.length === 0) return;

@@ -39,6 +39,8 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     const CSS_WARNINGS   =  'VghLantern__DocPreview__PrintDocWarnings';
     const CSS_USER_WARNINGS  =  'VghLantern__DocPreview__PrintDocUserWarnings';
     const CSS_EMPTY      =  'VghLantern__DocPreview__Empty';
+    const CSS_GLAZING_PAGE   =  'VghLantern__DocPreview__GlazingPage';
+    const CSS_GLAZING_BLOCK  =  'VghLantern__DocPreview__GlazingBlock';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -150,6 +152,21 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Whether the Specification Still Prints Glazing Areas
+    // ------------------------------------------------------------
+    // The pack follows the Specification's own section switch, so the gross areas
+    // leave the tab and the page together. Off since v0.10.0: each roof glazing unit
+    // carries its own area now, with the total glass.
+    function VghLantern__PrintDocument__ShowsAreas() {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        if (!DocumentModel) return false;
+        return DocumentModel.VghLantern__Specification__DocumentModel__ListSections().some(function(section) {
+            return section.Renderer === 'areas';
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build Tables for One Lantern Takeoff
     // ------------------------------------------------------------
     // isOwnPage suppresses the lantern heading: when this block is a page of its own
@@ -167,7 +184,9 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
 
         if (viewState.ShowTakeoffSchedule) {
             html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable(entry.Takeoff);
-            html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable(entry.Takeoff);
+            if (VghLantern__PrintDocument__ShowsAreas()) {
+                html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable(entry.Takeoff);
+            }
         }
 
         return html;
@@ -317,6 +336,72 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build One Lantern's Glazing Schedule, Page by Page
+    // ------------------------------------------------------------
+    // The glazing department's sheet, closing that lantern's set. Returns one body per
+    // page rather than one body for the paginator: the pages are laid out by
+    // GlazingScheduleRenderer.LayoutPages in the frame the PDF painter reports, and
+    // every block is placed at the top the layout gave it, so this preview and the
+    // exported file break at the same rows and carry the same page count.
+    //
+    // This is the pack's failsafe build: the schedule is cut and drawn here, as its
+    // page is drawn, unless the Specification tab already built it for an unchanged
+    // lantern. Nothing builds one when the Glazing Schedule switch is off.
+    function VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternGlazingSchedulePages(viewState, lanternIndex, page) {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        var Schedule       =  window.VghLantern__Specification__GlazingSchedule;
+        var Renderer       =  window.VghLantern__Specification__GlazingScheduleRenderer;
+        var SpecPainter    =  window.VghLantern__DocPreview__SpecificationPdfPainter;
+        if (!DocumentModel || !Schedule || !Renderer || !SpecPainter || !page) {
+            return ['<p class="' + CSS_EMPTY + '">Glazing schedule modules are not available.</p>'];
+        }
+
+        var model  =  DocumentModel.VghLantern__Specification__DocumentModel__BuildFromState();
+        var entry  =  model ? VghLantern__PrintDocument__FindLantern(model, lanternIndex) : null;
+        if (!entry) {
+            return ['<p class="' + CSS_EMPTY + '">This lantern has no glazing schedule.</p>'];
+        }
+
+        var schedule  =  Schedule.VghLantern__Specification__GlazingSchedule__ForLanternIndex(lanternIndex);
+        var frame     =  SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__GlazingPageFrame(page, model, entry, schedule);
+        var text      =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__PageText(schedule);
+        var metrics   =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__PageMetrics();
+        var columns   =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__ResolveColumns(page.BodyWidthMm);
+        var layout    =  Renderer.VghLantern__Specification__GlazingScheduleRenderer__LayoutPages(schedule, frame);
+        var Mm        =  function(value) { return (Math.round(value * 1000) / 1000) + 'mm'; };
+
+        // HELPER | The markup of one laid-out block
+        function blockHtml(block) {
+            if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_MASTHEAD) {
+                return VghLantern__PrintDocument__BuildMasthead(model, frame.MastheadSuffix);
+            }
+            if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_NOTE) {
+                return Renderer.VghLantern__Specification__GlazingScheduleRenderer__BuildNoteHtml(schedule);
+            }
+            if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_MESSAGE) {
+                return '<p class="' + CSS_EMPTY + '">' + VghLantern__PrintDocument__Escape(text.Message) + '</p>';
+            }
+            if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_PLAN) {
+                return Renderer.VghLantern__Specification__GlazingScheduleRenderer__BuildPlanHtml(schedule, metrics);
+            }
+            if (block.Kind === Renderer.VGHLANTERN__GLAZINGRENDERER__BLOCK_TABLE) {
+                return Renderer.VghLantern__Specification__GlazingScheduleRenderer__BuildTableHtml(schedule, block.RowIndices, columns, metrics, !!block.HasTotal);
+            }
+            return '';
+        }
+
+        return layout.map(function(layoutPage) {
+            var html  =  '<div class="' + CSS_ROOT + ' ' + CSS_GLAZING_PAGE + '" style="height:' + Mm(frame.UsableHeightMm) + '">';
+            layoutPage.Blocks.forEach(function(block) {
+                html  +=  '<div class="' + CSS_GLAZING_BLOCK + '" style="top:' + Mm(block.TopMm) + ';height:' + Mm(block.HeightMm) + '">' +
+                          blockHtml(block) + '</div>';
+            });
+            return html + '</div>';
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Full Print-Faithful Specification Body
     // ------------------------------------------------------------
     // The whole specification as one continuous document: the project summary followed
@@ -357,7 +442,9 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
         VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml :
             VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml,
         VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml :
-            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml,
+        VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternGlazingSchedulePages :
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternGlazingSchedulePages
     };
 
 // endregion -------------------------------------------------------------------

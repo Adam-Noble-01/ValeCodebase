@@ -40,6 +40,17 @@
                     "No plasterboard. Measure to the kerb itself, never to a lining.",
                     "The exterior is worked out for you: this plus the upstand thickness either side, so a thicker upstand makes a bigger lantern."
                 ]
+            },
+
+            "measure3d.snapping" : {
+                "Title"      : "How Measuring Snaps",
+                "Paragraphs" : [
+                    "Vertex to Vertex boxes the corner nearest the cursor. Face to Face puts a ring on the face under it.",
+                    "From the first point the red, green and blue axes run dashed. Within a few degrees of one, the line snaps to it and the dimension is dead straight.",
+                    "Face to Face also snaps square to the first face (magenta), and measures to the second face's plane, so a gap between parallel faces is exact wherever you click.",
+                    "Arrow keys lock as in SketchUp: Right red, Left green, Up blue, Down square. Shift holds the nearest axis; Alt measures free.",
+                    "Click a value to select it. Delete removes it; Escape drops a point."
+                ]
             }
         }
     }

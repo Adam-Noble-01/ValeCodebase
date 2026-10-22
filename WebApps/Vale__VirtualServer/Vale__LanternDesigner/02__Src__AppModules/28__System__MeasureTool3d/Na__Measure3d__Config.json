@@ -1,0 +1,95 @@
+{
+    "VghLantern__Measure3d__Config": {
+        "VghLantern__Measure3d__Config__Description": "The 3D View's measure tool (28__System__MeasureTool3d): Vertex to Vertex and Face to Face, built to audit test models. Polycam's axis guides and straight line nudge, in SketchUp's axis colours (three.js X red, Z green, Y blue up), TrueVision's measure icons and AutoCAD snap glyphs. An audit aid only: drawn as an SVG over the 3D View canvas and never in the three.js scene, so it can never reach a sheet snapshot; never saved to the design, printed or exported. Merged by AppCore ConfigLoader; read through VghLantern__Measure3d__ConfigAccess__.mjs.",
+
+        "VghLantern__Measure3d__Config__Feature": {
+            "Enabled"                     : true,
+            "EnabledNote"                 : "Master switch. Off lists no tools, so the Measure section leaves the 3D View Tools menu altogether rather than offering buttons that do nothing.",
+            "MeasureSectionCuts"          : true,
+            "MeasureSectionCutsNote"      : "With a cross section on, the cut faces (each member's profile where the cut passes) measure like the model's own faces and corners (Adam, 21-Oct-2026). The cut face is drawn 1.2 mm into the kept half (Na__CrossSection__Config.json FillInsetMm), which moves it along the cut's normal only, so a dimension across the cut face is exact."
+        },
+
+        "VghLantern__Measure3d__Config__Tools": [
+            { "Key": "vertex", "Label": "Vertex to Vertex", "Icon": "Icon__MeasureTools__VertexToVertex__.svg", "FirstStep": "Click the first vertex", "SecondStep": "Click the second vertex", "NothingHere": "No corner under the cursor" },
+            { "Key": "face",   "Label": "Face to Face",     "Icon": "Icon__MeasureTools__LinearMeasurment__.svg", "FirstStep": "Click the first face",   "SecondStep": "Click the second face",   "NothingHere": "No face under the cursor" }
+        ],
+
+        "VghLantern__Measure3d__Config__Icons": {
+            "Folder"                      : "01__AppAssets__VghLantern/06__UiIcons__MenuIcons__MeasureTools/",
+            "Clear"                       : "Icon__MeasureTools__ClearMeasurements__.svg",
+            "IconsNote"                   : "TrueVision's measure set, copied unchanged on 21-Oct-2026 from 30__TrueVision__CoreAppCode/01__AppAssets__TrueVision/UiIcons__MenuIcons__MeasureTools (Tape Measure is the section's icon, inline in Viewport3d__Controls), plus VertexToVertex, drawn for this app in the same style because none of the five shows two vertices. Face to Face wears Linear: two faces seen edge on with the arrows between them. Rectangular and Area wait with the set for an area tool."
+        },
+
+        "VghLantern__Measure3d__Config__Snap": {
+            "AxisSnapAngleDegrees"        : 6,
+            "AxisSnapAngleNote"           : "PROVISIONAL. The straight line nudge: when the line from the first point runs within this many degrees of red, green or blue (or, in Face to Face, square to the first face) it snaps to it and the dimension is dead straight. Measured in 3D, so it behaves the same whichever way the view is turned. Shift holds the nearest axis whatever the angle; Alt measures free.",
+            "SquareToFaceEnabled"         : true,
+            "SquareToFaceNote"            : "Face to Face also snaps square to the first face (SketchUp's perpendicular magenta, the Down arrow locks it), so a sloped glaze bar, a hip or the glass gives a straight dimension too (Adam, 21-Oct-2026).",
+            "AxisCoincideDegrees"         : 0.5,
+            "AxisCoincideNote"            : "A first face whose square lies within this many degrees of red, green or blue IS that axis, so one direction is never offered twice under two names.",
+            "PlaneMinCosine"              : 0.17,
+            "PlaneMinCosineNote"          : "A snapped Face to Face end is where the axis through the first point meets the plane of the face under the cursor. Below this cosine (about 80 degrees) the axis runs almost along that face and the meeting point runs away, so the cursor's own point is projected onto the axis instead.",
+            "VertexAperturePx"            : 14,
+            "VertexApertureNote"          : "How far from the cursor, in screen pixels, Vertex to Vertex looks for a corner: AutoCAD's aperture.",
+            "VertexSearchRingRays"        : 8,
+            "VertexSearchRingRaysNote"    : "With the cursor just off a corner, over nothing, this many rays round it (at half the aperture and at the whole) find the surface beside it.",
+            "VertexCandidateLimit"        : 6,
+            "VertexCandidateLimitNote"    : "The nearest corners tested for visibility before giving up, nearest first. Each test is one ray from the eye.",
+            "VisibilityToleranceMm"       : 0.5,
+            "VisibilityToleranceNote"     : "A corner counts as visible when nothing lies between the eye and it by more than this. Glass never hides a corner, as in the drawings.",
+            "ClickMoveTolerancePx"        : 4,
+            "ClickMoveToleranceNote"      : "A press that travels further than this before release is an orbit, not a click, and places nothing."
+        },
+
+        "VghLantern__Measure3d__Config__Precision": {
+            "Default"                     : "mm",
+            "Options"                     : [
+                { "Key": "mm",         "Label": "1 mm",    "Decimals": 0 },
+                { "Key": "hundredths", "Label": "0.01 mm", "Decimals": 2 }
+            ],
+            "PrecisionNote"               : "Whole millimetres by default, 0.01 mm for forensic work. Every visit opens at the default and the choice lasts the session, never saved (Adam, 21-Oct-2026). Rounded to the nearest. The mesh holds float32 metres, good to about 0.001 mm at lantern sizes, so 0.01 mm is honest."
+        },
+
+        "VghLantern__Measure3d__Config__Menu": {
+            "ClearConfirmMs"              : 4000,
+            "ClearConfirmNote"            : "Clear All asks twice, as TrueVision's does, so one slip cannot wipe an audit: the first press arms it and it stands down by itself after this long."
+        },
+
+        "VghLantern__Measure3d__Config__Overlay": {
+            "LinePx"                      : 2.2,
+            "TickPx"                      : 6,
+            "DotPx"                       : 3.1,
+            "GripPx"                      : 6.6,
+            "LabelPx"                     : 14.4,
+            "HaloPx"                      : 4.1,
+            "LabelGapPx"                  : 10.8,
+            "ChipPx"                      : 10.8,
+            "GuidePx"                     : 1.2,
+            "GuideDashPx"                 : [6, 5],
+            "RayPx"                       : 2,
+            "WitnessDashPx"               : [3, 4],
+            "GlyphPx"                     : 27,
+            "NamePx"                      : 11,
+            "ReticleRadiusPx"             : 22,
+            "ReticleSegments"             : 48,
+            "ReticleTickPx"               : 15,
+            "GuideLengthMm"               : 40000,
+            "OverlayNote"                 : "Screen pixels. The line, ticks, dots, grips, label, white edge, label gap and delete chip are TrueVision's measure overlay (Na__LayoutEditor__WebViewer__Measure__Overlay__.js v1.1.0); the 27 px snap glyph is the size Adam asked for there ('Make the snapping points 50% bigger'). The reticle is Polycam's: a ring lying in the face under the cursor, with the axes crossing at its centre. A face is dimensioned with the Vale 45 degree tick, a vertex with a solid dot. GuideLengthMm is how far the dashed axis guides run each way from the first point: further than any view of a lantern."
+        },
+
+        "VghLantern__Measure3d__Config__Copy": {
+            "AxisChips"                   : { "x": "Red X", "y": "Green Y", "z": "Blue Z", "square": "Square", "free": "Free" },
+            "AxisNames"                   : { "x": "Red (X)", "y": "Green (Y)", "z": "Blue (Z)", "square": "Square to Face" },
+            "SnappedText"                 : { "x": "On Red Axis (X)", "y": "On Green Axis (Y)", "z": "On Blue Axis (Z)", "square": "Square to Face" },
+            "LockedText"                  : { "x": "Locked to Red Axis (X)", "y": "Locked to Green Axis (Y)", "z": "Locked to Blue Axis (Z)", "square": "Locked Square to Face" },
+            "FreeText"                    : "Free, {angle}° off {axis}",
+            "PartsText"                   : "X {x}   Y {y}   Z {z}",
+            "BetweenText"                 : "{from} to {to}",
+            "VertexName"                  : "Vertex",
+            "SectionCutName"              : "Section Cut",
+            "SamePointText"               : "That is the first point: click a second one",
+            "EmptyList"                   : "None yet",
+            "CopyNote"                    : "Words the tool shows: the axis chips in the Measure section's list, the state the bar reads while measuring, and a free line's X Y Z parts in model millimetres (X the lantern's length, Y its width, Z up: SketchUp's axes). Red, green and blue are model X, Y and Z, which are three.js X, Z and Y."
+        }
+    }
+}

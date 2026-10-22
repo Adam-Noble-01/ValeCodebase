@@ -217,9 +217,10 @@ const VghLantern__SketchUpExport__PayloadBuilder = (function() {
         }
         VghLantern__PayloadBuilder__PushAssembly(assemblies, ASSEMBLY_BARS, parts, warnings);
 
-        // GLAZING | One sealed unit slab per solved slope
+        // GLAZING | One sealed unit per glazing panel, cut between the bars and
+        // hips (v0.9.0), so it takes the bar set the panels are cut by
         parts  =  VghLantern__PayloadBuilder__BuildSwitch('IncludeGlazing')
-            ? BaseRoof.VghLantern__SketchUpExport__Encoders__Glazing(skeleton)
+            ? BaseRoof.VghLantern__SketchUpExport__Encoders__Glazing(skeleton, barSet, lantern)
             : [];
         VghLantern__PayloadBuilder__PushAssembly(assemblies, ASSEMBLY_GLAZING, parts, warnings);
 

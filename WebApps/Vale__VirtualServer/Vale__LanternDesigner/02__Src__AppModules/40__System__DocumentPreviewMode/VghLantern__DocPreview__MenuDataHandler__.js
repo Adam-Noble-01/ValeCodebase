@@ -65,6 +65,7 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
         'ShowTakeoffSchedule',
         'ShowComponentSchedule',
         'ShowCuttingList',
+        'ShowGlazingSchedule',
         'ShowJobNotes',
         'ShowDrawingTermsPages',
         'ShowTermsPages'

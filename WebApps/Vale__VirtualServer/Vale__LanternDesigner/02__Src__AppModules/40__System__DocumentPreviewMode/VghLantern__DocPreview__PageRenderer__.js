@@ -165,8 +165,8 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var keys  =  DocumentState.LETTER_KEYS
             .concat(DocumentState.SUMMARY_KEYS, DocumentState.DRAWING_VIEW_KEYS,
                     DocumentState.DRAWING_NOTE_KEYS, DocumentState.DOCUMENT_KEYS,
-                    DocumentState.CUTLIST_KEYS, DocumentState.DRAWING_TERMS_KEYS,
-                    DocumentState.TERMS_KEYS);
+                    DocumentState.CUTLIST_KEYS, DocumentState.GLAZING_KEYS,
+                    DocumentState.DRAWING_TERMS_KEYS, DocumentState.TERMS_KEYS);
 
         var html  =  '<div class="' + CSS_TOOLBAR_GROUP + '">' +
                      '<span class="' + CSS_TOOLBAR_LABEL + '">' +
@@ -499,6 +499,27 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // SUB FUNCTION | Build One Lantern's Glazing Schedule Pages
+    // ------------------------------------------------------------
+    // Already cut into pages, one body each. The glazing schedule is laid out in
+    // millimetres by the same layout the PDF painter draws (see the header of
+    // VghLantern__Specification__GlazingScheduleRenderer), so it does not go through
+    // the paginator: the preview has to break where the file breaks.
+    function VghLantern__PageRenderer__BuildGlazingBodies(entry, page) {
+        var PrintDocument  =  window.VghLantern__DocPreview__PrintDocumentRenderer;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        if (!PrintDocument || !DocumentState) {
+            return ['<p class="' + CSS_EMPTY + '">No glazing schedule available.</p>'];
+        }
+
+        var bodies  =  PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternGlazingSchedulePages(
+            DocumentState.VghLantern__DocPreview__DocumentState__GetViewState(), entry.LanternIndex, page
+        );
+        return (bodies && bodies.length) ? bodies : ['<p class="' + CSS_EMPTY + '">No glazing schedule available.</p>'];
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -557,11 +578,15 @@ const VghLantern__DocPreview__PageRenderer = (function() {
             }
 
             page  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage();
-            body  =  VghLantern__PageRenderer__BuildFlowingBody(entry);
 
-            bodies  =  Paginator
-                ? Paginator.VghLantern__DocPreview__FlowPaginator__Split(body, page)
-                : [body];
+            if (entry.Kind === DocumentState.KIND_LANTERN_GLAZING) {
+                bodies  =  VghLantern__PageRenderer__BuildGlazingBodies(entry, page);   // <-- Laid out already, page by page
+            } else {
+                body    =  VghLantern__PageRenderer__BuildFlowingBody(entry);
+                bodies  =  Paginator
+                    ? Paginator.VghLantern__DocPreview__FlowPaginator__Split(body, page)
+                    : [body];
+            }
 
             for (b = 0; b < bodies.length; b++) {
                 slots.push({ IsSheet : false, Kind : entry.Kind, Page : page, Body : bodies[b] });

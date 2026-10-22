@@ -34,6 +34,12 @@
    While a target is pinned, hover picking stops entirely. The pin is a lock, so
    the reviewer can orbit right around a member and keep reading its figures.
 
+   While the 3D View's measure tool is on (28__System__MeasureTool3d) the
+   inspector is SUSPENDED: no hover, no highlight, no pin. Both answer a click
+   on the model, and a click there places a point; it must not pin a member as
+   well. SetSuspended releases any target as it suspends, and picks again under
+   the cursor as it resumes (21-Oct-2026).
+
    ---------------------------------------------------------------------------
 
    WHY THE PICK IS FRAME THROTTLED:
@@ -178,6 +184,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
         if (!state || surface.IsDestroyed) return;
 
         state.FrameHandle  =  0;
+        if (state.IsSuspended) return;                                       // <-- The measure tool has the cursor
         if (state.PinnedPick) return;                                        // <-- Pinned is a lock, hover does not fight it
 
         const pick  =  VghLantern__Env3d__HoverInspector__PickAtPointer(surface);
@@ -283,6 +290,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
         VghLantern__Env3d__HoverInspector__Listen(state, canvas, 'pointermove', function(ev) {
             state.PointerClientX  =  ev.clientX;
             state.PointerClientY  =  ev.clientY;
+            if (state.IsSuspended) return;                                   // <-- Still tracked, so resuming picks where the cursor is
 
             if (state.IsPointerDown) {
                 const travelled  =  Math.abs(ev.clientX - state.DownClientX) + Math.abs(ev.clientY - state.DownClientY);
@@ -309,6 +317,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
             state.IsDragging     =  false;
             state.PointerClientX =  ev.clientX;
             state.PointerClientY =  ev.clientY;
+            if (state.IsSuspended) return;                                   // <-- The click is the measure tool's
 
             if (wasDragging) {
                 VghLantern__Env3d__HoverInspector__ScheduleHover(surface);    // <-- The orbit moved the model under the cursor
@@ -322,6 +331,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
         VghLantern__Env3d__HoverInspector__Listen(state, canvas, 'pointerleave', function() {
             state.IsPointerDown  =  false;
             state.IsDragging     =  false;
+            if (state.IsSuspended) return;
             if (state.PinnedPick) return;                                    // <-- A pinned target survives the cursor leaving
 
             VghLantern__Env3d__HoverInspector__SetTarget(surface, null, false);
@@ -330,10 +340,12 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
         // Zooming moves the model under a stationary cursor, so the target can
         // change with no pointer event at all.
         VghLantern__Env3d__HoverInspector__Listen(state, canvas, 'wheel', function() {
+            if (state.IsSuspended) return;
             VghLantern__Env3d__HoverInspector__ScheduleHover(surface);
         });
 
         VghLantern__Env3d__HoverInspector__Listen(state, window, 'keydown', function(ev) {
+            if (state.IsSuspended) return;                                   // <-- Escape is the measure tool's while it is on
             if (ev.key === KEY_RELEASE_PIN) VghLantern__Env3d__HoverInspector__ReleasePin(surface);
         });
     }
@@ -380,7 +392,8 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
             DownClientY      : 0,
             ActiveKey        : '',
             PinnedKey        : '',
-            PinnedPick       : null
+            PinnedPick       : null,
+            IsSuspended      : false                                         // <-- True while the measure tool is on: see SetSuspended
         };
 
         VghLantern__Env3d__HoverInspector__Bind(surface);
@@ -425,7 +438,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
     // last known position rather than left to wait for the next frame.
     export function VghLantern__Env3d__HoverInspector__RevalidateTarget(surface) {
         const state  =  surface && surface.InspectorState;
-        if (!state) return;
+        if (!state || state.IsSuspended) return;
 
         if (state.PinnedPick) {
             if (!VghLantern__Env3d__PickIndex__IsVisible(state.PinnedPick.Object3d)) {
@@ -438,6 +451,32 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
             state.ActiveKey  =  '';                                          // <-- Force the next pass to re-resolve rather than trust a stale key
             VghLantern__Env3d__HoverInspector__RunHover(surface);
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Suspend or Resume the Inspector (the Measure Tool Has the Cursor)
+    // ------------------------------------------------------------
+    // Suspending drops any hover or pin, tells the panel to hide, and ignores the
+    // pointer until resumed; resuming picks again under the cursor's last known
+    // position rather than waiting for it to move. Safe on a surface with no
+    // inspector attached.
+    export function VghLantern__Env3d__HoverInspector__SetSuspended(surface, isSuspended) {
+        const state  =  surface && surface.InspectorState;
+        if (!state) return;
+
+        const next  =  isSuspended === true;
+        if (state.IsSuspended === next) return;
+
+        if (next) {
+            VghLantern__Env3d__HoverInspector__Clear(surface);
+            state.IsSuspended  =  true;
+            return;
+        }
+
+        state.IsSuspended  =  false;
+        state.ActiveKey    =  '';                                            // <-- Force the next pass to re-apply
+        VghLantern__Env3d__HoverInspector__ScheduleHover(surface);
     }
     // ------------------------------------------------------------
 

@@ -37,12 +37,21 @@ DESCRIPTION:
   writer writes both (Na__Theia__UpdateVv3dVideo).
 - URLs carry ?v=<size>-<modified> of the file on disk, so a replaced file is
   a new address and no browser or service-worker cache can mix old and new.
+- THE PROJECT'S NAME is the Gallery's: Na__Library__DisplayName (the Display
+  Name Alias, else projectName, else the folder name). Theia has no name of its
+  own for a project, so a rename in the Gallery's Project Editor shows here too.
 - Used by the Theia API (Server__Api/Api__ValeVision__TheiaVideoPlayer) and by
   the Gallery API (the video icon on a card and the Videos panel).
 
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+22-Oct-2026 - Version 1.1.0
+- A project's title is Na__Library__DisplayName (ValeShared__Library__ 1.3.0), the
+  name the Gallery shows. Theia's own title (TheiaVideo__Library__ProjectTitle) is
+  retired: it could override the Gallery's Display Name Alias. New data files no
+  longer carry it; a file that still does is ignored on that key.
+
 07-Oct-2026 - Version 1.0.0
 - Initial build for ValeVision Theia. The same day: one file per video
   (TheiaVideo__Video__File; the first build's Renditions list is still read),
@@ -61,8 +70,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from ValeShared__Library__ import (NA__LIBRARY__ROOT, Na__Library__Locked, Na__Library__ReadJson, Na__Library__Url,
-                                   Na__Library__WriteJson)
+from ValeShared__Library__ import (NA__LIBRARY__ROOT, Na__Library__DisplayName, Na__Library__Locked, Na__Library__ReadJson,
+                                   Na__Library__Url, Na__Library__WriteJson)
 from ValeShared__Mp4Probe__ import Na__Mp4__ProbeCached
 
 
@@ -295,7 +304,6 @@ def Na__Theia__EmptyData(folder: Path, record: dict | None = None) -> dict:
         "TheiaVideo__Library__ProjectId"     : Path(folder).name,
         "TheiaVideo__Library__ProjectCode"   : str(record.get("projectCode") or ""),
         "TheiaVideo__Library__ProjectName"   : str(record.get("projectName") or ""),
-        "TheiaVideo__Library__ProjectTitle"  : "",
         "TheiaVideo__Library__UpdatedIso"    : "",
         "TheiaVideo__Library__UpdatedBy"     : "",
         "TheiaVideo__Library__Videos"        : [],
@@ -600,8 +608,7 @@ def Na__Theia__Library(folder: Path, record: dict | None = None, cfg: dict | Non
     for v in videos:
         if v["scheme"] not in schemes:
             schemes.append(v["scheme"])
-    title = (str(data.get("TheiaVideo__Library__ProjectTitle") or "").strip()
-             or str(record.get("projectNameAlias") or "").strip() or str(record.get("projectName") or "").strip() or folder.name)
+    title = Na__Library__DisplayName(record, folder.name)                     # <-- The Gallery's name for it, alias and all
     return {"data": data, "problem": problem, "videos": videos, "schemes": schemes, "title": title,
             "rev": int(data.get("_rev", 0) or 0), "record": record}
 # ---------------------------------------------------------------

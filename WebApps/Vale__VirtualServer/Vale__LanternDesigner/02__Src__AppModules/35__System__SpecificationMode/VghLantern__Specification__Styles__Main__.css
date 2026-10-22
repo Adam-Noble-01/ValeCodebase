@@ -267,6 +267,99 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Glazing Panels
+ * -----------------------------------------------------------------------------
+ *
+ * The coded plan and the panel table with a cut drawing per panel type (v0.10.0).
+ * Both drawings are SVG sized in millimetres by GlazingSchedule, so on screen they
+ * read at the size they print. The Preview and Send page re-scopes these for paper
+ * in the DocPreview stylesheet.
+ *
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__GlazingNote {
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        font-style                     : italic;
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__Spec__GlazingPlan {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        text-align                     : center;
+    }
+
+    .VghLantern__Spec__GlazingSvg {
+        display                        : block;
+        max-width                      : 100%;
+        margin                         : 0 auto;
+    }
+
+    .VghLantern__Spec__GlazingPlanCaption {
+        margin-top                     : var(--Vale_Spacing_Small);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__Spec__GlazingTable .VghLantern__Spec__TableCell {
+        vertical-align                 : top;
+    }
+
+    /* As narrow as its drawing: the text columns take the rest of the table. */
+    .VghLantern__Spec__GlazingDrawingCell {
+        width                          : 1%;
+    }
+
+    .VghLantern__Spec__GlazingDrawingCell .VghLantern__Spec__GlazingSvg {
+        max-width                      : none;
+        margin                         : 0;
+    }
+
+    /* A text cell of a panel row: its column's name faint at the top, its value
+       larger and centred in the row's height (Adam, 20-Oct-2026). The renderer sets
+       the sizes as variables on the table: millimetres from config on the pack
+       page, nothing on this tab, where these relative sizes apply. */
+    .VghLantern__Spec__GlazingTable .VghLantern__Spec__GlazingTextCell {
+        position                       : relative;
+        vertical-align                 : middle;
+    }
+
+    .VghLantern__Spec__GlazingCellLabel {
+        position                       : absolute;
+        top                            : var(--Vale_Spacing_Small);
+        left                           : var(--Vale_Spacing_Small);
+        right                          : var(--Vale_Spacing_Small);
+        font-size                      : var(--VghLantern_GlazingLabelFont, 0.75em);
+        font-weight                    : var(--Vale_FontWeight_Regular);
+        line-height                    : 1.2;
+        color                          : var(--VghLantern_GlazingLabelColour, var(--Vale_TextSubtle));
+    }
+
+    .VghLantern__Spec__GlazingCellValue {
+        display                        : block;
+        font-size                      : var(--VghLantern_GlazingValueFont, 1.2em);
+        line-height                    : var(--VghLantern_GlazingLineRatio, 1.3);
+    }
+
+    .VghLantern__Spec__GlazingSecondary {
+        display                        : block;
+        font-size                      : var(--VghLantern_GlazingSubFont, 1em);
+        line-height                    : var(--VghLantern_GlazingLineRatio, 1.3);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    /* The total glass closing the table, at the values' own size (Adam, 20-Oct-2026:
+       "have a total glass 0.00m2 value at the end"). */
+    .VghLantern__Spec__GlazingTable .VghLantern__Spec__TableTotalsRow .VghLantern__Spec__TableCell {
+        vertical-align                 : middle;
+        font-size                      : var(--VghLantern_GlazingValueFont, 1.2em);
+        white-space                    : nowrap;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Job Notes Editor
  * ----------------------------------------------------------------------------- */
 

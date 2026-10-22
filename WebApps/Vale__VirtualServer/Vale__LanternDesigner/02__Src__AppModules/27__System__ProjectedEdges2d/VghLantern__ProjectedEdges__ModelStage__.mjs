@@ -100,8 +100,10 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
         const stage  =  new THREE.Group();
         stage.name   =  'VghLantern__ProjectedEdges__Stage';
 
+        // The glazing panels are cut between the bars and hips (v0.9.0), so the
+        // builder takes the bar set, and it is awaited like every builder below it.
         if (model.IncludeGlazing === true) {
-            VghLantern__Env3d__MeshBuilder__Glazing__Build(stage, skeleton);
+            await VghLantern__Env3d__MeshBuilder__Glazing__Build(stage, skeleton, barSet, lantern);
         }
 
         if (model.IncludeFrame === true) {

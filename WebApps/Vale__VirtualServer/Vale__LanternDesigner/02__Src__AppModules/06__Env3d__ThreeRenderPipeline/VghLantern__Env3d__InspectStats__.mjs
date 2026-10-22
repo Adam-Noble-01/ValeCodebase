@@ -377,10 +377,64 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Describe One Cut Glazing Panel
+    // ------------------------------------------------------------
+    // The record is the panel the glazing panel layout cut (v0.9.0), so the
+    // inspector quotes the panel's own code and sizes - the numbers the glazing
+    // schedule will list - rather than the slope it came from. Sizes are the
+    // bounding rectangle in the glass plane: across the slope, then up it. The
+    // build-up is read from the layout, the one place it is decided.
+    function VghLantern__Env3d__InspectStats__DescribeGlazingPanel(pick, lantern) {
+        const panel    =  pick.Record || {};
+        const block    =  lantern ? lantern[FINISH_BLOCK] : null;
+        const Layout   =  window.VghLantern__Geometry__GlazingPanelLayout;
+        const numbers  =  Layout ? Layout.VghLantern__GlazingPanelLayout__Interface() : null;
+        const facts    =  [];
+
+        VghLantern__Env3d__InspectStats__Push(facts, 'Panel code',      panel.Code);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Identical panels', panel.TypeQuantity);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Slope',
+            panel.Side + (SLOPE_LABELS[panel.SlopeKey] ? ', ' + SLOPE_LABELS[panel.SlopeKey].toLowerCase() : ''));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Top pane size',
+            VghLantern__Env3d__InspectStats__Mm(panel.WidthMm) + ' x ' + VghLantern__Env3d__InspectStats__Mm(panel.LengthMm));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Unit size',
+            VghLantern__Env3d__InspectStats__Mm(panel.UnitWidthMm) + ' x ' + VghLantern__Env3d__InspectStats__Mm(panel.UnitLengthMm));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Top pane area',   VghLantern__Env3d__InspectStats__SquareMetres(panel.AreaSqMm));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Corners',
+            (panel.CornerAnglesDegrees || []).map(function(angle) { return VghLantern__Env3d__InspectStats__Degrees(angle); }).join(', '));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Pitch',           VghLantern__Env3d__InspectStats__Degrees(panel.PitchDegrees));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Panels in model', pick.EntryCount);
+
+        VghLantern__Env3d__InspectStats__Push(facts, 'Glazing spec', (block && block[FIELD_GLAZING_SPEC]) || VALUE_UNSPECIFIED);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Tint',        (block && block[FIELD_GLAZING_TINT]) || VALUE_UNSPECIFIED);
+
+        if (numbers) {
+            VghLantern__Env3d__InspectStats__Push(facts, 'Unit thickness', VghLantern__Env3d__InspectStats__Mm(numbers.UnitThicknessMm));
+            if (numbers.OuterPaneOversails) {
+                VghLantern__Env3d__InspectStats__Push(facts, 'Top pane oversail',
+                    VghLantern__Env3d__InspectStats__Mm(numbers.OuterPaneThicknessMm) + ' pane (provisional)');
+            }
+            VghLantern__Env3d__InspectStats__Push(facts, 'Edge clearance', VghLantern__Env3d__InspectStats__Mm(numbers.EdgeClearanceMm) + ' to each web');
+        }
+        VghLantern__Env3d__InspectStats__Push(facts, 'Panel id', panel.Id);
+
+        return {
+            TypeLabel : 'Roof Glazing Unit ' + (panel.Code || ''),
+            Facts     : facts
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Describe a Glazing Panel
     // ------------------------------------------------------------
+    // A cut panel (it carries a Code) describes itself. A whole slope record means
+    // the glazing builder fell back to one slab per slope, and that keeps the
+    // pre-v0.9.0 description below.
     function VghLantern__Env3d__InspectStats__DescribeGlazing(pick, lantern) {
         const face    =  pick.Record  || {};
+        if (face.Code) return VghLantern__Env3d__InspectStats__DescribeGlazingPanel(pick, lantern);
+
         const block   =  lantern ? lantern[FINISH_BLOCK] : null;
         const facts   =  [];
 

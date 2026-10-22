@@ -18,6 +18,9 @@
      scene root - and so no consumer has to spell a group name as a literal.
    - Draws on demand only. Nothing renders until something calls Invalidate,
      which keeps an idle 3D panel at zero GPU cost.
+   - After each draw an optional OnAfterDraw hook runs, so a DOM overlay over
+     the canvas (the 3D View's measure tool) follows the camera frame for frame
+     without ever being drawn into the scene a snapshot captures.
 
    ---------------------------------------------------------------------------
 
@@ -306,6 +309,7 @@ import {
             FrameHandle  : 0,
             ResizeObs    : null,
             OnBeforeDraw : null,                                              // <-- Optional hook, used by CameraRig damping
+            OnAfterDraw  : null,                                              // <-- Optional hook after each draw, used by the Measure3d overlay
             GroundGridSuppressedBy : {}                                       // <-- Reason set, see SetGroundGridSuppressed
         };
 
@@ -439,6 +443,10 @@ import {
 
             surface.NeedsDraw  =  false;
             surface.Renderer.render(surface.Scene, surface.Camera);
+
+            if (typeof surface.OnAfterDraw === 'function') {
+                surface.OnAfterDraw(surface);                                  // <-- An overlay over the canvas follows what was just drawn
+            }
         }
 
         surface.FrameHandle  =  requestAnimationFrame(VghLantern__Env3d__SceneManager__Frame);

@@ -41,6 +41,7 @@
         "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionCameraOpen"        : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionCrossSectionOpen"  : false,
         "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionLanternOpen"       : false,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionMeasureOpen"       : false,
         "VghLantern__UserMenu__ModeViewport3d__Config__PersistMenuPosition"          : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__PersistMenuSectionState"      : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__PersistViewState"   : true
@@ -68,6 +69,7 @@
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowTakeoffSchedule"        : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowComponentSchedule"      : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowCuttingList"            : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowGlazingSchedule"        : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowJobNotes"               : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuPosition"        : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuSectionState"    : true,

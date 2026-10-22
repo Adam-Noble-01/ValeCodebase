@@ -81,6 +81,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 2.0.1 (v2.76.4)
+// - The card's thumbnail is written through ApplyToScene (its path and
+//   version), so a re-captured plan shows at once, not the cached copy.
+//
 // 20-Sep-2026 - Version 2.0.0 (Floor Plans and Elevations menu rebuild)
 // - Rows fold; one is open at a time, across this panel and Elevations.
 // - The open row is a draft. Update (green, confirmed) keeps it and writes R2
@@ -257,7 +261,8 @@
     // @delegate: ../21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js
     // ------------------------------------------------------------
     import {
-        Na__PresentationMode__Thumbnail__CaptureAndUpload
+        Na__PresentationMode__Thumbnail__CaptureAndUpload,
+        Na__PresentationMode__Thumbnail__ApplyToScene
     } from '../21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
     // ------------------------------------------------------------
 
@@ -916,8 +921,7 @@
                 if (scene) {
                     try {
                         const shot = await Na__PresentationMode__Thumbnail__CaptureAndUpload(scene.PresentationMode__Scene__Id);
-                        if (shot.ok) scene.PresentationMode__Scene__ThumbnailUrl = shot.relUrl;
-                        else Na__FpDev__Toast('Thumbnail upload failed (' + shot.error + ') - the plan is still being updated.', true);
+                        if (!Na__PresentationMode__Thumbnail__ApplyToScene(scene, shot)) Na__FpDev__Toast('Thumbnail upload failed (' + shot.error + ') - the plan is still being updated.', true);
                     } catch (shotError) {
                         console.error('[ValeVision3D] Floor plan thumbnail error:', shotError);
                         Na__FpDev__Toast('Thumbnail error - see console. The plan is still being updated.', true);

@@ -1,5 +1,5 @@
 /* =============================================================================
- * VALEVISION THEIA - DIALOG STYLES (SHARE)
+ * VALEVISION THEIA - DIALOG STYLES (SHARE, CLIENT EMAIL)
  * =============================================================================
  *
  * FILE       : Na__UiFeature__Styles__Dialogs__.css
@@ -7,7 +7,8 @@
  * MODULE     : Dialog Styles
  * AUTHOR     : Adam Noble - Noble Architecture
  * PURPOSE    : The Share dialog: client link and staff link in two collapsed
- *              panels (green / amber), the project's links
+ *              panels (green / amber), the project's links. The client email
+ *              dialog (App Admins): its form, notes and result.
  * CREATED    : 07-Oct-2026
  *
  * =============================================================================
@@ -286,6 +287,84 @@
     .theia-share__row.is-revoked,
     .theia-share__row.is-expired {
         opacity                            : 0.55;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Client Email (App Admins: Na__ClientEmail__Dialog__)
+ * ----------------------------------------------------------------------------- */
+
+    .theia-email__project {
+        margin                             : 2px 0 12px;
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 14px;
+    }
+
+    .theia-email__form {
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .theia-email__note {
+        margin                             : 6px 0 0;
+        color                              : var(--Theia_TextSecondary);
+        font-size                          : 12px;
+        line-height                        : 1.45;
+    }
+
+    /* A link ending soon, and a local copy of Theia: the Share dialog's amber */
+    .theia-email__note.is-warn,
+    .theia-email__local {
+        padding                            : 8px 12px;
+        border-radius                      : 8px;
+        background                         : var(--Theia_WarnBg);
+        color                              : var(--Theia_Warn);
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-email__local {
+        margin                             : 0 0 6px;
+        font-size                          : 13px;
+        line-height                        : 1.45;
+    }
+
+    .theia-email__actions {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        justify-content                    : flex-end;
+        gap                                : 10px;
+        margin-top                         : 18px;
+    }
+
+    .theia-email__done {
+        margin-top                         : 18px;
+        padding-top                        : 16px;
+        border-top                         : 1px solid var(--Theia_Border);
+    }
+
+    .theia-email__done[hidden] {
+        display                            : none;
+    }
+
+    .theia-email__done-title {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        margin-bottom                      : 6px;
+        color                              : #1f6b45;                      /* <-- The Share dialog's client green */
+        font-size                          : 15px;
+        font-weight                        : var(--Theia_FontSemiBold);
+    }
+
+    .theia-email__done-title .theia-icon {
+        width                              : 20px;
+        height                             : 20px;
+    }
+
+    .theia-email__open {
+        margin-top                         : 14px;
     }
 
 /* endregion ------------------------------------------------------------------- */

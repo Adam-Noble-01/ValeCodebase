@@ -139,6 +139,8 @@
       "SectionMaxYMm": 63.0,
       "StretchesWithTimberDepth": false,
       "ReslopesWithRoofPitch": false,
+      "WebHalfWidthAtGlassMm": 6.0,
+      "WebHalfWidthAtGlassNote": "Half the core's 12mm upright web, which runs x -6 to +6 from section y -38.5 to 60, below its 40mm top flange, through the whole glass band either side of the ridge. MEASURED from this asset's Plan2D__Top with the app's own SectionLoopBuilder on 20-Oct-2026; measure it again if the core is re-exported. The glazing panel layout stops the long slope glass 3mm off it, measured along the glass; because the ridge section stands upright and the glass slopes, that lands the glass edge 6.18mm off the ridge line at 22.5 degrees.",
       "Note": "The structural spine. Welded to the hip cores and to every glaze bar core, so it is the one member in the ridge that cannot be omitted or resized."
     },
     {

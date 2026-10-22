@@ -24,6 +24,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.0.1
+// - Display Name Alias help text: ValeVision Theia shows the alias too (the
+//   server names projects by one rule, Na__Library__DisplayName).
+//
 // 06-Oct-2026 - Version 1.0.0 (app server)
 // - Saves go to api/projects/<id> (and /visibility) with the _rev check.
 // - Removed: Cloudflare Worker + R2 writes, the local Flask mirror, the
@@ -526,10 +530,10 @@
                                 disabled={isSaving || showRenameConfirm}
                             />
                             <span className="editor-form__help-text">
-                                Optional. When set, ValeVision Gallery shows this name everywhere instead of the Project Name
-                                above — in the gallery, search, and this editor. This does NOT rename the live folder or
-                                CDN path, so it is the safe way to change how a project is displayed. Leave blank to just
-                                use the Project Name.
+                                Optional. When set, ValeVision Gallery and ValeVision Theia show this name everywhere
+                                instead of the Project Name above: the gallery, search, this editor, and Theia's video
+                                pages and client links. This does NOT rename the live folder or CDN path, so it is the
+                                safe way to change how a project is displayed. Leave blank to just use the Project Name.
                             </span>
                         </div>
                     )}

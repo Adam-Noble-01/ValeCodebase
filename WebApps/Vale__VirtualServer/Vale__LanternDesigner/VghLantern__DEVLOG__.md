@@ -3,6 +3,446 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.10.1 - 21-Oct-2026
+### FEATURE | 3D View Measure Tool: Vertex to Vertex and Face to Face, with Polycam's axis snapping
+
+Adam: "Add a dimension tool section to the 3D Tab menu - Vertex to vertex measurement tool - Face to face measurement
+tool - Measure in 1mm but have the ability to also change to 0.00mm default is whole mm, the smaller is for more
+foresnic work - I need this to aduit the test models to ensure dimensions are correct." Polycam's dimension tool is
+the model for the interaction ("it clearly shows you with that purple ray how far off you are, but if you select close
+enough to the planar parrall point it givs you a perfect straight dimension (Key for us with accuracy)"), SketchUp's
+colours for the axes ("in 3js Axis X = Red , Z = Green , Y = Blue (Up)"), "a Box around the target vertex like
+autocad style", and TrueVision's measure tool for the graphics ("copy all of the measurement tool graphics accross
+(SVG) To this project").
+
+Planned first (`VghLantern__PLAN__MeasureTool3d__.md`), then four questions, each answered with the recommendation:
+Face to Face also snaps square to the first face; a finished dimension takes the TrueVision look; the cut faces of a
+cross section measure too; every visit opens at whole millimetres.
+
+---
+
+#### WHAT IT IS
+
+- A **Measure** section in the 3D View Tools menu (TrueVision's tape measure, above Lantern): **Vertex to Vertex** and
+  **Face to Face** with TrueVision's icons (a second press switches a tool off), **Precision** 1 mm | 0.01 mm, and the
+  **Dimensions** taken. Each row: its number, value and axis chip (Red X, Green Y, Blue Z, Square, Free), the parts it
+  runs between (the hover inspector's own names), and for a free one its X Y Z parts. A row selects its dimension on
+  the model; its cross removes it; **Clear All** asks twice. How it snaps sits behind the Vale "i".
+- A bar along the foot of the view while a tool is on (TrueVision's bar, Polycam's readout): the tool, what to do next,
+  the live length and how it stands ("On Red Axis (X)", "Square to Face", "Free, 3.4° off Green (Y)"), Undo and Done.
+
+---
+
+#### FACE TO FACE
+
+- Polycam's reticle: a ring lying in the face under the cursor (an ellipse in perspective, which is what says which
+  face), the three axes crossing at its centre, the part named beside it.
+- From the first point red, green and blue run dashed across the view (and square to the first face in magenta when
+  that face is not level or plumb); the free line is purple. Within 6 degrees of one it snaps, solid, and the end is
+  where that axis through the first point meets the plane of the face under the cursor: between two parallel faces it
+  is the exact gap wherever on the second face you click. A sloped bar, a hip or the glass measures dead straight
+  square to its face.
+
+---
+
+#### VERTEX TO VERTEX
+
+- The corner nearest the cursor within 14 px, boxed with AutoCAD's endpoint square in TrueVision's snap purple and
+  named; only one the eye can see (a ray from the eye must meet nothing first; glass never hides a corner, as in the
+  drawings). Just off a corner, over the backdrop, a ring of rays round the cursor still finds it. The first corner
+  keeps its box while the second is found.
+- Snapped, the dimension is the axis part of corner to corner (AutoCAD's linear dimension), with a faint dashed witness
+  to the second corner; free, the true 3D distance.
+
+---
+
+#### KEYS
+
+- SketchUp's arrows lock while a point is being placed: Right red, Left green, Up blue, Down square to the face;
+  again to release. TrueVision's Shift holds the nearest axis whatever the angle, Alt measures free.
+- Escape drops the point in progress, then deselects, then switches the tool off. Delete (or Backspace) removes the
+  selected dimension. Clicking a dimension's value selects it, with grips and a red delete chip. Keys typed into a
+  field, and keys while another tab is on screen, are left alone; Alt and Ctrl combinations stay the app's hotkeys.
+
+---
+
+#### WHERE IT LIVES, AND WHY IT CANNOT REACH A DRAWING
+
+- `28__System__MeasureTool3d` (Area `Measure3d`), built like the cross section: its own folder and JSON
+  (`Na__Measure3d__Config.json`: the snap angle, aperture, precision, overlay sizes and every word it shows), reached
+  by the app only through the render pipeline (`RenderPipeline__AttachMeasure` and friends). The menu section and the
+  bar are the 3D View's (`Viewport3d__Controls`, `__Layout`, the new `__MeasureBar`).
+- Drawn as one SVG over the canvas, never into the three.js scene: the Drawing Editor photographs this very surface for
+  its sheet 3D views. Never saved, printed or exported. `SceneManager` gained an `OnAfterDraw` hook so the overlay
+  follows every frame of an orbit.
+- Picking runs on three-mesh-bvh (already vendored for the projected drawings), built `indirect: true` so it never
+  reorders a geometry's index: every pick table's triangle spans, and the GLB geometry the projection stage shares,
+  are untouched. The trees sit in a WeakMap keyed by geometry, never on it, so no other raycast changes behaviour.
+- The hover inspector is suspended while a tool is on (`HoverInspector__SetSuspended`): one click, one meaning.
+- Dimensions are kept through orbits, presets, element views, display modes, cuts and leaving the tab; they go when the
+  lantern changes (an edit, or another lantern selected), so one never describes a model no longer on screen.
+- Distances come off the built mesh in world metres, through `UnitConverter__WorldToMm`; the mesh holds float32,
+  good to about 0.001 mm at lantern sizes, so 0.01 mm is honest. Red, green and blue are derived from
+  `ConfigAccess__PointToWorld`, not written out a second time.
+
+---
+
+#### TRUEVISION'S GRAPHICS
+
+- Its five measure icons copied unchanged to `01__AppAssets__VghLantern\06__UiIcons__MenuIcons__MeasureTools`, plus
+  `Icon__MeasureTools__VertexToVertex__.svg` drawn in the same style (two endpoint boxes joined), because none of the
+  five shows two vertices; Face to Face wears Linear (two faces seen edge on, the arrows between them). Rectangular and
+  Area wait with the set for an area tool. The section icon is the tape measure's own path data, inline.
+- Its AutoCAD snap glyphs ported (`VghLantern__Measure3d__Glyphs__.mjs`, the casing and ink, the tint inside a closed
+  glyph only); its measure overlay's line, label with a white edge, grips, delete chip and name tag; its red and green
+  kept for SketchUp's red and green, a blue of the same weight added.
+- A finished dimension ends as Vale's size diagrams do: a face with the 45 degree tick, a vertex with a solid dot.
+
+---
+
+#### CHECKED
+
+- `node --check` on every changed script; every changed JSON parses; the new modules are ASCII.
+- The real modules in Node (the whole `RenderPipeline` import graph, the vendored three and three-mesh-bvh, the real
+  `UnitConverter` and configs), 84 checks: the axes from the one swap; whole and 0.01 mm formatting, never a minus
+  zero; face to face across two parallel faces exactly 400 mm whatever the offset on the second face; glass on a 25
+  degree slope exactly 28 mm square to its face; a level face's square aliased to blue; vertex axis parts, the green
+  lock, Shift and Alt; a box inside a moved, turned, nested group under a 0.001 scale (a GLB component) hit in world
+  space, normal facing the eye, 400 mm face to face to 0.001 mm, 11.4 degrees off staying free at the true diagonal;
+  the near corner visible and the far one hidden; the ring of rays off the silhouette; the overlay's markup (the
+  label, chip and guides, no NaN, a dimension behind the eye left off).
+- The interaction through a fake canvas and window, 25 checks: hover, click, click, an orbit drag that places nothing,
+  the list's rows and revision, 0.01 mm reprinting, select and Delete, the arrow lock, Escape's three steps, keys in a
+  field left alone, a second click on the first corner refused with a notice, Undo, a rebuild of the same lantern
+  keeping the dimensions (stored linework ignored) and of an edited one clearing them, detach releasing every listener.
+- The testing server's smoke on my own copy (port 8039): CLEAN, 604 requests, no load failures, nothing named in code
+  that a push would not send, sign-in at all four levels.
+- Not run in a browser (no WebGL headless): Adam to try it on his 8031.
+
+---
+
+#### STILL OPEN
+
+- The 6 degree snap angle and the 14 px aperture are provisional (`Na__Measure3d__Config.json`, Snap).
+- Not in this build: edge midpoints, setting-out linework, area, angle and running totals, measuring in the editor's
+  3D panel or on sheets, saving or exporting measurements, Polycam's Rescale.
+- Polycam's own documentation was not read (the research was stopped at Adam's word): the interaction follows his six
+  screenshots.
+
+---
+
+#### FILES
+
+- New: `28__System__MeasureTool3d\` (`Na__Measure3d__Config.json`, `VghLantern__Measure3d__ConfigAccess__.mjs`,
+  `__SystemLogic__.mjs`, `__SnapSolver__.mjs`, `__Overlay__.mjs`, `__Glyphs__.mjs`, `__Styles__Main__.css`),
+  `25__System__Viewport3dMode\VghLantern__Viewport3d__MeasureBar__.js`, the six icons, `VghLantern__PLAN__MeasureTool3d__.md`.
+- Changed: `Viewport3d__Controls` (the section), `__Layout` (callbacks, attach, mode exit), `__MenuDataHandler`
+  (`MenuSectionMeasureOpen`), `__Styles__Main` (the section and the bar); `Env3d__RenderPipeline` (the measure API,
+  rebuild, view and dispose hooks), `__HoverInspector` (`SetSuspended`), `__SceneManager` (`OnAfterDraw`),
+  `Na__Env3d__Config.json` (`ShowMeasureTools`); `AppCore__ConfigLoader` (the overlay); `Na__InfoTooltip__Config.json`
+  (`measure3d.snapping`); `UserMenuConfig__Defaults`; the CSS hub and Variables (seven `--VghLantern_Measure*` tokens);
+  `index.html` (one script tag); AppVersion 0.10.1; service worker `2026-10-21-1`; the README.
+- Unchanged: the geometry, `MODEL_BUILD_TOKEN`, the drawings, the takeoff, the PDF and the SketchUp payload.
+
+---
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.10.0 - 20-Oct-2026
+### FEATURE | Roof Glazing Panel Units: the coded plan and a cut drawing per unit type, on the tab and in the pack
+
+Adam: "Next build the new system for creating diagrams for each in the specification section. Ensure these arent
+generated until that tab is entered though as to not waste compute so only compute the glass panel drawings diagram and
+table when the specf section opens and as a failsafe when the end pack is compiled / for the diagram show a 2d top
+down".
+
+Asked first, and answered: PROVISIONAL TYPICAL BUILD-UPS fill the thickness and cavity columns, marked as provisional
+(rather than TBC); the pack gives each lantern its OWN Glazing Schedule page, after its cutting list, with its own
+switch; cut sizes round DOWN to the whole millimetre, angles to 0.1 degree.
+
+Then, from his first look on the testing server, with a marked-up plan: "Set all bubbles in consistent lines like shown
+in my markup", and "put Code Qty Length mm Width mm Glass Type Glass Thickness Cavity Spec at the top of each feintly
+and then centre the main text and make it a little larger, take advantage better of the space availible". Both are in.
+
+Then, on the Glazing Areas section: "remove this and istead have a square m2 0.00m2 column for each and have a total
+glass 0.00m2 value at the end, per side is irrelevant its the total of all of the panels call the section "Roof
+Glazing Panel Units" instead of Glazing Panels, change the codes from gz as the standard to RU "Roof Glazing Unit" be
+sure to save a skill that lists standard codes as we will be making more long term". All in; the standard codes are
+kept in a skill of their own.
+
+---
+
+#### WHAT IT IS
+
+- Per lantern: a top-down plan of the glass (each panel's top pane inside the upstand outline, FRONT at the bottom)
+  with a circular GZ bubble on every panel, then a table with one row per panel type: its straight-on cut drawing,
+  code, quantity, length, width, glass type (spec and tint, the panes beneath), glass thickness and cavity.
+- The Specification tab's new **Roof Glazing Panel Units** section shows every lantern's. Preview and Send has a page
+  of the same name per lantern, closing its set after the cutting list, with its own toolbar switch (on by default,
+  kept per user like the others). Internally it is still the glazing schedule (`glazingPanels`,
+  `lanternGlazingSchedule`, `ShowGlazingSchedule`), so no saved preference changes meaning.
+- **Codes are RU** (Roof glazing Unit: RU01 the largest), the standard Adam set, in place of the GZ codes v0.9.0 gave
+  them: on the plan, in the table, in the 3D View inspector ("Roof Glazing Unit RU03") and in the SketchUp export
+  names (`GlazingUnit__RU03__Front__07`). One constant in `Geometry__GlazingPanelLayout` assigns it.
+- **Glazing Areas is gone:** the gross per-slope section is switched off, and Preview and Send's specification page drops
+  its area table on the same switch, so turning the section back on restores both.
+
+---
+
+#### BUILT ONLY WHEN DRAWN
+
+- Nothing builds a schedule at boot, on an edit or inside the shared specification model (Preview and Send rebuilds
+  that once per page). The tab builds them when its Glazing Panels section is on screen; a collapsed section is left
+  empty and filled the moment it is opened. The pack builds them as its Glazing Schedule pages are drawn (the preview,
+  its issue check, the export), and not at all with the switch off. The static describe the issue check reads never
+  builds them.
+- Each schedule is cached against the six lantern blocks it depends on, so an unchanged lantern is never cut or drawn
+  twice and the pack reuses what the tab built. Renaming a lantern or editing a note rebuilds nothing.
+
+---
+
+#### THE PLAN
+
+- Fitted to a 180 x 105 mm box rather than drawn to a scale: the table sizes the panels, the plan identifies them.
+- Each slope's bubbles sit on one line parallel to its eaves, 1.6 bubble radii in from the eaves edge, each centred
+  along the line in its own panel, so round the plan they read as one ring just inside the eaves (a row above a transom
+  lines up above the transom). Every bubble is one size: the tighter of the smallest panel's inscribed circle and what
+  the corner triangles hold on their line, with clearance. At the 1.9 mm minimum a bubble may cross its panel's edge a
+  little rather than step off its row.
+
+---
+
+#### THE CUT DRAWINGS
+
+- The panel flat, eaves at the bottom, seen from outside: the top pane as the outline, a dashed line where the sealed
+  unit stops short (the stepped eaves), the overall width below, the top pane's length up one side and the oversail up
+  the other, every other cut edge labelled on the edge and every corner that is not square marked with its angle.
+  Fitted to a 62 x 44 mm cell.
+- Placement found by looking at rendered pages: on a mirrored hip panel a part-length edge's label printed across the
+  length dimension, so the length moves to the other side; a sharp corner's angle printed on the outline, so it sits as
+  far into the corner as clears both edges, or just outside a corner too tight for it.
+- A long narrow pane fitted whole came out 3 mm wide (12000 x 6000 at 300 spacing). One that would be drawn narrower
+  than 6 mm is drawn 6 mm wide with its plain middle broken out, the way a long member is drawn: the cut ends keep their
+  true shapes and angles, and every size printed is the full one. None of the local designs' everyday lanterns break.
+
+---
+
+#### THE TABLE
+
+- Sizes round DOWN to the whole millimetre, so a pane is never listed bigger than designed; the sealed unit's size sits
+  beneath the top pane's where it differs.
+- **Area m2:** each unit's top pane to 0.01 m2 (the sealed unit's beneath where it differs), and a **Total glass, all N
+  units** row closing the table: every unit on the lantern, summed from the exact areas, kept with the last rows on
+  the pack page. The Kitchen test lantern (6000 x 2500 at 25 degrees): 42 units, 16.48 m2.
+- Every text cell carries its column's name faintly at its top and its value, larger, centred in the row's height. The
+  dark header row stays above them. With the area column the A4 table is nine columns, so the values are 3.1mm and the
+  drawing column 56mm, which keeps codes, sizes, areas and the thickness on one line.
+- Thickness and cavity come from the new `VghLantern__Glazing__Options__Config__BuildUps` in the main config, typical
+  sealed units per glazing spec (double 6 / 16 argon / 6; laminate over 6 / 16 argon / 6.4; triple 4 / 8 / 4 / 8 / 4
+  argon; self cleaning 6 / 16 / 6), **all marked Provisional**: printed with * and a note on the page, and named in a
+  warning on the Preview and Send banner. A spec with no build-up prints TBC and warns. The 3D unit is unchanged (28mm).
+
+---
+
+#### ONE LAYOUT, TWO RENDERERS
+
+- The plan and every cut drawing are described once, as paper millimetre primitives, and drawn as SVG on screen and as
+  native jsPDF vectors in the file.
+- The pack page is laid out once, in millimetres: the masthead, the provisional note and the plan open the first page;
+  the table follows the plan and runs on a whole row at a time, its header repeated on every page. The preview draws
+  that layout rather than paginating it, because the FlowPaginator sizes the first piece of a split table to a whole
+  page and would have started the table a page later than the PDF, numbering the pages differently.
+
+---
+
+#### STILL OPEN
+
+- The build-ups, and the 6mm top pane, are provisional until Vale's glazing panel design gives the real ones.
+- The dark header row may be redundant now each cell names its column: Adam's call.
+- A 12m lantern's plan holds its bubbles at the 1.9mm minimum: dense, but readable.
+
+---
+
+#### FILES
+
+- New: `35__System__SpecificationMode\VghLantern__Specification__GlazingSchedule__.js` (on demand, cached; the plan and
+  the cut drawings as primitives; the areas and the total; the build-ups), `...GlazingScheduleRenderer__.js` (SVG,
+  jsPDF, the tab markup, the pack page layout), `60__Dev__WebBuildUtils\VghLantern__DevCheck__GlazingSchedule__.cjs`.
+- RU codes: `04__...\Geometry__GlazingPanelLayout` (the prefix), `06__...\Env3d__InspectStats` (the label),
+  `80__...\Na__SketchUpExport__Config.json` (a note), `60__...\DevCheck__GlazingPanels` (the expected codes).
+- `35__System__SpecificationMode`: `SectionManager` (the section, built only while open), `Na__Specification__Config.json`
+  (the section and the GlazingSchedule block), the stylesheet.
+- `40__System__DocumentPreviewMode`: `DocumentState` (the switch, the page kind), `MenuDataHandler`, `PageRenderer`,
+  `PrintDocumentRenderer` (the preview pages), `SpecificationPdfPainter` (the frame, the PDF pages), `PdfExporter`,
+  `DocIssueHandler` (the provisional build-up warning, the panel cut's warnings), `Na__DocPreview__Config.json`, the
+  stylesheet.
+- `02__AppData`: the main config (`BuildUps`, app version), the user menu defaults (the switch).
+- `index.html` (the two modules), app version 0.10.0, service worker `2026-10-20-5`, README.
+- Tested on the PC, headless: the new dev check, 101 PASS (nothing builds at load, in the document model, in the issue
+  check's describe or with the switch off; the tab builds one per lantern and reuses them; a pitch change rebuilds only
+  that lantern; rows, codes and quantities match the layout; sizes floored; one bubble per panel inside it and every
+  slope's bubbles on one line; drawings inside their cells, labels clear of the outline and the dimension lines, every
+  corner that is not square marked, broken drawings at least 6mm wide; clean SVG; the PDF drawing primitive for
+  primitive; the build-ups; each unit's area and the total glass, once per lantern on its last page, the same in the
+  preview and the PDF; Glazing Areas off and the section renamed; the page plan order; the banner warning; preview and
+  PDF the same pages with the same rows,
+  the header on every page and nothing below the footer reserve, on A4 and A3; every cell labelled; no config key
+  missing); all 33 lanterns in the 21 local designs (208 panel types, 72 A4 pages, 6 broken drawings) pass the same
+  checks; the other dev checks pass (Winding still fails on its old pointer to the retired folder; MeshTriangulation
+  needs the `three` package installed, neither touched); the pages rendered once in headless Edge to look at them;
+  `node --check` and JSON parse on every changed file; the testing server smoke CLEAN (588 requests, every file would
+  deploy, sign-in at every level). Adam's first look was the build before the bubble lines and the cell labels.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.9.0 - 20-Oct-2026
+### FEATURE | Glazing panels: the glass cut between the bars and hips, 3mm off each web, with GZ codes
+
+Adam: "Currently the glass is created as a harmogenised single plane that intersects all of the elements. Instead we
+need to make sure each pane is panelised to sit between the glaze bars and hips ... the reason we need to do this is
+so so in the specificatrion section ... we can hjave a plan diagram with code ... GZ01 , GZ02 etc in curcular bubbles
+per pane ... for now we will morth with single masses like now just divided to properly span between glaze bars, once
+this is imnplemented you will get me to test, then once succesful we will implement the more advanced glazing
+department spec sheets ... Tollerance, for now use a 3mm each side tolerance se you have | Rafter | 3mm | Glazing |
+3mm | Rafter | 3mm | Glazing | 3mm | Rafter | etc as needed". With a section sketch of the eaves marking the glass
+under the oversailing top pane "Remove".
+
+Asked first, and answered: the eaves edge is STEPPED now, with a provisional 6mm top pane; the 3mm is measured from
+the UPRIGHT WEB of the bar (the glass runs under the cap); ONE CODE PER PANEL TYPE, largest first; a pane and its
+mirror image are TWO codes (handed).
+
+This is stage one. The specification's glazing plan with code bubbles and the panel schedule with flattened drawings,
+sizes and cut angles follow once Adam has tested it.
+
+---
+
+#### THE GLASS IS NOW PANELS
+
+- Each slope is cut in its own flat frame (the glass plane, the glaze bar datum): between neighbouring bars, or a bar
+  and a hip for the triangular end piece, each cut a half plane, so every panel is a convex polygon however the bars
+  fall. No special case for a pyramid, a Mode02 pane straddling the end block (five sided), a hip end centre pane or a
+  pane a transom cuts in two.
+- One new geometry module does it, `VghLantern__Geometry__GlazingPanelLayout`, and only it: the 3D glazing builder,
+  the projected drawings (through the staged 3D model) and the SketchUp export all build from its answer.
+- 6000 x 2500 at 25 degrees, Mode01, 390 target: 42 panels in 7 types. The bay pane is 377.89 wide (the 388.889 pitch
+  less 2 x 5.5) by 1405.41 (top pane) / 1275.29 (unit) long; the long slope trapezoids and end triangles come out
+  identical to the hip end ones, so they share codes.
+
+---
+
+#### WHERE EACH EDGE SITS - 3MM OFF THE WEB
+
+Measured from the core assets with the app's own SectionLoopBuilder. The glass band is 8 to 36mm above the datum.
+
+| Member | Web at the glass | Panel edge off the member's line |
+|---|---|---|
+| Glaze bar core 45_2011 | 5mm (x +-2.5), section square to the glass | 5.5mm at every pitch: the pane beds 14mm onto the 39mm wing, under the cap |
+| Ridge core 47_2001 | 12mm (x +-6), section upright, glass on the skew | 7.68 at 10 deg, 6.18 at 22.5, 3.49 at 45 |
+| Hip core 48_2001 | 12mm (x +-6), section normal to the hip, glass at the backing angle | 6.98 at 22.5 deg |
+| Eaves extrusion 46_1002 upstand | face 42.875mm down the pitch from the eaves datum | the unit stops 39.875 past the datum |
+
+A hip or ridge web runs through the glass band on the skew, so the corner of the glass nearest it is a corner of the
+band: `reach = (W - beta s) / c` with c and s taken from the member's own section axis (GlazeBarAssembly Basis, the frame
+both sweeps use), so the glass clears each member exactly as it is modelled. For a glaze bar this is the web half width.
+
+---
+
+#### THE EAVES - A STEPPED EDGE
+
+- The unit at full thickness (28mm) stops 3mm short of the eaves extrusion upstand: the part of the old slab Adam
+  marked "Remove" (it ran straight through the upstand) is gone.
+- The top pane runs on over the upstand fins (they rise to 25.365, the pane sits 30 to 36 above the datum) to the glaze
+  bar cap ends, 170mm past the datum, so the hip lead still lands on glass. **The 6mm is provisional** until Adam's
+  panel design diagram; it is one number in the glaze bar index.
+- In 3D and in SketchUp each panel is its unit slab plus a thinner lip slab under the same code.
+
+---
+
+#### PANEL TYPES AND GZ CODES
+
+- Two panels are one type when both outlines (the top pane and the unit) match corner for corner within 0.5mm, eaves at
+  the bottom. Mirror images are NOT matched: a sealed unit with a stepped edge or a coated face cannot be turned over.
+- Codes run GZ01 down by top pane area (a near tie goes to the wider panel), like the T codes. Per lantern.
+- Each panel carries its code, the number of identical panels, its side of the roof (Front, Right, Back, Left from its
+  own normal), both sizes (the bounding rectangle in the glass plane: across, then up the slope), its corner angles and
+  which member each edge meets (bar, transom, hip, ridge, eaves), ready for the schedule.
+- Hover a pane in the 3D View: the inspector names it ("Glazing Panel GZ03"), the identical count, both sizes, the
+  top pane area, the corner angles and the build-up.
+
+---
+
+#### WHERE THE NUMBERS LIVE
+
+- Glaze bar index, new `VghLantern__GlazeBarSystem__GlazingInterface`: `BeddingOffsetMm` 8, `UnitThicknessMm` 28,
+  `EdgeClearanceMm` 3, `OuterPaneOversails` true, `OuterPaneThicknessMm` 6 (provisional). The 8 and 28 lived only in a
+  JS fallback table in Env3d ConfigAccess and in the SketchUp export config; both copies are now read only when the
+  layout module is missing.
+- `WebHalfWidthAtGlassMm` on each core's part entry (glaze bar 2.5, ridge 6, hip 6), and `GlassStopAlongPitchMm`
+  42.875 in the base frame `EavesInterface`, each with a note saying how it was measured.
+- The ridge and hip indexes now load at boot with the other system indexes, because the panel cut reads them
+  synchronously and the drawings, export and specification can need it before any 3D view has loaded them. (Side
+  effect: the takeoff's ridge and hip rows no longer wait for a 3D view to have been opened.)
+
+---
+
+#### WHAT ELSE CHANGED
+
+- `MODEL_BUILD_TOKEN` bumped to `2026-10-20-glazing-panels`, so stored drawings re-project with the panels.
+- The glazing builder is async (it awaits the four indexes; both callers await it in their own build order) and keeps
+  the old one-slab-per-slope build as the fallback for a lantern with no bar set.
+- SketchUp payload 1.2.0 (minor): one `GlazingUnit__GZ03__Front__07` prism per panel and one `GlazingTopPane__...`
+  lip per oversail, each carrying the panel id, code, sizes and build-up. Still prisms: the importer needs no change.
+
+---
+
+#### UNCHANGED, ON PURPOSE
+
+- The takeoff and the specification's Glazing Areas stay GROSS by slope (the stable figure, and what the gross
+  rows say); the 2.6 m2 pane warning measures as before; the 2D views' translucent wash is still one per slope (the
+  panel gaps sit under the bar caps, where a drawing would hide them anyway). All three are stage two decisions.
+
+---
+
+#### STILL OPEN
+
+- **Transoms are swept upright** (the sweep's world up rule for a level member), not square to the roof like a bar.
+  The glass follows the model, so it clears a transom by 2.39mm below and 20.62mm above at 22.5 degrees (4.13 / 11.89
+  at 10, -1.46 / 42.54 at 45: at 45 degrees the glass below runs 1.5mm past the transom line). If a transom should sit
+  square to the roof, that is a fix to its sweep basis; the glass then follows at 5.5mm each side with no change here.
+- The top pane thickness and the whole unit build-up wait on Adam's panel design diagram.
+- Stage two: the specification glazing plan with GZ bubbles, and the panel table (flattened 2D panel, code, quantity,
+  length, width, glass type, thickness, cavity) with dimensioned cut drawings and angles.
+
+---
+
+#### FILES
+
+- New: `04__MathUtils__LanternGeometry\VghLantern__Geometry__GlazingPanelLayout__.js`,
+  `60__Dev__WebBuildUtils\VghLantern__DevCheck__GlazingPanels__.cjs`.
+- `06__Env3d__ThreeRenderPipeline`: `MeshBuilder__Glazing` (panels, lip, async, fallback), `RenderPipeline` and
+  `27__...\ProjectedEdges__ModelStage` (await, bar set), `InspectStats` (the panel facts), `ConfigAccess` (a note);
+  `27__...\ProjectedEdges__LineworkStore` (token).
+- `80__System__SketchUpExport`: `Encoders__BaseAndRoof` (panel prisms), `PayloadBuilder`, `Na__SketchUpExport__Config.json`
+  (1.2.0, two name templates, a note).
+- `02__AppData`: `GlazeBarSystemLoader` (`GlazingInterface`), `BaseFrameSystemLoader` (fallback); `04__...`
+  `BaseFrameAssembly` (fallback); `01__AppCore\Init` (ridge and hip at boot); `index.html` (the module).
+- `06__Data__LanternProfileLibrary`: the glaze bar, base frame, ridge and hip system indexes.
+- `60__Dev__WebBuildUtils\...EavesExtension__.cjs` (a note: it now exercises the fallback).
+- App version 0.9.0, service worker `2026-10-20-4`, README.
+- Tested on the PC, headless: the new dev check, 30 PASS (the webs and the glass stop re-measured from the assets and
+  matching their index entries at 10, 22.5 and 45 degrees; the layout's fallbacks mirroring the indexes; 11 shapes -
+  both ways round, square, pyramids, Mode02, a transom, 10 and 45 degrees, 12000 x 6000 and 900 x 700 - every panel
+  convex, every edge named, no corner within 5.5mm of a bar, every hip and ridge edge exactly where the closed form
+  backing angle puts it, codes in order, every type paired with its mirror; the export's units and lips lifted to 8-36
+  and 30-36 and the top pane at the cap end level; the fallback); the real Env3d glazing builder run under Node with the
+  vendored three r184 (42 pick spans tiling 976 triangles, the slab 8.000 to 36.000mm off the datum, outward winding,
+  the fallback); all 33 lanterns in the 21 local designs cut clean (1012 panels, no warnings, no edge under 5mm); the
+  existing dev checks pass (Winding still fails on its old pointer to the retired folder, as before); `node --check` on
+  every changed script, every changed JSON parsed; the testing server smoke CLEAN (586 requests, every file would
+  deploy, sign-in at every level). Not yet run in the browser.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.8.1 - 20-Oct-2026
 ### FEATURE | Duplicate Lantern replaces Quantity; Roof Form tucked into a closed group
 
@@ -55,6 +495,23 @@ click on on tabs" (beside + Lantern).
   helpful"). Form and Size now carries no hint text at all.
 - The first Set Out To card (and its tip's title) is now "Exterior Upstand", to balance "Internal Upstand" on the
   other side (Adam). Its tip still says it is the finished exterior of the builders upstand, covering included.
+
+---
+
+#### THE TERMS LIBRARY MOVED
+
+- Adam: "Move The Terms And Conditions Folder With The Md Files up to the main root in a proper numbered series, remove
+  the Na Prefix and relink throughout the lantern designer codebase."
+- `02__Src__AppModules\38__System__TermsAndConditions\Na__Terms__Library\Na__Terms__NN__*.md` is now
+  `07__Data__TermsAndConditionsLibrary\VghLantern__Terms__NN__*.md` (moved with `git mv`, history kept), beside the
+  other data libraries (05 components, 06 profiles). Relinked: `LibraryBasePath` and every `SourceFile` in
+  `Na__Terms__Config.json` (all five resolve), the PLAN, the README, the comment in `/t/index.html`. The Terms module
+  and its config stay in `38__`. Older DEVLOG entries keep the old names as history.
+- **Then renamed `.md` to `.txt`, which fixes the terms on the server.** The testing server listed all five as "would not
+  work on the server": the Server Manager's sync excludes `*.md` from every web app and nginx denies `.md`, so the
+  terms loaded on the PC and 404'd live. The loader reads each file as plain text, so only the extension changed (git
+  mv; `SourceFile`s, the PLAN and `/t/index.html` relinked). Judged against nginx's deny patterns and the sync map's web
+  excludes, the new paths pass both. No server rule changed.
 
 ---
 

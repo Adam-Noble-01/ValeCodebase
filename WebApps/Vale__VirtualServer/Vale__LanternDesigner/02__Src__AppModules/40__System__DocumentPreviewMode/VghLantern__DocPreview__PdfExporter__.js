@@ -143,6 +143,22 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build One Lantern's Glazing Schedule Page Descriptor
+    // ------------------------------------------------------------
+    // The descriptor costs nothing: the schedule is cut and drawn when the writer
+    // paints the page, and only for a pack with the Glazing Schedule switch on.
+    function VghLantern__PdfExporter__BuildLanternGlazingSchedulePage(specModel, lanternIndex) {
+        var SpecPainter  =  window.VghLantern__DocPreview__SpecificationPdfPainter;
+        var page         =  VghLantern__PdfExporter__Page();
+        if (!SpecPainter || !specModel || !page) return null;
+
+        return SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternGlazingSchedulePage(
+            page, specModel, lanternIndex
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build One Lantern's Drawing Sheet Page Descriptor
     // ------------------------------------------------------------
     // The sheet comes from the baker, which composes it exactly as the Drawing Editor
@@ -381,6 +397,7 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         builders[DocumentState.KIND_LANTERN_NOTES]    =  function(entry) { return VghLantern__PdfExporter__BuildLanternNotesPage(entry.LanternIndex); };
         builders[DocumentState.KIND_LANTERN_SPEC]     =  function(entry) { return VghLantern__PdfExporter__BuildLanternSpecPage(viewState, specModel, entry.LanternIndex); };
         builders[DocumentState.KIND_LANTERN_CUTLIST]  =  function(entry) { return VghLantern__PdfExporter__BuildLanternCuttingListPage(specModel, entry.LanternIndex); };
+        builders[DocumentState.KIND_LANTERN_GLAZING]  =  function(entry) { return VghLantern__PdfExporter__BuildLanternGlazingSchedulePage(specModel, entry.LanternIndex); };
         builders[DocumentState.KIND_DRAWING_TERMS]    =  function()      { return VghLantern__PdfExporter__BuildDrawingTermsPage(); };
         builders[DocumentState.KIND_TERMS]            =  function()      { return VghLantern__PdfExporter__BuildTermsPage(); };
 

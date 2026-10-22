@@ -39,8 +39,12 @@
                          is a datum rather than a part, the upstand reveal is a
                          hole, and glazing bars belong to their own encoder.
 
-       Glazing           One slab per solved glazing face, seated on the
-                         bedding face and given its unit thickness outwards.
+       Glazing           One sealed unit per glazing PANEL (v0.9.0), as
+                         VghLantern__Geometry__GlazingPanelLayout cut it
+                         between the bars and hips: the unit seated on the
+                         bedding face at its full thickness, plus a thinner
+                         prism where the top pane oversails the eaves upstand.
+                         Without a bar set, one slab per solved slope.
 
    ---------------------------------------------------------------------------
 
@@ -59,6 +63,11 @@
    Both are extended here, exactly as the 3D viewport extends them, and both
    for the same number out of the same place - the base frame system index,
    read through VghLantern__Geometry__BaseFrameAssembly.EavesInterface.
+
+   Since v0.9.0 the GLASS is extended by the glazing panel layout instead, and
+   only its top pane reaches the cap ends: the unit at full thickness stops 3mm
+   short of the eaves extrusion upstand. The face extension below now serves
+   only the whole slope fallback.
 
    THE SOLVED GEOMETRY IS NEVER MUTATED. Extended copies are swept, and the
    datum length and datum area still travel in each part's attributes, so the
@@ -698,23 +707,114 @@ const VghLantern__SketchUpExport__Encoders__BaseAndRoof = (function() {
 // REGION | Glazing Encoder
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Encode Each Solved Glazing Face as a Sealed Unit Slab
+    // HELPER FUNCTION | The Attributes Every Part of One Glazing Panel Carries
     // ------------------------------------------------------------
-    // The slab's inner face sits the bedding offset ABOVE the glaze bar datum -
-    // the depth of the core's glazing leg and the setting tape - and the unit
-    // thickness is measured outward from there, so a thicker unit moves the
+    // The panel's code and both sets of sizes travel on the unit AND on its top
+    // pane lip, so whichever group somebody clicks in SketchUp names the panel the
+    // glazing schedule lists.
+    function VghLantern__EncodersBaseAndRoof__PanelAttributes(panel, meta, partRole) {
+        return {
+            PartRole              : partRole,
+            PanelId               : panel.Id,
+            PanelCode             : panel.Code,
+            IdenticalPanels       : panel.TypeQuantity,
+            FaceId                : panel.FaceId,
+            SlopeKey              : panel.SlopeKey,
+            Side                  : panel.Side,
+            PitchDegrees          : panel.PitchDegrees || 0,
+            TopPaneWidthMm        : panel.WidthMm,
+            TopPaneLengthMm       : panel.LengthMm,
+            TopPaneAreaSqMm       : panel.AreaSqMm,
+            UnitWidthMm           : panel.UnitWidthMm,
+            UnitLengthMm          : panel.UnitLengthMm,
+            UnitAreaSqMm          : panel.UnitAreaSqMm,
+            UnitThicknessMm       : meta.UnitThicknessMm,
+            BeddingOffsetMm       : meta.BeddingOffsetMm,
+            EdgeClearanceMm       : meta.EdgeClearanceMm,
+            OuterPaneThicknessMm  : meta.OuterPaneThicknessMm
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Encode Each Cut Glazing Panel: Its Unit and Its Top Pane Lip
+    // ------------------------------------------------------------
+    // One prism per panel at full unit thickness, and where the top pane oversails
+    // the eaves extrusion upstand a second, thinner prism carrying it on to the
+    // cap ends - the same two slabs the 3D viewport builds, from the same outlines
+    // and the same build-up numbers off the panel set's Meta. Nothing here is
+    // geometry: the panel layout cut it all.
+    function VghLantern__EncodersBaseAndRoof__GlazingPanels(panelSet) {
+        var Sweep    =  VghLantern__EncodersBaseAndRoof__Sweep();
+        var Factory  =  VghLantern__EncodersBaseAndRoof__Factory();
+        var meta     =  panelSet.Meta;
+        var lipOffsetMm  =  meta.BeddingOffsetMm + meta.UnitThicknessMm - meta.OuterPaneThicknessMm;
+        var records  =  [];
+        var i, panel, tokens, prism, record;
+
+        for (i = 0; i < panelSet.Panels.length; i++) {
+            panel   =  panelSet.Panels[i];
+            tokens  =  { PanelCode : panel.Code, Side : panel.Side, Index : VghLantern__EncodersBaseAndRoof__Pad(panel.Ordinal) };
+
+            prism   =  Sweep.VghLantern__SketchUpExport__SweepGeometry__PrismFromPolygon(
+                VghLantern__EncodersBaseAndRoof__OutwardWound(panel.Outline3d), meta.BeddingOffsetMm, meta.UnitThicknessMm);
+            record  =  Factory.VghLantern__SketchUpExport__PartFactory__Prism(prism, {
+                Name        : Factory.VghLantern__SketchUpExport__PartFactory__Name('GlazingPanel', tokens),
+                TagKey      : 'glazing',
+                MaterialKey : 'glazing',
+                Attributes  : VghLantern__EncodersBaseAndRoof__PanelAttributes(panel, meta, 'glazingUnit')
+            });
+            if (record) records.push(record);
+
+            if (!meta.OuterPaneOversails || !(meta.OuterPaneThicknessMm > 0)) continue;
+            if (!Array.isArray(panel.LipOutline3d) || panel.LipOutline3d.length < 3) continue;
+
+            prism   =  Sweep.VghLantern__SketchUpExport__SweepGeometry__PrismFromPolygon(
+                VghLantern__EncodersBaseAndRoof__OutwardWound(panel.LipOutline3d), lipOffsetMm, meta.OuterPaneThicknessMm);
+            record  =  Factory.VghLantern__SketchUpExport__PartFactory__Prism(prism, {
+                Name        : Factory.VghLantern__SketchUpExport__PartFactory__Name('GlazingPanelOversail', tokens),
+                TagKey      : 'glazing',
+                MaterialKey : 'glazing',
+                Attributes  : VghLantern__EncodersBaseAndRoof__PanelAttributes(panel, meta, 'glazingTopPaneOversail')
+            });
+            if (record) records.push(record);
+        }
+
+        return records;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Encode the Lantern's Glazing: One Unit per Cut Panel
+    // ------------------------------------------------------------
+    // Since v0.9.0 the glass is the panels VghLantern__Geometry__GlazingPanelLayout
+    // cuts between the bars and hips. Without a bar set to cut by (or that module)
+    // it falls back to the pre-v0.9.0 export below: one slab per solved slope.
+    //
+    // THE FALLBACK SLAB: its inner face sits the bedding offset ABOVE the glaze bar
+    // datum - the depth of the core's glazing leg and the setting tape - and the
+    // unit thickness is measured outward from there, so a thicker unit moves the
     // outer surface up under the cap and leaves the bedded face where the bar
     // put it. That is how the real unit behaves on the roof.
     //
     // @param skeleton  SolvedSkeleton
+    // @param barSet    GlazeBarSet the panels are cut between
+    // @param lantern   The lantern block
     // @return          Array of part records
-    function VghLantern__SketchUpExport__Encoders__Glazing(skeleton) {
+    function VghLantern__SketchUpExport__Encoders__Glazing(skeleton, barSet, lantern) {
         var Sweep    =  VghLantern__EncodersBaseAndRoof__Sweep();
         var Factory  =  VghLantern__EncodersBaseAndRoof__Factory();
         if (!skeleton || !Array.isArray(skeleton.Faces) || !Sweep || !Factory) return [];
 
-        var offsetMm     =  VghLantern__EncodersBaseAndRoof__GlazingNumber('GlazingInnerFaceOffsetMm');
-        var thicknessMm  =  VghLantern__EncodersBaseAndRoof__GlazingNumber('GlazingThicknessMm');
+        var Layout    =  window.VghLantern__Geometry__GlazingPanelLayout;
+        var panelSet  =  (Layout && barSet) ? Layout.VghLantern__GlazingPanelLayout__Layout(skeleton, barSet, lantern) : null;
+        if (panelSet && Array.isArray(panelSet.Panels) && panelSet.Panels.length > 0) {
+            return VghLantern__EncodersBaseAndRoof__GlazingPanels(panelSet);
+        }
+
+        var numbers      =  Layout ? Layout.VghLantern__GlazingPanelLayout__Interface() : null;
+        var offsetMm     =  numbers ? numbers.BeddingOffsetMm : VghLantern__EncodersBaseAndRoof__GlazingNumber('GlazingInnerFaceOffsetMm');
+        var thicknessMm  =  numbers ? numbers.UnitThicknessMm : VghLantern__EncodersBaseAndRoof__GlazingNumber('GlazingThicknessMm');
         var records      =  [];
         var i, face, points, prism, record;
 

@@ -11,7 +11,11 @@
 
    DESCRIPTION:
    - Builds the tools menu that floats over the full-screen 3D canvas: a titled
-     card docked to the right of the viewport, holding four collapsible sections.
+     card docked to the right of the viewport, holding five collapsible sections.
+   - The Measure section (21-Oct-2026) offers the 3D measure tool's two tools,
+     its precision and the dimensions taken. The list is repainted in place from
+     the tool's reports (SetMeasurements), never by repainting the card, so a row
+     clicked mid-measure is never rebuilt out from under the cursor.
    - Owns no surface and no renderer. It reports user intent back to the Layout
      module through a callback map, so the menu can be rebuilt at will without
      touching the live GL context.
@@ -74,6 +78,23 @@ const VghLantern__Viewport3d__Controls = (function() {
     const CSS_SELECT        =  'VghLantern__Viewport3d__MenuSelect';
     const CSS_READOUT       =  'VghLantern__Viewport3d__MenuReadout';
     const CSS_OPEN          =  'is-open';
+
+    const CSS_BTN_TOOL      =  'VghLantern__Viewport3d__MenuBtn--tool';     // <-- A button with its icon beside its words
+    const CSS_BTN_CONFIRM   =  'VghLantern__Viewport3d__MenuBtn--confirm';  // <-- Clear All armed: the second press clears
+    const CSS_TOOL_ICON     =  'VghLantern__Viewport3d__MenuToolIcon';
+    const CSS_CHOICE_ROW    =  'VghLantern__Viewport3d__MenuChoiceRow';
+    const CSS_GROUP_HEAD    =  'VghLantern__Viewport3d__MenuGroupHead';
+    const CSS_MEASURE_LIST  =  'VghLantern__Viewport3d__MeasureList';
+    const CSS_MEASURE_EMPTY =  'VghLantern__Viewport3d__MeasureEmpty';
+    const CSS_ROW           =  'VghLantern__Viewport3d__MeasureRow';
+    const CSS_ROW_PICKED    =  'VghLantern__Viewport3d__MeasureRow--selected';
+    const CSS_ROW_MAIN      =  'VghLantern__Viewport3d__MeasureRowMain';
+    const CSS_ROW_TOP       =  'VghLantern__Viewport3d__MeasureRowTop';
+    const CSS_ROW_NUMBER    =  'VghLantern__Viewport3d__MeasureRowNumber';
+    const CSS_ROW_VALUE     =  'VghLantern__Viewport3d__MeasureRowValue';
+    const CSS_ROW_NOTE      =  'VghLantern__Viewport3d__MeasureRowNote';
+    const CSS_ROW_DELETE    =  'VghLantern__Viewport3d__MeasureRowDelete';
+    const CSS_AXIS_CHIP     =  'VghLantern__Viewport3d__MeasureAxis';        // <-- + --x | --y | --z | --square | --free
     // ------------------------------------------------------------
 
 
@@ -88,8 +109,15 @@ const VghLantern__Viewport3d__Controls = (function() {
     const ATTR_MENU_SECTION  =  'data-vgh-menu-section';                      // <-- On the section toggle button
     const ATTR_MENU_PANEL    =  'data-vgh-menu-panel';                        // <-- On the panel the toggle opens
     const ATTR_DRAG_HANDLE   =  'data-vgh-menu-drag';
+    const ATTR_MEASURE_TOOL  =  'data-vgh-measure-tool';
+    const ATTR_PRECISION     =  'data-vgh-measure-precision';
+    const ATTR_MEASURE_DO    =  'data-vgh-measure-action';                    // <-- One of the three actions below
+    const ATTR_MEASURE_ID    =  'data-vgh-measure-id';
 
     const ACTION_ZOOM_FIT    =  'zoomExtents';
+    const ACTION_CLEAR       =  'clear';                                      // <-- The Measure section's Clear All
+    const ACTION_SELECT      =  'select';                                     // <-- A row of the dimensions list
+    const ACTION_DELETE      =  'delete';                                     // <-- A row's cross
     // ------------------------------------------------------------
 
 
@@ -102,6 +130,7 @@ const VghLantern__Viewport3d__Controls = (function() {
     const LABEL_SEC_CAMERA   =  'Camera';
     const LABEL_SEC_SECTION  =  'Cross Section';
     const LABEL_SEC_LANTERN  =  'Lantern';
+    const LABEL_SEC_MEASURE  =  'Measure';
 
     const LABEL_DISPLAY      =  'Display';
     const LABEL_ELEMENTS     =  'Elements';
@@ -110,6 +139,13 @@ const VghLantern__Viewport3d__Controls = (function() {
     const LABEL_LANTERN      =  'Active Lantern';
     const LABEL_FIT          =  'Zoom to Fit';
     const LABEL_MODE_PREFIX  =  'Members: ';
+    const LABEL_PRECISION    =  'Precision';
+    const LABEL_DIMENSIONS   =  'Dimensions';
+    const LABEL_CLEAR_ALL    =  'Clear All';
+    const LABEL_CLEAR_ARMED  =  'Press Again to Clear';
+    const LABEL_DELETE_ROW   =  'Delete dimension ';
+    const LABEL_MEASURE_TIP  =  'How measuring snaps';
+    const TIP_MEASURE        =  'measure3d.snapping';                         // <-- Its words are in Na__InfoTooltip__Config.json
     // ------------------------------------------------------------
 
 
@@ -122,12 +158,14 @@ const VghLantern__Viewport3d__Controls = (function() {
     const SECTION_CAMERA   =  'camera';
     const SECTION_CUT      =  'crossSection';
     const SECTION_LANTERN  =  'lantern';
+    const SECTION_MEASURE  =  'measure';
 
     const PERSIST_FIELD  =  {
         display      : 'MenuSectionDisplayOpen',
         camera       : 'MenuSectionCameraOpen',
         crossSection : 'MenuSectionCrossSectionOpen',
-        lantern      : 'MenuSectionLanternOpen'
+        lantern      : 'MenuSectionLanternOpen',
+        measure      : 'MenuSectionMeasureOpen'
     };
     // ------------------------------------------------------------
 
@@ -146,8 +184,25 @@ const VghLantern__Viewport3d__Controls = (function() {
         lantern      : '<path d="M3 19h18"/><path d="M12 5 3 15h18L12 5Z"/><path d="M12 5v10M3 15l9-10 9 10"/>',
         chevron      : '<path d="m6 9 6 6 6-6"/>',
         grip         : '<circle cx="9"  cy="6"  r="1.1"/><circle cx="9"  cy="12" r="1.1"/><circle cx="9"  cy="18" r="1.1"/>' +
-                       '<circle cx="15" cy="6"  r="1.1"/><circle cx="15" cy="12" r="1.1"/><circle cx="15" cy="18" r="1.1"/>'
+                       '<circle cx="15" cy="6"  r="1.1"/><circle cx="15" cy="12" r="1.1"/><circle cx="15" cy="18" r="1.1"/>',
+        cross        : '<path d="M7 7l10 10M17 7 7 17"/>',
+        measure      : '<path d="M236.7 240.1H369.2A206.5 206.5 0 0 1 575.7 446.6V729.9H226.2A137.7 137.7 0 0 1 88.5 592.3V388.2A148.1 148.1 0 0 1 236.7 240.1Z"/>' +
+                       '<path d="M470.1 266.4A39.2 39.2 0 0 1 472 264.4L488 248.4A39.2 39.2 0 0 1 543.4 248.4L592.6 297.6A39.2 39.2 0 0 1 592.6 352.9L576.6 369A39.2 39.2 0 0 1 563.8 377.5"/>' +
+                       '<circle cx="332" cy="486.7" r="148.4"/>' +
+                       '<polyline points="575.7 621.7 935.7 621.7 935.7 777.6"/>' +
+                       '<path d="M575.7 729.9H935.7M636.5 729.9V698.3M696.9 729.9V684.7M757.2 729.9V702.4M817.5 729.9V684.7M877.8 729.9V698.3"/>'
     };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Icon Frames
+    // ------------------------------------------------------------
+    // Every glyph above is drawn in a 24 unit box at 1.6, except the tape measure:
+    // TrueVision's own path data (Icon__MeasureTools__TapeMeasure__.svg, copied
+    // unchanged) in its 1024 artboard, where 68 is the same weight as 1.6 here, so
+    // the five section icons read as one set.
+    const ICON_FRAME_DEFAULT  =  { ViewBox : '0 0 24 24',     StrokeWidth : 1.6 };
+    const ICON_FRAMES         =  { measure : { ViewBox : '0 0 1024 1024', StrokeWidth : 68 } };
     // ------------------------------------------------------------
 
 
@@ -167,6 +222,12 @@ const VghLantern__Viewport3d__Controls = (function() {
     let VghLantern__Viewport3dControls__ActiveElement =  '';                  // <-- Element view key currently highlighted
     let VghLantern__Viewport3dControls__IsBound       =  false;               // <-- Guards duplicate delegated listeners
     let VghLantern__Viewport3dControls__PrefsRequested=  false;               // <-- Guards a second load of the user file
+    let VghLantern__Viewport3dControls__ActiveTool    =  '';                  // <-- Measure tool currently on ('' for none)
+    let VghLantern__Viewport3dControls__ActiveDecimal =  '';                  // <-- Measure precision key currently highlighted
+    let VghLantern__Viewport3dControls__MeasureRows   =  [];                  // <-- The dimensions taken, as the tool last reported them
+    let VghLantern__Viewport3dControls__MeasureRev    =  -1;                  // <-- The list revision those rows came from
+    let VghLantern__Viewport3dControls__ClearArmed    =  false;               // <-- Clear All pressed once and waiting for the second
+    let VghLantern__Viewport3dControls__ClearTimerId  =  null;
     // ------------------------------------------------------------
 
 
@@ -181,7 +242,8 @@ const VghLantern__Viewport3d__Controls = (function() {
         display      : true,
         camera       : true,
         crossSection : false,
-        lantern      : false
+        lantern      : false,
+        measure      : false
     };
 
     let VghLantern__Viewport3dControls__MenuPosition  =  { left : null, top : null };
@@ -229,6 +291,20 @@ const VghLantern__Viewport3d__Controls = (function() {
         return String(value === undefined || value === null ? '' : value)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Get One Block of the Measure Tool's Config
+    // ------------------------------------------------------------
+    // Na__Measure3d__Config.json, merged by ConfigLoader. Only the menu's own words
+    // and timing are read here; what the tool does is the pipeline's business.
+    function VghLantern__Viewport3dControls__MeasureConfig(blockName) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader || !ConfigLoader.VghLantern__ConfigLoader__GetMergedConfig) return {};
+
+        var root  =  (ConfigLoader.VghLantern__ConfigLoader__GetMergedConfig() || {})['VghLantern__Measure3d__Config'] || {};
+        return root['VghLantern__Measure3d__Config__' + blockName] || {};
     }
     // ------------------------------------------------------------
 
@@ -333,8 +409,10 @@ const VghLantern__Viewport3d__Controls = (function() {
         var paths  =  ICON_PATHS[iconKey];
         if (!paths) return '';
 
-        return '<svg class="' + CSS_ICON + (extraClass ? ' ' + extraClass : '') + '" viewBox="0 0 24 24"' +
-               ' fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"' +
+        var frame  =  ICON_FRAMES[iconKey] || ICON_FRAME_DEFAULT;
+
+        return '<svg class="' + CSS_ICON + (extraClass ? ' ' + extraClass : '') + '" viewBox="' + frame.ViewBox + '"' +
+               ' fill="none" stroke="currentColor" stroke-width="' + frame.StrokeWidth + '" stroke-linecap="round"' +
                ' stroke-linejoin="round" aria-hidden="true" focusable="false">' + paths + '</svg>';
     }
     // ------------------------------------------------------------
@@ -528,6 +606,128 @@ const VghLantern__Viewport3d__Controls = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build the Dimensions List's Rows
+    // ------------------------------------------------------------
+    // One row per dimension taken: its number, value and the axis it snapped to on
+    // the first line, then the parts it runs between, and for a free one its X Y Z
+    // parts. A row selects its dimension on the model; its cross removes it.
+    function VghLantern__Viewport3dControls__BuildMeasureRows() {
+        var E     =  VghLantern__Viewport3dControls__Escape;
+        var rows  =  VghLantern__Viewport3dControls__MeasureRows;
+
+        if (!rows.length) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+            var emptyText     =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                VghLantern__Viewport3dControls__MeasureConfig('Copy'), 'EmptyList',
+                'Na__Measure3d__Config.json -> VghLantern__Measure3d__Config__Copy');
+            return '<span class="' + CSS_MEASURE_EMPTY + '">' + E(emptyText) + '</span>';
+        }
+
+        var html  =  '';
+        var i, row;
+        for (i = 0; i < rows.length; i++) {
+            row  =  rows[i];
+
+            html  +=  '<div class="' + CSS_ROW + (row.IsSelected ? ' ' + CSS_ROW_PICKED : '') + '">';
+            html  +=      '<button type="button" class="' + CSS_ROW_MAIN + '" ' + ATTR_MEASURE_DO + '="' + ACTION_SELECT + '"' +
+                          ' ' + ATTR_MEASURE_ID + '="' + E(row.Id) + '" aria-pressed="' + (row.IsSelected ? 'true' : 'false') + '">';
+            html  +=          '<span class="' + CSS_ROW_TOP + '">' +
+                              '<span class="' + CSS_ROW_NUMBER + '">' + E(row.Number) + '</span>' +
+                              '<span class="' + CSS_ROW_VALUE + '">' + E(row.ValueText) + '</span>' +
+                              '<span class="' + CSS_AXIS_CHIP + ' ' + CSS_AXIS_CHIP + '--' + E(row.AxisKey) + '">' + E(row.AxisChip) + '</span>' +
+                              '</span>';
+            if (row.Between) html  +=  '<span class="' + CSS_ROW_NOTE + '">' + E(row.Between) + '</span>';
+            if (row.Parts)   html  +=  '<span class="' + CSS_ROW_NOTE + '">' + E(row.Parts) + '</span>';
+            html  +=      '</button>';
+            html  +=      '<button type="button" class="' + CSS_ROW_DELETE + '" ' + ATTR_MEASURE_DO + '="' + ACTION_DELETE + '"' +
+                          ' ' + ATTR_MEASURE_ID + '="' + E(row.Id) + '" aria-label="' + E(LABEL_DELETE_ROW + row.Number) + '">' +
+                          VghLantern__Viewport3dControls__BuildIcon('cross') + '</button>';
+            html  +=  '</div>';
+        }
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Clear All Button
+    // ------------------------------------------------------------
+    // Asks twice, as TrueVision's does, so one slip cannot wipe an audit: the first
+    // press arms it (red, "Press Again to Clear") and it stands down by itself.
+    function VghLantern__Viewport3dControls__BuildClearButton() {
+        var pipeline   =  window.VghLantern__Env3d__RenderPipeline;
+        var iconUrl    =  (pipeline && pipeline.VghLantern__Env3d__RenderPipeline__MeasureClearIcon)
+            ? pipeline.VghLantern__Env3d__RenderPipeline__MeasureClearIcon() : '';
+        var isArmed    =  VghLantern__Viewport3dControls__ClearArmed;
+        var isEmpty    =  VghLantern__Viewport3dControls__MeasureRows.length === 0;
+
+        return '<button type="button" class="' + CSS_BTN + ' ' + CSS_BTN_TOOL + (isArmed ? ' ' + CSS_BTN_CONFIRM : '') + '"' +
+               ' ' + ATTR_MEASURE_DO + '="' + ACTION_CLEAR + '"' + (isEmpty ? ' disabled' : '') + '>' +
+               (iconUrl ? '<img class="' + CSS_TOOL_ICON + '" src="' + VghLantern__Viewport3dControls__Escape(iconUrl) + '" alt="" aria-hidden="true" draggable="false">' : '') +
+               '<span>' + (isArmed ? LABEL_CLEAR_ARMED : LABEL_CLEAR_ALL) + '</span>' +
+               '</button>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Measure Section
+    // ------------------------------------------------------------
+    // Adam: "Add a dimension tool section to the 3D Tab menu - Vertex to vertex
+    // measurement tool - Face to face measurement tool. Measure in 1mm but have the
+    // ability to also change to 0.00mm". The tools carry TrueVision's measure icons;
+    // how the snapping works sits behind the Vale "i", not as text in the panel.
+    // Comes back empty when the tool is switched off in config, which leaves no
+    // section rather than an inert one.
+    function VghLantern__Viewport3dControls__BuildMeasureBody(modeConfig) {
+        if (modeConfig.ShowMeasureTools === false) return '';
+
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        if (!pipeline || !pipeline.VghLantern__Env3d__RenderPipeline__ListMeasureTools) return '';
+
+        var tools  =  pipeline.VghLantern__Env3d__RenderPipeline__ListMeasureTools() || [];
+        if (!tools.length) return '';
+
+        var E           =  VghLantern__Viewport3dControls__Escape;
+        var precisions  =  pipeline.VghLantern__Env3d__RenderPipeline__ListMeasurePrecisions
+            ? (pipeline.VghLantern__Env3d__RenderPipeline__ListMeasurePrecisions() || []) : [];
+
+        var toolHtml  =  '';
+        var i, tool, activeClass;
+        for (i = 0; i < tools.length; i++) {
+            tool         =  tools[i];
+            activeClass  =  (tool.Key === VghLantern__Viewport3dControls__ActiveTool) ? ' ' + CSS_BTN_ACTIVE : '';
+
+            toolHtml  +=  '<button type="button" class="' + CSS_BTN + ' ' + CSS_BTN_TOOL + activeClass + '"' +
+                          ' ' + ATTR_MEASURE_TOOL + '="' + E(tool.Key) + '">' +
+                          (tool.Icon ? '<img class="' + CSS_TOOL_ICON + '" src="' + E(tool.Icon) + '" alt="" aria-hidden="true" draggable="false">' : '') +
+                          '<span>' + E(tool.Label) + '</span>' +
+                          '</button>';
+        }
+
+        var InfoTooltip  =  window.VghLantern__AppCore__InfoTooltip;
+        var tipHtml      =  (InfoTooltip && InfoTooltip.VghLantern__InfoTooltip__IconMarkup)
+            ? InfoTooltip.VghLantern__InfoTooltip__IconMarkup(TIP_MEASURE, LABEL_MEASURE_TIP, '') : '';
+
+        var html  =  '<div class="' + CSS_GROUP + '">' +
+                     '<span class="' + CSS_GROUP_LABEL + ' ' + CSS_GROUP_HEAD + '">' + E(LABEL_TOOLS) + tipHtml + '</span>' +
+                     toolHtml +
+                     '</div>';
+
+        if (precisions.length) {
+            html  +=  VghLantern__Viewport3dControls__BuildGroup(LABEL_PRECISION,
+                '<div class="' + CSS_CHOICE_ROW + '">' +
+                VghLantern__Viewport3dControls__BuildChoiceStack(precisions, ATTR_PRECISION, VghLantern__Viewport3dControls__ActiveDecimal) +
+                '</div>');
+        }
+
+        html  +=  VghLantern__Viewport3dControls__BuildGroup(LABEL_DIMENSIONS,
+            '<div class="' + CSS_MEASURE_LIST + '">' + VghLantern__Viewport3dControls__BuildMeasureRows() + '</div>' +
+            VghLantern__Viewport3dControls__BuildClearButton());
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build One Collapsible Section
     // ------------------------------------------------------------
     // A section with no body is not rendered at all. That is what lets a config
@@ -570,9 +770,14 @@ const VghLantern__Viewport3d__Controls = (function() {
         var lanternBody  =  VghLantern__Viewport3dControls__BuildLanternGroup(modeConfig) +
                             VghLantern__Viewport3dControls__BuildModeReadout(modeConfig);
 
+        var measureBody  =  VghLantern__Viewport3dControls__BuildMeasureBody(modeConfig);
+
+        // Measure sits with the other ways of looking at the model, above Lantern,
+        // which says which lantern is on screen and stays last.
         var sections  =  VghLantern__Viewport3dControls__BuildSection(SECTION_DISPLAY, 'display',      LABEL_SEC_DISPLAY, displayBody) +
                          VghLantern__Viewport3dControls__BuildSection(SECTION_CAMERA,  'camera',       LABEL_SEC_CAMERA,  cameraBody)  +
                          VghLantern__Viewport3dControls__BuildSection(SECTION_CUT,     'crossSection', LABEL_SEC_SECTION, cutBody)     +
+                         VghLantern__Viewport3dControls__BuildSection(SECTION_MEASURE, 'measure',      LABEL_SEC_MEASURE, measureBody) +
                          VghLantern__Viewport3dControls__BuildSection(SECTION_LANTERN, 'lantern',      LABEL_SEC_LANTERN, lanternBody);
 
         if (!sections) return '';                                             // <-- Nothing to show: no empty card over the model
@@ -786,6 +991,24 @@ const VghLantern__Viewport3d__Controls = (function() {
                 return;
             }
 
+            var measureToolEl  =  ev.target.closest('[' + ATTR_MEASURE_TOOL + ']');
+            if (measureToolEl) {
+                VghLantern__Viewport3dControls__Invoke('OnMeasureTool', measureToolEl.getAttribute(ATTR_MEASURE_TOOL));
+                return;
+            }
+
+            var precisionEl  =  ev.target.closest('[' + ATTR_PRECISION + ']');
+            if (precisionEl) {
+                VghLantern__Viewport3dControls__Invoke('OnMeasurePrecision', precisionEl.getAttribute(ATTR_PRECISION));
+                return;
+            }
+
+            var measureEl  =  ev.target.closest('[' + ATTR_MEASURE_DO + ']');
+            if (measureEl) {
+                VghLantern__Viewport3dControls__OnMeasureAction(measureEl);
+                return;
+            }
+
             var actionEl  =  ev.target.closest('[' + ATTR_ACTION + ']');
             if (actionEl && actionEl.getAttribute(ATTR_ACTION) === ACTION_ZOOM_FIT) {
                 VghLantern__Viewport3dControls__Invoke('OnZoomExtents');
@@ -825,6 +1048,78 @@ const VghLantern__Viewport3d__Controls = (function() {
         });
 
         VghLantern__Viewport3dControls__IsBound  =  true;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Act on a Measure Section Button
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dControls__OnMeasureAction(buttonEl) {
+        var action  =  buttonEl.getAttribute(ATTR_MEASURE_DO);
+        var id      =  buttonEl.getAttribute(ATTR_MEASURE_ID) || '';
+
+        if (action === ACTION_CLEAR) {
+            VghLantern__Viewport3dControls__ArmOrClear();
+            return;
+        }
+        if (action === ACTION_DELETE) {
+            VghLantern__Viewport3dControls__Invoke('OnMeasureDelete', id);
+            return;
+        }
+        if (action === ACTION_SELECT) {
+            var isPicked  =  buttonEl.getAttribute('aria-pressed') === 'true';
+            VghLantern__Viewport3dControls__Invoke('OnMeasureSelect', isPicked ? '' : id);   // <-- A second click on a picked row lets it go
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Swap the Clear All Button for a Fresh One, in Place
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dControls__RefreshClearButton() {
+        var hostElement  =  VghLantern__Viewport3dControls__HostElement;
+        if (!hostElement) return;
+
+        var current  =  hostElement.querySelector('[' + ATTR_MEASURE_DO + '="' + ACTION_CLEAR + '"]');
+        if (!current) return;
+
+        var holder  =  document.createElement('div');
+        holder.innerHTML  =  VghLantern__Viewport3dControls__BuildClearButton();
+        if (holder.firstChild) current.parentNode.replaceChild(holder.firstChild, current);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Stand Clear All Down
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dControls__DisarmClear() {
+        if (VghLantern__Viewport3dControls__ClearTimerId) clearTimeout(VghLantern__Viewport3dControls__ClearTimerId);
+        VghLantern__Viewport3dControls__ClearTimerId  =  null;
+
+        if (!VghLantern__Viewport3dControls__ClearArmed) return;
+        VghLantern__Viewport3dControls__ClearArmed  =  false;
+        VghLantern__Viewport3dControls__RefreshClearButton();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Arm Clear All, or Clear on the Second Press
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dControls__ArmOrClear() {
+        if (VghLantern__Viewport3dControls__ClearArmed) {
+            VghLantern__Viewport3dControls__DisarmClear();
+            VghLantern__Viewport3dControls__Invoke('OnMeasureClear');
+            return;
+        }
+
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var waitMs        =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            VghLantern__Viewport3dControls__MeasureConfig('Menu'), 'ClearConfirmMs',
+            'Na__Measure3d__Config.json -> VghLantern__Measure3d__Config__Menu');
+
+        VghLantern__Viewport3dControls__ClearArmed  =  true;
+        VghLantern__Viewport3dControls__RefreshClearButton();
+        VghLantern__Viewport3dControls__ClearTimerId  =  setTimeout(VghLantern__Viewport3dControls__DisarmClear, waitMs);
     }
     // ------------------------------------------------------------
 
@@ -932,6 +1227,47 @@ const VghLantern__Viewport3d__Controls = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Highlight the Measure Tool That Is On ('' for none)
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3d__Controls__SetActiveMeasureTool(toolKey) {
+        VghLantern__Viewport3dControls__ActiveTool  =  toolKey || '';
+        VghLantern__Viewport3dControls__Highlight(ATTR_MEASURE_TOOL, VghLantern__Viewport3dControls__ActiveTool);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Highlight the Precision Dimensions Print At
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3d__Controls__SetActiveMeasurePrecision(precisionKey) {
+        VghLantern__Viewport3dControls__ActiveDecimal  =  precisionKey || '';
+        VghLantern__Viewport3dControls__Highlight(ATTR_PRECISION, VghLantern__Viewport3dControls__ActiveDecimal);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show the Dimensions Taken, Repainting the List in Place
+    // ------------------------------------------------------------
+    // revision is the tool's list revision. A report with the same revision is a
+    // frame of a live line, which changes nothing here, so the rows are left alone
+    // and never rebuilt under a cursor reaching for one.
+    function VghLantern__Viewport3d__Controls__SetMeasurements(rows, revision) {
+        if (revision === VghLantern__Viewport3dControls__MeasureRev) return;
+
+        VghLantern__Viewport3dControls__MeasureRev   =  revision;
+        VghLantern__Viewport3dControls__MeasureRows  =  Array.isArray(rows) ? rows : [];
+
+        var hostElement  =  VghLantern__Viewport3dControls__HostElement;
+        if (!hostElement) return;
+
+        var list  =  hostElement.querySelector('.' + CSS_MEASURE_LIST);
+        if (list) list.innerHTML  =  VghLantern__Viewport3dControls__BuildMeasureRows();
+
+        if (!VghLantern__Viewport3dControls__MeasureRows.length) VghLantern__Viewport3dControls__DisarmClear();
+        VghLantern__Viewport3dControls__RefreshClearButton();
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -946,7 +1282,10 @@ const VghLantern__Viewport3d__Controls = (function() {
         VghLantern__Viewport3d__Controls__SetActivePreset      : VghLantern__Viewport3d__Controls__SetActivePreset,
         VghLantern__Viewport3d__Controls__SetActiveDisplayMode : VghLantern__Viewport3d__Controls__SetActiveDisplayMode,
         VghLantern__Viewport3d__Controls__SetActiveElementView : VghLantern__Viewport3d__Controls__SetActiveElementView,
-        VghLantern__Viewport3d__Controls__SetActiveSectionMode : VghLantern__Viewport3d__Controls__SetActiveSectionMode
+        VghLantern__Viewport3d__Controls__SetActiveSectionMode : VghLantern__Viewport3d__Controls__SetActiveSectionMode,
+        VghLantern__Viewport3d__Controls__SetActiveMeasureTool : VghLantern__Viewport3d__Controls__SetActiveMeasureTool,
+        VghLantern__Viewport3d__Controls__SetActiveMeasurePrecision : VghLantern__Viewport3d__Controls__SetActiveMeasurePrecision,
+        VghLantern__Viewport3d__Controls__SetMeasurements      : VghLantern__Viewport3d__Controls__SetMeasurements
     };
 
 // endregion -------------------------------------------------------------------

@@ -16,8 +16,8 @@
             "PageOrder"                 : ["welcomeLetter", "projectSummary", "perLantern", "generalDrawingTerms", "terms"],
             "PageOrderNote"             : "Enabled pages are emitted in this order. 'perLantern' is not a page: it is the point in the pack where the schedule is walked, emitting PerLanternOrder once for every lantern on the project. Everything before it describes the job as a whole, everything after it applies to the whole pack. The terms are last because they are read last and referred back to; they are one flowing page descriptor however many sheets they run to, because they are one continuously numbered document.",
 
-            "PerLanternOrder"           : ["lanternDrawing", "lanternDrawingTerms", "lanternSpecification", "lanternCuttingList"],
-            "PerLanternOrderNote"       : "Repeated once per lantern, in schedule order, so a four-lantern pack reads as four complete sets rather than four drawings followed by four schedules. The drawing leads because it is what the client looks at; its own drawing notes follow it so a caveat about that drawing is read against it; the specification comes next because its T codes are marked on the plan view two pages earlier; the cutting list closes the set because it is the workshop's own sheet and is read off the specification above it. A lantern with no drawing notes of its own simply omits that page - the page exists because it has content, so there is no switch for it to fall out of step with.",
+            "PerLanternOrder"           : ["lanternDrawing", "lanternDrawingTerms", "lanternSpecification", "lanternCuttingList", "lanternGlazingSchedule"],
+            "PerLanternOrderNote"       : "Repeated once per lantern, in schedule order, so a four-lantern pack reads as four complete sets rather than four drawings followed by four schedules. The drawing leads because it is what the client looks at; its own drawing notes follow it so a caveat about that drawing is read against it; the specification comes next because its T codes are marked on the plan view two pages earlier; the cutting list follows because it is the workshop's own sheet and is read off the specification above it; the glazing schedule closes the set because it is the glazing department's sheet, cut from the same lantern. A lantern with no drawing notes of its own simply omits that page - the page exists because it has content, so there is no switch for it to fall out of step with.",
 
             "PageKindLabels": {
                 "welcomeLetter"        : "Welcome Letter",
@@ -26,6 +26,7 @@
                 "lanternDrawingTerms"  : "Drawing Notes",
                 "lanternSpecification" : "Specification",
                 "lanternCuttingList"   : "Cutting List",
+                "lanternGlazingSchedule": "Roof Glazing Panel Units",
                 "generalDrawingTerms"  : "General Drawing Terms",
                 "terms"                : "Terms and Conditions"
             },
@@ -40,6 +41,7 @@
             "DefaultShowTakeoffSchedule"  : true,
             "DefaultShowComponentSchedule": true,
             "DefaultShowCuttingList"      : true,
+            "DefaultShowGlazingSchedule"  : true,
             "DefaultShowJobNotes"         : true,
             "DefaultShowDrawingTermsPages": true,
             "DefaultShowTermsPages"       : true,
@@ -49,12 +51,13 @@
             "TermsToggleNote"             : "ShowTermsPages is the page-level switch and is a per-user preference like every other key in this block. Which SECTIONS the terms document contains is NOT here - that is document content, so it lives on the project file and is edited by both the Client Doc tab and the Terms group in this mode's toolbar. One value, two surfaces, nothing to drift.",
             "DrawingNotesToggleNote"      : "ShowDrawingNotes governs the per-lantern Drawing Notes pages as a set. Switching it off drops all of them; it does not decide whether any given lantern has one, which is answered by whether that lantern has notes written against it.",
             "CuttingListToggleNote"       : "ShowCuttingList is a page-level switch of its own rather than a member of DocumentSections, because the cutting list is a workshop sheet rather than a schedule the client reads. A pack going out to a customer is the specification without it; a pack going to the joinery shop is both. It gets its own switch precisely so that decision can be made per pack.",
+            "GlazingScheduleToggleNote"   : "ShowGlazingSchedule is a page-level switch of its own, like the cutting list, because the glazing schedule (the coded plan and the panel cut drawings) is the glazing department's sheet rather than something a client reads. Off, no lantern's schedule is cut or drawn for the pack at all; on, each lantern's is built as its page is drawn, reusing what the Specification tab already built for an unchanged lantern.",
             "ToggleGrouping": {
-                "Document"              : ["ShowWelcomeLetter", "ShowProjectSummary", "ShowDrawingSheet", "ShowDrawingNotes", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowCuttingList", "ShowJobNotes", "ShowDrawingTermsPages", "ShowTermsPages"],
+                "Document"              : ["ShowWelcomeLetter", "ShowProjectSummary", "ShowDrawingSheet", "ShowDrawingNotes", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowCuttingList", "ShowGlazingSchedule", "ShowJobNotes", "ShowDrawingTermsPages", "ShowTermsPages"],
                 "DrawingViews"          : ["ShowDrawingSheet"],
                 "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
             },
-            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the project summary when ShowProjectSummary is on, a lantern's drawing when ShowDrawingSheet is on, its drawing notes when ShowDrawingNotes is on AND that lantern has notes, its cutting list when ShowCuttingList is on, the general drawing terms when ShowDrawingTermsPages is on, the business terms when ShowTermsPages is on, and a lantern's specification when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
+            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the project summary when ShowProjectSummary is on, a lantern's drawing when ShowDrawingSheet is on, its drawing notes when ShowDrawingNotes is on AND that lantern has notes, its cutting list when ShowCuttingList is on, its glazing schedule when ShowGlazingSchedule is on, the general drawing terms when ShowDrawingTermsPages is on, the business terms when ShowTermsPages is on, and a lantern's specification when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
         },
 
         "VghLantern__DocPreview__Config__Toolbar": {
@@ -78,6 +81,7 @@
                 "ShowTakeoffSchedule"   : "Takeoff Schedule",
                 "ShowComponentSchedule" : "Component Schedule",
                 "ShowCuttingList"       : "Cutting List",
+                "ShowGlazingSchedule"   : "Roof Glazing Panel Units",
                 "ShowJobNotes"          : "Job Notes",
                 "ShowDrawingTermsPages" : "General Drawing Terms",
                 "ShowTermsPages"        : "Terms Pages"
@@ -148,7 +152,9 @@
             "TermsUnreviewedNote"       : "A warning, not an error, so a quotation can still be issued while the wording is being settled. It is raised whenever ReviewNoticeEnabled is true in Na__Terms__Config.json, so switching the closing notice off switches this warning off with it - one flag, never two things to remember.",
             "LetterEmptyMessage"        : "The welcome letter has no paragraphs, so it will not be included.",
             "LetterUnsignedMessage"     : "The welcome letter has no name against the sign-off.",
-            "UnresolvedTokenMessage"    : "Document text refers to {tokens}, which this project has no value for. The reference will print as a blank."
+            "UnresolvedTokenMessage"    : "Document text refers to {tokens}, which this project has no value for. The reference will print as a blank.",
+            "GlazingBuildUpProvisionalMessage" : "The roof glazing panel units for {lanterns} print provisional typical glass build-ups (marked *) until Vale's glazing panel design confirms them.",
+            "GlazingBuildUpProvisionalMessageNote" : "A warning, raised only when the Roof Glazing Panel Units pages are in the pack and a lantern's glazing spec takes its thickness and cavity from a build-up marked Provisional in VghLantern__Glazing__Options__Config__BuildUps. Clearing the Provisional flag on the real build-ups clears this warning with it."
         }
     }
 }

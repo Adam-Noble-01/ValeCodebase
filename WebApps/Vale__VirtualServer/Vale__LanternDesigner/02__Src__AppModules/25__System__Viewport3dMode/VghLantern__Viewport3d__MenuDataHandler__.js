@@ -63,7 +63,8 @@ const VghLantern__Viewport3d__MenuDataHandler = (function() {
         'MenuSectionDisplayOpen',
         'MenuSectionCameraOpen',
         'MenuSectionCrossSectionOpen',
-        'MenuSectionLanternOpen'
+        'MenuSectionLanternOpen',
+        'MenuSectionMeasureOpen'
     ];
     // ------------------------------------------------------------
 

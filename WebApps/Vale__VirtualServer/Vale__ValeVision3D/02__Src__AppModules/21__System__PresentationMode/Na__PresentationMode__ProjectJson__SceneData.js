@@ -58,6 +58,13 @@
 //   (ported from TrueVision) for systems that change the scene set from
 //   outside the Presentation Scenes editor.
 //
+// 22-Oct-2026 - Version 1.3.0 (v2.76.4)
+// - ResolveThumbnailUrlPair puts the scene's PresentationMode__Scene__ThumbnailVersion
+//   on the URL as ?v=. A re-rendered thumbnail keeps its file name, so the
+//   4-hour browser cache went on showing the old picture, or a 404 it had
+//   cached before the file existed (Falla Scheme-02, Full Context). The
+//   thumbnail renderer's ApplyToScene writes the version with every upload.
+//
 // =============================================================================
 
 
@@ -106,6 +113,7 @@
     const Na__PresentationMode__THUMBNAIL_EXT     = '.webp';                                        // <-- Primary thumbnail extension
     const Na__PresentationMode__IMAGE_EXT         = '.png';                                         // <-- Full resolution scene image extension
     const Na__PresentationMode__SLOT_PATTERN      = /^(IMG\d{2,3}(?:_ART\d{2})?)/i;                 // <-- Scene slot token at the head of a filename
+    const Na__PresentationMode__THUMB_VERSION_KEY = 'PresentationMode__Scene__ThumbnailVersion';    // <-- Upload time (ms) of the scene's current thumbnail, absent on older records
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -396,19 +404,35 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Put the Scene's Thumbnail Version on a URL (?v=)
+    // ------------------------------------------------------------
+    // A re-render keeps the file name, so without this the browser serves
+    // what it cached before - the old picture, or a 404 from before the
+    // file existed - for up to four hours. Records without a version (the
+    // SketchUp IMG## thumbnails, anything older) pass through unchanged.
+    // ------------------------------------------------------------
+    function na_with_thumbnail_version(url, scene) {
+        const version = Number(scene && scene[Na__PresentationMode__THUMB_VERSION_KEY]);
+        if (!url || !Number.isFinite(version) || version <= 0) return url;
+        return url + (url.indexOf('?') === -1 ? '?' : '&') + 'v=' + Math.round(version);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Resolve Thumbnail URL Pair
     // ------------------------------------------------------------
     // Returns { primary, fallback } - the same URL twice now there is one
     // store: the project's Content__AnimationScenes__Thumbnails folder on the
     // server (Na__AppUtils__ResolveAssetUrl). The pair shape is kept for the
-    // carousel's callers.
+    // carousel's callers. Both carry the thumbnail's version (?v=).
     // ------------------------------------------------------------
     function Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair(scene, projectCode) {
         const rawUrl = scene && scene.PresentationMode__Scene__ThumbnailUrl;
         if (!rawUrl) return null;
 
         if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('/')) {
-            return { primary: rawUrl, fallback: rawUrl };                    // <-- Already absolute, pass through
+            const absolute = na_with_thumbnail_version(rawUrl, scene);
+            return { primary: absolute, fallback: absolute };                // <-- Already absolute, pass through
         }
 
         const code = projectCode || Na__PresentationMode__ActiveProjectCode;
@@ -417,7 +441,12 @@
         const folderId = Na__AppUtils__NormalizeProjectFolderId(code);
         const fileName = na_resolve_current_thumbnail_filename(rawUrl);      // <-- Self-heal a filename left behind by an image re-sync
 
-        return Na__AppUtils__ResolveAssetUrl(folderId, fileName);            // <-- The project's scene thumbnails on the server
+        const pair = Na__AppUtils__ResolveAssetUrl(folderId, fileName);      // <-- The project's scene thumbnails on the server
+        if (!pair) return null;
+        return {
+            primary  : na_with_thumbnail_version(pair.primary, scene),
+            fallback : na_with_thumbnail_version(pair.fallback, scene)
+        };
     }
     // ------------------------------------------------------------
 

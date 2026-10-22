@@ -70,9 +70,10 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
 
     // MODULE CONSTANTS | Index Field Names
     // ------------------------------------------------------------
-    const KEY_META    =  'VghLantern__GlazeBarSystem__Meta';
-    const KEY_PARTS   =  'VghLantern__GlazeBarSystem__Parts';
-    const KEY_ENDCAP  =  'VghLantern__GlazeBarSystem__EndCapRelationship';
+    const KEY_META     =  'VghLantern__GlazeBarSystem__Meta';
+    const KEY_PARTS    =  'VghLantern__GlazeBarSystem__Parts';
+    const KEY_ENDCAP   =  'VghLantern__GlazeBarSystem__EndCapRelationship';
+    const KEY_GLAZING  =  'VghLantern__GlazeBarSystem__GlazingInterface';
     // ------------------------------------------------------------
 
 
@@ -358,6 +359,19 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | How the Glass Sits on the Bar (synchronous)
+    // ------------------------------------------------------------
+    // The bedding offset, the unit thickness, the 3mm edge clearance and the top
+    // pane's oversail, as the index declares them. Answered from the index so the
+    // glazing panel layout stays synchronous; it applies its own documented
+    // fallbacks to anything missing. Null before the index loads.
+    function VghLantern__GlazeBarSystemLoader__GlazingInterface() {
+        var index  =  VghLantern__GlazeBarSystemLoader__IndexData;
+        return (index && index[KEY_GLAZING]) ? index[KEY_GLAZING] : null;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Load the Decorative End Cap Component (memoised)
     // ------------------------------------------------------------
     // Returned as the raw asset document rather than as geometry: the cap is a
@@ -513,6 +527,7 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
         VghLantern__GlazeBarSystemLoader__DescribeParts         : VghLantern__GlazeBarSystemLoader__DescribeParts,
         VghLantern__GlazeBarSystemLoader__OverallWidthMm        : VghLantern__GlazeBarSystemLoader__OverallWidthMm,
         VghLantern__GlazeBarSystemLoader__EndCapRelationship    : VghLantern__GlazeBarSystemLoader__EndCapRelationship,
+        VghLantern__GlazeBarSystemLoader__GlazingInterface      : VghLantern__GlazeBarSystemLoader__GlazingInterface,
         VghLantern__GlazeBarSystemLoader__LoadEndCapAsset       : VghLantern__GlazeBarSystemLoader__LoadEndCapAsset,
         VghLantern__GlazeBarSystemLoader__PeekAsset             : VghLantern__GlazeBarSystemLoader__PeekAsset,
         VghLantern__GlazeBarSystemLoader__ResolveParts          : VghLantern__GlazeBarSystemLoader__ResolveParts

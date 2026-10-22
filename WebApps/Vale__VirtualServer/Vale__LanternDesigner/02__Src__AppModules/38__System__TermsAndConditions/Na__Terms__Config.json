@@ -12,7 +12,7 @@
             "ReviewNoticeHeading"       : "Note on the status of these terms",
             "ReviewNoticeText"          : "These terms and conditions have not yet been reviewed or approved by Vale Garden Houses' legal advisers. They are issued as a working draft to describe the intended basis of any order, and should not be relied upon as final contract wording. Approved terms will be issued before an order is confirmed.",
             "ReviewNoticeNote"          : "One notice at the end of the terms document, printed in the critical colour, replacing what used to be a per-clause marker on every clause. Forty-four red markers made the document unreadable and buried the point; one statement at the end makes it once, clearly. Set ReviewNoticeEnabled to false when the library has been approved - that is the whole switch, and it also stops the Preview and Send warning that accompanies it.",
-            "LibraryBasePath"           : "02__Src__AppModules/38__System__TermsAndConditions/Na__Terms__Library/",
+            "LibraryBasePath"           : "07__Data__TermsAndConditionsLibrary/",
             "LibraryBasePathNote"       : "Relative to the application root. The loader appends the SourceFile named on each section below."
         },
 
@@ -51,7 +51,7 @@
                 "Number"        : 3,
                 "Label"         : "General Terms and Legal Clarifications",
                 "Source"        : "library",
-                "SourceFile"    : "Na__Terms__01__GeneralAndLegal__.md",
+                "SourceFile"    : "VghLantern__Terms__01__GeneralAndLegal__.txt",
                 "IsCritical"    : false,
                 "DefaultEnabled": true,
                 "EmptyBehaviour": "warn"
@@ -61,7 +61,7 @@
                 "Number"        : 4,
                 "Label"         : "Payment Terms",
                 "Source"        : "library",
-                "SourceFile"    : "Na__Terms__02__Payment__.md",
+                "SourceFile"    : "VghLantern__Terms__02__Payment__.txt",
                 "IsCritical"    : false,
                 "DefaultEnabled": true,
                 "EmptyBehaviour": "warn"
@@ -71,7 +71,7 @@
                 "Number"        : 5,
                 "Label"         : "Access to Site Terms",
                 "Source"        : "library",
-                "SourceFile"    : "Na__Terms__03__SiteAccess__.md",
+                "SourceFile"    : "VghLantern__Terms__03__SiteAccess__.txt",
                 "IsCritical"    : false,
                 "DefaultEnabled": true,
                 "EmptyBehaviour": "warn"
@@ -81,7 +81,7 @@
                 "Number"        : 6,
                 "Label"         : "Builders Upstand Terms",
                 "Source"        : "library",
-                "SourceFile"    : "Na__Terms__04__BuildersUpstand__.md",
+                "SourceFile"    : "VghLantern__Terms__04__BuildersUpstand__.txt",
                 "IsCritical"    : false,
                 "DefaultEnabled": true,
                 "EmptyBehaviour": "warn"
@@ -112,7 +112,7 @@
                 "Number"        : 1,
                 "Label"         : "General Drawing Terms, Limitations and Omissions",
                 "Source"        : "library",
-                "SourceFile"    : "Na__Terms__11__GeneralDrawingTerms__.md",
+                "SourceFile"    : "VghLantern__Terms__11__GeneralDrawingTerms__.txt",
                 "IsCritical"    : false,
                 "DefaultEnabled": true,
                 "EmptyBehaviour": "warn"

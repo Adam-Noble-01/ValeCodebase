@@ -26,6 +26,7 @@
        SetDisplayMode(surface, key)     solid3d / both / setOut
        SetSectionMode(surface, key)     none / lateral / longitudinal
        AttachInspector(surface, cb)     hover and pin model inspection
+       AttachMeasure(surface, cb)       vertex and face measuring (the 3D View)
        Snapshot(surface, options)       PNG data URL for the drawing sheet
        Dispose(surface)                 release the WebGL context
 
@@ -118,6 +119,26 @@ import {
 
 import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__CrossSection__CapFactory__SeedResolution } from '../26__System__CrossSectionView/VghLantern__CrossSection__CapFactory__.mjs';
 
+import {
+    VghLantern__Measure3d__Attach,
+    VghLantern__Measure3d__Detach,
+    VghLantern__Measure3d__ListTools,
+    VghLantern__Measure3d__SetTool,
+    VghLantern__Measure3d__CurrentTool,
+    VghLantern__Measure3d__ListPrecisions,
+    VghLantern__Measure3d__SetPrecision,
+    VghLantern__Measure3d__CurrentPrecision,
+    VghLantern__Measure3d__ClearIcon,
+    VghLantern__Measure3d__ListMeasurements,
+    VghLantern__Measure3d__Select,
+    VghLantern__Measure3d__Delete,
+    VghLantern__Measure3d__Clear,
+    VghLantern__Measure3d__Undo,
+    VghLantern__Measure3d__OnModelRebuilt,
+    VghLantern__Measure3d__OnModelBuilt,
+    VghLantern__Measure3d__OnViewChanged
+} from '../28__System__MeasureTool3d/VghLantern__Measure3d__SystemLogic__.mjs';
+
 // =============================================================================
 // REGION | 3D Render Pipeline Module
 // =============================================================================
@@ -205,6 +226,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         if (!surface) return;
 
         VghLantern__Env3d__HoverInspector__Detach(surface);                   // <-- Listeners outlive the canvas otherwise
+        VghLantern__Measure3d__Detach(surface);                               // <-- And the measure tool's, and its overlay
         VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, null);
         VghLantern__Env3d__SceneManager__Destroy(surface);
 
@@ -265,6 +287,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // Any highlight in flight refers to meshes that are about to be disposed,
         // and any pinned target to a member index the rebuild may renumber.
         VghLantern__Env3d__HoverInspector__Clear(surface);
+        VghLantern__Measure3d__OnModelRebuilt(surface, lantern);              // <-- A point being placed refers to those meshes too; the dimensions go only if the lantern changed
         VghLantern__Env3d__SceneManager__ClearModelGroups(surface);
 
         // Held so the inspector can name what it picks without re-reading the
@@ -296,7 +319,10 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         const solidComponentsGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Components);
 
         // SOLID GEOMETRY | The finished model
-        VghLantern__Env3d__MeshBuilder__Glazing__Build(solidGlazingGroup, skeleton);
+        // The glass is cut into panels between the bars and hips, so it takes the
+        // bar set too (v0.9.0), and is awaited because the cut reads system indexes.
+        await VghLantern__Env3d__MeshBuilder__Glazing__Build(solidGlazingGroup, skeleton, barSet, lantern);
+        if (surface.IsDestroyed) return;
         VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(solidFrameGroup, skeleton, lantern);
 
         // The Vale base frame: head beam, eaves extrusion and lead flashing
@@ -376,6 +402,10 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // recomputed against the geometry that replaced it. An uncut surface
         // returns immediately and pays nothing.
         VghLantern__CrossSection__Refresh(surface);
+
+        // Every part is in: the measure tool drops any mesh list a hover pass took
+        // part way through the build, which awaits its parts one by one.
+        VghLantern__Measure3d__OnModelBuilt(surface);
 
         VghLantern__Env3d__SceneManager__Invalidate(surface);
     }
@@ -488,6 +518,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     export function VghLantern__Env3d__RenderPipeline__SetDisplayMode(surface, modeKey) {
         VghLantern__Env3d__DisplayMode__Apply(surface, modeKey);
         VghLantern__Env3d__HoverInspector__RevalidateTarget(surface);
+        VghLantern__Measure3d__OnViewChanged(surface);                        // <-- What can be measured is what is drawn
     }
     // ------------------------------------------------------------
 
@@ -516,6 +547,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     export function VghLantern__Env3d__RenderPipeline__SetElementView(surface, viewKey) {
         VghLantern__Env3d__ElementFilter__Apply(surface, viewKey);
         VghLantern__Env3d__HoverInspector__RevalidateTarget(surface);
+        VghLantern__Measure3d__OnViewChanged(surface);                        // <-- What can be measured is what is drawn
     }
     // ------------------------------------------------------------
 
@@ -647,6 +679,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     // set up in the 3D View never reaches the editor panel or a sheet viewport.
     export function VghLantern__Env3d__RenderPipeline__SetSectionMode(surface, modeKey) {
         VghLantern__CrossSection__Apply(surface, modeKey);
+        VghLantern__Measure3d__OnViewChanged(surface);                        // <-- A cut changes which faces can be measured
     }
     // ------------------------------------------------------------
 
@@ -726,6 +759,112 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     // ------------------------------------------------------------
     export function VghLantern__Env3d__RenderPipeline__HasInspector(surface) {
         return VghLantern__Env3d__HoverInspector__IsAttached(surface);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Measure Tool
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Attach the Measure Tool to a Surface
+    // ------------------------------------------------------------
+    // The 3D View's Vertex to Vertex and Face to Face (28__System__MeasureTool3d).
+    // onChanged receives a composed payload on every change:
+    //     { Tool, ToolLabel, ToolIcon, PrecisionKey, Instruction, IsFlash,
+    //       LiveText, LiveState, LiveAxisKey, CanUndo, ListRevision,
+    //       Rows : [{ Id, Number, Tool, AxisKey, AxisChip, ValueText, Between,
+    //                 Parts, IsSelected }], SelectedId }
+    // Returns false when the feature is switched off in config. Dimensions are
+    // drawn in a DOM layer over the canvas, never into the scene, so a sheet
+    // snapshot of this surface can never carry one.
+    export function VghLantern__Env3d__RenderPipeline__AttachMeasure(surface, onChanged) {
+        return VghLantern__Measure3d__Attach(surface, onChanged);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Measure Tools: [{ Key, Label, Icon, ... }]
+    // ------------------------------------------------------------
+    // Empty when the feature is switched off, which removes the Measure section
+    // from the 3D View menu rather than leaving inert buttons on screen.
+    export function VghLantern__Env3d__RenderPipeline__ListMeasureTools() {
+        return VghLantern__Measure3d__ListTools();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch a Measure Tool On, Change Tool, or Switch Off With ''
+    // ------------------------------------------------------------
+    // The hover inspector is suspended while a tool is on.
+    export function VghLantern__Env3d__RenderPipeline__SetMeasureTool(surface, toolKey) {
+        VghLantern__Measure3d__SetTool(surface, toolKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Measure Tool a Surface Has On ('' for none)
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__GetMeasureTool(surface) {
+        return VghLantern__Measure3d__CurrentTool(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Precision Choices: [{ Key, Label, Decimals }]
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ListMeasurePrecisions() {
+        return VghLantern__Measure3d__ListPrecisions();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set and Read the Precision Dimensions Print At
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__SetMeasurePrecision(surface, precisionKey) {
+        VghLantern__Measure3d__SetPrecision(surface, precisionKey);
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__GetMeasurePrecision(surface) {
+        return VghLantern__Measure3d__CurrentPrecision(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Clear All Icon's Address
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__MeasureClearIcon() {
+        return VghLantern__Measure3d__ClearIcon();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Dimensions Taken on a Surface, as Plain Rows
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ListMeasurements(surface) {
+        return VghLantern__Measure3d__ListMeasurements(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Select, Delete, Clear and Undo Dimensions
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__SelectMeasurement(surface, measureId) {
+        VghLantern__Measure3d__Select(surface, measureId);
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__DeleteMeasurement(surface, measureId) {
+        VghLantern__Measure3d__Delete(surface, measureId);
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__ClearMeasurements(surface) {
+        VghLantern__Measure3d__Clear(surface);
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__UndoMeasurement(surface) {
+        VghLantern__Measure3d__Undo(surface);
     }
     // ------------------------------------------------------------
 

@@ -1,0 +1,291 @@
+/* =============================================================================
+ * VGHLANTERN - 3D MEASURE TOOL STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Measure3d__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : 3D Measure Tool
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The dimensions, guides and snap markers drawn over the 3D View
+ * CREATED    : 21-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Colours only. The overlay (VghLantern__Measure3d__Overlay__.mjs) writes every
+ *   stroke width and text size itself in screen pixels, from
+ *   Na__Measure3d__Config.json; a width set here would win over those, so none is.
+ * - SketchUp's axis colours, one class each (Ink--x red, Ink--y green, Ink--z
+ *   blue, Ink--square magenta, Ink--free purple), set as `color` so every part
+ *   of a dimension strokes in currentColor and one class colours it all.
+ * - TrueVision's measure look: values in Vale blue with a white edge, white grips,
+ *   a red delete chip, the AutoCAD glyph in the snap purple with a faint tint
+ *   inside a closed one, the dark name tag.
+ * - The menu's Measure section and the bar are Viewport3d's and are styled in
+ *   VghLantern__Viewport3d__Styles__Main__.css.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | The Overlay Over the Canvas, and the Cursor
+ * ----------------------------------------------------------------------------- */
+
+    /* OVERLAY | One SVG Over the 3D View Canvas */
+    /* ------------------------------------------------------------ */
+    /* Sized to the canvas host, so its pixels are the canvas's CSS pixels. It
+       takes no input: the canvas under it keeps every click and orbit, and the
+       tool hit-tests the labels it reports. */
+    .VghLantern__Measure3d__Overlay {
+        position                           : absolute;
+        top                                : 0;
+        left                               : 0;
+        z-index                            : 2;
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : visible;
+        font-family                        : var(--Vale_FontFamily);
+        pointer-events                     : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CURSOR | Crosshair While a Tool Is On, a Hand Over a Dimension's Value */
+    /* ------------------------------------------------------------ */
+    /* Paired with the live host class so it outranks the grab and grabbing hands
+       the 3D host wears the rest of the time. */
+    .VghLantern__Env3d__Host--active.VghLantern__Measure3d__Host--measuring,
+    .VghLantern__Env3d__Host--active.VghLantern__Measure3d__Host--measuring:active {
+        cursor                             : crosshair;
+    }
+
+    .VghLantern__Env3d__Host--active.VghLantern__Measure3d__Host--overLabel {
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COLOUR | The Axes, Square to Face and Free
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Measure3d__Ink--x {
+        color                              : var(--VghLantern_MeasureAxisRed);
+    }
+
+    .VghLantern__Measure3d__Ink--y {
+        color                              : var(--VghLantern_MeasureAxisGreen);
+    }
+
+    .VghLantern__Measure3d__Ink--z {
+        color                              : var(--VghLantern_MeasureAxisBlue);
+    }
+
+    .VghLantern__Measure3d__Ink--square {
+        color                              : var(--VghLantern_MeasureSquare);
+    }
+
+    .VghLantern__Measure3d__Ink--free {
+        color                              : var(--VghLantern_MeasureFree);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Dimensions, Guides and Labels
+ * ----------------------------------------------------------------------------- */
+
+    /* GUIDE | The Axes Through the First Point */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__Guide {
+        fill                               : none;
+        stroke                             : currentColor;
+        opacity                            : 0.7;
+    }
+
+    .VghLantern__Measure3d__Guide--snapped {
+        opacity                            : 0.95;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LINE | A Dimension, With a White Casing So It Reads Over the Metal */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__LineCasing {
+        fill                               : none;
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-linecap                     : round;
+        opacity                            : 0.85;
+    }
+
+    .VghLantern__Measure3d__Line,
+    .VghLantern__Measure3d__Tick {
+        fill                               : none;
+        stroke                             : currentColor;
+        stroke-linecap                     : round;
+        stroke-linejoin                    : round;
+    }
+
+    .VghLantern__Measure3d__Dot {
+        fill                               : currentColor;
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-width                       : 1;
+    }
+
+    .VghLantern__Measure3d__Witness {
+        fill                               : none;
+        stroke                             : currentColor;
+        opacity                            : 0.6;
+    }
+
+    .VghLantern__Measure3d__Grip {
+        fill                               : var(--Vale_BackgroundWhite);
+        stroke                             : var(--VghLantern_MeasureInk);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | The Value Along Its Line */
+    /* ------------------------------------------------------------ */
+    /* The white edge sits under the letters (paint-order), so a value reads over
+       any line or face behind it. */
+    .VghLantern__Measure3d__Label {
+        fill                               : var(--VghLantern_MeasureInk);
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-linejoin                    : round;
+        paint-order                        : stroke;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-anchor                        : middle;
+        dominant-baseline                  : central;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .VghLantern__Measure3d__Label--live {
+        font-weight                        : 700;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHIP | Delete the Selected Dimension */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__Chip circle {
+        fill                               : var(--Vale_BackgroundWhite);
+        stroke                             : var(--VghLantern_MeasureDelete);
+    }
+
+    .VghLantern__Measure3d__Chip path {
+        fill                               : none;
+        stroke                             : var(--VghLantern_MeasureDelete);
+        stroke-linecap                     : round;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Snap Markers
+ * ----------------------------------------------------------------------------- */
+
+    /* RETICLE | Polycam's Ring Lying in the Face Under the Cursor */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__ReticleFill {
+        fill                               : var(--Vale_BackgroundWhite);
+        fill-opacity                       : 0.22;
+        stroke                             : none;
+    }
+
+    .VghLantern__Measure3d__ReticleCasing,
+    .VghLantern__Measure3d__ReticleAxisCasing {
+        fill                               : none;
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-linecap                     : round;
+        opacity                            : 0.9;
+    }
+
+    .VghLantern__Measure3d__ReticleRing {
+        fill                               : none;
+        stroke                             : var(--VghLantern_MeasureFree);
+    }
+
+    .VghLantern__Measure3d__ReticleAxis {
+        fill                               : none;
+        stroke                             : currentColor;
+        stroke-linecap                     : round;
+    }
+
+    .VghLantern__Measure3d__ReticleDot {
+        fill                               : var(--VghLantern_MeasureFree);
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-width                       : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GLYPH | AutoCAD's Endpoint Box, TrueVision's Casing and Ink */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__Snap {
+        color                              : var(--VghLantern_MeasureFree);
+    }
+
+    .VghLantern__Measure3d__GlyphCasing {
+        fill                               : none;
+        stroke                             : var(--Vale_BackgroundWhite);
+        stroke-linejoin                    : round;
+        stroke-linecap                     : round;
+    }
+
+    .VghLantern__Measure3d__GlyphTint {
+        fill                               : none;
+        stroke                             : none;
+    }
+
+    .VghLantern__Measure3d__Glyph--end  .VghLantern__Measure3d__GlyphTint,
+    .VghLantern__Measure3d__Glyph--mid  .VghLantern__Measure3d__GlyphTint,
+    .VghLantern__Measure3d__Glyph--cen  .VghLantern__Measure3d__GlyphTint,
+    .VghLantern__Measure3d__Glyph--near .VghLantern__Measure3d__GlyphTint {
+        fill                               : currentColor;
+        fill-opacity                       : 0.18;
+    }
+
+    .VghLantern__Measure3d__GlyphInk {
+        fill                               : none;
+        stroke                             : currentColor;
+        stroke-linejoin                    : round;
+        stroke-linecap                     : round;
+    }
+
+    .VghLantern__Measure3d__GlyphFill {
+        fill                               : currentColor;
+        stroke                             : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TAG | The Part's Name Beside the Marker */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Measure3d__Name rect {
+        fill                               : rgba(23, 43, 58, 0.9);
+    }
+
+    .VghLantern__Measure3d__Name text {
+        fill                               : var(--Vale_TextLight);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        dominant-baseline                  : central;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * PRINT | A Reviewer's Dimensions Are Theirs to See, Not to Print
+ * ----------------------------------------------------------------------------- */
+
+    @media print {
+        .VghLantern__Measure3d__Overlay {
+            display                        : none !important;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

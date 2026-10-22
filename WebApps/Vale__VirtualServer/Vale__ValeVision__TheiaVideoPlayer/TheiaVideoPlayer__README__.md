@@ -10,6 +10,7 @@ never watch Vale's work through Google Drive, Dropbox or YouTube compression.
 |---|---|---|
 | **Staff** (Employee and up, the shared Vale sign-in) | `/theia/?project=<library id>[&video=<id>][&t=<seconds>]` | the player and the project's videos, breadcrumbs back to ValeVision Gallery, Share (staff and client links) |
 | **Managers and App Admins** | the same | also Edit (title, description; kept in step with ValeVision 3D), order and hide, the below-2K and missing-file flags |
+| **App Admins** | the same | also **Create email HTML…** (account menu, Developer tools): the client delivery email, below |
 | **Clients** (no account) | `/theia/?project=<library id>&share=<token>` | the player and the shared videos only: no gallery, no sign-in, no editing; a guest bubble at the top right (the shared sign-in's guest state: who shared it, when the link ends, copy a link to this video) |
 | Staff, no project | `/theia/` | the projects that have videos |
 
@@ -51,6 +52,26 @@ AppData__VideoData\PROJECTNUMBER__PROJECTNAME__VideoAppData__.json.--example`.
   It appears as a video of its own, titled from its file name; the first time a manager edits it, it is written into
   the data file. Files that differ only by a `__2160p__` / `__1440p__` token are one video: the largest plays.
 - **Titles and descriptions** are kept in step with the ValeVision 3D path both ways: the newer edit wins.
+- **The project's name** is the one ValeVision Gallery shows: its Display Name Alias (Gallery, Project Editor,
+  Advanced), else its Project Name. Theia has no name of its own for a project; rename it in the Gallery.
+
+## The Client Delivery Email (App Admins)
+
+Account menu → Developer tools → **Create email HTML…** (with a project open). Fill in who it is to ("Mr and Mrs
+Holt"), pick the client link and add any special notes, then **Generate & download email**.
+
+- **The link:** a new client link by default (never expires, labelled "<addressee> - Email <date>" in Share), or
+  one of the project's active client links. A link ending within 30 days is flagged, and the email gives its end
+  date. Always the production address, so make emails to send on app.valegardenhouses.com: a link made on a local
+  copy exists only on that PC.
+- **The email:** ValeVision 3D's card, with the Vale pavilion mark and "ValeVision / By Vale Garden Houses", Project
+  Code / Project Name, "Dear …", the invitation, the special notes, a View Your Project Videos button. No closing
+  line: your own close and signature follow. The mark is a PNG in the shared assets
+  (`Logo__ValeGardenHouses\Logo__ValeGardenHouses__PavilionMark__Navy__EmailLogo__.png`), so it shows only once the
+  `commonassets` mapping is pushed.
+- **Into Outlook:** Open the email (or the downloaded file), Ctrl+A, Ctrl+C, paste into a new email; the dialog
+  gives the subject line to copy. Never drag the file into Outlook: it attaches instead.
+- The template is `02__Src__AppModules\25__Feature__ClientEmail\Na__ClientEmail__Template__.html`.
 
 ## Quality and Playback
 

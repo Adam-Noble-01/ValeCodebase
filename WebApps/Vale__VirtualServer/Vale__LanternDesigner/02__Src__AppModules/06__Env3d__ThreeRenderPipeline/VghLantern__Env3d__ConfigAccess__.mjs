@@ -53,6 +53,9 @@
         Lighting      : { AmbientIntensity : 0.62, KeyLightIntensity : 1.05, FillLightIntensity : 0.38 },
         // Materials are deliberately absent: they moved to Na__PbrMaterials__Config.json
         // and MaterialLibrary reads that file directly rather than through here.
+        // GlazingInnerFaceOffsetMm and GlazingThicknessMm are read only if the glazing
+        // panel layout is not loaded: since v0.9.0 the glass build-up lives in the
+        // glaze bar system index and reaches the glazing builder on the panel set.
         MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55, GlazingInnerFaceOffsetMm : 8, GlazingThicknessMm : 28 },
         Snapshot      : { DefaultWidthPx : 2000, DefaultHeightPx : 1400, SupersampleFactor : 2 },
         SetOut        : { Enabled : true, DefaultDisplayMode : 'solid3d', CheckToleranceMm : 0.5, DepthTest : false, RenderOrder : 20 }

@@ -18,6 +18,8 @@
    - Attaches the Env3d hover inspector and feeds its payloads to
      Viewport3d__InspectorPanel, so hovering a member names it, counts its
      siblings and shades the rest of the model back.
+   - Attaches the 3D measure tool (28__System__MeasureTool3d) and feeds its
+     reports to the menu's Measure section and to Viewport3d__MeasureBar.
    - Rebuilds the model whenever geometry is re-solved, and resizes the drawing
      buffer whenever the mode is entered or the window changes size.
    - Classic script; it waits for the ESM bootstrap to publish the pipeline rather
@@ -175,6 +177,39 @@ const VghLantern__Viewport3d__Layout = (function() {
                 var StateManager  =  window.VghLantern__AppCore__StateManager;
                 if (!StateManager || typeof lanternIndex !== 'number' || isNaN(lanternIndex)) return;
                 StateManager.VghLantern__StateManager__SetCurrentLanternIndex(lanternIndex); // <-- Solve and redraw follow from the state event
+            },
+
+            OnMeasureTool: function(toolKey) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface || !pipeline.VghLantern__Env3d__RenderPipeline__SetMeasureTool) return;
+
+                var current  =  pipeline.VghLantern__Env3d__RenderPipeline__GetMeasureTool(VghLantern__Viewport3dLayout__Surface);
+                pipeline.VghLantern__Env3d__RenderPipeline__SetMeasureTool(
+                    VghLantern__Viewport3dLayout__Surface, current === toolKey ? '' : toolKey);   // <-- A second press switches the tool off
+            },
+
+            OnMeasurePrecision: function(precisionKey) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface || !pipeline.VghLantern__Env3d__RenderPipeline__SetMeasurePrecision) return;
+                pipeline.VghLantern__Env3d__RenderPipeline__SetMeasurePrecision(VghLantern__Viewport3dLayout__Surface, precisionKey);
+            },
+
+            OnMeasureSelect: function(measureId) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface || !pipeline.VghLantern__Env3d__RenderPipeline__SelectMeasurement) return;
+                pipeline.VghLantern__Env3d__RenderPipeline__SelectMeasurement(VghLantern__Viewport3dLayout__Surface, measureId);
+            },
+
+            OnMeasureDelete: function(measureId) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface || !pipeline.VghLantern__Env3d__RenderPipeline__DeleteMeasurement) return;
+                pipeline.VghLantern__Env3d__RenderPipeline__DeleteMeasurement(VghLantern__Viewport3dLayout__Surface, measureId);
+            },
+
+            OnMeasureClear: function() {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface || !pipeline.VghLantern__Env3d__RenderPipeline__ClearMeasurements) return;
+                pipeline.VghLantern__Env3d__RenderPipeline__ClearMeasurements(VghLantern__Viewport3dLayout__Surface);
             }
         };
     }
@@ -242,6 +277,77 @@ const VghLantern__Viewport3d__Layout = (function() {
         if (!Legend || !container) return;
 
         Legend.VghLantern__Viewport3d__SetOutLegend__Render(container);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Hand the Measure Tool's Report to the Menu and the Bar
+    // ------------------------------------------------------------
+    // The tool owns what is measured; the menu's highlights, its list and the bar
+    // are all derived from its report, so none of them can disagree with the
+    // dimensions on screen.
+    function VghLantern__Viewport3dLayout__OnMeasureChanged(payload) {
+        var Controls  =  window.VghLantern__Viewport3d__Controls;
+        var Bar       =  window.VghLantern__Viewport3d__MeasureBar;
+        if (!payload) return;
+
+        if (Bar) Bar.VghLantern__Viewport3d__MeasureBar__Show(payload);
+        if (!Controls) return;
+
+        Controls.VghLantern__Viewport3d__Controls__SetActiveMeasureTool(payload.Tool);
+        Controls.VghLantern__Viewport3d__Controls__SetActiveMeasurePrecision(payload.PrecisionKey);
+        Controls.VghLantern__Viewport3d__Controls__SetMeasurements(payload.Rows, payload.ListRevision);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Attach the Measure Tool and Its Bar
+    // ------------------------------------------------------------
+    // Idempotent, like the inspector's: this mode renders on every entry. Two
+    // gates, both honoured: the pipeline decides whether the feature exists
+    // (Na__Measure3d__Config.json), this mode whether it wants it (ShowMeasureTools).
+    function VghLantern__Viewport3dLayout__AttachMeasure() {
+        var pipeline   =  window.VghLantern__Env3d__RenderPipeline;
+        var Bar        =  window.VghLantern__Viewport3d__MeasureBar;
+        var container  =  document.getElementById(DOM_CONTAINER);
+
+        if (!pipeline || !container || !VghLantern__Viewport3dLayout__Surface) return;
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__AttachMeasure) return;
+        if (VghLantern__Viewport3dLayout__ModeConfig().ShowMeasureTools === false) return;
+
+        if (Bar) {
+            Bar.VghLantern__Viewport3d__MeasureBar__Render(container, {
+                OnUndo : function() {
+                    var livePipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                    if (livePipeline && VghLantern__Viewport3dLayout__Surface) {
+                        livePipeline.VghLantern__Env3d__RenderPipeline__UndoMeasurement(VghLantern__Viewport3dLayout__Surface);
+                    }
+                },
+                OnDone : function() {
+                    var livePipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                    if (livePipeline && VghLantern__Viewport3dLayout__Surface) {
+                        livePipeline.VghLantern__Env3d__RenderPipeline__SetMeasureTool(VghLantern__Viewport3dLayout__Surface, '');
+                    }
+                }
+            });
+        }
+
+        pipeline.VghLantern__Env3d__RenderPipeline__AttachMeasure(
+            VghLantern__Viewport3dLayout__Surface, VghLantern__Viewport3dLayout__OnMeasureChanged);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Switch the Measure Tool Off, Keeping the Dimensions
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dLayout__StopMeasuring() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Bar       =  window.VghLantern__Viewport3d__MeasureBar;
+
+        if (pipeline && pipeline.VghLantern__Env3d__RenderPipeline__SetMeasureTool && VghLantern__Viewport3dLayout__Surface) {
+            pipeline.VghLantern__Env3d__RenderPipeline__SetMeasureTool(VghLantern__Viewport3dLayout__Surface, '');
+        }
+        if (Bar) Bar.VghLantern__Viewport3d__MeasureBar__Hide();
     }
     // ------------------------------------------------------------
 
@@ -401,6 +507,7 @@ const VghLantern__Viewport3d__Layout = (function() {
         }
 
         VghLantern__Viewport3dLayout__AttachInspector();                      // <-- Before the first draw, so the model is pickable as soon as it lands
+        VghLantern__Viewport3dLayout__AttachMeasure();
         VghLantern__Viewport3dLayout__AttachSetOutLegend();
         VghLantern__Viewport3dLayout__Subscribe();
         await VghLantern__Viewport3d__Layout__Redraw();
@@ -471,6 +578,7 @@ const VghLantern__Viewport3d__Layout = (function() {
             VghLantern__Viewport3d__Layout__Resize();
             VghLantern__Viewport3dLayout__RenderOverlay();
             VghLantern__Viewport3dLayout__AttachInspector();                  // <-- Idempotent, and covers a first mount that raced the config load
+            VghLantern__Viewport3dLayout__AttachMeasure();
             VghLantern__Viewport3dLayout__AttachSetOutLegend();
             await VghLantern__Viewport3d__Layout__Redraw();
             return;
@@ -527,6 +635,9 @@ const VghLantern__Viewport3d__Layout = (function() {
         if (window.VghLantern__Viewport3d__SetOutLegend) {
             window.VghLantern__Viewport3d__SetOutLegend.VghLantern__Viewport3d__SetOutLegend__Dispose();
         }
+        if (window.VghLantern__Viewport3d__MeasureBar) {
+            window.VghLantern__Viewport3d__MeasureBar.VghLantern__Viewport3d__MeasureBar__Dispose();
+        }
 
         VghLantern__Viewport3dLayout__Surface  =  null;
     }
@@ -539,10 +650,13 @@ const VghLantern__Viewport3d__Layout = (function() {
     // returning to this mode instant. The inspector is released either way: this
     // surface is the one the Drawing Editor prefers for its sheet 3D views, and a
     // member left pinned in accent blue must not follow the user onto a drawing.
+    // The measure tool is switched off with it (its dimensions are kept for the
+    // return): a crosshair and a suspended inspector belong to this tab alone.
     function VghLantern__Viewport3d__Layout__OnModeExit() {
         var modeConfig  =  VghLantern__Viewport3dLayout__ModeConfig();
 
         var ConfigLoaderForDispose  =  window.VghLantern__AppCore__ConfigLoader;
+        VghLantern__Viewport3dLayout__StopMeasuring();                        // <-- First, so the inspector it resumes is then cleared
         VghLantern__Viewport3dLayout__ClearInspector();
         if (ConfigLoaderForDispose.VghLantern__ConfigLoader__RequireBoolean(
                 modeConfig, 'DisposeOnModeExit',

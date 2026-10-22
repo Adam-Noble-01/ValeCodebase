@@ -117,7 +117,7 @@ document engine with a content library.
 02__Src__AppModules/
   37__System__ClientDocumentMode/          <-- the tab: editors, letter model, letter output
   38__System__TermsAndConditions/          <-- the engine: markdown library, numbering, output
-    Na__Terms__Library/                    <-- the editable markdown docs
+    07__Data__TermsAndConditionsLibrary/                    <-- the editable markdown docs
 ```
 
 `37` and `38` sit between `35__System__SpecificationMode` and `40__System__DocumentPreviewMode`,
@@ -142,10 +142,10 @@ which matches both the nav order and the document order.
 | File | Purpose |
 |---|---|
 | `Na__Terms__Config.json` | The section table (key, fixed number, label, source file, default enabled), the numbering format, the QR block copy and URL, and terms typography. |
-| `Na__Terms__Library/Na__Terms__01__GeneralAndLegal__.md` | Standard section 3 content. |
-| `Na__Terms__Library/Na__Terms__02__Payment__.md` | Standard section 4 content. |
-| `Na__Terms__Library/Na__Terms__03__SiteAccess__.md` | Standard section 5 content. |
-| `Na__Terms__Library/Na__Terms__04__BuildersUpstand__.md` | Standard section 6 content. |
+| `07__Data__TermsAndConditionsLibrary/VghLantern__Terms__01__GeneralAndLegal__.txt` | Standard section 3 content. |
+| `07__Data__TermsAndConditionsLibrary/VghLantern__Terms__02__Payment__.txt` | Standard section 4 content. |
+| `07__Data__TermsAndConditionsLibrary/VghLantern__Terms__03__SiteAccess__.txt` | Standard section 5 content. |
+| `07__Data__TermsAndConditionsLibrary/VghLantern__Terms__04__BuildersUpstand__.txt` | Standard section 6 content. |
 | `VghLantern__Terms__MarkdownLoader__.js` | Fetches and caches each `.md` once per session, parses it into term records, reports a load failure rather than silently issuing an incomplete document. |
 | `VghLantern__Terms__DocumentModel__.js` | **The numbering authority.** Assembles the full ordered, numbered, toggled terms document from config sections, the markdown library and the project's critical / special terms. |
 | `VghLantern__Terms__ScreenRenderer__.js` | Print-faithful terms HTML for the editor preview and Preview & Send. |
@@ -284,10 +284,10 @@ config section table.
 "Sections": [
   { "Key": "critical", "Number": 1, "Label": "Critical Project Terms",   "Source": "project:critical", "IsCritical": true },
   { "Key": "special",  "Number": 2, "Label": "Special Project Terms",    "Source": "project:special" },
-  { "Key": "general",  "Number": 3, "Label": "General Terms and Legal",  "Source": "library:Na__Terms__01__GeneralAndLegal__.md" },
-  { "Key": "payment",  "Number": 4, "Label": "Payment Terms",            "Source": "library:Na__Terms__02__Payment__.md" },
-  { "Key": "access",   "Number": 5, "Label": "Access to Site Terms",     "Source": "library:Na__Terms__03__SiteAccess__.md" },
-  { "Key": "upstand",  "Number": 6, "Label": "Builders Upstand Terms",   "Source": "library:Na__Terms__04__BuildersUpstand__.md" }
+  { "Key": "general",  "Number": 3, "Label": "General Terms and Legal",  "Source": "library:VghLantern__Terms__01__GeneralAndLegal__.txt" },
+  { "Key": "payment",  "Number": 4, "Label": "Payment Terms",            "Source": "library:VghLantern__Terms__02__Payment__.txt" },
+  { "Key": "access",   "Number": 5, "Label": "Access to Site Terms",     "Source": "library:VghLantern__Terms__03__SiteAccess__.txt" },
+  { "Key": "upstand",  "Number": 6, "Label": "Builders Upstand Terms",   "Source": "library:VghLantern__Terms__04__BuildersUpstand__.txt" }
 ],
 "NumberFormat"      : "{section}.{term}",
 "TermNumberPadding" : 2
@@ -477,11 +477,11 @@ after `SyncFromServer()` has populated the cache:
   VghLantern__Terms__QrLink__.js
   VghLantern__Terms__Styles__Main__.css
 
-02__Src__AppModules/38__System__TermsAndConditions/Na__Terms__Library/
-  Na__Terms__01__GeneralAndLegal__.md
-  Na__Terms__02__Payment__.md
-  Na__Terms__03__SiteAccess__.md
-  Na__Terms__04__BuildersUpstand__.md
+07__Data__TermsAndConditionsLibrary/
+  VghLantern__Terms__01__GeneralAndLegal__.txt
+  VghLantern__Terms__02__Payment__.txt
+  VghLantern__Terms__03__SiteAccess__.txt
+  VghLantern__Terms__04__BuildersUpstand__.txt
 ```
 
 ### 5.2 Modified files (14)

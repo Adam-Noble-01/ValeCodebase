@@ -3,8 +3,8 @@
 
     "VghLantern__SketchUpExport__Config__Payload": {
         "SchemaName"         : "VghLantern__SketchUpExport__Payload",
-        "SchemaVersion"      : "1.1.0",
-        "SchemaVersionNote"  : "Bump the minor when a new part Kind or a new optional field is added; bump the major when an existing field changes meaning. The importer refuses a major it was not written against rather than building a wrong model quietly.",
+        "SchemaVersion"      : "1.2.0",
+        "SchemaVersionNote"  : "Bump the minor when a new part Kind or a new optional field is added; bump the major when an existing field changes meaning. The importer refuses a major it was not written against rather than building a wrong model quietly. 1.2.0 (20-Oct-2026, v0.9.0): the glazing assembly carries one prism per glazing panel plus a top pane oversail prism, with the panel code and sizes in new attributes; still prisms, so no importer change.",
         "Units"              : "mm",
         "CoordinateSpace"    : "Lantern model millimetres. Origin is the centre of the lantern footprint at builders upstand BASE level. +X is the width axis, +Y is the depth axis, +Z is vertically up. This is the SkeletonSolver convention unchanged, and it maps straight onto SketchUp's own Z-up axes with no swap.",
         "CoordinateDecimals" : 3,
@@ -145,6 +145,9 @@
         "GlazeBarTrim"       : "GlazeBarTrim__{SlopeKey}__{Index}",
         "GlazeBarEndCap"     : "GlazeBarEndCap__{SlopeKey}__{Index}",
         "Glazing"            : "GlazingUnit__{SlopeKey}",
+        "GlazingPanel"       : "GlazingUnit__{PanelCode}__{Side}__{Index}",
+        "GlazingPanelOversail" : "GlazingTopPane__{PanelCode}__{Side}__{Index}",
+        "GlazingPanelNote"   : "One group per glazing panel since v0.9.0, named by its RU code (Roof glazing Unit; GZ until 20-Oct-2026), the side of the roof it is on and its place across that slope from the left as seen from outside. The oversail is the top pane running on past the unit to the cap ends. Glazing (by SlopeKey) names the whole slope fallback.",
         "Cornice"            : "Cornice__{Side}",
         "CornicePacker"      : "CornicePacker__{Side}",
         "EavesTrim"          : "EavesTrim__{Side}",
@@ -166,7 +169,7 @@
         "FallbackBarDepthMm"     : 55,
         "GlazingInnerFaceOffsetMm" : 8,
         "GlazingThicknessMm"       : 28,
-        "GlazingNumbersNote"       : "Read from VghLantern__Env3d__Config__MeshBuilders when that block carries them, so the exported pane is the pane the viewport shows. These two are the documented mirror of the Env3d ConfigAccess fallbacks and are used only when the live block is silent on them, which today it is."
+        "GlazingNumbersNote"       : "Superseded in v0.9.0: the bedding offset and unit thickness now live in the glaze bar system index (VghLantern__GlazeBarSystem__GlazingInterface) and reach the export through the glazing panel layout's Meta. These two are read only if that layout module is not loaded, and remain the documented mirror of the Env3d ConfigAccess fallbacks for that case."
     },
 
     "VghLantern__SketchUpExport__Config__Menu": {

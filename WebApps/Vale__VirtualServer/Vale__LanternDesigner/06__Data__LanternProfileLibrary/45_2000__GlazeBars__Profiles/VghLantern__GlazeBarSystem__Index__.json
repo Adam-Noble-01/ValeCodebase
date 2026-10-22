@@ -33,6 +33,8 @@
       "SectionMinXMm": -19.5,
       "SectionMaxXMm": 19.5,
       "FileSizeBytes": 83100,
+      "WebHalfWidthAtGlassMm": 2.5,
+      "WebHalfWidthAtGlassNote": "Half the upright web of the core where it stands between two panes. The web runs x -2.5 to +2.5 from section y 5 (the top of the 39mm glazing leg) to 45.7, through the whole glass band (8 to 36). MEASURED from this asset's Plan2D__Top with the app's own SectionLoopBuilder on 20-Oct-2026, the way the extents above were; measure it again if the core is re-exported. The glazing panel layout stops every pane GlazingInterface EdgeClearanceMm off this web, so a pane edge sits 5.5mm off the bar centreline, under the cap.",
       "Note": "Always present. The structural extrusion every other part hangs off."
     },
     {
@@ -155,5 +157,18 @@
     "FinishSource": "cap",
     "PlacementNote": "One at the eaves end of every bar that HAS an eaves end. A bar running ridge to hip has none and takes no cap, which the layout already answers with EavesEnd null.",
     "RotationRestFrameNote": "At rest the asset's X runs down the bar towards the eaves, its Y runs across the bar, and its Z runs out through the roof square to the slope. So LocalX rolls it, LocalY tips it nose over tail, and LocalZ spins it flat on the roof plane."
+  },
+  "VghLantern__GlazeBarSystem__GlazingInterface": {
+    "Description": "How the glass sits on the bar, and the numbers every glazing panel is cut with. Read by VghLantern__Geometry__GlazingPanelLayout, which publishes them on its panel set so the 3D view, the projected drawings and the SketchUp export lift one glass by one set of numbers. Added 20-Oct-2026 (v0.9.0), when the glass was divided into panels between the bars and hips.",
+    "BeddingOffsetMm": 8,
+    "BeddingOffsetNote": "The unit's inner face above the glaze bar datum: the 5mm glazing leg of the core 45_2011 (section y 0 to 5) plus 3mm of setting tape. Lived in a JS fallback table in Env3d ConfigAccess and in the SketchUp export config until v0.9.0; both copies are now only read when this index cannot be.",
+    "UnitThicknessMm": 28,
+    "UnitThicknessNote": "The sealed unit modelled as one mass, measured outward from the bedding face: its outer face at 36mm above the datum, just under the cap skirts at 36.908 (the cap 45_2021's SectionMinYMm). Adam, 20-Oct-2026: 'for now we will morph with single masses like now'; the separate skins, spacer and edge seal come later.",
+    "EdgeClearanceMm": 3,
+    "EdgeClearanceNote": "Adam, 20-Oct-2026: 'use a 3mm each side tolerance so you have | Rafter | 3mm | Glazing | 3mm | Rafter |'. Measured from the upright web of the member the glass stops against (the glaze bar, hip and ridge cores, and the eaves extrusion upstand), along the glass and square to the panel edge. Adam chose the web over the outside of the cap: the glass beds on the core's glazing leg and is held under the cap.",
+    "OuterPaneOversails": true,
+    "OuterPaneOversailsNote": "The stepped eaves edge (Adam's section sketch, 20-Oct-2026: 'the top pane of glass oversails the eaves trim'). The unit at full thickness stops EdgeClearanceMm short of the eaves extrusion upstand (the base frame index's GlassStopAlongPitchMm); only the top pane runs on over it to the glaze bar cap ends. false stops the whole unit at the upstand.",
+    "OuterPaneThicknessMm": 6,
+    "OuterPaneThicknessNote": "PROVISIONAL. The oversailing top pane's thickness, agreed with Adam on 20-Oct-2026 as a stand-in until his glazing panel design diagram gives the real build-up. It is the top 6mm of the 28mm unit, so the lip sits 30 to 36mm above the datum, clear of the upstand fins at 25.365. Change it here; nothing else holds it."
   }
 }

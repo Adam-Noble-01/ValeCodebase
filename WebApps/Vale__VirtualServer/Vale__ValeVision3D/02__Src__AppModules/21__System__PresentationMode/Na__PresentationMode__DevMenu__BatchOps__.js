@@ -77,6 +77,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.1.1 (v2.76.4)
+// - Each thumbnail is written onto its scene through ApplyToScene, which adds
+//   its version, so a re-render is never hidden by the browser's cached copy.
+//   The capture itself now syncs the fog to each scene it is parked on (the
+//   thumbnail renderer 1.3.0), which is what whited out Falla's Patio View.
+//
 // 28-Sep-2026 - Version 1.1.0 (per-scene lighting, v2.71.0)
 // - Each scene is walked in its own lighting (the instant apply sets it), so
 //   thumbnails and exported images show it. The restore point records the
@@ -116,7 +122,10 @@
 
     // MODULE IMPORTS | Thumbnail Capture and Upload
     // ------------------------------------------------------------
-    import { Na__PresentationMode__Thumbnail__CaptureAndUpload } from './Na__PresentationMode__Thumbnail__Renderer.js';
+    import {
+        Na__PresentationMode__Thumbnail__CaptureAndUpload,
+        Na__PresentationMode__Thumbnail__ApplyToScene
+    } from './Na__PresentationMode__Thumbnail__Renderer.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Image Export Panel (its settings, its render, its save)
@@ -351,8 +360,7 @@
 
                 try {
                     const result = await Na__PresentationMode__Thumbnail__CaptureAndUpload(scene.PresentationMode__Scene__Id);
-                    if (result && result.ok) {
-                        scene.PresentationMode__Scene__ThumbnailUrl = result.relUrl; // <-- Caller commits the record
+                    if (Na__PresentationMode__Thumbnail__ApplyToScene(scene, result)) { // <-- Path and version; the caller commits the record
                         updated++;
                     } else {
                         failed++;

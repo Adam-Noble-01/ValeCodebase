@@ -29,6 +29,9 @@ DESCRIPTION:
   (*.lock never syncs).
 - Content__* files are served straight by nginx; Na__Library__Url gives their
   public URL.
+- ONE DISPLAY NAME. Na__Library__DisplayName is how every app names a project:
+  the Display Name Alias set in the Gallery's Project Editor (projectNameAlias),
+  else projectName, else the folder name. The Gallery and Theia both use it.
 - NEW PROJECTS (Na__Library__CreateProject) get every folder the schema project
   has (NA__LIBRARY__SCAFFOLD, from ValeProjects__2026/12345__ExampleProject__Schema),
   so ValeVision Cloud Sync, ValeVision 3D, the Gallery, Theia and Lantern Designer
@@ -41,6 +44,11 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+22-Oct-2026 - Version 1.3.0
+- Na__Library__DisplayName: one rule for a project's name on screen (the Gallery's
+  Display Name Alias, else projectName, else the folder name), so the Gallery and
+  Theia can never name a project differently.
+
 15-Oct-2026 - Version 1.2.0
 - New projects from an app (first used by Lantern Designer): NA__LIBRARY__SCAFFOLD,
   Na__Library__Scaffold, Na__Library__NewProjectId ("1236", "The Brussels House" ->
@@ -227,6 +235,14 @@ def Na__Library__ProjectDataPath(project_id: str) -> Path | None:
 def Na__Library__Year(folder: Path) -> str:
     m = NA__LIBRARY__YEAR_DIR.match(folder.parent.name)
     return m.group(1) if m else ""
+# ---------------------------------------------------------------
+
+# FUNCTION | A Project's Display Name: the Gallery's Display Name Alias, else its projectName, else its id
+# ------------------------------------------------------------
+def Na__Library__DisplayName(record: dict | None, project_id: str = "") -> str:
+    record = record or {}
+    return (str(record.get("projectNameAlias") or "").strip()                 # <-- Set in the Gallery's Project Editor
+            or str(record.get("projectName") or "").strip() or str(project_id or ""))
 # ---------------------------------------------------------------
 
 # FUNCTION | Every Project: [(id, folder Path)], newest year first

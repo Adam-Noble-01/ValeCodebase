@@ -231,6 +231,52 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Collect Issues Raised by the Glazing Schedule Pages
+    // ------------------------------------------------------------
+    // Only when the Glazing Schedule pages are in the pack, which makes this the
+    // pack's first call for each lantern's schedule; the pages drawn straight after
+    // reuse what it built. Lanterns still on a provisional typical build-up are named
+    // in one warning, and anything the panel cut left out is reported against the
+    // lantern it came from.
+    function VghLantern__DocIssue__CollectGlazingIssues(messages) {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var Schedule       =  window.VghLantern__Specification__GlazingSchedule;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
+        if (!DocumentState || !Schedule || !StateManager) return [];
+        if (!DocumentState.VghLantern__DocPreview__DocumentState__IncludesGlazingSchedule()) return [];
+
+        var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        var lanterns  =  (project && Array.isArray(project['VghLantern__ProjectFile__Lanterns']))
+            ? project['VghLantern__ProjectFile__Lanterns'] : [];
+
+        var issues       =  [];
+        var provisional  =  [];
+        var i, j, identity, title, schedule;
+
+        for (i = 0; i < lanterns.length; i++) {
+            identity  =  lanterns[i]['Lantern__Identity__Config'] || {};
+            title     =  identity['Lantern__Identity__Config__Title'] || ('Lantern ' + (i + 1));
+            schedule  =  Schedule.VghLantern__Specification__GlazingSchedule__ForLanternIndex(i);
+            if (!schedule) continue;
+
+            if (schedule.IsValid && schedule.IsProvisional) provisional.push(title);
+            for (j = 0; j < schedule.Warnings.length; j++) {
+                issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING, title + ': ' + schedule.Warnings[j]));
+            }
+        }
+
+        if (provisional.length) {
+            issues.unshift(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'GlazingBuildUpProvisionalMessage', ISSUES_LABEL)
+                    .replace('{lanterns}', provisional.join(', '))));
+        }
+
+        return issues;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Collect Issues Raised by the Welcome Letter
     // ------------------------------------------------------------
     // Only when the letter is actually being issued. A project whose letter has never
@@ -327,6 +373,7 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
                 .concat(VghLantern__DocIssue__CollectSelectionIssues(messages))
                 .concat(VghLantern__DocIssue__CollectDrawingIssues(messages))
                 .concat(VghLantern__DocIssue__CollectSpecificationIssues())
+                .concat(VghLantern__DocIssue__CollectGlazingIssues(messages))
                 .concat(VghLantern__DocIssue__CollectLetterIssues(messages))
                 .concat(VghLantern__DocIssue__CollectTermsIssues(messages));
         }

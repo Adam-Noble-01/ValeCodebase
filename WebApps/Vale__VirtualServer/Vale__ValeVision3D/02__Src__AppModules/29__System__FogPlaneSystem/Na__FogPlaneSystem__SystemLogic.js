@@ -17,6 +17,13 @@
 //   for the render loop in Na__AppFlow__LoadingSequence.js.
 // - Exposes a single Na__FogPlaneSystem__Initialize entry point.
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 22-Oct-2026 - Version 1.1.0 (thumbnails whited out by fog, v2.76.4)
+// - UpdatePerFrame applies the camera constraint before the shader uniforms,
+//   so a frame the constraint pushes back is fogged from where it was pushed to.
+//
 // =============================================================================
 
 
@@ -177,13 +184,16 @@
 // REGION | Per-Frame Update
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Per-Frame Fog System Update (Camera Uniforms + Constraint)
+    // FUNCTION | Per-Frame Fog System Update (Constraint + Camera Uniforms)
+    // ------------------------------------------------------------
+    // The constraint runs FIRST: it can push the camera back, and the shader
+    // must be handed the pose this frame is drawn from, not the one before.
     // ------------------------------------------------------------
     function Na__FogPlaneSystem__UpdatePerFrame(camera, controls) {
-        Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlane__SysFogPass, camera);
         if (Na__FogPlane__SysFogEnabled) {                                       // <-- Forcefield only while fog master is on
             Na__FogPlane__ApplyCameraConstraint(camera, controls);
         }
+        Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlane__SysFogPass, camera);
     }
     // ------------------------------------------------------------
 

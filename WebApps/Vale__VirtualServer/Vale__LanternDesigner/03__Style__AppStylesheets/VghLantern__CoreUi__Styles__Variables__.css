@@ -106,6 +106,15 @@
         --VghLantern_ThreeViewportBackdrop  : var(--VghLantern_ViewportBackdrop);      /* <-- Three.js canvas clear colour */
         --VghLantern_ThreeOverlayPanel      : var(--VghLantern_ViewportOverlayPanel);  /* <-- Floating 3D control overlay background */
 
+        /* 3D Environment - Measure Tool (SketchUp's axis colours, TrueVision's measure palette) */
+        --VghLantern_MeasureAxisRed         : #dc2626;                      /* <-- Red axis: model X (three.js X), TrueVision's shade of SketchUp red */
+        --VghLantern_MeasureAxisGreen       : #16a34a;                      /* <-- Green axis: model Y (three.js Z), TrueVision's shade of SketchUp green */
+        --VghLantern_MeasureAxisBlue        : #2563eb;                      /* <-- Blue axis: model Z up (three.js Y), the same weight of blue */
+        --VghLantern_MeasureSquare          : #db2777;                      /* <-- Square to the first face: SketchUp's perpendicular magenta */
+        --VghLantern_MeasureFree            : #9333ea;                      /* <-- A free line and the snap markers: TrueVision's snap purple */
+        --VghLantern_MeasureInk             : var(--Vale_PrimaryBrand);     /* <-- Dimension values, Vale blue with a white edge */
+        --VghLantern_MeasureDelete          : #c0392b;                      /* <-- The delete chip, and Clear All once armed */
+
         /* 2D Environment - Skeleton Construction Linework */
         --VghLantern_SvgSkeletonRidge       : #172b3a;                      /* <-- Ridge line stroke colour */
         --VghLantern_SvgSkeletonHip         : #2f4a5e;                      /* <-- Hip line stroke colour */

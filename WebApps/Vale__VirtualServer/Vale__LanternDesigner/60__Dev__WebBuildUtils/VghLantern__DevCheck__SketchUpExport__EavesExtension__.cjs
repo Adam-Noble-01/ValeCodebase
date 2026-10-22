@@ -187,6 +187,10 @@ Hip beam built at ${beamDepth} mm against the ${stdDepth} mm standard`
         `(datum ${beams[0].Attributes.DatumLengthMm.toFixed(1)} mm)`);
 
     // -- GLAZING -------------------------------------------------------------
+    // Called WITHOUT a bar set, so this exercises the whole slope fallback. Since
+    // v0.9.0 a real export cuts panels between the bars and hips; that path, and
+    // its top pane reaching the cap end level, is proved by
+    // VghLantern__DevCheck__GlazingPanels__.cjs.
     const panes = Encoders.VghLantern__SketchUpExport__Encoders__Glazing(skeleton);
     console.log('');
     check('every solved glazing face was exported',

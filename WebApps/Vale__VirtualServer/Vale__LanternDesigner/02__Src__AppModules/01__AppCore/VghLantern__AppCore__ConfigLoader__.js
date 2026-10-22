@@ -62,6 +62,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         { Label : 'Env2d',           Path : '02__Src__AppModules/05__Env2d__SvgRenderPipeline/Na__Env2d__Config.json' },
         { Label : 'Env3d',           Path : '02__Src__AppModules/06__Env3d__ThreeRenderPipeline/Na__Env3d__Config.json' },
         { Label : 'CrossSection',    Path : '02__Src__AppModules/26__System__CrossSectionView/Na__CrossSection__Config.json' },
+        { Label : 'Measure3d',       Path : '02__Src__AppModules/28__System__MeasureTool3d/Na__Measure3d__Config.json' },
         { Label : 'UserLogin',       Path : '02__Src__AppModules/08__System__UserLogin/Na__UserLogin__Config.json' },
         { Label : 'CreationWizard',  Path : '02__Src__AppModules/09__System__LaternCreationWizard/Na__CreationWizard__Config.json' },
         { Label : 'DocManagement',   Path : '02__Src__AppModules/10__System__DocumentManagementMode/Na__DocManagement__Config.json' },

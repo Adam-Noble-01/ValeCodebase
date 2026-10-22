@@ -92,7 +92,8 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
     const FALLBACK_EAVES_INTERFACE  =  {
         GlazeBarCoreExtensionAlongPitchMm  : 42.5,
         GlazeBarCapExtensionAlongPitchMm   : 170,
-        GlazeBarTrimPlumbCutInsetMm        : 18
+        GlazeBarTrimPlumbCutInsetMm        : 18,
+        GlassStopAlongPitchMm              : 42.875                          // <-- v0.9.0: the eaves extrusion upstand the glazing unit stops short of
     };
     // ------------------------------------------------------------
 

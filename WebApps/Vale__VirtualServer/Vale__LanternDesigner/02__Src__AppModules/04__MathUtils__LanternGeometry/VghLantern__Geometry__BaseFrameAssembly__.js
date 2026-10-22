@@ -66,6 +66,7 @@ const VghLantern__Geometry__BaseFrameAssembly = (function() {
     const FALLBACK_CORE_EXTENSION_MM    =  42.5;
     const FALLBACK_CAP_EXTENSION_MM     =  170;
     const FALLBACK_TRIM_PLUMB_INSET_MM  =  18;
+    const FALLBACK_GLASS_STOP_MM        =  42.875;                           // <-- The eaves extrusion upstand the glazing unit stops short of (v0.9.0)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -107,7 +108,8 @@ const VghLantern__Geometry__BaseFrameAssembly = (function() {
         return {
             GlazeBarCoreExtensionAlongPitchMm  : FALLBACK_CORE_EXTENSION_MM,
             GlazeBarCapExtensionAlongPitchMm   : FALLBACK_CAP_EXTENSION_MM,
-            GlazeBarTrimPlumbCutInsetMm        : FALLBACK_TRIM_PLUMB_INSET_MM
+            GlazeBarTrimPlumbCutInsetMm        : FALLBACK_TRIM_PLUMB_INSET_MM,
+            GlassStopAlongPitchMm              : FALLBACK_GLASS_STOP_MM
         };
     }
     // ------------------------------------------------------------

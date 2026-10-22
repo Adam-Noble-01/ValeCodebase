@@ -8,6 +8,14 @@
 // PURPOSE    : Build absolute ValeVision3D share URLs from ?project= state
 // CREATED    : Mar-2026
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 22-Oct-2026 - The production address (ValeVision3D v2.76.5)
+// - The link is always https://app.valegardenhouses.com/valevision/?project=<id>,
+//   never built from the page's own address: the URL only ever goes into an
+//   email, and an email sent from a localhost session mailed a localhost link.
+//
 // =============================================================================
 
 
@@ -24,15 +32,25 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Module Constants
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Production Address (NEVER relative, never window.location)
+    // ------------------------------------------------------------
+    const NA_SHARE_PROJECT_LINK__APP_URL = 'https://app.valegardenhouses.com/valevision/';   // <-- ValeVision 3D on the Vale app server
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Share URL Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build Share URL for Current App Origin and Path
+    // HELPER FUNCTION | Build the Share URL on the Production Address
     // ------------------------------------------------------------
     function Na__Feature__ShareProjectLink__BuildProjectUrl(rawProjectCode) {
-        const base = new URL(window.location.href);
-        base.search = '';
-        base.hash = '';
+        const base = new URL(NA_SHARE_PROJECT_LINK__APP_URL);
         const params = new URLSearchParams();
         params.set('project', rawProjectCode);
         base.search = params.toString();

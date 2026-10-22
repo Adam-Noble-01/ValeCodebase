@@ -105,6 +105,8 @@
       "SectionMaxYMm": 61.0,
       "StretchesWithTimberDepth": false,
       "ReslopesWithRoofPitch": false,
+      "WebHalfWidthAtGlassMm": 6.0,
+      "WebHalfWidthAtGlassNote": "Half the core's 12mm upright web, which runs x -6 to +6 from section y -40.5 to 58, below its 40mm top flange, through the whole glass band on both slopes. MEASURED from this asset's Plan2D__Top with the app's own SectionLoopBuilder on 20-Oct-2026; measure it again if the core is re-exported. The glazing panel layout stops the glass 3mm off it, measured along the glass; the slopes meet the hip section on the skew (the backing angle, 15.70 degrees at a 22.5 degree pitch), which lands the glass edge 6.98mm off the hip line there.",
       "Note": "The structural spine. Welded to the eaves extrusion at its foot, to the ridge core at its head, and to every jack rafter core along its length."
     },
     {

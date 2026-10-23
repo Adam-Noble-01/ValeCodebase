@@ -3544,8 +3544,16 @@
           "color": "na-shift-color-emerald"
         },
         {
+          "id": "new-1792739421030",
+          "date": "2026-10-22",
+          "startTime": "08:15",
+          "endTime": "12:30",
+          "title": "MaxModel__Fella - Scheme-02",
+          "color": "na-shift-color-amber"
+        },
+        {
           "id": "new-1792483307139",
-          "date": "2026-10-20",
+          "date": "2026-10-21",
           "startTime": "09:15",
           "endTime": "10:00",
           "title": "Whitecard |  Hazelton",
@@ -3553,7 +3561,7 @@
         },
         {
           "id": "new-1792579777747",
-          "date": "2026-10-20",
+          "date": "2026-10-21",
           "startTime": "12:00",
           "endTime": "16:30",
           "title": "MaxModel__Fella",
@@ -3561,11 +3569,27 @@
         },
         {
           "id": "new-1792654939160",
-          "date": "2026-10-20",
+          "date": "2026-10-21",
           "startTime": "16:30",
           "endTime": "17:30",
           "title": "Assets |  Plants",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1792751797164",
+          "date": "2026-10-23",
+          "startTime": "11:45",
+          "endTime": "12:15",
+          "title": "Whitecard |  Graf",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1792755614617",
+          "date": "2026-10-23",
+          "startTime": "12:45",
+          "endTime": "14:45",
+          "title": "Whitecard |  Graf",
+          "color": "na-shift-color-purple"
         }
       ]
     }

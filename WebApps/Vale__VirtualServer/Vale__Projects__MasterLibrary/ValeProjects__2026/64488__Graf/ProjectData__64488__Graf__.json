@@ -1,0 +1,150 @@
+{
+    "projectName": "Graf",
+    "projectCode": "64488",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Rachael",
+        "designer": "Tom",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "23-Oct-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__23-Oct-2026.png",
+        "IMG02__3dView__AlternativeView____WhitecardImage__23-Oct-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "valeVision_ModelUrls": [
+        "Graf__01__OrbitHelperCube__MeshModel__.glb",
+        "Graf__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Graf__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Graf__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Graf__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Graf__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Graf__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "Graf__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "Graf__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__23-Oct-2026.png",
+        "IMG02__3dView__AlternativeView____WhitecardImage__23-Oct-2026.png"
+    ],
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__23-Oct-2026.png",
+        "IMG02__3dView__AlternativeView____WhitecardImage__23-Oct-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__23-Oct-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "23-Oct-2026 at 15:58",
+        "model_name": "Graf__WhiteCardModel__0.3.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Shot 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -4805.5136,
+                        "y": -23637.8111,
+                        "z": 4040.0315
+                    },
+                    "target": {
+                        "x": 10014.042,
+                        "y": 13678.0803,
+                        "z": 3296.5644
+                    },
+                    "up": {
+                        "x": 0.006833,
+                        "y": 0.017206,
+                        "z": 0.999829
+                    },
+                    "direction": {
+                        "x": 0.369033,
+                        "y": 0.929232,
+                        "z": -0.018514
+                    },
+                    "fov_degrees": 24.616,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG02__3dView__AlternativeView__",
+                "scene_description": "Shot 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 34017.367,
+                        "y": -20021.5462,
+                        "z": 3000.0
+                    },
+                    "target": {
+                        "x": 12455.6503,
+                        "y": 13853.0902,
+                        "z": 2500.8896
+                    },
+                    "up": {
+                        "x": -0.006674,
+                        "y": 0.010485,
+                        "z": 0.999923
+                    },
+                    "direction": {
+                        "x": -0.536925,
+                        "y": 0.843538,
+                        "z": -0.012429
+                    },
+                    "fov_degrees": 24.616,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            }
+        ]
+    }
+}

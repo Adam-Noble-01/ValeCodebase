@@ -13,7 +13,10 @@
 #
 # DESCRIPTION:
 # - READ: GET api/projects/<id>/videos answers each audience (theia_core.audience_for)
-#   with only what it may see. A share link's view is counted once per visit.
+#   with only what it may see. A share link's view is counted once per visit, and
+#   the read sets the cookie that lets this browser play the link's video files
+#   (vale_theia_files, on the project's Theia folder in the library; a dead link
+#   clears it). nginx asks api/library-access before it sends one.
 # - TWO-WAY WITH VALEVISION 3D:
 #     Theia -> 3D  a title or description saved here is also written into the path
 #                  in the project record's VideoStudio__Config (Na__Theia__UpdateVv3dVideo).
@@ -39,6 +42,11 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.2.0
+# - The library gate: a client link's videos read sets vale_theia_files on the
+#   project's Theia folder (a dead link clears it), the cookie nginx's
+#   api/library-access reads before it sends a video file.
+#
 # 22-Oct-2026 - Version 1.1.0
 # - PATCH api/projects/<id>/library removed: it gave a project a Theia-only title
 #   that overrode the Gallery's Display Name Alias. Nothing called it.
@@ -251,16 +259,20 @@ def project_videos(pid):
         if token and request.args.get('view') == '1':                         # <-- Someone opened a dead link: who, and from where
             theia_core.activity('link.open-refused', 'Opened a client link that has expired or been switched off', folder,
                                 link=token[:64], ok=False)
+        if token:
+            theia_core.set_files_cookie(error[0], folder, None)                # <-- A dead link plays no file either
         return error
     only_ids = None
     if share:
-        only_ids = [str(i) for i in (share.get('TheiaShare__Link__VideoIds') or []) if i] or None
+        only_ids = theia_core.share_video_ids(share)
         if request.args.get('view') == '1':
             theia_core.note_share_view(folder, share.get('TheiaShare__Link__Token'))
             theia_core.activity('link.open', 'Opened the Theia web viewer from a client link', folder,
                                 target=share.get('TheiaShare__Link__Label') or '', link=share.get('TheiaShare__Link__Token') or '')
     response = jsonify(library_answer(folder, audience, user, share, only_ids))
     response.headers['Cache-Control'] = 'no-store'
+    if share:
+        theia_core.set_files_cookie(response, folder, share.get('TheiaShare__Link__Token'))   # <-- The video files nginx sends: this link's only
     return response
 
 

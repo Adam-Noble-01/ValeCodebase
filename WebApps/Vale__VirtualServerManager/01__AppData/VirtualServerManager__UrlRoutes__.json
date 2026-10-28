@@ -12,6 +12,12 @@
             "ExampleQuery": "project=64135",
             "Api": true,
             "ApiPort": 8002,
+            "LibraryProtected": [
+                "ProjectData__*.json",
+                "ValeVision3D/Content__3dModel__GlbFiles/",
+                "ValeVision3D/Content__3dModel__AppGenerated/",
+                "ValeVision3D/Content__SitePlanData/"
+            ],
             "Note": "ValeVision 3D (URL from the email to Shane)"
         },
         {
@@ -72,6 +78,12 @@
             "ExampleQuery": "",
             "Api": true,
             "ApiPort": 8005,
+            "LibraryProtected": [
+                "ValeVision__TheiaVideo/Content__VideoFiles/"
+            ],
+            "LibraryHidden": [
+                "ValeVision__TheiaVideo/AppData__VideoData/"
+            ],
             "Note": "ValeVision Theia video player (API vale@ValeVision__TheiaVideoPlayer on 8005)"
         },
         {

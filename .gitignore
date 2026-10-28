@@ -252,3 +252,6 @@ WebApps/Vale__VirtualServer/Vale__Projects__MasterLibrary/**/LanternDesigner/
 # Lock files the Vale API library writer keeps beside the documents it writes (.<document>.lock,
 # .ProjectCreate.lock). Never synced either (the Server Manager's NeverSync has *.lock).
 WebApps/Vale__VirtualServer/**/.*.lock
+WebApps/ValeSpec/Na__ValeSpecServer__Startup.log
+WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
+WebApps/ValePlanner/02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json

@@ -204,6 +204,7 @@
                 <option value="ledger">Activity ledger</option>
                 <option value="links">Generated links</option>
                 <option value="people">People and devices</option>
+                <option value="insights">Insights</option>
             </select>
             <select id="Vsm__ActDays" class="Vsm__Select" title="Period">
                 <option value="1">Today</option>
@@ -225,6 +226,10 @@
                 <option value="email">Email</option>
                 <option value="download">Downloads</option>
                 <option value="tool">Tools, reports, prints</option>
+                <option value="export">Image exports</option>
+                <option value="setting">Camera, layers, settings</option>
+                <option value="guide">Help and the tour</option>
+                <option value="visit">Visit summaries</option>
                 <option value="refused">Refused</option>
             </select>
             <label class="Vsm__Check" title="The same thing by the same person within 10 minutes: one row"><input type="checkbox" id="Vsm__ActGroup" checked> Group repeats</label>
@@ -242,8 +247,10 @@
         <div id="Vsm__ActErrors" class="Vsm__UrlErrors"></div>
         <div class="Vsm__ExplorerBody is-users">
             <div class="Vsm__UserTableWrap"><table id="Vsm__ActTable" class="Vsm__UserTable"></table></div>
+            <div id="Vsm__ActInsights" class="Vsm__Ins" hidden></div>
             <aside id="Vsm__ActDetail" class="Vsm__Detail"><span class="Vsm__Muted">Loading&hellip;</span></aside>
         </div>
+        <div id="Vsm__ActInsTip" class="Vsm__InsTip" role="tooltip" hidden></div>
     </section>
 
     <div id="Vsm__Modal" class="Vsm__Modal" hidden>

@@ -122,7 +122,7 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 60 | - | `60__Feature__FullScreenMode` | - | VV-reserved | VV-only `60__Feature__FullScreenMode` (twin of TV `76__System__FullscreenMode`, DR-44 keeps VV's); reserved for VV |
 | 61 | - | `61__Feature__ShareProjectLink` | `61__Feature__PwaAppHelpers` | VV-reserved | VV-only `61__Feature__ShareProjectLink` (Vale client project links; not TV's document sharing LE/66, DR-43); reserved for VV. WCP's 61__Feature__PwaAppHelpers is ValeVision Gallery's own namespace (see section 2.3) |
 | 62 | `62__Feature__AppInstallability` | `62__Feature__EmailWorkers` | `62__Feature__AppInstallability` | VV-reserved | VV `62__Feature__EmailWorkers` keeps 62 - a NOMINAL COLLISION, recorded: TV's and WCP's 62 is `62__Feature__AppInstallability`, which VV never ports (VV runs under WCP's PWA; K2 TF-T46). Moves to 92 only if Adam asks, after its tracked node_modules are removed (FR-22, W6-03; DR-03 default "62 unchanged"). WCP's 62 is the PWA ValeVision runs under (section 2.3) |
-| 63 | - | `63__Feature__AppNotificationEmail` | - | VV-reserved | VV-only `63__Feature__AppNotificationEmail`; reserved for VV. Q-63 (D86): TV's UNMERGED branch `claude/westfarm-intro-notes-37b804` (commit `4db73420`, 22-Sep-2026; not in `b2aa9151` and not in TV HEAD on 01-Oct-2026) adds `63__System__LocalFileParity`. Nothing moves while it is unmerged. If it merges as 63 first, VV's folder moves to 93 with W6-03 (Q-63 (b)) and this row records it; recommended to Adam instead: rename the branch folder to a TV-growth number such as 65 before it merges (Q-63 (a)) |
+| 63 | - | `63__Feature__AppNotificationEmail` | - | VV-reserved | VV-only `63__Feature__AppNotificationEmail`; reserved for VV. Q-63 (D86): TV's UNMERGED branch `claude/westfarm-intro-notes-37b804` (commit `4db73420`, 22-Sep-2026; not in `b2aa9151` and not in TV HEAD on 01-Oct-2026) adds `63__System__LocalFileParity`. Nothing moves while it is unmerged. If it merges as 63 first, VV's folder moves to 94 with W6-03 (Q-63 (b); 93 until `93__Feature__ClientLinks` took it in v2.77.0) and this row records it; recommended to Adam instead: rename the branch folder to a TV-growth number such as 65 before it merges (Q-63 (a)) |
 | 64 | - | `64__Feature__BreadcrumbNav` | - | VV-reserved | VV-only `64__Feature__BreadcrumbNav`; reserved for VV |
 | 65 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 66 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
@@ -152,15 +152,15 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 90 | - | - | - | burnt | Burnt: TV's retired `90__System__PageLayoutSystem` (TrueVision3D v2.155.0, TV devlog :1287 at `b2aa9151`). Never reused by either app |
 | 91 | - | `91__System__2dElevationsView` | - | legacy | VV legacy `91__System__2dElevationsView` (the Tools-menu Elevation View), moved here from 40 by W0-02 on 01-Oct-2026 (FR-01; DR-03 (a)) so TV's 40 DrawingViewCore could take 40. Retires with W6-03 (FR-25), then BURNT. 91 was never used by TV (K2 section 8 proof) |
 | 92 | - | - | - | VV-reserved | VV band, reserved (empty): earmarked for `92__Feature__EmailWorkers` if Adam asks for the 62 move (FR-22, W6-03). Never used by TV (K2 section 8 proof) |
-| 93 | - | - | - | VV-reserved | VV band, free: the lowest free number for the next VV-only top-level folder (K2 N3). Earmarked for `93__Feature__AppNotificationEmail` only if Q-63 (b) applies (see 63) |
-| 94 | - | - | - | VV-reserved | VV band, free (future VV-only folders take the lowest free number in 93-99) |
+| 93 | - | `93__Feature__ClientLinks` | - | VV-reserved | VV-only `93__Feature__ClientLinks` (client links: the External Client Sharing tab, the client's view and its first-launch tour; v2.77.0, 28-Oct-2026). Was free and earmarked for `93__Feature__AppNotificationEmail` only if Q-63 (b) applied: that earmark moves to 94 |
+| 94 | - | - | - | VV-reserved | VV band, free: the lowest free number for the next VV-only top-level folder (K2 N3). Earmarked for `94__Feature__AppNotificationEmail` only if Q-63 (b) applies (see 63; was 93 until v2.77.0) |
 | 95 | - | - | - | VV-reserved | VV band, free (future VV-only folders). Not to be confused with the app-root `95__SketchUpSisterTools__ToolsAndUtils/` (outside 02__Src__AppModules) |
 | 96 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 97 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 98 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 99 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 
-Totals: shared 34, TV-only 44, VV-reserved 18, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 37 now, ValeVision Gallery 14.
+Totals: shared 34, TV-only 44, VV-reserved 18, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 38 now (93 added in v2.77.0), ValeVision Gallery 14.
 
 ### 2.2 The bands at a glance
 
@@ -170,7 +170,7 @@ Totals: shared 34, TV-only 44, VV-reserved 18, legacy 2, burnt 1 (99 numbers). T
 | Shared, landing with its port | 27 (menu renderer only, W4-11), 47, 48, 49, 52, 53, 54, 55, 80 (VV facade body) |
 | TrueVision folders ValeVision never ports | 75, 76; 62 (TrueVision's and ValeVision Gallery's AppInstallability - see 62) |
 | TrueVision growth | 08, 09, 12-14, 16-19 (Q-REG (a)), 22-24, 32-34, 36-39, 56-59, 65-68, 72-74, 77-79, 81-89 |
-| ValeVision-reserved | 28, 29, 31, 60, 61, 62 (nominal collision kept), 63, 64, 69, 71; the band 92-99 (92 earmarked, 93-99 free) |
+| ValeVision-reserved | 28, 29, 31, 60, 61, 62 (nominal collision kept), 63, 64, 69, 71; the band 92-99 (92 earmarked, 93 ClientLinks, 94-99 free) |
 | ValeVision legacy, burnt once retired | 35, 91 |
 | Burnt | 90 |
 

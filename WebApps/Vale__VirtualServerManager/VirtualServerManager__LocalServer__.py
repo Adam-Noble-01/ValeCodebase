@@ -30,6 +30,15 @@ DESCRIPTION:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+28-Oct-2026 - Version 0.14.0
+- The library gate (the engine): an app route's LibraryProtected / LibraryHidden lists in the routes
+  file become nginx auth_request locations; tab 03 shows them. No route of this server changed; the
+  version moves with Vsm.PageVersion.
+
+28-Oct-2026 - Version 0.13.0
+- Tab 05 Insights (page) and ValeVision 3D's client links in its payload (the engine). No route
+  changed; the version moves with Vsm.PageVersion.
+
 13-Oct-2026 - Version 0.12.0
 - Page only: tab 05 Hide my actions. No server change; the version moves with Vsm.PageVersion.
 
@@ -112,7 +121,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.12.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.14.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root

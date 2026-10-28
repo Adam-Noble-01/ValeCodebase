@@ -7,7 +7,8 @@ whitecard model, steps through its saved scenes, and (for app admins) authors fl
 and Layout Editor sheets from it.
 
 - **Live:** `https://app.valegardenhouses.com/valevision/?project=<library id>` (e.g. `64135__Washington`; a bare
-  job number and the old `2026/<folder>` also open it).
+  job number and the old `2026/<folder>` also open it). Since v2.77.0 that plain link is a **staff link** (Vale
+  sign-in). A client is sent a **client link**: `...?project=<library id>&share=<token>`.
 - **Code:** `WebApps/Vale__VirtualServer/Vale__ValeVision3D` (this folder), pushed to `/srv/vale/Vale__ValeVision3D`
   by the Vale Virtual Server Manager. Moved here from `WebApps/ValeVision3D` on 06-Oct-2026 (v2.72.0).
 
@@ -28,15 +29,43 @@ One server, one origin, one store (since v2.72.0). Nothing comes from GitHub Pag
 | Spelling dictionary, custom scrapbook | `50__UserData__SpellCheckDictionary/`, `51__UserData__LayoutEditorScrapbook/` in this folder (user data) |
 | Sign-in | the shared Vale sign-in (`/AppAssets__CommonApplicationAssets/Shared__UserLogin/`, `api/accounts/*`), users register `Server__UserAccountData` |
 | Videos for clients | the Video Studio's **Publish to Theia** (since v2.73.0): one MP4 per path, at its own export settings, uploaded into ValeVision Theia (`/theia/`, `Vale__ValeVision__TheiaVideoPlayer`) while it renders; the path keeps its title, description and publish stamp in `VideoStudio__Config`, in step with Theia both ways |
+| Client links (since v2.77.0) | `<project>/ValeVision3D/UserData__ShareLinks/<id>__ValeVision3DShareLinks__.json` (user data, git-ignored), made and read through `api/projects/<id>/shares` and `.../client-link` (`ValeVision3D__Api__ClientLinks__.py`); the page side is `02__Src__AppModules/93__Feature__ClientLinks/` |
 
-**Who can do what.** Anyone with a project link can view it (clients have no account). Staff sign in with their
-Vale email address and password (top right); the initials bubble's menu holds their options. **App admins**
-(permission level AppAdmin: Adam, Shane) also get the Dev Tools menu, every save and the Layout Editor's editing
-(`Na__AppUtils__DevGate__`); the API checks the level again on every write. *Client view on / off* in the bubble
-menu (or `?authoring=off|on`) lets an admin see exactly what a client sees.
+**Who can do what (since v2.77.0, as Theia).**
+
+| Who | Address | What they get |
+|---|---|---|
+| **Staff** (any Vale account) | `/valevision/?project=<id>` (a staff link) | the sign-in first, then the viewer; Employee and up get Share Project Link (Internal and External tabs) |
+| **App admins** (AppAdmin: Adam, Shane) | the same | also the Dev Tools menu, every save and the Layout Editor's editing (`Na__AppUtils__DevGate__`) |
+| **Clients** (no account) | `/valevision/?project=<id>&share=<token>` (a client link) | the model, the scene carousel and Tools & Settings with Camera Settings, Export Image, Toggle Model Layers, Enter Full Screen and App Settings only; a guest bubble; a first-launch tour |
+
+- A client link is made on **Share Project Link > External Client Sharing** (Theia's client link panel: who it is
+  for, an expiry, Copy, Switch off, how often it was opened) or with the **client email** on the same tab. Employee
+  and up make links and switch off their own; Management and App Admins switch off anyone's.
+- **Client emails are sent from the app (v2.79.0):** the Client email panel sends the email straight to the client
+  (up to 10 addresses) after the send check: what goes where, a checklist, a tick box that unlocks Send, then "Email
+  sent to ...". The server (`ValeVision3D__Api__Email__.py`) lets an address outside Vale have only the client email
+  with a live client link; the sender is CC'd and the admin blind-copied. Each sender may send 10 client emails an
+  hour (Management and App Admins 20) and 30 internal ones. Guide: `62__Feature__EmailWorkers/` README.
+- **The API decides** (`ValeVision3D__Api__ClientLinks__.py`, one guard before every request): a read needs a Vale
+  sign-in or a live client link for that project; every write needs a sign-in at its route's level. A client link
+  never authors, whoever is signed in on the device (`Na__DevGate__IsClientLink`), and never loads the Layout Editor.
+- **The model files and the record (the library gate, 28-Oct-2026):** nginx sends a project's `ProjectData__<id>__.json`
+  and its `ValeVision3D/Content__3dModel__GlbFiles/`, `Content__3dModel__AppGenerated/` and `Content__SitePlanData/`
+  only after asking this app's API (`GET api/library-access`, nginx's auth_request): a Vale sign-in, or a live client
+  link to that very project in the cookie `vale_vv3d_files` (set by the door on that project's library folder). The
+  list is the valevision route's `LibraryProtected` in the Server Manager's routes file. Live once the API is pushed
+  and restarted and nginx is applied; until then the files still open for anyone holding their exact address.
+- *Client view on / off* in the bubble menu (or `?authoring=off|on`) still locks authoring on a staff page; opening a
+  client link shows an admin exactly what the client sees.
+- **Analytics (v2.78.0):** `03__AppUtils/Na__AppUtils__ActivityLog__.js` reports what a visit does (image exports,
+  the lens, layers, full screen, Reset View, Help, settings, menus, the client tour, and a summary of each visit's time
+  and moves on the model) to the shared activity ledger, each carrying the client link when there is one. The Server
+  Manager's tab 05 (Insights) counts them.
 
 **Key modules.** `03__AppUtils/Na__AppUtils__ProjectLoader.js` (where the project is, `Na__AppUtils__ApiUrl`),
-`Na__AppUtils__UserSession__.js` (sign-in), `Na__AppUtils__DevGate__.js` (authoring), `Na__AppUtils__SaveProjectJson__.js`
+`Na__AppUtils__UserSession__.js` (sign-in), `Na__AppUtils__DevGate__.js` (authoring), `93__Feature__ClientLinks/`
+(client links: the External tab, the client's view, the tour), `Na__AppUtils__SaveProjectJson__.js`
 and `Na__AppUtils__AssetUpload__.js` (Dev menu saves and uploads), `Na__AppUtils__LocalProjectMirror__.js` and
 `80__CloudflareIntegration/Na__CloudflareIntegration__ApiClient__.js` (TrueVision's storage names, now over this
 app's API, kept for parity).

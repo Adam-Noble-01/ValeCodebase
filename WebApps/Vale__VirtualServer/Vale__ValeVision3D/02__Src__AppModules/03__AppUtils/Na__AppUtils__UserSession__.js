@@ -16,10 +16,12 @@
 //   (window.ValeUserLogin, in Lantern Designer's style), talking to
 //   api/accounts/* on ValeVision 3D's own API. The session cookie covers the
 //   whole site, so signing in on the Gallery signs you in here too.
-// - CLIENTS NEED NO ACCOUNT. A project link (?project=<id>) is what a client
-//   is sent, so with a project the sign-in is OPTIONAL: the model opens at
-//   once and staff use the "Sign in" pill in the header. Without a project
-//   there is nothing to show a client, so the sign-in is required.
+// - THE SIGN-IN IS REQUIRED (since 28-Oct-2026, Adam). A plain project link
+//   (?project=<id>) is a staff link, as Theia's: it opens for a signed-in Vale
+//   account only, and the API refuses its reads otherwise. Clients still need
+//   no account: they are sent a CLIENT LINK (?project=<id>&share=<token>),
+//   which never comes here. 93__Feature__ClientLinks opens it, with the guest
+//   bubble in place of this one.
 // - WHO AUTHORS: an AppAdmin (Na__AppUtils__DevGate__). The answer is fixed
 //   for the page, so signing in or out as someone with a different answer
 //   reloads the page and every panel is built for them.
@@ -33,6 +35,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 1.1.0 (ValeVision3D v2.77.0, client links)
+// - The sign-in is required with a project too: a plain project link is a staff
+//   link. A client link (&share=) is opened by 93__Feature__ClientLinks instead.
+// - The bubble menu's "Copy link to this project" says it is a staff link.
+//
 // 06-Oct-2026 - Version 1.0.0
 // - Created for the move to app.valegardenhouses.com: the Vale users register
 //   replaces the email password overlay and the Gallery's PIN.
@@ -108,12 +115,12 @@
             { id : 'gallery', label : 'Open ValeVision Gallery', onClick : () => { window.location.href = Na__UserSession__GALLERY_URL; } }
         ];
         if (Na__UserSession__ProjectToken()) {
-            items.push({ id : 'copy-link', label : 'Copy link to this project', onClick : () => {
+            items.push({ id : 'copy-link', label : 'Copy staff link to this project', onClick : () => {
                 const url = new URL(window.location.href);
                 url.search = '?project=' + encodeURIComponent(Na__UserSession__ProjectToken());
                 url.hash = '';
                 navigator.clipboard.writeText(url.href)
-                    .then(() => Na__UserSession__Note('Link copied'))
+                    .then(() => Na__UserSession__Note('Staff link copied (Vale staff only)'))
                     .catch(() => window.prompt('Copy this link:', url.href));
             } });
         }
@@ -138,10 +145,12 @@
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Start the Session: Resolves With the Signed-In User, or Null for a Client Viewer
+    // FUNCTION | Start the Session: Resolves With the Signed-In User
     // ------------------------------------------------------------
-    // Never rejects. Without the shared login module (a page served without
-    // /AppAssets__CommonApplicationAssets/) the app opens read-only.
+    // Never rejects. Resolves once someone has signed in (the gate stays up
+    // until then). Without the shared login module (a page served without
+    // /AppAssets__CommonApplicationAssets/) it resolves null and the API's
+    // own guard refuses the project.
     // ------------------------------------------------------------
     function Na__UserSession__Start() {
         const login = window.ValeUserLogin;
@@ -149,7 +158,7 @@
             console.warn('[ValeVision3D] The shared Vale sign-in is not loaded: the app opens read-only.');
             return Promise.resolve(null);
         }
-        const required = !Na__UserSession__ProjectToken();                     // <-- No project: staff only. A project link opens for anyone
+        const required = true;                                                   // <-- A plain project link is a staff link; clients come by a client link (93__Feature__ClientLinks)
         return new Promise((resolve) => {
             let started = false;
             login.Init({

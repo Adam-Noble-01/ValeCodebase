@@ -8,7 +8,31 @@
 // PURPOSE    : Modal UI for recipient selection and send-email actions
 // CREATED    : 09-Apr-2026
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 28-Oct-2026 - Vale addresses only, said (ValeVision3D v2.79.0, client emails sent)
+// - The Internal tab's hint says a client is emailed from External Client
+//   Sharing: the server refuses an address outside Vale from this tab.
+//
+// 28-Oct-2026 - Two tabs (ValeVision3D v2.77.0, client links)
+// - "Internal Vale Company Sharing" (the default, every time the form opens)
+//   holds the form exactly as it was: address book, greeting, notes, emails.
+// - "External Client Sharing" is an empty panel here; the client links module
+//   (93__Feature__ClientLinks/Na__ClientLinks__ShareTab__) fills it the first
+//   time it is chosen. selectTab(name) switches; onTabChange(name) is called.
+// - The panel is 560px wide (was 520px) so both tab names fit on one line.
+//
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    import { Na__ClientLinks__Icon } from '../93__Feature__ClientLinks/Na__ClientLinks__Helpers__.js';
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -77,9 +101,48 @@
         title.className = 'na-email-workers-overlay__title';
         title.textContent = 'Share Project Link';
 
+        // TABS | Internal (the form as it always was) and External (client links)
+        // ------------------------------------------------------------
+        const tabs = document.createElement('div');
+        tabs.className = 'na-email-workers-overlay__tabs';
+        tabs.setAttribute('role', 'tablist');
+        tabs.setAttribute('aria-label', 'Who the project is shared with');
+
+        const makeTab = (name, icon, label, panelId) => {
+            const tab = document.createElement('button');
+            tab.type = 'button';
+            tab.id = `naShareTab__${name}`;
+            tab.className = 'na-email-workers-overlay__tab';
+            tab.dataset.tab = name;
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('aria-controls', panelId);
+            tab.appendChild(Na__ClientLinks__Icon(icon, 'na-email-workers-overlay__tab-icon'));
+            const text = document.createElement('span');
+            text.textContent = label;
+            tab.appendChild(text);
+            return tab;
+        };
+        const tabInternal = makeTab('internal', 'staff', 'Internal Vale Company Sharing', 'naShareTabPanel__internal');
+        const tabExternal = makeTab('external', 'client', 'External Client Sharing', 'naShareTabPanel__external');
+        tabs.appendChild(tabInternal);
+        tabs.appendChild(tabExternal);
+
+        const makeTabPanel = (name, tab) => {
+            const tabPanel = document.createElement('div');
+            tabPanel.id = `naShareTabPanel__${name}`;
+            tabPanel.className = `na-email-workers-overlay__tabpanel na-email-workers-overlay__tabpanel--${name}`;
+            tabPanel.setAttribute('role', 'tabpanel');
+            tabPanel.setAttribute('aria-labelledby', tab.id);
+            return tabPanel;
+        };
+        const internalPanel = makeTabPanel('internal', tabInternal);
+        const externalPanel = makeTabPanel('external', tabExternal);
+        // ------------------------------------------------------------
+
         const hint = document.createElement('p');
         hint.className = 'na-email-workers-overlay__hint';
-        hint.textContent = 'Type a person or email to search the internal address book, then send directly from ValeVision3D.';
+        hint.textContent = 'Type a person or email to search the internal address book, then send directly from ValeVision3D. '
+                         + 'Vale addresses only: to email a client, use External Client Sharing.';
 
         const recipientsField = document.createElement('div');
         recipientsField.className = 'na-email-workers-overlay__field';
@@ -208,15 +271,19 @@
         actions.appendChild(btnSendNotification);
         actions.appendChild(btnSend);
 
+        internalPanel.appendChild(hint);
+        internalPanel.appendChild(recipientsField);
+        internalPanel.appendChild(greetingField);
+        internalPanel.appendChild(notesField);
+        internalPanel.appendChild(generateChooser);
+        internalPanel.appendChild(actions);
+
         panel.appendChild(antiAutofillTrapUser);
         panel.appendChild(antiAutofillTrapPass);
         panel.appendChild(title);
-        panel.appendChild(hint);
-        panel.appendChild(recipientsField);
-        panel.appendChild(greetingField);
-        panel.appendChild(notesField);
-        panel.appendChild(generateChooser);
-        panel.appendChild(actions);
+        panel.appendChild(tabs);
+        panel.appendChild(internalPanel);
+        panel.appendChild(externalPanel);
 
         overlay.appendChild(backdrop);
         overlay.appendChild(panel);
@@ -224,8 +291,35 @@
 
         panel.addEventListener('click', (event) => event.stopPropagation());
 
+        // SUB FUNCTION | Show One Tab: 'internal' or 'external' (then onTabChange(name))
+        // ------------------------------------------------------------
+        function selectTab(name) {
+            const external = name === 'external';
+            [[tabInternal, internalPanel, !external], [tabExternal, externalPanel, external]].forEach(([tab, tabPanel, on]) => {
+                tab.classList.toggle('is-active', on);
+                tab.setAttribute('aria-selected', on ? 'true' : 'false');
+                tab.tabIndex = on ? 0 : -1;
+                tabPanel.hidden = !on;
+            });
+            hideGenerateChooser();
+            if (typeof api.onTabChange === 'function') api.onTabChange(external ? 'external' : 'internal');
+        }
+        // ------------------------------------------------------------
+
+        [tabInternal, tabExternal].forEach((tab) => {
+            tab.addEventListener('click', () => selectTab(tab.dataset.tab));
+            tab.addEventListener('keydown', (event) => {                         // <-- The tab pattern: arrows move between the two
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                const next = tab === tabInternal ? tabExternal : tabInternal;
+                selectTab(next.dataset.tab);
+                next.focus();
+            });
+        });
+
         function show() {
             overlay.classList.add('is-visible');
+            selectTab('internal');                                              // <-- Internal is the default tab, every time
             recipientInput.focus();
         }
 
@@ -250,10 +344,13 @@
             return greetingInput.value;
         }
 
-        return {
+        const api = {
             overlay,
             backdrop,
             panel,
+            externalPanel,
+            selectTab,
+            onTabChange : null,                                                 // <-- Set by the UI logic: fills the External tab on first use
             btnCancel,
             btnGenerate,
             btnSendNotification,
@@ -274,6 +371,8 @@
             getNotesValue,
             getGreetingNamesValue
         };
+        selectTab('internal');
+        return api;
     }
     // ------------------------------------------------------------
 

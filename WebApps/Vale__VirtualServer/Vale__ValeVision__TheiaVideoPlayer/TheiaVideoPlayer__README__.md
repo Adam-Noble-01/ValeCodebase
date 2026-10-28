@@ -16,6 +16,14 @@ never watch Vale's work through Google Drive, Dropbox or YouTube compression.
 
 Affiliates are refused. A client link can be limited to some videos, given an expiry, and switched off.
 
+**The video files themselves** (the library gate, 28-Oct-2026): nginx sends a file from `Content__VideoFiles` only
+after asking this API (`GET api/library-access`, nginx's auth_request). Staff (Employee and up) get any of them; a
+client's browser gets exactly the files its link's page lists (visible, 2K and up, the videos the link names),
+through the cookie `vale_theia_files` that the videos read sets on that project's Theia folder. A link switched off
+or expired stops at the next request. The data file (`AppData__VideoData`) is never served; posters and thumbnails
+stay public. Live once the API is pushed and restarted and nginx is applied. Videos a device has already cached
+(the service worker keeps every chunk it played) still play there offline.
+
 The header is ValeVision 3D's: the Vale logo, then **ValeVision THEIA** at the right in ValeVision 3D's title
 style (24px Open Sans SemiBold, navy) and the user bubble. The project's name and number ("Holt - 64135") sit
 over the video's title, under the picture.
@@ -32,8 +40,8 @@ over the video's title, under the picture.
 
 ```
 <project>\ValeVision__TheiaVideo\
-├── AppData__VideoData\<id>__VideoAppData__.json        the video list, in playing order (project data: both ways)
-├── Content__VideoFiles\Videos__Scheme-01\<file>.mp4     one file per video (heavy content: pushed up)
+├── AppData__VideoData\<id>__VideoAppData__.json        the video list, in playing order (project data: both ways; never web-served)
+├── Content__VideoFiles\Videos__Scheme-01\<file>.mp4     one file per video (heavy content: pushed up; staff or the link that lists it)
 ├── Content__VideoThumbnails\<file>.webp                 posters (1920 wide) and thumbnails (524 wide)
 ├── UserData__ShareLinks\<id>__TheiaShareLinks__.json    the share links (user data: through the API only)
 └── UserData__UploadStaging\                            uploads in progress (*.tmp never syncs; cleared after 48 hours)

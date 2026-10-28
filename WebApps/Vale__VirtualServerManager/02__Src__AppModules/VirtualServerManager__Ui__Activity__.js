@@ -20,13 +20,21 @@
      "activity"). It runs by itself when the tab opens and the copy is more than
      5 minutes old, and every 5 minutes while the tab is on screen, unless a job
      is running, the key is not loaded or the connection is cooling down.
-   - THREE VIEWS of the same events:
+   - FOUR VIEWS of the same events:
        Activity ledger      one row per event (repeats in a row grouped "x12")
-       Generated links      ValeVision Theia client links (the PC's copies of each
-                            project's links file, plus the ledger), and links staff
-                            copied: who made them, opens, distinct visitors
+       Generated links      client links of ValeVision Theia and ValeVision 3D (the
+                            PC's copies of each project's links file, plus the
+                            ledger), and links staff copied: who made them, opens,
+                            distinct visitors
        People and devices   one row per signed-in person, and per external
                             device (or IP when the browser sent no device id)
+       Insights             the same events counted (0.13.0): headline figures,
+                            what clients and staff use (two colours, every bar
+                            split), activity day by day, each client link's and
+                            each project's engagement (time spent exploring,
+                            images exported, scenes, the tour, video watched),
+                            and the most used sizes, lenses, scenes, layers and
+                            videos. Click a row for its events in the ledger.
    - EXTERNAL means no sign-in: a client or guest who opened a link. They are
      told apart by device id (a random id in the browser's cookie) and IP.
    - Filters (period, search, app, account type, action) and the shared column
@@ -45,6 +53,13 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   28-Oct-2026 - Version 0.13.0
+   - Insights, the fourth view (above). New action kinds for ValeVision 3D's
+     menu actions and visits and Theia's watch time (ValeShared__Activity__ 1.2.0):
+     Exported, Changed, Guided, Visit. ValeVision 3D's client links join Theia's
+     in Generated links, each with its own address; a link's panel shows what
+     its visitors did.
+
    13-Oct-2026 - Version 0.12.0
    - Hide my actions (beside Group repeats): the ledger, people and the links'
      opens and visitors leave out the PC's own person and their browsers.
@@ -102,6 +117,10 @@
         email    : { label: 'Email',    cls: 'kind-server' },
         download : { label: 'Download', cls: 'kind-server' },
         tool     : { label: 'Used',     cls: 'is-off' },
+        export   : { label: 'Exported', cls: 'kind-server' },                 // <-- 0.13.0: an image saved from ValeVision 3D
+        setting  : { label: 'Changed',  cls: 'is-off' },                      // <-- the camera, layers, full screen, Reset View, settings
+        guide    : { label: 'Guided',   cls: 'kind-web' },                    // <-- Help and the client tour
+        visit    : { label: 'Visit',    cls: 'is-mirror' },                   // <-- a visit's time and moves on the model
         refused  : { label: 'Refused',  cls: 'is-refused' }
     };
     var Vsm__AppRoutes  = { '/valevision/': 'ValeVision 3D', '/theia/': 'ValeVision Theia', '/project-gallery/': 'ValeVision Gallery',
@@ -139,11 +158,15 @@
         if (e.Ok === false) return 'refused';
         if (/^account\./.test(a)) return 'account';
         if (/^link\./.test(a)) return 'link';
-        if (/^(app|project)\.(open|resume|edit|switch)$|^(view|model)\.open$|^(scene|drawing)\.view$|^view\.mode$/.test(a)) return 'open';
-        if (/^video\.(play|publish|delete)$/.test(a)) return 'video';
+        if (/^(app|project)\.(open|resume|edit|switch)$|^(view|model|menu)\.open$|^(scene|drawing)\.view$|^view\.mode$/.test(a)) return 'open';
+        if (/^video\.(play|publish|delete|watch)$/.test(a)) return 'video';
         if (/^email\./.test(a)) return 'email';
         if (/^file\.download$/.test(a)) return 'download';
         if (/^(tool|search|report)\.|^file\.print$|^video\.preview$/.test(a)) return 'tool';
+        if (a === 'image.export') return 'export';
+        if (/^(camera|layer|settings)\.|^view\.(fullscreen|reset)$/.test(a)) return 'setting';
+        if (/^(help|tour)\./.test(a)) return 'guide';
+        if (a === 'visit.summary') return 'visit';
         return 'save';
     }
 
@@ -579,8 +602,8 @@
                 '<td>' + (l.kind === 'Copied link' ? '' : ex ? Vsm.Esc(Vsm__Day(ex)) : '<span class="Vsm__Muted">never</span>') + '</td>' +
                 '<td>' + state + '</td>' +
                 '<td>' + l.opens.length + (l.refused.length ? ' <span class="Vsm__C-delete" title="Opened after it expired or was switched off">+' + l.refused.length + ' refused</span>' : '') +
-                    (l.counter > l.opens.length ? ' <span class="Vsm__Muted" title="Theia’s own view counter, all time, from this PC’s copy of the links file (Collect brings it up to date). It counts visits from before the ledger began.">· ' +
-                     l.counter + ' by Theia</span>' : '') + '</td>' +
+                    (l.counter > l.opens.length ? ' <span class="Vsm__Muted" title="The link’s own view counter in ' + Vsm.Esc(l.app || 'its app') + ', all time, from this PC’s copy of the links file (Collect brings it up to date). It counts visits from before the ledger began, or before this period.">· ' +
+                     l.counter + ' in all</span>' : '') + '</td>' +
                 '<td>' + l.visitors + '</td>' +
                 '<td>' + (l.last ? Vsm.Esc(Vsm__Day(l.last._d) + ' ' + Vsm__Clock(l.last._d)) : '') + '</td>' +
                 '<td>' + Vsm__IpHtml(l.last) + '</td>' +
@@ -667,13 +690,375 @@
     // ------------------------------------------------------------
     Activity.Render = function() {
         if (!Vsm__Data) { Vsm__RenderBar(); return; }
-        var f = Vsm__Filters(), view = Vsm.El('Vsm__ActView').value;
-        var counts = view === 'links' ? Vsm__RenderLinks(f) : view === 'people' ? Vsm__RenderPeople(f) : Vsm__RenderLedger(f);
+        var f = Vsm__Filters(), view = Vsm.El('Vsm__ActView').value, insights = view === 'insights';
+        Vsm.El('Vsm__ActTable').parentNode.hidden = insights;                  // <-- Insights draws its own page in place of the table
+        Vsm.El('Vsm__ActInsights').hidden = !insights;
+        if (!insights) Vsm.El('Vsm__ActInsTip').hidden = true;
+        var counts = insights ? Vsm__RenderInsights(f) : view === 'links' ? Vsm__RenderLinks(f) : view === 'people' ? Vsm__RenderPeople(f) : Vsm__RenderLedger(f);
         Vsm__RenderBar(counts);
         Vsm.El('Vsm__ActErrors').innerHTML = Vsm__Data.truncated ? '<div>⚠ ' + Vsm__Data.truncated.toLocaleString() +
             ' older events in this period are left out (newest ' + Vsm__Data.events.length.toLocaleString() + ' shown): choose a shorter period.</div>' : '';
         Vsm__RenderSide();
     };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Insights: the Same Events, Counted (the fourth view, 0.13.0)
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | What Is Counted, and How Many Rows Each List Shows
+    // ------------------------------------------------------------
+    // Two series everywhere: clients (no sign-in) and staff (signed in), in
+    // the stylesheet's --Vsm_InsClient and --Vsm_InsStaff (the reference data
+    // palette's first two colours, checked colour-blind safe on white). Bars
+    // carry the colour; every number and name stays in the text colours.
+    // ------------------------------------------------------------
+    var Vsm__InsTop = 8;                                                       // <-- Rows in each "most used" list
+    var Vsm__InsRows = 15;                                                     // <-- Rows in the links and projects tables
+    var Vsm__InsDaysMax = 92;                                                  // <-- Longer periods are drawn week by week
+
+    function Vsm__Is(action) { return function(e) { return e.Action === action; }; }
+
+    var Vsm__InsFeatures = [                                                   // <-- [what it reads as, the action to find in the ledger, the test]
+        ['Opened an app',                'app.open',          Vsm__Is('app.open')],
+        ['Opened a 3D model',            'model.open',        Vsm__Is('model.open')],
+        ['Viewed a presentation scene',  'scene.view',        Vsm__Is('scene.view')],
+        ['Exported an image',            'image.export',      Vsm__Is('image.export')],
+        ['Changed the camera lens',      'camera.lens',       Vsm__Is('camera.lens')],
+        ['Perspective correction',       'camera.correction', Vsm__Is('camera.correction')],
+        ['Showed or hid a model layer',  'layer.toggle',      Vsm__Is('layer.toggle')],
+        ['Went full screen',             'view.fullscreen',   function(e) { return e.Action === 'view.fullscreen' && e.Target === 'Entered'; }],
+        ['Reset the view',               'view.reset',        Vsm__Is('view.reset')],
+        ['Walk, orbit or fly',           'view.mode',         Vsm__Is('view.mode')],
+        ['Opened a drawing view',        'view.open',         Vsm__Is('view.open')],
+        ['Opened a menu',                'menu.open',         Vsm__Is('menu.open')],
+        ['Changed a setting',            'settings.change',   Vsm__Is('settings.change')],
+        ['Opened Help',                  'help.open',         Vsm__Is('help.open')],
+        ['Started the tour',             'tour.start',        Vsm__Is('tour.start')],
+        ['Finished the tour',            'tour.finish',       Vsm__Is('tour.finish')],
+        ['Left the tour early',          'tour.skip',         Vsm__Is('tour.skip')],
+        ['Played a video',               'video.play',        Vsm__Is('video.play')],
+        ['Watched a video to the end',   'video.watch',       function(e) { return e.Action === 'video.watch' && !!(e.Detail && e.Detail.Finished === true); }],
+        ['Copied a link',                'link.copy',         Vsm__Is('link.copy')],
+        ['Downloaded a file',            'file.download',     Vsm__Is('file.download')]
+    ];
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Durations in Words ("45 s", "12 min", "3 h 20 min")
+    // ------------------------------------------------------------
+    function Vsm__Dur(seconds) {
+        var s = Math.round(Number(seconds) || 0);
+        if (s < 60) return s + ' s';
+        var m = Math.round(s / 60);
+        if (m < 60) return m + ' min';
+        return Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '');
+    }
+
+    function Vsm__N(n, one, many) { return n.toLocaleString() + ' ' + (n === 1 ? one : many || one + 's'); }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Set of Events Adds Up To (a link's, a project's, a period's)
+    // ------------------------------------------------------------
+    function Vsm__Engage(list) {
+        var g = { opens: 0, visits: 0, seconds: 0, active: 0, exports: 0, scenes: 0, layers: 0, camera: 0, menus: 0, help: 0,
+                  tourStart: 0, tourFinish: 0, tourSkip: 0, tourAt: '', videoSeconds: 0, videoFinished: 0, plays: 0, devices: {}, last: null };
+        list.forEach(function(e) {
+            var d = e.Detail || {};
+            switch (e.Action) {
+                case 'link.open':         g.opens += 1; break;
+                case 'app.open':          g.visits += 1; break;
+                case 'visit.summary':     g.seconds += Number(d.Seconds) || 0; g.active += Number(d.ActiveSeconds) || 0; break;
+                case 'image.export':      g.exports += 1; break;
+                case 'scene.view':        g.scenes += 1; break;
+                case 'layer.toggle':      g.layers += 1; break;
+                case 'camera.lens':
+                case 'camera.correction': g.camera += 1; break;
+                case 'menu.open':         g.menus += 1; break;
+                case 'help.open':         g.help += 1; break;
+                case 'tour.start':        g.tourStart += 1; break;
+                case 'tour.finish':       g.tourFinish += 1; break;
+                case 'tour.skip':         g.tourSkip += 1; g.tourAt = e.Target || g.tourAt; break;
+                case 'video.watch':       g.videoSeconds += Number(d.Seconds) || 0; if (d.Finished === true) g.videoFinished += 1; break;
+                case 'video.play':        g.plays += 1; break;
+            }
+            if (!e.User) g.devices[e.DeviceId || e.Ip || '?'] = true;
+            if (!g.last || e._t > g.last._t) g.last = e;
+        });
+        g.visitors = Object.keys(g.devices).length;
+        return g;
+    }
+
+    function Vsm__TourWords(g) {
+        if (g.tourFinish) return 'finished' + (g.tourFinish > 1 ? ' ×' + g.tourFinish : '');
+        if (g.tourSkip) return 'left early' + (g.tourAt ? ' at ' + g.tourAt : '');
+        return g.tourStart ? 'started' : '';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | A Bar Split Into Clients and Staff (2 px apart; the far end rounded)
+    // ------------------------------------------------------------
+    function Vsm__InsBar(c, s, max) {
+        var both = c && s, segs = [];
+        var width = function(n) { var f = max ? n / max : 0; return both ? 'calc((100% - 2px) * ' + f.toFixed(4) + ')' : (f * 100).toFixed(2) + '%'; };
+        if (c) segs.push(['is-client', width(c)]);
+        if (s) segs.push(['is-staff', width(s)]);
+        return '<span class="Vsm__InsTrack">' + segs.map(function(x, i) {
+            return '<span class="Vsm__InsSeg ' + x[0] + (i === segs.length - 1 ? ' is-end' : '') + '" style="width:' + x[1] + '"></span>';
+        }).join('') + '</span>';
+    }
+
+    function Vsm__InsSplitWords(c, s, fmt) {                                   // <-- "12 by clients · 3 by staff", "4 min by clients"
+        var f = fmt || function(n) { return n.toLocaleString(); };
+        return [c ? f(c) + ' by clients' : '', s ? f(s) + ' by staff' : ''].filter(Boolean).join(' · ');
+    }
+
+    function Vsm__InsRow(label, c, s, max, find, fmt) {
+        var words = Vsm__InsSplitWords(c, s, fmt);
+        return '<div class="Vsm__InsRow"' + (find ? ' data-act-find="' + Vsm.Esc(find) + '"' : '') + ' data-tip="' + Vsm.Esc(label + '\n' + words +
+               (find ? '\nClick: these events in the ledger' : '')) + '">' +
+            '<span class="Vsm__InsLabel">' + Vsm.Esc(label) + '</span>' + Vsm__InsBar(c, s, max) +
+            '<span class="Vsm__InsNum">' + Vsm.Esc(words) + '</span></div>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | A "Most Used" List: events grouped by a key, split clients / staff
+    // ------------------------------------------------------------
+    // key(e) names the row ('' leaves the event out); value(e) is what it adds
+    // (1 by default, seconds for watch time); fmt words the totals.
+    // ------------------------------------------------------------
+    function Vsm__InsList(events, test, key, value, fmt) {
+        var map = {};
+        events.forEach(function(e) {
+            if (!test(e)) return;
+            var k = key(e);
+            if (!k) return;
+            var row = map[k] || (map[k] = { k: k, c: 0, s: 0 });
+            row[e.User ? 's' : 'c'] += value ? value(e) : 1;
+        });
+        var rows = Object.keys(map).map(function(k) { return map[k]; }).sort(function(a, b) { return (b.c + b.s) - (a.c + a.s); });
+        if (!rows.length) return '<div class="Vsm__InsEmpty">None in this period.</div>';
+        var max = rows.reduce(function(m, r) { return Math.max(m, r.c + r.s); }, 0);
+        return rows.slice(0, Vsm__InsTop).map(function(r) { return Vsm__InsRow(r.k, r.c, r.s, max, r.k, fmt); }).join('') +
+               (rows.length > Vsm__InsTop ? '<div class="Vsm__InsEmpty">and ' + (rows.length - Vsm__InsTop) + ' more</div>' : '');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Period in Buckets: Days, or Weeks When Longer Than 92 Days
+    // ------------------------------------------------------------
+    function Vsm__InsBuckets(events) {
+        var day = function(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+        var keyOf = function(d) { return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); };
+        var end = day(new Date()), start;
+        if (Vsm__Data.month) {
+            var y = Number(Vsm__Data.month.slice(0, 4)), m = Number(Vsm__Data.month.slice(5, 7)) - 1;
+            start = new Date(y, m, 1);
+            end = new Date(y, m + 1, 0);
+        } else {
+            start = Vsm__Data.since ? day(new Date(Vsm__Data.since + 'T00:00:00')) : end;
+        }
+        if (events.length && events[0]._d && day(events[0]._d) < start) start = day(events[0]._d);   // <-- UTC days against this PC's days
+        var weekly = Math.round((end - start) / 864e5) + 1 > Vsm__InsDaysMax;
+        var monday = function(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7); };
+        if (weekly) start = monday(start);
+        var list = [], index = {};
+        for (var d = start; d <= end; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (weekly ? 7 : 1))) {
+            index[keyOf(d)] = list.length;
+            list.push({ d: d, c: 0, s: 0 });
+        }
+        events.forEach(function(e) {
+            if (!e._d) return;
+            var i = index[keyOf(weekly ? monday(day(e._d)) : day(e._d))];
+            if (i !== undefined) list[i][e.User ? 's' : 'c'] += 1;
+        });
+        return { list: list, weekly: weekly };
+    }
+
+    function Vsm__InsNiceMax(v) {
+        if (v <= 5) return 5;
+        var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+        return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p;
+    }
+
+    function Vsm__InsTopRounded(x, y, w, h, r) {                               // <-- A bar's top corners rounded, its foot square on the baseline
+        r = Math.max(0, Math.min(r, w / 2, h));
+        return 'M' + x.toFixed(1) + ',' + (y + h).toFixed(1) + 'V' + (y + r).toFixed(1) + 'Q' + x.toFixed(1) + ',' + y.toFixed(1) + ' ' +
+               (x + r).toFixed(1) + ',' + y.toFixed(1) + 'H' + (x + w - r).toFixed(1) + 'Q' + (x + w).toFixed(1) + ',' + y.toFixed(1) + ' ' +
+               (x + w).toFixed(1) + ',' + (y + r).toFixed(1) + 'V' + (y + h).toFixed(1) + 'Z';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Activity Day by Day (inline SVG: clients at the foot, staff above, one axis)
+    // ------------------------------------------------------------
+    function Vsm__InsDayChart(events) {
+        var b = Vsm__InsBuckets(events), list = b.list;
+        if (!list.length) return '<div class="Vsm__InsEmpty">No days in this period.</div>';
+        var most = list.reduce(function(m, x) { return Math.max(m, x.c + x.s); }, 0);
+        var top = Vsm__InsNiceMax(most);
+        var W = 720, H = 172, L = 40, R = 8, T = 10, B = 24, w = W - L - R, h = H - T - B, base = T + h;
+        var slot = w / list.length, bw = Math.max(2, Math.min(26, slot * 0.68)), gap = 2;
+        var px = function(v) { return top ? v / top * h : 0; };
+        var out = [];
+        [0, top / 2, top].forEach(function(v) {
+            var y = (base - px(v)).toFixed(1);
+            out.push('<line class="is-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y + '" y2="' + y + '"></line>');
+            out.push('<text x="' + (L - 6) + '" y="' + (Number(y) + 4) + '" text-anchor="end">' + Math.round(v).toLocaleString() + '</text>');
+        });
+        var every = Math.max(1, Math.ceil(list.length / 7));
+        var dayName = function(d) { return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]; };
+        list.forEach(function(x, i) {
+            var cx = L + slot * i + slot / 2, x0 = cx - bw / 2;
+            var hc = x.c ? Math.max(1, px(x.c)) : 0, hs = x.s ? Math.max(1, px(x.s)) : 0;
+            if (hc) out.push(hs ? '<rect class="is-client" x="' + x0.toFixed(1) + '" y="' + (base - hc).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hc.toFixed(1) + '"></rect>'
+                                : '<path class="is-client" d="' + Vsm__InsTopRounded(x0, base - hc, bw, hc, 3) + '"></path>');
+            if (hs) out.push('<path class="is-staff" d="' + Vsm__InsTopRounded(x0, base - hc - (hc ? gap : 0) - hs, bw, hs, 3) + '"></path>');
+            var when = b.weekly ? 'Week of ' + Vsm__Day(x.d) : dayName(x.d) + ' ' + Vsm__Day(x.d);
+            out.push('<rect class="is-hit" x="' + (L + slot * i).toFixed(1) + '" y="' + T + '" width="' + slot.toFixed(1) + '" height="' + h + '" data-tip="' +
+                     Vsm.Esc(when + '\n' + (x.c + x.s ? 'Clients ' + x.c.toLocaleString() + ' · Staff ' + x.s.toLocaleString() + ' events' : 'No events')) + '"></rect>');
+            if (i % every === 0) {
+                out.push('<text x="' + cx.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + Vsm.Esc(x.d.getDate() + ' ' + Vsm__Months[x.d.getMonth()]) + '</text>');
+            }
+        });
+        return '<svg class="Vsm__InsChart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Events ' + (b.weekly ? 'week' : 'day') +
+               ' by ' + (b.weekly ? 'week' : 'day') + ', clients and staff">' + out.join('') + '</svg>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | The Client Links: What Each Link's Visitors Did
+    // ------------------------------------------------------------
+    function Vsm__InsLinks(f) {
+        var links = Vsm__Links(f).filter(function(l) {
+            return l.token && (!f.app || l.app === f.app) && (l.opens.length || l.seen.length) && Vsm__TextMatch(l._s, f.terms);
+        }).map(function(l) { return Object.assign(l, { g: Vsm__Engage(l.opens.concat(l.seen)) }); });
+        links.sort(function(a, b) { return (b.g.last ? b.g.last._t : 0) - (a.g.last ? a.g.last._t : 0); });
+        if (!links.length) return '<div class="Vsm__InsEmpty">No client link was used in this period.</div>';
+        var most = links.reduce(function(m, l) { return Math.max(m, l.g.seconds); }, 0);
+        return '<table class="Vsm__UserTable Vsm__InsTable"><thead><tr><th>Link</th><th>App</th><th>Project</th><th>Opens</th><th>Visitors</th>' +
+               '<th>Exploring</th><th>Images</th><th>Scenes</th><th>Tour</th><th>Watched</th><th>Last used</th></tr></thead><tbody>' +
+            links.slice(0, Vsm__InsRows).map(function(l) {
+                var g = l.g;
+                return '<tr class="Vsm__ActRow" data-act-find="' + Vsm.Esc(l.token) + '" data-tip="' + Vsm.Esc((l.label || 'No label') + '\nClick: everything with this link in the ledger') + '">' +
+                    '<td><b>' + Vsm.Esc(l.label || 'No label') + '</b> ' + Vsm__LinkHtml(l.token) + '</td>' +
+                    '<td>' + Vsm.Esc((l.app || '').replace(/^ValeVision /, '')) + '</td>' +
+                    '<td>' + Vsm__ProjectHtml(l.project) + '</td>' +
+                    '<td>' + l.opens.length + '</td>' +
+                    '<td>' + g.visitors + '</td>' +
+                    '<td>' + (g.seconds ? '<span class="Vsm__InsMini" style="width:' + Math.max(3, Math.round(g.seconds / (most || 1) * 60)) + 'px"></span>' + Vsm.Esc(Vsm__Dur(g.seconds)) : '') + '</td>' +
+                    '<td>' + (g.exports || '') + '</td>' +
+                    '<td>' + (g.scenes || '') + '</td>' +
+                    '<td>' + Vsm.Esc(Vsm__TourWords(g)) + '</td>' +
+                    '<td>' + (g.videoSeconds ? Vsm.Esc(Vsm__Dur(g.videoSeconds)) + (g.videoFinished ? ' <span class="Vsm__Muted">· ' + g.videoFinished + ' to the end</span>' : '') : '') + '</td>' +
+                    '<td>' + (g.last ? Vsm.Esc(Vsm__Day(g.last._d) + ' ' + Vsm__Clock(g.last._d)) : '') + '</td></tr>';
+            }).join('') + '</tbody></table>' +
+            (links.length > Vsm__InsRows ? '<div class="Vsm__InsEmpty">and ' + (links.length - Vsm__InsRows) + ' more: see Generated links</div>' : '');
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | The Projects Clients Opened, the Most Explored First
+    // ------------------------------------------------------------
+    function Vsm__InsProjects(events) {
+        var map = {};
+        events.forEach(function(e) { if (!e.User && e.Project) (map[e.Project] || (map[e.Project] = [])).push(e); });
+        var rows = Object.keys(map).map(function(p) { return { project: p, apps: {}, g: Vsm__Engage(map[p]), list: map[p] }; });
+        rows.forEach(function(r) { r.list.forEach(function(e) { if (e.App) r.apps[e.App.replace(/^ValeVision /, '')] = true; }); });
+        rows.sort(function(a, b) { return (b.g.seconds + b.g.videoSeconds) - (a.g.seconds + a.g.videoSeconds) || b.g.visits - a.g.visits; });
+        if (!rows.length) return '<div class="Vsm__InsEmpty">No client opened a project in this period.</div>';
+        var most = rows.reduce(function(m, r) { return Math.max(m, r.g.seconds); }, 0);
+        return '<table class="Vsm__UserTable Vsm__InsTable"><thead><tr><th>Project</th><th>Apps</th><th>Visits</th><th>Visitors</th><th>Exploring</th>' +
+               '<th>Images</th><th>Scenes</th><th>Watched</th><th>Last visit</th></tr></thead><tbody>' +
+            rows.slice(0, Vsm__InsRows).map(function(r) {
+                var g = r.g;
+                return '<tr class="Vsm__ActRow" data-act-find="' + Vsm.Esc(r.project) + '" data-tip="' + Vsm.Esc(Vsm__ProjectText(r.project) + '\nClick: this project in the ledger') + '">' +
+                    '<td>' + Vsm__ProjectHtml(r.project) + '</td>' +
+                    '<td>' + Vsm.Esc(Object.keys(r.apps).join(', ')) + '</td>' +
+                    '<td>' + g.visits + '</td>' +
+                    '<td>' + g.visitors + '</td>' +
+                    '<td>' + (g.seconds ? '<span class="Vsm__InsMini" style="width:' + Math.max(3, Math.round(g.seconds / (most || 1) * 60)) + 'px"></span>' + Vsm.Esc(Vsm__Dur(g.seconds)) : '') + '</td>' +
+                    '<td>' + (g.exports || '') + '</td>' +
+                    '<td>' + (g.scenes || '') + '</td>' +
+                    '<td>' + (g.videoSeconds ? Vsm.Esc(Vsm__Dur(g.videoSeconds)) : '') + '</td>' +
+                    '<td>' + (g.last ? Vsm.Esc(Vsm__Day(g.last._d) + ' ' + Vsm__Clock(g.last._d)) : '') + '</td></tr>';
+            }).join('') + '</tbody></table>';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render Insights for the Filters (the kind filter is the ledger's alone)
+    // ------------------------------------------------------------
+    function Vsm__RenderInsights(f) {
+        var fi = Object.assign({}, f, { kind: '' });
+        var events = Vsm__Data.events.filter(function(e) { return Vsm__Matches(e, fi); });
+        var clients = events.filter(function(e) { return !e.User; }), staff = events.length - clients.length;
+        var cg = Vsm__Engage(clients), sg = Vsm__Engage(events.filter(function(e) { return !!e.User; }));
+        var tile = function(label, value, sub, tip) {
+            return '<div class="Vsm__InsTile"' + (tip ? ' data-tip="' + Vsm.Esc(tip) + '"' : '') + '><span>' + Vsm.Esc(label) + '</span><b>' + Vsm.Esc(value) + '</b><span>' + Vsm.Esc(sub || '') + '</span></div>';
+        };
+        var features = Vsm__InsFeatures.map(function(x) {
+            var c = 0, s = 0;
+            events.forEach(function(e) { if (x[2](e)) { if (e.User) s += 1; else c += 1; } });
+            return { label: x[0], find: x[1], c: c, s: s };
+        }).filter(function(x) { return x.c + x.s; }).sort(function(a, b) { return (b.c + b.s) - (a.c + a.s); });
+        var fmax = features.reduce(function(m, x) { return Math.max(m, x.c + x.s); }, 0);
+        var stripState = function(e) { return String(e.Target || '').replace(/\s*\((shown|hidden)\)$/, '').trim(); };   // <-- One row per layer, shown or hidden
+        var minutes = function(n) { return Vsm__Dur(n); };
+
+        Vsm.El('Vsm__ActInsights').innerHTML =
+            '<div class="Vsm__InsLegend"><span><i class="Vsm__InsKey is-client"></i>Clients: no sign-in (client links)</span>' +
+                '<span><i class="Vsm__InsKey is-staff"></i>Staff: signed in</span>' +
+                '<span class="Vsm__Muted">Point at anything for its numbers; click a row for its events in the ledger.</span></div>' +
+            '<div class="Vsm__InsTiles">' +
+                tile('Client visits', cg.visits.toLocaleString(), Vsm__N(cg.visitors, 'device') + ' · ' + Vsm__N(cg.opens, 'link open'), 'An app opened with no sign-in (each page load), the devices behind them, and client links opened (once per browser session)') +
+                tile('Clients exploring', Vsm__Dur(cg.seconds), cg.active ? Vsm__Dur(cg.active) + ' active' : 'ValeVision 3D', 'Time ValeVision 3D was on a client’s screen after the model showed; active: an input in each 5 seconds') +
+                tile('Images exported', cg.exports.toLocaleString(), (sg.exports ? sg.exports.toLocaleString() + ' by staff' : 'by clients'), 'Images actually downloaded from Export Image') +
+                tile('Scenes viewed', cg.scenes.toLocaleString(), (sg.scenes ? sg.scenes.toLocaleString() + ' by staff' : 'by clients'), 'Presentation scenes a person chose') +
+                tile('Client tour', cg.tourStart ? cg.tourFinish + ' of ' + cg.tourStart : '0', cg.tourStart ? 'finished · ' + cg.tourSkip + ' left early' : 'not started yet', 'Tours finished of those started') +
+                tile('Video watched', Vsm__Dur(cg.videoSeconds), cg.videoFinished ? cg.videoFinished + ' to the end' : 'by clients', 'ValeVision Theia: seconds actually played by clients') +
+            '</div>' +
+            '<div class="Vsm__InsGrid">' +
+                '<section class="Vsm__InsCard is-wide"><h3>Activity ' + (Vsm__InsBuckets(events).weekly ? 'week by week' : 'day by day') + '</h3>' + Vsm__InsDayChart(events) + '</section>' +
+                '<section class="Vsm__InsCard"><h3>What people use</h3>' + (features.length ? features.map(function(x) {
+                    return Vsm__InsRow(x.label, x.c, x.s, fmax, x.find);
+                }).join('') : '<div class="Vsm__InsEmpty">' + Vsm__EmptyText() + '</div>') + '</section>' +
+                '<section class="Vsm__InsCard"><h3>Images exported</h3>' + Vsm__InsList(events, Vsm__Is('image.export'), function(e) { return e.Target || 'image'; }) +
+                    '<h3 class="Vsm__InsSub">Camera lenses chosen</h3>' + Vsm__InsList(events, Vsm__Is('camera.lens'), function(e) { return e.Target; }) + '</section>' +
+                '<section class="Vsm__InsCard is-wide"><h3>Client links</h3>' + Vsm__InsLinks(f) + '</section>' +
+                '<section class="Vsm__InsCard is-wide"><h3>Projects clients opened</h3>' + Vsm__InsProjects(events) + '</section>' +
+                '<section class="Vsm__InsCard"><h3>Scenes viewed</h3>' + Vsm__InsList(events, Vsm__Is('scene.view'), function(e) { return e.Target; }) + '</section>' +
+                '<section class="Vsm__InsCard"><h3>Model layers shown or hidden</h3>' + Vsm__InsList(events, Vsm__Is('layer.toggle'), stripState) + '</section>' +
+                '<section class="Vsm__InsCard"><h3>Menus opened</h3>' + Vsm__InsList(events, Vsm__Is('menu.open'), function(e) { return e.Target; }) + '</section>' +
+                '<section class="Vsm__InsCard"><h3>Videos watched</h3>' + Vsm__InsList(events, Vsm__Is('video.watch'), function(e) { return e.Target; },
+                    function(e) { return Number(e.Detail && e.Detail.Seconds) || 0; }, minutes) + '</section>' +
+            '</div>';
+        return Vsm__N(events.length, 'event') + ' · ' + Vsm__N(cg.visitors, 'client device') + ' · ' + Vsm__N(staff, 'staff event');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Hover Tip: any element in Insights with data-tip
+    // ------------------------------------------------------------
+    function Vsm__InsTip(e) {
+        var tip = Vsm.El('Vsm__ActInsTip'), box = Vsm.El('Vsm__ActInsights');
+        var t = e.target && e.target.closest ? e.target.closest('[data-tip]') : null;
+        if (!tip) return;
+        if (!t || !box.contains(t) || e.type === 'mouseleave') { tip.hidden = true; return; }
+        tip.textContent = t.getAttribute('data-tip');
+        tip.hidden = false;
+        var r = tip.getBoundingClientRect(), x = e.clientX + 14, y = e.clientY + 14;
+        if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - 14;
+        if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - 14;
+        tip.style.left = Math.max(4, x) + 'px';
+        tip.style.top = Math.max(4, y) + 'px';
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -789,7 +1174,9 @@
                    Vsm.Esc(e.Ok === false ? 'refused' : e.Action === 'link.open' || /^(app|project)\.open$/.test(e.Action) ? 'opened' : e.Text) +
                    '</td><td>' + Vsm__IpHtml(e) + '</td><td>' + Vsm.Esc(e.Device || '') + '</td></tr>';
         }).join('');
-        var url = l.token && l.project ? '/theia/?project=' + encodeURIComponent(l.project) + '&share=' + encodeURIComponent(l.token) : l.path || '';
+        var route = l.app === 'ValeVision 3D' ? '/valevision/' : '/theia/';
+        var url = l.token && l.project ? route + '?project=' + encodeURIComponent(l.project) + '&share=' + encodeURIComponent(l.token) : l.path || '';
+        var g = Vsm__Engage(l.opens.concat(l.seen));
         return '<h3>' + Vsm.Esc(l.label || l.kind) + '</h3>' + Vsm__Dl([
                 ['Kind', Vsm.Esc(l.kind)],
                 ['App', Vsm.Esc(l.app || '')],
@@ -798,9 +1185,14 @@
                 ['Address', url ? '<code>' + Vsm.Esc(url) + '</code>' : ''],
                 ['State', Vsm.Esc(l.state || '')],
                 ['Expires', l.kind === 'Copied link' ? '' : l.expires ? Vsm.Esc(Vsm__Stamp(Vsm__Parse(l.expires))) : 'never'],
-                ['Videos', l.kind === 'Copied link' ? '' : l.videos ? String(l.videos) : 'all'],
-                ['Opens', l.opens.length + ' in the period' + (l.counter ? ' · ' + l.counter + ' counted by Theia in all' : '')],
+                ['Videos', l.kind === 'Copied link' || l.app !== 'ValeVision Theia' ? '' : l.videos ? String(l.videos) : 'all'],
+                ['Opens', l.opens.length + ' in the period' + (l.counter ? ' · ' + l.counter + ' counted by the link in all' : '')],
                 ['Visitors', l.visitors + ' external device(s) or IP(s)'],
+                ['Exploring', g.seconds ? Vsm.Esc(Vsm__Dur(g.seconds) + (g.active ? ', ' + Vsm__Dur(g.active) + ' of it active' : '')) : ''],
+                ['Images', g.exports ? g.exports + ' exported' : ''],
+                ['Scenes', g.scenes ? g.scenes + ' viewed' : ''],
+                ['Tour', Vsm.Esc(Vsm__TourWords(g))],
+                ['Watched', g.videoSeconds ? Vsm.Esc(Vsm__Dur(g.videoSeconds) + (g.videoFinished ? ', ' + g.videoFinished + ' to the end' : '')) : ''],
                 ['Plays', l.plays ? String(l.plays) : ''],
                 ['Copied', l.copies ? l.copies + ' time(s)' : '']]) +
             (l.kind === 'Copied link' ? '<p class="Vsm__Muted">A plain app link carries no token: these are the project’s external opens in ' +
@@ -824,6 +1216,12 @@
         } else if (sel && sel.view === view && view === 'links') {
             var link = Vsm__Rows.find(function(l) { return l.key === sel.key; });
             html = link ? Vsm__SideLink(link) : '';
+        } else if (view === 'insights') {
+            html = '<h3>About Insights</h3><p class="Vsm__Muted">The same events as the ledger, counted. The period, app, account type, ' +
+                   'search and Hide my actions filters apply. <b>Clients</b> are visitors with no sign-in: almost always someone on a client link. ' +
+                   'ValeVision 3D reports its menu actions, image exports and a summary of each visit (time on screen, time active, turns, ' +
+                   'zooms and slides), and ValeVision Theia how long each video was watched, since 28-Oct-2026: earlier days have none of these.</p>' +
+                   Vsm__SideSummary();
         }
         side.innerHTML = html || Vsm__SideSummary();
         Vsm.SortTables(side);
@@ -955,6 +1353,8 @@
         ['Vsm__ActApp', 'Vsm__ActWho', 'Vsm__ActKind', 'Vsm__ActGroup'].forEach(function(id) {
             Vsm.El(id).addEventListener('change', Activity.Render);
         });
+        Vsm.El('Vsm__ActInsights').addEventListener('mousemove', Vsm__InsTip);   // <-- Insights: every bar, tile and row says its numbers
+        Vsm.El('Vsm__ActInsights').addEventListener('mouseleave', Vsm__InsTip);
         Vsm.El('Vsm__ActHideMe').checked = Vsm.Store('ActivityHideMe') === '1';
         Vsm.El('Vsm__ActHideMe').addEventListener('change', function() {
             Vsm.Store('ActivityHideMe', this.checked ? '1' : '0');

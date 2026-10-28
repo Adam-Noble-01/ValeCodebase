@@ -50,7 +50,7 @@
     position                           : relative;
     z-index                            : 3101;
     width                              : 100%;
-    max-width                          : 520px;
+    max-width                          : 560px;                               /* <-- 520px until v2.77.0: both tab names on one line */
     max-height                         : min(90vh, 700px);
     overflow-y                         : auto;
     background                         : #ffffff;
@@ -67,6 +67,76 @@
     font-weight                        : 600;
     color                              : #172b3a;
 }
+
+/* ----------------------------------------------------------------- */
+/* SUB REGION  |  Tabs: Internal Vale Company Sharing / External     */
+/* Client Sharing (v2.77.0). Internal holds the form as it was.      */
+/* ----------------------------------------------------------------- */
+
+.na-email-workers-overlay__tabs {
+    display                            : flex;
+    gap                                : 4px;
+    margin                             : 10px 0 16px;
+    border-bottom                      : 1px solid rgba(23, 43, 58, 0.16);
+}
+
+.na-email-workers-overlay__tab {
+    display                            : inline-flex;
+    flex                               : 1 1 0;
+    align-items                        : center;
+    justify-content                    : center;
+    gap                                : 7px;
+    min-width                          : 0;
+    margin                             : 0 0 -1px;
+    padding                            : 9px 10px 10px;
+    border                             : none;
+    border-bottom                      : 3px solid transparent;
+    border-radius                      : 6px 6px 0 0;
+    background                         : transparent;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.8rem;
+    font-weight                        : 600;
+    line-height                        : 1.25;
+    color                              : #656565;
+    cursor                             : pointer;
+    transition                         : color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.na-email-workers-overlay__tab:hover {
+    color                              : #172b3a;
+    background                         : #f3f5f7;
+}
+
+.na-email-workers-overlay__tab.is-active {
+    color                              : #172b3a;
+    border-bottom-color                : #172b3a;
+}
+
+.na-email-workers-overlay__tab:focus-visible {
+    outline                            : 2px solid rgba(23, 43, 58, 0.45);
+    outline-offset                     : -2px;
+}
+
+.na-email-workers-overlay__tab-icon {
+    flex-shrink                        : 0;
+    width                              : 18px;
+    height                             : 18px;
+}
+
+.na-email-workers-overlay__tabpanel[hidden] {
+    display                            : none;
+}
+
+@media (max-width: 480px) {
+    .na-email-workers-overlay__tab {
+        flex-direction                 : column;
+        gap                            : 3px;
+        font-size                      : 0.74rem;
+        text-align                     : center;
+    }
+}
+
+/* endregion -------------------------------------------------------- */
 
 .na-email-workers-overlay__hint {
     margin                             : 0 0 18px;

@@ -28,6 +28,28 @@
 
 
     <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Client Link (marks the page before anything draws)     -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- A client link (?project=<id>&share=<token>) opens the client's     -->
+    <!-- view: <html class="na-client-mode"> hides every Tools & Settings   -->
+    <!-- item not marked data-na-client-menu, so the full menu never        -->
+    <!-- flashes up first. The same rule as Na__DevGate__IsClientLink();    -->
+    <!-- the server decides whether the link opens (93__Feature__ClientLinks). -->
+    <script>
+        (function Na__Boot__MarkClientLink() {
+            try {
+                var params = new URLSearchParams(window.location.search);
+                if ((params.get('share') || '').trim() && (params.get('project') || params.get('project-folder') || '').trim()) {
+                    document.documentElement.classList.add('na-client-mode');
+                }
+            } catch (error) { /* an address that cannot be read: the staff page, behind its sign-in */ }
+        })();
+    </script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Sign-In (the shared Vale sign-in) and Installable App  -->
     <!-- ----------------------------------------------------------------- -->
     <!-- One sign-in for every Vale app: the gate and the initials bubble   -->
@@ -248,8 +270,12 @@
                 <span class="na-dropdown-menu__btn-label">Tools & Settings</span>
                 <span class="na-dropdown-menu__arrow">▾</span>
             </summary>
+            <!-- data-na-client-menu: the five items a client link shows (Camera Settings, Export Image,
+                 Toggle Model Layers, Enter Full Screen, App Settings). Every other item is hidden from
+                 clients (93__Feature__ClientLinks/Na__ClientLinks__Styles__.css): mark a new item only
+                 when a client should have it. -->
             <ul class="na-dropdown-menu__list">
-                <li class="na-dropdown-menu__item">
+                <li class="na-dropdown-menu__item" data-na-client-menu>
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraLensToggle">
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__CameraSettings__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Camera Settings</span>
@@ -276,7 +302,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item">
+                <li class="na-dropdown-menu__item" data-na-client-menu>
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naImageExportToggle">
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ExportImage__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Export Image</span>
@@ -537,7 +563,7 @@
                         </div>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item">
+                <li class="na-dropdown-menu__item" data-na-client-menu>
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naModelToggleButton">
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ViewModelLayers__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Toggle Model Layers</span>
@@ -689,7 +715,7 @@
                 </li>
                 <!-- endregion ----------------------------------------------------------------- -->
 
-                <li class="na-dropdown-menu__item na-dropdown-menu__item--full-screen" id="naFullScreenMenuItem">
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--full-screen" id="naFullScreenMenuItem" data-na-client-menu>
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
                         type="button"
@@ -705,7 +731,7 @@
                 <!-- ---------------------------------------------------------------- -->
                 <!-- UI MENU | App Settings                                          -->
                 <!-- ---------------------------------------------------------------- -->
-                <li class="na-dropdown-menu__item">
+                <li class="na-dropdown-menu__item" data-na-client-menu>
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
                         type="button"
@@ -1410,6 +1436,7 @@
     import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
     import { Na__AppConfig__LoadConfig } from './02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js';
     import { Na__UserSession__Start } from './02__Src__AppModules/03__AppUtils/Na__AppUtils__UserSession__.js';
+    import { Na__ClientMode__Start } from './02__Src__AppModules/93__Feature__ClientLinks/Na__ClientLinks__ClientMode__.js';
     import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeVerticalCorrectionControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
@@ -1553,15 +1580,19 @@
 // REGION | Sign-In (before anything asks who may author)
 // -----------------------------------------------------------------------------
 
-    // SESSION | The shared Vale sign-in (Na__AppUtils__UserSession__.js)
+    // SESSION | A client link, or the shared Vale sign-in
     // ------------------------------------------------------------
-    // A project link opens for anyone (clients have no account; staff sign in
-    // from the header). Without ?project= the sign-in gate must be passed
-    // first. Awaited here, at the top of the module, because the authoring
-    // gate (Na__AppUtils__DevGate__) answers once, on its first ask, and every
-    // dev panel below asks it.
+    // A CLIENT LINK (?project=<id>&share=<token>, 93__Feature__ClientLinks) is
+    // checked with the server first: a live one opens the client's view with
+    // the guest bubble and no sign-in; a dead one shows why and the app stops
+    // there. Every other page, a plain project link included, is a staff page:
+    // the sign-in gate must be passed first (Na__AppUtils__UserSession__.js).
+    // Awaited here, at the top of the module, because the authoring gate
+    // (Na__AppUtils__DevGate__) answers once, on its first ask, and every dev
+    // panel below asks it. A client link never authors.
     // ------------------------------------------------------------
-    const Na__Session__User = await Na__UserSession__Start();               // <-- The signed-in user, or null for a client viewer
+    const Na__ClientMode__Link = await Na__ClientMode__Start();             // <-- null on a staff page
+    const Na__Session__User = Na__ClientMode__Link ? null : await Na__UserSession__Start();   // <-- The signed-in member of staff
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -2189,7 +2220,7 @@
         walkEnabled   : Na__NavigationModes__IsWalkEnabled(),   // <-- Default ON; project.json can switch it off
         flyEnabled    : Na__NavigationModes__IsFlyEnabled()     // <-- Default ON; project.json can switch it off
     });
-    Na__Feature__BreadcrumbNav__Initialize();                                                       // <-- Top-left breadcrumb back to ValeVision Gallery (hidden without ?project=)
+    if (!Na__ClientMode__Link) Na__Feature__BreadcrumbNav__Initialize();                            // <-- Top-left breadcrumb back to ValeVision Gallery (hidden without ?project=, and on a client link)
     // ------------------------------------------------------------
 
     // INITIALIZE FLOATING NAVIGATION TOOLBAR (Bottom Centre)
@@ -2410,10 +2441,13 @@
     // Each page registers first; then the navigation starts: the address
     // (?project=<id>&page=drawing), Back and Forward, Alt+Left / Alt+Right /
     // Alt+Backspace and the breadcrumb trail's Model View crumb. The model's
-    // rendering is paused while a page is up.
-    Na__DrawingPage__Initialize({ leaveLayoutEditor : Na__LeLoad__Leave });   // <-- Never over a drawing tab: the Layout Editor is left first
-    Na__AppPages__Initialize();
-    Na__SavedDrawings__Initialize();                                          // <-- Tools & Settings > Drawings: the job's saved layouts, when there are some
+    // rendering is paused while a page is up. Not on a client link: the Drawing
+    // Editor is a staff tool, and its Drawings menu is hidden from clients.
+    if (!Na__ClientMode__Link) {
+        Na__DrawingPage__Initialize({ leaveLayoutEditor : Na__LeLoad__Leave });   // <-- Never over a drawing tab: the Layout Editor is left first
+        Na__AppPages__Initialize();
+        Na__SavedDrawings__Initialize();                                      // <-- Tools & Settings > Drawings: the job's saved layouts, when there are some
+    }
     // ------------------------------------------------------------
 
     // DRAWING PLANES | Every plan and elevation plane, shown, dragged and picked in the 3D view

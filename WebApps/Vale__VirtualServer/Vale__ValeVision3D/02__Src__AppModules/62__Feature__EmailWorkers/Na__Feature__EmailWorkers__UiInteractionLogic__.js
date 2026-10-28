@@ -8,6 +8,20 @@
 // PURPOSE    : Wire Tools menu and modal send-email workflow
 // CREATED    : 09-Apr-2026
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 28-Oct-2026 - Where it went (ValeVision3D v2.79.0, client emails sent)
+// - Both sends say where the email went, from the server's answer (sentTo):
+//   "Email successfully sent to derek@..., roger@... and 2 more." The server now
+//   takes 30 sends an hour here (was 10) and refuses an address outside Vale
+//   with a pointer to the External tab's Client email.
+//
+// 28-Oct-2026 - The External Client Sharing tab (ValeVision3D v2.77.0)
+// - The form opens on its Internal tab (unchanged). The External tab is built
+//   by 93__Feature__ClientLinks the first time it is chosen, and fetches the
+//   project's client links afresh each time it is shown.
+//
 // =============================================================================
 
 
@@ -21,6 +35,7 @@
     import { Na__Feature__EmailWorkers__BuildSendPayload } from './Na__Feature__EmailWorkers__PayloadBuilder__.js';
     import { Na__Feature__ShareProjectLink__DownloadHtmlFile } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__DownloadEmail__Logic__.js';
     import { Na__Feature__AppNotificationEmail__BuildSendPayload } from '../63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js';
+    import { Na__ClientLinks__ShareTab__Build } from '../93__Feature__ClientLinks/Na__ClientLinks__ShareTab__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -33,6 +48,18 @@
     // ------------------------------------------------------------
     function Na__Feature__EmailWorkers__CanSend() {
         return !!(window.ValeUserLogin && window.ValeUserLogin.HasLevel('Employee'));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Where an Email Went, From the Server's Answer ("a@x.com, b@x.com and 2 more")
+    // ------------------------------------------------------------
+    function Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients) {
+        const sentTo = Array.isArray(sendResult?.sentTo) && sendResult.sentTo.length
+            ? sendResult.sentTo
+            : selectedRecipients.map((item) => item.email);
+        const shown = sentTo.slice(0, 3).join(', ');
+        return sentTo.length > 3 ? `${shown} and ${sentTo.length - 3} more` : shown;
     }
     // ------------------------------------------------------------
 
@@ -154,6 +181,16 @@
         form.backdrop.addEventListener('click', closeOverlay);
         form.btnCancel.addEventListener('click', closeOverlay);
 
+        // EXTERNAL CLIENT SHARING TAB | Built on first use, refreshed every time it is shown
+        // ------------------------------------------------------------
+        let clientShareTab = null;
+        form.onTabChange = (name) => {
+            if (name !== 'external') return;
+            if (!clientShareTab) clientShareTab = Na__ClientLinks__ShareTab__Build(form.externalPanel, { onClose : closeOverlay });
+            clientShareTab.show();
+        };
+        // ------------------------------------------------------------
+
         // SUB FUNCTION | Generate & Download Legacy Link Email HTML
         // ------------------------------------------------------------
         const generateAndDownloadLinkEmail = async () => {
@@ -258,8 +295,7 @@
                 });
 
                 const sendResult = await apiClient.sendEmail(payload);
-                const sentCount = Number(sendResult?.sentCount || selectedRecipients.length);
-                showToast(`App notification sent to ${sentCount} recipient${sentCount === 1 ? '' : 's'}.`);
+                showToast(`App notification successfully sent to ${Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients)}.`);
                 autocomplete.clear();
                 form.notesInput.value = '';
                 closeOverlay();
@@ -299,8 +335,7 @@
                 });
 
                 const sendResult = await apiClient.sendEmail(payload);
-                const sentCount = Number(sendResult?.sentCount || selectedRecipients.length);
-                showToast(`Email sent to ${sentCount} recipient${sentCount === 1 ? '' : 's'}.`);
+                showToast(`Email successfully sent to ${Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients)}.`);
                 autocomplete.clear();
                 form.notesInput.value = '';
                 closeOverlay();

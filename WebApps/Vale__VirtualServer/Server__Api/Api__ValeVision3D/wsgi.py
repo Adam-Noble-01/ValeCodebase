@@ -20,11 +20,13 @@
 #   route (Api__Shared/ValeShared__Activity__.py at /api/activity).
 # - Every important write goes into the shared activity ledger
 #   (ValeVision3D__Api__Activity__.py: one hook, what each save changed).
+# - Every read needs a Vale sign-in or a live client link for the project it
+#   names (ValeVision3D__Api__ClientLinks__.py: one hook, the guard).
 #
 # ENVIRONMENT (see Server__Api README / the skill's flask-services.md):
 #   VALE_ROOT        the mirror root (/srv/vale)        VALE_SECRET_KEY   shared session key
 #   VALE_ACCEL_REDIRECT=1  let nginx stream private files   VALE_DEV=1    local development only
-#   MICROSOFT_* / ALLOWED_SEND_DOMAINS / RATE_LIMIT_MAX_PER_HOUR / VALE_EMAIL_BCC   (email)
+#   MICROSOFT_* / ALLOWED_SEND_DOMAINS / EMAIL_LIMIT_*_PER_HOUR / VALE_EMAIL_BCC   (email: ValeVision3D__Api__Email__.py)
 #
 # RUN LOCALLY (on its own):
 #   set VALE_DEV=1 && python wsgi.py        ->  http://127.0.0.1:8002/api/health
@@ -32,6 +34,12 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.3.0
+# - Client links: make, list and switch off links a client opens the 3D model
+#   with, the door that lets a client's browser in, and the guard: a project
+#   read needs a sign-in or a live client link (ValeVision3D__Api__ClientLinks__.py).
+#   A plain project link is now a staff link.
+#
 # 09-Oct-2026 - Version 1.2.0
 # - Page layouts: Create Drawing's saved layouts per job (ValeVision3D__Api__PageLayouts__.py).
 #
@@ -60,6 +68,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix                              
 from ValeShared__Accounts__ import Na__Accounts__Blueprint                        # noqa: E402
 from ValeShared__Activity__ import Na__Activity__Blueprint                        # noqa: E402
 from ValeVision3D__Api__Activity__ import Na__Vv3dActivity__Install               # noqa: E402
+from ValeVision3D__Api__ClientLinks__ import Na__Vv3dClientLinks__Install, valevision_client_links_api   # noqa: E402
 from ValeVision3D__Api__Email__ import valevision_email_api                       # noqa: E402
 from ValeVision3D__Api__PageLayouts__ import valevision_page_layouts_api          # noqa: E402
 from ValeVision3D__Api__Projects__ import valevision_projects_api                 # noqa: E402
@@ -80,8 +89,10 @@ def create_app() -> Flask:
     app.register_blueprint(Na__Accounts__Blueprint, url_prefix='/api/accounts')
     app.register_blueprint(Na__Activity__Blueprint, url_prefix='/api/activity')
     Na__Vv3dActivity__Install(app)                                                # <-- Who saved what: the shared activity ledger
+    Na__Vv3dClientLinks__Install(app)                                             # <-- Every read: a sign-in, or a live client link for its project
     for bp in (valevision_projects_api, valevision_published_api, valevision_scrapbook_api, valevision_sheet_images_api,
-               valevision_statements_api, valevision_user_config_api, valevision_email_api, valevision_page_layouts_api):
+               valevision_statements_api, valevision_user_config_api, valevision_email_api, valevision_page_layouts_api,
+               valevision_client_links_api):
         app.register_blueprint(bp)
 
     @app.errorhandler(404)

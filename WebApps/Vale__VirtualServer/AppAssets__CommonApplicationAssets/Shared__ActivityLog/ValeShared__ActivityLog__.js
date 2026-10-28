@@ -32,6 +32,12 @@
        link.copy     a link to this site copied to the clipboard (any "Copy link")
        video.play    a <video> started with its sound on (once per video per page;
                      muted background videos are not people watching)
+       video.watch   how long a video was watched and how far (1.2.0): the
+                     seconds that actually played (a seek is not counted), the
+                     furthest point as a percentage, whether it ran to the end,
+                     its length. Once per video: when it ends, when the player
+                     moves on to another, or when the page is hidden or closed.
+                     Under 3 seconds is not reported
        file.download a download link clicked
      and ValeActivity.Log(action, {project, target, detail}) for anything else.
    - NEVER IN THE WAY: everything is wrapped; a failed report is dropped. The
@@ -48,6 +54,10 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   28-Oct-2026 - Version 1.2.0
+   - video.watch: watch time, how far, and to the end (ValeVision Theia's
+     analytics in the Server Manager's Insights view). No app code changed.
+
    08-Oct-2026 - Version 1.1.0
    - A download within 3 seconds (before or after) of the app's own ValeActivity.Log
      is not reported again: the app's report names it better (the KPI report, a link
@@ -306,6 +316,92 @@
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | How Long Each Video Was Watched, and How Far (1.2.0)
+    // ------------------------------------------------------------
+    // One entry per video file (its address), kept for the page: the seconds
+    // played since the last report, the furthest point reached, whether it
+    // ended. The title is taken again for the first seconds: the app names a
+    // video (media session) a moment after it starts.
+    // ------------------------------------------------------------
+    var Na__Watch     = {};                                                    // <-- key -> { project, target, seconds, furthest, length, ended, last }
+    var Na__WatchOn   = typeof WeakMap === 'function' ? new WeakMap() : null;  // <-- <video> -> the key it is playing now
+    var Na__WatchMinS = 3;
+
+    function Na__WatchIgnored(video) {
+        return !video || video.tagName !== 'VIDEO' || video.getAttribute('data-vale-activity') === 'off' || (video.muted && !video.controls);
+    }
+
+    function Na__WatchEntry(video) {
+        var facts = Na__VideoFacts(video);
+        if (!facts.key) return null;
+        var w = Na__Watch[facts.key];
+        if (!w) w = Na__Watch[facts.key] = { project: facts.project, target: facts.target, seconds: 0, furthest: 0, length: 0, ended: false, last: null };
+        else if (w.seconds < Na__WatchMinS && facts.target) w.target = facts.target;
+        if (Na__WatchOn) Na__WatchOn.set(video, facts.key);
+        return w;
+    }
+
+    function Na__WatchReport(key) {
+        var w = Na__Watch[key];
+        if (!w || w.seconds < Na__WatchMinS) return;
+        var percent = w.length ? Math.min(100, Math.round(w.furthest / w.length * 100)) : 0;
+        Na__Send('video.watch', { project: w.project, target: w.target, detail: {
+            Seconds: Math.round(w.seconds), Percent: percent, Finished: w.ended || percent >= 95, Length: Math.round(w.length) } });
+        w.seconds = 0;                                                         // <-- The furthest point stays: the next report says how far in all
+        w.ended = false;
+    }
+
+    function Na__WatchReportAll() {
+        Object.keys(Na__Watch).forEach(Na__WatchReport);
+    }
+
+    function Na__WatchVideoTime() {
+        document.addEventListener('timeupdate', function(e) {                  // <-- Media events do not bubble: heard on the way down
+            try {
+                var video = e.target;
+                if (Na__WatchIgnored(video)) return;
+                var w = Na__WatchEntry(video);
+                if (!w) return;
+                var t = video.currentTime || 0;
+                if (!video.paused && w.last !== null && t > w.last && t - w.last < 2) w.seconds += t - w.last;   // <-- A jump is a seek, not watching
+                w.last = t;
+                if (t > w.furthest) w.furthest = t;
+                if (video.duration && isFinite(video.duration)) w.length = video.duration;
+            } catch (err) { /* never in the way */ }
+        }, true);
+        document.addEventListener('seeking', function(e) {
+            try {
+                var key = Na__WatchOn && Na__WatchOn.get(e.target);
+                if (key && Na__Watch[key]) Na__Watch[key].last = null;
+            } catch (err) { /* never in the way */ }
+        }, true);
+        document.addEventListener('ended', function(e) {
+            try {
+                var video = e.target;
+                if (Na__WatchIgnored(video)) return;
+                var w = Na__WatchEntry(video);
+                if (!w) return;
+                w.ended = true;
+                if (w.length) w.furthest = w.length;
+                Na__WatchReport(Na__WatchOn ? Na__WatchOn.get(video) : '');
+            } catch (err) { /* never in the way */ }
+        }, true);
+        document.addEventListener('loadstart', function(e) {                   // <-- The player moved on to another video
+            try {
+                var key = Na__WatchOn && Na__WatchOn.get(e.target);
+                if (!key) return;
+                Na__WatchReport(key);
+                if (Na__Watch[key]) Na__Watch[key].last = null;
+            } catch (err) { /* never in the way */ }
+        }, true);
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') Na__WatchReportAll();
+        });
+        window.addEventListener('pagehide', Na__WatchReportAll);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | A Download Link Clicked
     // ------------------------------------------------------------
     function Na__WatchDownloads() {
@@ -354,7 +450,7 @@
 
         var deviceId = Na__DeviceId();                                         // <-- Before the app's first API call
         window.ValeActivity = {
-            Version  : '1.1.0',
+            Version  : '1.2.0',
             DeviceId : function() { return deviceId; },
             Log      : function(action, fields) { Na__LastAppLog = Date.now(); Na__Send(String(action || ''), fields || {}); }
         };
@@ -362,6 +458,7 @@
         try { Na__WatchHistory(); } catch (e) { /* never in the way */ }
         try { Na__WatchClipboard(); } catch (e) { /* never in the way */ }
         try { Na__WatchVideos(); } catch (e) { /* never in the way */ }
+        try { Na__WatchVideoTime(); } catch (e) { /* never in the way */ }
         try { Na__WatchDownloads(); } catch (e) { /* never in the way */ }
         try { Na__WatchResume(); } catch (e) { /* never in the way */ }
         Na__Send('app.open');

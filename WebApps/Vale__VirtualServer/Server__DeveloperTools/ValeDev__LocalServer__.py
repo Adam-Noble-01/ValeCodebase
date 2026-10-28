@@ -25,6 +25,13 @@ DESCRIPTION:
   doesn't need its API proxy switched on in tab 03 to be mounted here.
 - X-Accel-Redirect: /_internal/<path> from an API is served from the root,
   like nginx's internal location.
+- THE LIBRARY GATE, as nginx's auth_request: a library file in an app route's
+  LibraryProtected list (routes file) is sent only after that app's API answers
+  GET /api/library-access with a 2xx, asked in this process with the browser's
+  own headers and cookies and the file's path in X-Vale-Library-Path; a 401 or
+  403 goes back as it is, any other answer is a 500. LibraryHidden folders, and
+  the protected folders of a route switched off, are never served. The path is
+  normalised first (slashes merged, dot segments resolved) as nginx's $uri is.
 - Files stream with byte ranges (206 Partial Content), as nginx serves them:
   a video seeks, and a 1 GB file is never read into memory.
 - A sandbox VALE_ROOT (for testing sign-ins and uploads) also holds library
@@ -42,6 +49,14 @@ USAGE:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+28-Oct-2026 - Version 1.2.0
+- The library gate (see above): model files, project records and Theia videos
+  open only for a Vale sign-in or a live client link to that project, as on
+  the server. Library paths are normalised before any rule is read, and a
+  backslash in a path is a 404 (on Windows it would have been a separator).
+- The never-served rules are also read against the normalised path, so a
+  /Vale__Projects__MasterLibrary/../Server__... path is refused as on nginx.
+
 07-Oct-2026 - Version 1.1.0
 - Byte ranges (werkzeug send_file, conditional): videos seek and stream, as on
   nginx. Needed by ValeVision Theia; models and images stream too.
@@ -58,9 +73,11 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import io
 import json
 import mimetypes
 import os
+import posixpath
 import re
 import sys
 from pathlib import Path
@@ -92,6 +109,9 @@ mimetypes.add_type("video/mp4", ".mp4")
 mimetypes.add_type("video/mp4", ".m4v")
 mimetypes.add_type("image/webp", ".webp")
 NA__DEV__LIBRARY                  = "/Vale__Projects__MasterLibrary/"
+NA__DEV__LIBRARY_PATTERN          = re.compile(r"^[A-Za-z0-9_.*-]+(?:/[A-Za-z0-9_.*-]+)*/?$")   # <-- A LibraryProtected / LibraryHidden entry
+NA__DEV__GATE_ROUTE               = "/api/library-access"                    # <-- The app API's answer to nginx's auth_request
+NA__DEV__GATE_HEADER              = "HTTP_X_VALE_LIBRARY_PATH"               # <-- X-Vale-Library-Path, as nginx sets it
 
 # endregion ----------------------------------------------------
 
@@ -100,13 +120,32 @@ NA__DEV__LIBRARY                  = "/Vale__Projects__MasterLibrary/"
 # REGION | Loading Routes and APIs
 # -----------------------------------------------------------------------------
 
-# FUNCTION | Load App Routes, Short Links and Each Route's Flask App
+# HELPER FUNCTION | One Regex for a List of Library Paths, Inside Every Project (the generator's own rule), or None
+# ------------------------------------------------------------
+# "ValeVision3D/Content__3dModel__GlbFiles/" is a folder and all it holds;
+# "ProjectData__*.json" a file name, * standing for any characters but "/".
+# ------------------------------------------------------------
+def Na__Dev__LibraryRegex(patterns: list):
+    alts = []
+    for p in patterns or []:
+        p = str(p).strip()
+        if not NA__DEV__LIBRARY_PATTERN.match(p) or any(s in (".", "..") for s in p.rstrip("/").split("/")):
+            raise SystemExit(f"routes file: {p!r} is not a library path (letters, digits, _ . - * and /)")
+        body = "".join("[^/]*" if c == "*" else "\\." if c == "." else c for c in p)
+        alts.append(body if p.endswith("/") else body + "$")
+    return (re.compile("^/Vale__Projects__MasterLibrary/[^/]+/[^/]+/(?:" + "|".join(alts) + ")", re.I)   # <-- re.I: Windows names
+            if alts else None)                                                 #     ignore case, so a lower-cased path is gated too
+# ---------------------------------------------------------------
+
+# FUNCTION | Load App Routes, Short Links, Each Route's Flask App and the Library Rules
 # ------------------------------------------------------------
 def Na__Dev__Load(routes_path: Path) -> tuple:
     data = json.loads(routes_path.read_text(encoding="utf-8"))
-    apps, links = [], []
+    apps, links, hidden = [], [], []
     for r in data.get("Routes", []):
+        hidden += r.get("LibraryHidden") or []                                 # <-- Never served, whatever the route's state
         if not r.get("Enabled", True):
+            hidden += r.get("LibraryProtected") or []                          # <-- A route switched off opens none of its files
             continue
         path = "/" + str(r.get("Path", "")).strip("/")
         if r.get("Type") == "app":
@@ -119,14 +158,15 @@ def Na__Dev__Load(routes_path: Path) -> tuple:
                 spec.loader.exec_module(module)
                 api = module.app
             apps.append({"path": path, "target": target, "entry": r.get("Entry") or "index.html", "api": api,
-                         "api_name": api_file.parent.name if api else ""})
+                         "api_name": api_file.parent.name if api else "",
+                         "gate": Na__Dev__LibraryRegex(r.get("LibraryProtected"))})
         elif r.get("Type") == "link":
             segs = [s for s in str(r["Path"]).strip("/").split("/") if s]
             names = [NA__DEV__VARIABLE.match(s).group(1) for s in segs if NA__DEV__VARIABLE.match(s)]
             regex = re.compile("^/" + "/".join("([A-Za-z0-9_-]+)" if NA__DEV__VARIABLE.match(s) else re.escape(s) for s in segs) + "/?$")
             links.append({"regex": regex, "names": names, "target": r["Target"], "code": int(r.get("Code", 302))})
     apps.sort(key=lambda a: -len(a["path"]))
-    return apps, links
+    return apps, links, Na__Dev__LibraryRegex(hidden)
 # ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------
@@ -174,7 +214,7 @@ def Na__Dev__DataFile(rel: str) -> Path | None:
 # ------------------------------------------------------------
 class Na__Dev__Server:
     def __init__(self, routes_path: Path):
-        self.apps, self.links = Na__Dev__Load(routes_path)
+        self.apps, self.links, self.hidden = Na__Dev__Load(routes_path)
 
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO") or "/"
@@ -206,8 +246,17 @@ class Na__Dev__Server:
                 for name, value in zip(link["names"], m.groups()):
                     target = target.replace("{" + name + "}", value)
                 return Response("", link["code"], headers={"Location": target})
-        if any(p.search(path) for p in NA__DEV__DENY):                         # <-- nginx's regex denies win over every route
+        if "\\" in path:
+            return Response("Not Found", 404)                                  # <-- On nginx a backslash is part of a name, never a separator
+        clean = posixpath.normpath(re.sub(r"/{2,}", "/", path)) + ("/" if path.endswith("/") and path != "/" else "")   # <-- nginx's $uri
+        if any(p.search(path) or p.search(clean) for p in NA__DEV__DENY):      # <-- nginx's regex denies win over every route
             return Response("Not Found", 404)
+        if clean.startswith(NA__DEV__LIBRARY):
+            if self.hidden and self.hidden.match(clean):
+                return Response("Not Found", 404)                              # <-- LibraryHidden (and a switched-off route's protected files)
+            for a in self.apps:
+                if a["gate"] and a["gate"].match(clean):
+                    return self.Na__Dev__Gated(a, req, clean)
         for a in self.apps:
             if path == a["path"]:
                 return Response("", 301, headers={"Location": a["path"] + "/" + ("?" + query if query else "")})
@@ -218,6 +267,34 @@ class Na__Dev__Server:
         if target and target.is_dir() and not (target / "index.html").is_file():
             return Response("Forbidden", 403)                                  # <-- autoindex is off on the server too
         return Na__Dev__File(target, environ=req.environ) if target else Response("Not Found", 404)
+
+    def Na__Dev__Gated(self, a: dict, req: Request, clean: str) -> Response:
+        """A protected library file: the app's API decides first, as nginx's auth_request; never kept by a shared cache."""
+        status = self.Na__Dev__Ask(a, req.environ, clean) if a["api"] is not None else 500
+        if status in (401, 403):
+            resp = Response(f"{status} refused by {a['api_name']}", status, mimetype="text/plain")
+        elif not 200 <= status < 300:
+            resp = Response(f"500: the library check answered {status}", 500, mimetype="text/plain")   # <-- nginx: any other code is an error
+        else:
+            target = Na__Dev__DataFile(clean)
+            if target and target.is_dir():
+                resp = Response("Forbidden", 403)                              # <-- autoindex is off on the server too
+            else:
+                resp = Na__Dev__File(target, environ=req.environ) if target else Response("Not Found", 404)
+        resp.headers["Cache-Control"] = "private, no-cache"
+        return resp
+
+    def Na__Dev__Ask(self, a: dict, environ: dict, clean: str) -> int:
+        """GET /api/library-access on the app's API, in this process: the browser's headers and cookies, the file's path."""
+        sub = {k: v for k, v in environ.items() if k not in ("werkzeug.request", "CONTENT_TYPE")}
+        sub.update({"REQUEST_METHOD": "GET", "SCRIPT_NAME": a["path"], "PATH_INFO": NA__DEV__GATE_ROUTE, "QUERY_STRING": "",
+                    "CONTENT_LENGTH": "0", "wsgi.input": io.BytesIO(b""), NA__DEV__GATE_HEADER: clean})
+        captured = {}
+        def capture(status, headers, exc_info=None):
+            captured["status"] = status
+            return lambda data: None
+        b"".join(a["api"](sub, capture))
+        return int(str(captured.get("status") or "500").split()[0])
 # ---------------------------------------------------------------
 
 # endregion ----------------------------------------------------
@@ -239,7 +316,8 @@ def Na__Dev__Main() -> int:
     print("=" * 77)
     print(f" VALE DEV SERVER   http://127.0.0.1:{a.port}/    root {NA__DEV__ROOT}")
     for app_ in server.apps:
-        print(f"   {app_['path'] + '/':<22} {app_['target'].name:<26} API: {app_['api_name'] or '-'}")
+        print(f"   {app_['path'] + '/':<22} {app_['target'].name:<26} API: {app_['api_name'] or '-'}"
+              + ("   (library gate)" if app_["gate"] else ""))
     print("=" * 77, flush=True)
     run_simple("127.0.0.1", a.port, server, threaded=True, use_reloader=False)
     return 0

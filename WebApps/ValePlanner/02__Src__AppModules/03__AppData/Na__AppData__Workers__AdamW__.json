@@ -3590,6 +3590,22 @@
           "endTime": "14:45",
           "title": "Whitecard |  Graf",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1793110048463",
+          "date": "2026-10-27",
+          "startTime": "18:00",
+          "endTime": "19:15",
+          "title": "Whitecard |  Telfer-Smith",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1793176821315",
+          "date": "2026-10-28",
+          "startTime": "10:30",
+          "endTime": "13:30",
+          "title": "Whitecard |  Telfer-Smith",
+          "color": "na-shift-color-rose"
         }
       ]
     }

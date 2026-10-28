@@ -27,6 +27,11 @@
 // - Resolved ONCE per page load, after the sign-in has settled (index.html
 //   awaits it before any module asks). Signing in or out later reloads the
 //   page, so every panel is built for the right person.
+// - A CLIENT LINK NEVER AUTHORS (28-Oct-2026). A page opened from a client link
+//   (?project=<id>&share=<token>, 93__Feature__ClientLinks) answers "no" whoever
+//   is signed in on the device, as Theia shows staff a client link's own view.
+//   Na__DevGate__IsClientLink() is the one rule for "is this a client link",
+//   read from the address; the Layout Editor's loader asks it too.
 //
 // INTEGRATION:
 // - Lock / unlock: ?authoring=off|on, or Na__DevGate__Lock() / Na__DevGate__Unlock() on window.
@@ -41,6 +46,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 2.1.0 (ValeVision3D v2.77.0, client links)
+// - Na__DevGate__IsClientLink(): a page opened from a client link. Authoring is
+//   off on one, whoever is signed in.
+//
 // 06-Oct-2026 - Version 2.0.0 (the move to app.valegardenhouses.com)
 // - Authoring is the signed-in user's AppAdmin level, not the hostname. The
 //   device switch can only lock (preview the client view), never unlock.
@@ -63,6 +72,7 @@
     const Na__DevGate__STORAGE_KEY  = 'ValeVision3D__AuthoringLocked';           // <-- 'true' = an admin chose the client view on this device
     const Na__DevGate__URL_PARAM    = 'authoring';
     const Na__DevGate__AUTHOR_LEVEL = 'AppAdmin';                                // <-- The server's AUTHOR_LEVEL (VALEVISION3D_AUTHOR_LEVEL)
+    const Na__DevGate__SHARE_PARAM  = 'share';                                   // <-- A client link's token (93__Feature__ClientLinks)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -134,10 +144,29 @@
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | Was This Page Opened From a Client Link? (?project=<id>&share=<token>)
+    // ------------------------------------------------------------
+    // The same test as the head script that marks <html class="na-client-mode">
+    // in index.html, so the styles and every module agree.
+    // ------------------------------------------------------------
+    function Na__DevGate__IsClientLink() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            return !!(params.get(Na__DevGate__SHARE_PARAM) || '').trim()
+                && !!(params.get('project') || params.get('project-folder') || '').trim();
+        } catch (error) { return false; }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | May This Session Author?
     // ------------------------------------------------------------
     function Na__DevGate__IsAuthoringEnabled() {
         if (Na__DevGate__Resolved !== null) return Na__DevGate__Resolved;
+        if (Na__DevGate__IsClientLink()) {
+            Na__DevGate__Resolved = false;                                       // <-- A client link: the client's view, whoever is signed in
+            return Na__DevGate__Resolved;
+        }
         Na__DevGate__ApplyUrlParam();
         const author = Na__DevGate__UserIsAuthor();
         Na__DevGate__Resolved = author && !Na__DevGate__IsLockedHere();
@@ -187,6 +216,7 @@
     // ------------------------------------------------------------
     export {
         Na__DevGate__IsAuthoringEnabled,
+        Na__DevGate__IsClientLink,
         Na__DevGate__Unlock,
         Na__DevGate__Lock,
         Na__DevGate__Initialize

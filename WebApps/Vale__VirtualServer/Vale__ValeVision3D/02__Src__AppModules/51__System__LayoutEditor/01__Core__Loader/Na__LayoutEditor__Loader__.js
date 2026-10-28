@@ -145,6 +145,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 1.1.9 (v2.77.0)
+// - NEVER ON A CLIENT LINK (Adam: the sheet tabs are hidden from clients).
+//   Na__LeLoad__IsAvailable answers false on a page opened from a client link
+//   (Na__DevGate__IsClientLink), so no tab strip comes in and no sheet opens;
+//   the editor and its stylesheets are never loaded there.
+//
 // 02-Oct-2026 - Version 1.1.8 (v2.71.5)
 // - SHEET IMAGES' STYLESHEET LOADS WITH THE EDITOR.
 //   54__Feature__SheetImages/Na__LayoutEditor__Styles__SheetImages__.css (the
@@ -287,7 +293,7 @@
         Na__DrawData__SetLayoutModeEnabled,
         Na__DrawData__Save
     } from '../../40__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
-    import { Na__DevGate__IsAuthoringEnabled } from '../../03__AppUtils/Na__AppUtils__DevGate__.js';
+    import { Na__DevGate__IsAuthoringEnabled, Na__DevGate__IsClientLink } from '../../03__AppUtils/Na__AppUtils__DevGate__.js';
     import { Na__LeCode__ShortCode, Na__LeCode__Compose } from '../07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js';   // <-- A leaf with no imports of its own: the tab code rules, without pulling the editor in
     import {
         Na__LeLoadScreen__Show,
@@ -629,7 +635,7 @@
     // ------------------------------------------------------------
     function Na__LeLoad__Load() {
         if (Na__LeLoad__Editor)   return Promise.resolve(Na__LeLoad__Editor);
-        if (Na__LeLoad__Disabled) return Promise.resolve(null);
+        if (Na__LeLoad__Disabled || Na__DevGate__IsClientLink()) return Promise.resolve(null);   // <-- Never fetched on a client link
         if (!Na__LeLoad__Loading) {
             Na__LeLoad__Loading = Na__LeLoad__Run()
                 .then((editor) => { Na__LeLoad__SettleReady(!!editor); return editor; },
@@ -667,6 +673,7 @@
     // ------------------------------------------------------------
     async function Na__LeLoad__WithEditor(action, quiet, enters) {
         if (Na__LeLoad__Editor) return action(Na__LeLoad__Editor);
+        if (Na__DevGate__IsClientLink()) return null;                            // <-- A client link: no screen, no load, nothing opened
         const early = !quiet && enters === true && Na__LeLoad__IsAvailable();   // <-- Only a press that will open the editor: never a quiet load or a Dev action
         if (early) Na__LeLoad__SetEditorClass(true);
         if (!quiet) Na__LeLoadScreen__Show();
@@ -834,9 +841,11 @@
     // FUNCTION | Is the Editor Offered (tab strip shown, sheets can open)
     // ------------------------------------------------------------
     // The mode controller's rule once it has loaded; the same rule read from
-    // the raw block before that: Layout Mode on AND at least one sheet.
+    // the raw block before that: Layout Mode on AND at least one sheet. Never
+    // on a client link (the sheet tabs are hidden from clients).
     // ------------------------------------------------------------
     function Na__LeLoad__IsAvailable() {
+        if (Na__DevGate__IsClientLink()) return false;
         if (Na__LeLoad__Editor)   return Na__LeLoad__Editor.mode.Na__LeMode__IsAvailable();
         if (Na__LeLoad__Disabled) return false;
         return Na__DrawData__GetLayoutModeEnabled() && Na__LeLoad__RawRecords().length > 0;

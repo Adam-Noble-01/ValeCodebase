@@ -24,14 +24,19 @@
 #   published-files prune and the sheet-pictures reconcile come with the saves
 #   above and would only repeat them.
 # - A ROUTE THAT KNOWS BETTER NAMES WHAT IT DID: a write may leave
-#   g.na_vv3d_activity = { text, target, detail } and those words are recorded in
-#   place of the table's (the page layouts: "Created page layout Rear view").
+#   g.na_vv3d_activity = { action, text, target, link, detail } and those are
+#   recorded in place of the table's (the page layouts: "Created page layout
+#   Rear view"; the client email: email.client, with its client link).
 # - Never fails a request: the ledger writer swallows its own errors, and so
 #   does every step here.
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.2.0 (ValeVision3D v2.79.0)
+# - g.na_vv3d_activity may name the action and the link too: a client email is
+#   recorded as email.client with the client link it carries (ValeVision3D__Api__Email__ 1.2.0).
+#
 # 09-Oct-2026 - Version 1.1.0
 # - The page layouts' save and delete (ValeVision3D__Api__PageLayouts__), and g.na_vv3d_activity
 #   for a route to name what it did.
@@ -169,7 +174,7 @@ def _after(response):
         return response
     try:
         action, text = known
-        folder, body, detail = _project(), _body(), None
+        folder, body, detail, link = _project(), _body(), None, ''
         target = _target(body)
         if request.endpoint in NA__VV3D__RECORD_SAVES:
             after = vv_shared.read_json_file(str(vv_shared.project_record_path(folder))) if folder else None
@@ -193,11 +198,13 @@ def _after(response):
             text = text.format(name=(request.view_args or {}).get('name') or target or 'a file')
         named = getattr(g, 'na_vv3d_activity', None)                           # <-- A route that knows better names what it did
         if isinstance(named, dict):
+            action = named.get('action') or action
             text   = named.get('text') or text
             target = named.get('target') or target
+            link   = named.get('link') or link
             detail = named.get('detail') or detail
         Na__Activity__Record(NA__VV3D__ACTIVITY_APP, action, text, project=folder.name if folder else '',
-                             target=target, detail=detail)
+                             target=target, link=link, detail=detail)
     except Exception as error:                                                 # <-- Never fails the save it describes
         vv_shared.log(f' [ACTIVITY] not recorded ({type(error).__name__}: {error})')
     return response

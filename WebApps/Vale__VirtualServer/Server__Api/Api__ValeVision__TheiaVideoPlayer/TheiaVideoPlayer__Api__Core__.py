@@ -24,10 +24,21 @@
 # - SHARE LINKS live in the project, user data:
 #     <project>/ValeVision__TheiaVideo/UserData__ShareLinks/<id>__TheiaShareLinks__.json
 #   nginx denies UserData folders, so a token is never readable as a file.
+# - THE VIDEO FILES (the library gate, since 28-Oct-2026): nginx sends a file from
+#   Content__VideoFiles only after asking GET api/library-access (auth_request).
+#   A client's browser shows its link with the cookie vale_theia_files, set on
+#   the project's Theia folder in the library by the videos read
+#   (set_files_cookie); share_plays_file says whether that link's page lists
+#   the file asked for. ValeShared__LibraryGate__ reads the question.
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.1.0
+# - The library gate: FILES_COOKIE, set_files_cookie, share_video_ids and
+#   share_plays_file, for the video files nginx sends only to staff or to the
+#   client link whose page lists them.
+#
 # 07-Oct-2026 - Version 1.0.0
 # - Initial build.
 #
@@ -49,6 +60,7 @@ from flask import jsonify, request
 from ValeShared__Activity__ import Na__Activity__Record
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Ranks
 from ValeShared__Library__ import Na__Library__Find, Na__Library__Locked, Na__Library__ReadJson, Na__Library__WriteJson
+from ValeShared__LibraryGate__ import Na__LibraryGate__SetCookie
 import ValeShared__TheiaVideo__ as theia
 
 # endregion -------------------------------------------------------------------
@@ -62,6 +74,7 @@ APP_NAME                 = 'ValeVision__TheiaVideoPlayer'
 ACTIVITY_APP             = 'ValeVision Theia'                                     # <-- Its name in the activity ledger (Server Manager tab 05)
 SERVICE_NAME             = 'theia-api'                                            # <-- What GET /api/health names
 SHARE_HEADER             = 'X-Theia-Share'                                        # <-- A share token may come as a header instead of ?share=
+FILES_COOKIE             = 'vale_theia_files'                                     # <-- The project's Theia folder only: the link that plays its video files
 EDIT_LEVEL               = 'Management'                                           # <-- Titles, descriptions, order, publishing
 DELETE_LEVEL             = 'AppAdmin'                                             # <-- Removing a published video and its files
 VIEW_LEVEL               = 'Employee'                                             # <-- The full app; below this, share links only
@@ -201,6 +214,32 @@ def expiry_iso(days):
         return None
     when = datetime.now(timezone.utc) + timedelta(days=min(days, 3650))
     return when.strftime('%Y-%m-%dT%H:%M:%S.') + f'{when.microsecond // 1000:03d}Z'
+
+
+def share_video_ids(share):
+    """The videos a link names, or None for all of them (including videos published after it was made)."""
+    return [str(i) for i in (share.get('TheiaShare__Link__VideoIds') or []) if i] or None
+
+
+def set_files_cookie(response, folder, token):
+    """The link that plays this project's video files, on its Theia folder in the library (None clears it)."""
+    sub = theia.Na__Theia__Bucket(folder).relative_to(folder).as_posix()
+    return Na__LibraryGate__SetCookie(response, FILES_COOKIE, folder, token, sub)
+
+
+def share_plays_file(folder, share, rest):
+    """
+    True when a link's page lists this file ("ValeVision__TheiaVideo/Content__VideoFiles/
+    <scheme folder>/<file>", inside the project): each video the link shows (visible,
+    2K and up, one it names) plays exactly one file. Read without the project record:
+    it only names videos, and it can be large.
+    """
+    prefix = theia.Na__Theia__VideosDir(folder).relative_to(folder).as_posix() + '/'
+    if not rest.startswith(prefix):
+        return False
+    library = theia.Na__Theia__Library(folder, record={})
+    shown = {v['id'] for v in theia.Na__Theia__ForAudience(library, 'client', only_ids=share_video_ids(share))}
+    return any(v['id'] in shown and v['file'] and v['file']['path'] == rest[len(prefix):] for v in library['videos'])
 
 # endregion -------------------------------------------------------------------
 

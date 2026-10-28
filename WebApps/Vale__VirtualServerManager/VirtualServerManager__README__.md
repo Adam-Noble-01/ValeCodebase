@@ -137,8 +137,22 @@ So:
 - **Save** writes `01__AppData\VirtualServerManager__UrlRoutes__.json`.
 - **Test on server** runs `nginx -t` on a copy of the live configuration and changes nothing.
 - **Apply to nginx** backs up, installs `/etc/nginx/snippets/vale-site.conf`, reloads, checks
-  `/` = 200 and `Server__*` = 404, and restores the previous files on any failure.
+  `/` = 200, `Server__*` = 404 and every library-gate path = 401 (below), and restores the previous
+  files on any failure.
 - The always-on rules (web root, denied paths) and the generated nginx are shown beside the routes.
+- **The library gate** (0.14.0): an app route may list paths inside every library project, in the
+  routes file (shown on its card, read-only):
+  - `LibraryProtected` (`"ValeVision3D/Content__3dModel__GlbFiles/"` a folder, `"ProjectData__*.json"`
+    a file name): nginx sends one only after the route's own API answers `GET /api/library-access`
+    with a 2xx (auth_request, through an internal `/_vale_library_access/<route>` location, the file's
+    `$uri` in `X-Vale-Library-Path`), with `Cache-Control: private, no-cache`. The route needs its API
+    proxy on; a route switched off never serves them.
+  - `LibraryHidden`: never served (404).
+  - Each path belongs to one route. Apply probes each protected path in a project that does not exist
+    (`/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/...`): anything but 401 (an
+    API not yet restarted with the route answers 500) restores the previous files.
+  - Since 28-Oct-2026: the valevision route (the record and the 3D model folders) and the theia route
+    (the videos; its data file hidden).
 
 **04 User accounts** (`Vale__VirtualServer\Server__UserAccountData\UserAccountData__ValeUsers__Register__.json`):
 - **One row per person:** USR code, first name, surname, email, department, role, permission level,
@@ -204,22 +218,33 @@ So:
     spelling dictionary, emails sent (subject and recipients);
   - ValeVision Theia: client links made, opened (one per browser session), opened after they expired
     or were switched off, switched off; videos published, edited, re-ordered, synced, removed;
-    posters.
+    posters; how long each video was watched, how far, and to the end (0.13.0);
+  - ValeVision 3D (0.13.0, its v2.77.0 and v2.78.0): client links made, opened, switched off; image
+    exports (size, ratio, lens), the camera lens, perspective correction, layers shown or hidden, full
+    screen, Reset View, Help, settings, menus opened, the client tour (started, finished, left early),
+    and one summary per visit (time on screen and active, turns, zooms, slides). Every event from a client
+    link carries its token.
 - **Fetch from server** brings only the ledger files that changed, in one read-only connection. It
   runs by itself when the tab opens and the copy here is 5 minutes old, and every 5 minutes while
   the tab is on screen, unless a job is running, the key is not loaded or the connection is cooling
   down. Files keep the server's size and time, so Compare shows them in sync; Collect brings them
   too (user-data lane).
-- **Three views of the same events:**
+- **Four views of the same events:**
   - *Activity ledger*: User, Account type, Role, App, Action, Project, Detail, Date, Time, IP address,
     Device. The same thing by the same person within 10 minutes is one row (×12); untick *Group
     repeats* to see each;
-  - *Generated links*: ValeVision Theia's client links (from the PC's copies of each project's links
-    file, and the ledger) with who made them, expiry, state, opens, distinct visitors, the last open
-    and where from; links staff copied (a plain `/valevision/?project=` link has no token, so it
-    counts the project's external opens since it was copied). Click one for everyone who opened it;
+  - *Generated links*: the client links of ValeVision Theia and ValeVision 3D (from the PC's copies of
+    each project's links file, and the ledger) with who made them, expiry, state, opens, distinct
+    visitors, the last open and where from; links staff copied (a plain `/valevision/?project=` link has
+    no token, so it counts the project's external opens since it was copied). Click one for everyone
+    who opened it and what they did (time exploring, images, scenes, the tour, video watched);
   - *People and devices*: one row per signed-in person and per external device (or IP), with apps,
-    events, projects, first and last seen, IP addresses and devices. Click one for their ledger.
+    events, projects, first and last seen, IP addresses and devices. Click one for their ledger;
+  - *Insights* (0.13.0): the events counted. Headline tiles; what people use, each bar split clients
+    (blue) and staff (orange); activity day by day (week by week past 92 days); each client link's and
+    each project's engagement; the most used image sizes, lenses, scenes, layers, menus and videos.
+    The period, app, account type, search and Hide my actions filters apply. Point at anything for
+    its numbers; click a row for its events in the ledger.
 - **Filters** like the other tabs: period (today to everything), search (every word must match:
   name, code, IP, device id, project, action, link token), app, account type (staff, external, a
   permission level) and action. Click a row for every detail and *This person / device / IP / link

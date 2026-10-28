@@ -63,6 +63,24 @@ USAGE (CLI, used by Claude):
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+28-Oct-2026 - Version 0.14.0
+- The library gate. An app route may name LibraryProtected paths (inside every library project:
+  "ValeVision3D/Content__3dModel__GlbFiles/", "ProjectData__*.json") and LibraryHidden paths. Each
+  protected list renders as one regex location that asks the app's API first (auth_request to an
+  internal /_vale_library_access/<route> location, which proxies GET /api/library-access with the
+  file's $uri in X-Vale-Library-Path) and sends "Cache-Control: private, no-cache". Hidden paths, and
+  the protected ones of a route switched off, render as one 404 location; all of it sits below the
+  never-served denies. Validated: a list of paths, no "." or "..", each path in one route only, and
+  an enabled route's protected paths need its API proxy on.
+- Apply probes each protected path in a project that does not exist (must_401: the API answers 401)
+  and restores the previous config when any probe gets another code (an API not yet restarted with
+  /api/library-access gets nginx's 500).
+
+28-Oct-2026 - Version 0.13.0
+- Na__Activity__ShareLinks reads ValeVision 3D's client links too
+  (<project>/ValeVision3D/UserData__ShareLinks/<id>__ValeVision3DShareLinks__.json, app v2.77.0), beside
+  Theia's: NA__ACTIVITY__LINK_FILES names each register, its app and its key prefix. Tab 05's Insights.
+
 08-Oct-2026 - Version 0.11.0
 - A year live, then archived (ValeShared__Activity__ 1.1.0 zips each month once all its days are a
   year old into 00__Archive/ServerLogs__<yyyy>__Archived__.zip). Agent mode "activity" also sends
@@ -188,6 +206,9 @@ NA__ENGINE__NAMED_SERVER_DIRS     = ("Server__Api", "Server__DeveloperTools")  #
 NA__ENGINE__ROUTE_SEGMENT         = re.compile(r"^[a-z0-9][a-z0-9-]*$")          # <-- Short, lowercase, QR friendly
 NA__ENGINE__ROUTE_VARIABLE        = re.compile(r"^\{([a-z][a-z0-9_]*)\}$")
 NA__ENGINE__ROUTE_TARGET_SAFE     = re.compile(r"^[A-Za-z0-9/_.\-?=&%{}:+~#]*$")
+NA__ENGINE__LIBRARY_URL           = "/Vale__Projects__MasterLibrary/"          # <-- Every library project, as nginx serves it
+NA__ENGINE__LIBRARY_PATTERN       = re.compile(r"^[A-Za-z0-9_.*-]+(?:/[A-Za-z0-9_.*-]+)*/?$")   # <-- A LibraryProtected / LibraryHidden entry
+NA__ENGINE__LIBRARY_GATE          = "/_vale_library_access/"                   # <-- nginx's internal auth_request locations, one per app route
 NA__ENGINE__RESULT_MARKER         = "__VALE_RESULT__"                          # <-- Prefix of the agent's JSON result line
 NA__ENGINE__WATCH_MARKER          = "__VALE_WATCH__"                           # <-- Prefix of each live-tree message
 NA__ENGINE__LANES                 = ("code", "content", "userdata", "shared")
@@ -1233,6 +1254,12 @@ def mode_nginx():
         codes[path] = c
         if c != "404":
             problems.append(f"{path} returned {c}, expected 404")
+    for path in ARGS.get("must_401", []):
+        c = http_code(host, path)
+        codes[path] = c
+        if c != "401":
+            problems.append(f"{path} returned {c}, expected 401 (the library gate: is the app's API restarted with "
+                            "/api/library-access?)")
     if problems:
         restored = nginx_restore(bdir, had_snip)
         result({"ok": False, "error": "verification failed: " + "; ".join(problems) + ("; restored" if restored else "; RESTORE FAILED"),
@@ -2181,7 +2208,7 @@ def Na__Routes__Parse(path: str) -> tuple:
 # FUNCTION | Validate the Routes (returns a list of problems; empty = fine)
 # ------------------------------------------------------------
 def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
-    errs, seen = [], {}
+    errs, seen, library_seen = [], {}, {}
     mirror = Path(cfg["Local"]["MirrorRoot"])
     for r in routes.get("Routes", []):
         segs, names = Na__Routes__Parse(r.get("Path", ""))
@@ -2209,6 +2236,22 @@ def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
                 errs.append(f"{rid}: entry must be an .html file name")
             if r.get("Api") and not (1024 <= int(r.get("ApiPort") or 0) <= 65535):
                 errs.append(f"{rid}: API port must be 1024-65535")
+            for key in ("LibraryProtected", "LibraryHidden"):
+                value = r.get(key)
+                if value is None:
+                    continue
+                if not isinstance(value, list):
+                    errs.append(f"{rid}: {key} must be a list of paths inside a library project")
+                    continue
+                for p in map(str, value):
+                    if not NA__ENGINE__LIBRARY_PATTERN.match(p) or any(s in (".", "..") for s in p.rstrip("/").split("/")):
+                        errs.append(f"{rid}: {key} '{p}' - a path inside a library project: letters, digits, _ . - * and /")
+                    elif p in library_seen:
+                        errs.append(f"{rid}: '{p}' is already in the library lists of {library_seen[p]}")
+                    else:
+                        library_seen[p] = rid
+            if r.get("Enabled", True) and r.get("LibraryProtected") and not r.get("Api"):
+                errs.append(f"{rid}: its LibraryProtected files need its API proxy on (the API decides who may have them)")
         elif r.get("Type") == "link":
             target = r.get("Target", "")
             if not (target.startswith("/") or target.startswith("https://")) or not NA__ENGINE__ROUTE_TARGET_SAFE.match(target):
@@ -2222,6 +2265,18 @@ def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
         else:
             errs.append(f"{rid}: type must be app or link")
     return errs
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | One nginx Regex for Paths Inside Every Library Project, or ""
+# ------------------------------------------------------------
+# "ValeVision3D/Content__3dModel__GlbFiles/" is a folder and all it holds;
+# "ProjectData__*.json" a file name, * standing for any characters but "/".
+# Server__DeveloperTools/ValeDev__LocalServer__.py builds the same regex.
+# ------------------------------------------------------------
+def Na__Routes__LibraryRegex(patterns: list) -> str:
+    alts = ["".join("[^/]*" if c == "*" else "\\." if c == "." else c for c in p) + ("" if p.endswith("/") else "$")
+            for p in (str(x).strip() for x in patterns or [])]
+    return f"^{NA__ENGINE__LIBRARY_URL}[^/]+/[^/]+/(?:{'|'.join(alts)})" if alts else ""
 # ---------------------------------------------------------------
 
 # FUNCTION | Render the nginx Site Body From the Routes
@@ -2251,6 +2306,28 @@ def Na__Routes__Render(routes: dict, cfg: dict) -> str:
            f"location ^~ /_internal/ {{ internal; alias {root}/; }}", ""]
     apps = [r for r in routes.get("Routes", []) if r.get("Enabled", True) and r.get("Type") == "app"]
     links = [r for r in routes.get("Routes", []) if r.get("Enabled", True) and r.get("Type") == "link"]
+    gated = [r for r in apps if r.get("Api") and r.get("LibraryProtected")]
+    hidden = [p for r in routes.get("Routes", []) if r.get("Type") == "app" for p in (r.get("LibraryHidden") or [])]
+    hidden += [p for r in routes.get("Routes", []) if r.get("Type") == "app" and not r.get("Enabled", True)
+               for p in (r.get("LibraryProtected") or [])]                     # <-- A route switched off opens none of its files
+    if gated or hidden:
+        out += ["# ---- Library files that open only for a Vale sign-in or a live client link to that project (each app",
+                "#      route's LibraryProtected). nginx asks the app's API first (auth_request, the file's normalised path",
+                "#      in X-Vale-Library-Path): a 2xx sends the file, a 401 or 403 refuses it, anything else is a 500.",
+                "#      private: Cloudflare and every other shared cache never keep a copy. LibraryHidden folders, and the",
+                "#      protected ones of a route switched off, are never served. Below the denies, so those still win."]
+    if hidden:
+        out.append(f"location ~ {Na__Routes__LibraryRegex(hidden)} {{ return 404; }}")
+    for r in gated:
+        gate = NA__ENGINE__LIBRARY_GATE + "-".join(Na__Routes__Parse(r["Path"])[0])
+        out.append(f"# {', '.join(r['LibraryProtected'])}  ->  the /{'/'.join(Na__Routes__Parse(r['Path'])[0])}/ API decides")
+        out.append(f"location = {gate} {{ internal; proxy_pass http://127.0.0.1:{int(r['ApiPort'])}/api/library-access; "
+                   'proxy_pass_request_body off; proxy_set_header Content-Length ""; '
+                   "proxy_set_header X-Vale-Library-Path $vale_library_path; include snippets/proxy-common.conf; }")
+        out.append(f"location ~ {Na__Routes__LibraryRegex(r['LibraryProtected'])} {{ set $vale_library_path $uri; "
+                   f'auth_request {gate}; add_header Cache-Control "private, no-cache" always; }}')
+    if gated or hidden:
+        out.append("")
     if apps:
         out.append("# ---- App routes (query strings pass straight through to the app)")
     for r in apps:
@@ -2287,9 +2364,14 @@ def Na__Engine__Nginx(cfg: dict, action: str) -> dict:
     digest = hashlib.sha256(conf.encode("utf-8")).hexdigest()[:12]
     verify = ["/"] + ["/" + "/".join(Na__Routes__Parse(r["Path"])[0]) + "/"
                       for r in routes["Routes"] if r.get("Enabled", True) and r.get("Type") == "app"]
+    must_401 = [f"{NA__ENGINE__LIBRARY_URL}ValeProjects__0000/0000__GateCheck/" + p.replace("*", "GateCheck")
+                + ("GateCheck.bin" if p.endswith("/") else "")                 # <-- No such project: the API answers 401, never 404
+                for r in routes["Routes"] if r.get("Enabled", True) and r.get("Type") == "app" and r.get("Api")
+                for p in (r.get("LibraryProtected") or [])]
     res = Na__Agent__Run(cfg, {"mode": "nginx", "action": action, "conf": conf, "hash": digest,
                                "host": routes.get("PublicHost", "app.valegardenhouses.com"), "verify": verify,
-                               "must_404": ["/Server__Api/", "/Server__DeveloperTools/", "/Server__UserAccountData/"]},
+                               "must_404": ["/Server__Api/", "/Server__DeveloperTools/", "/Server__UserAccountData/"],
+                               "must_401": must_401},
                          why=f"nginx {action} ({digest})", sudo=True)
     res["hash"] = digest
     if action == "apply" and res.get("ok"):
@@ -2838,20 +2920,31 @@ def Na__Activity__Unzip(cfg: dict, month: str) -> tuple:
     return cache, out
 # ---------------------------------------------------------------
 
-# FUNCTION | ValeVision Theia's Client Links, From the PC's Copies of Each Project's Links File
+# FUNCTION | Client Links (ValeVision Theia, ValeVision 3D), From the PC's Copies of Each Project's Links File
 # ------------------------------------------------------------
+# Both registers have one shape (ValeVision 3D's copied Theia's in its v2.77.0),
+# under their own key prefix: {prefix}Links__Records, each record {prefix}Link__<Field>.
+# Collect brings the files (user data); links made since show from the ledger.
+# ------------------------------------------------------------
+NA__ACTIVITY__LINK_FILES = (
+    ("ValeVision Theia", "ValeProjects__*/*/ValeVision__TheiaVideo/UserData__ShareLinks/*__TheiaShareLinks__.json", "TheiaShare__"),
+    ("ValeVision 3D", "ValeProjects__*/*/ValeVision3D/UserData__ShareLinks/*__ValeVision3DShareLinks__.json", "ValeVision3DShare__"),
+)
+
 def Na__Activity__ShareLinks(cfg: dict) -> list:
     lib = Path(cfg["Local"]["MirrorRoot"]) / "Vale__Projects__MasterLibrary"
     out = []
-    for f in sorted(lib.glob("ValeProjects__*/*/ValeVision__TheiaVideo/UserData__ShareLinks/*__TheiaShareLinks__.json")):
-        try:
-            doc = json.loads(f.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        for r in doc.get("TheiaShare__Links__Records") or []:
-            if isinstance(r, dict) and r.get("TheiaShare__Link__Token"):
-                out.append({"App": "ValeVision Theia", "Project": f.parents[2].name,
-                            **{k[len("TheiaShare__Link__"):]: v for k, v in r.items() if k.startswith("TheiaShare__Link__")}})
+    for app, pattern, prefix in NA__ACTIVITY__LINK_FILES:
+        field = prefix + "Link__"
+        for f in sorted(lib.glob(pattern)):
+            try:
+                doc = json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            for r in doc.get(prefix + "Links__Records") or []:
+                if isinstance(r, dict) and r.get(field + "Token"):
+                    out.append({"App": app, "Project": f.parents[2].name,
+                                **{k[len(field):]: v for k, v in r.items() if k.startswith(field)}})
     return out
 # ---------------------------------------------------------------
 
@@ -3141,7 +3234,7 @@ def Na__Cli__Main() -> int:
             print(f"{len(rows)} event(s) shown of {len(res['events'])} "
                   f"{'in ' + res['month'] + ' (' + res['source'] + (', unzipped to ' + res['cache'] if res['cache'] else '') + ')' if res['month'] else 'in the last ' + str(a.days or 'all') + ' day(s)'}; "
                   f"{res['files']['count']} ledger file(s) on this PC ({res['files']['first']} .. {res['files']['last']}), "
-                  f"{len(res['links'])} Theia client link(s) known; archived months: "
+                  f"{len(res['links'])} client link(s) known (Theia, ValeVision 3D); archived months: "
                   f"{', '.join(m['Month'] for m in res['months'] if m['ArchivedDays']) or 'none'}")
             return 0
         if a.cmd in ("user-reset", "user-signout"):

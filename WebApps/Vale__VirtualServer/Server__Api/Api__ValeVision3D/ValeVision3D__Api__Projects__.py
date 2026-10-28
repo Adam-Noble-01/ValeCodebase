@@ -16,11 +16,14 @@
 #   Worker, no GitHub Pages copy. The app calls them RELATIVE to its page
 #   (fetch('api/projects/64135__Washington')), so the same code runs on the
 #   server and on Adam's PC.
-# - READS ARE OPEN, WRITES NEED THE AUTHORING LEVEL. A project link
-#   (/valevision/?project=<id>) is sent to clients, who have no account, so the
-#   record, its drawings and its published files read without signing in, as
-#   they always have. Every write needs a signed-in user at vv_shared.AUTHOR_LEVEL
-#   (AppAdmin: the people who see the Dev Tools menu).
+# - READS NEED A SIGN-IN OR A CLIENT LINK, WRITES NEED THE AUTHORING LEVEL.
+#   Since 28-Oct-2026 a plain project link (/valevision/?project=<id>) is a staff
+#   link: the routes below without a decorator read for any signed-in Vale
+#   account, or for a client holding a live client link for THIS project
+#   (/valevision/?project=<id>&share=<token>). The guard that decides is
+#   ValeVision3D__Api__ClientLinks__ (one before-request hook), not the routes.
+#   Every write needs a signed-in user at vv_shared.AUTHOR_LEVEL (AppAdmin: the
+#   people who see the Dev Tools menu); a client link never opens a write.
 # - THE DRAWINGS SAVE GUARD (X-ValeVision-Drawings-Base) is kept exactly: a save
 #   built on drawings that have since changed is refused with 409 and nothing
 #   is written.
@@ -42,6 +45,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.2.1
+# - Notes only: the open reads are guarded by ValeVision3D__Api__ClientLinks__ (a
+#   sign-in, or a live client link for the project). No route changed.
+#
 # 09-Oct-2026 - Version 1.2.0
 # - _send_private moved into the core library as vv_shared.send_private_file (unchanged), with its
 #   sandbox list, nginx prefix and content types, for the page layouts blueprint to share.

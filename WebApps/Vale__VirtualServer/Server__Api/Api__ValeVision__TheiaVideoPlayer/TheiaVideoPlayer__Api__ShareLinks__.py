@@ -25,15 +25,28 @@
 #   switching one off stamps RevokedIso, so the list stays a record of who was
 #   sent what.
 # - The view counter is bumped by the videos route (one count per visit).
+# - THE VIDEO FILES (the library gate, since 28-Oct-2026): nginx sends a file
+#   from Content__VideoFiles (the theia route's LibraryProtected list in the
+#   Server Manager's routes file) only after asking GET api/library-access
+#   (auth_request). It answers 204 for staff (Employee and up), or for a live
+#   link in vale_theia_files whose page lists that very file: visible, 2K and
+#   up, one of the videos it names. 401 otherwise (403: signed in, but not
+#   allowed to watch without a link).
 #
 # ROUTES:
 #   GET  /api/projects/<id>/shares                    every link for the project  (Employee)
 #   POST /api/projects/<id>/shares                    {label, expiresDays, videoIds}  (Employee)
 #   POST /api/projects/<id>/shares/<token>/revoke     switch a link off (its maker, or Management)
+#   GET  /api/library-access                          nginx: may this browser have this video file?
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 28-Oct-2026 - Version 1.1.0
+# - The library gate: GET api/library-access answers nginx's auth_request for a
+#   video file. Before it, anyone holding a video's exact address could download
+#   it, and a link limited to some videos could open the others by their names.
+#
 # 07-Oct-2026 - Version 1.0.0
 # - Initial build.
 #
@@ -52,6 +65,7 @@ import TheiaVideoPlayer__Api__Core__ as theia_core
 import ValeShared__TheiaVideo__ as theia
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__FindRecord, Na__Auth__Require
 from ValeShared__Library__ import Na__Library__Locked
+from ValeShared__LibraryGate__ import Na__LibraryGate__Answer, Na__LibraryGate__CookieToken, Na__LibraryGate__Target
 
 # endregion -------------------------------------------------------------------
 
@@ -192,5 +206,27 @@ def revoke_share(pid, token):
             theia_core.activity('link.revoke', 'Switched off a client link', folder,
                                 target=record.get('TheiaShare__Link__Label') or '', link=record.get('TheiaShare__Link__Token') or '')
     return jsonify({'ok': True, 'link': _public(record, user, {})})
+
+
+@theia_shares_api.get('/api/library-access')
+def library_access():
+    """
+    auth_request for a video file, its path in X-Vale-Library-Path: 204 for staff
+    (Employee and up), or for a live link in vale_theia_files whose page lists this
+    very file; 403 for an account that may not watch without a link; else 401.
+    Never another code: nginx would turn it into a 500.
+    """
+    user = Na__Auth__CurrentUser()
+    if user and not user['mustChangePassword'] and user['levelRank'] <= theia_core.rank_of(theia_core.VIEW_LEVEL):
+        return Na__LibraryGate__Answer(204)
+    try:
+        folder, rest = Na__LibraryGate__Target()
+        token = Na__LibraryGate__CookieToken(theia_core.FILES_COOKIE)
+        share = theia_core.find_share(folder, token) if folder is not None and token else None
+        if share and theia_core.share_plays_file(folder, share, rest):
+            return Na__LibraryGate__Answer(204)
+    except Exception as error:                                                 # noqa: BLE001  <-- A check that cannot decide refuses
+        theia_core.log(f' [THEIA] library check refused ({type(error).__name__}: {error})')
+    return Na__LibraryGate__Answer(403 if user else 401)
 
 # endregion -------------------------------------------------------------------

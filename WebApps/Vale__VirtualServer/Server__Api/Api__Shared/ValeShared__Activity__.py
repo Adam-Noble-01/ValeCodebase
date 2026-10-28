@@ -73,6 +73,18 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+28-Oct-2026 - Version 1.2.0
+- Richer analytics (Adam: see what clients and staff do, over time): ValeVision
+  3D's menu actions (image.export, camera.lens, camera.correction, layer.toggle,
+  view.fullscreen, view.reset, settings.change, menu.open, help.open), its client
+  tour (tour.start, tour.finish, tour.skip), one visit.summary when a visit ends
+  (time on screen, time active, turns, zooms, slides), and video.watch for every
+  app that plays video (ValeVision Theia: seconds watched, how far, to the end).
+  Every new action keeps its specifics in Target and Detail, never in Text, so
+  the Server Manager can count them.
+- NA__ACTIVITY__CLIENT_LIMIT 300 (was 120) per address per 10 minutes: the
+  office shares one address, and a visit now reports each action.
+
 08-Oct-2026 - Version 1.1.0
 - A year live, then archived: Na__Activity__Archive (above), started by the first
   line of each new day. More browser actions for ValeVision 3D and ValeVision
@@ -127,7 +139,7 @@ NA__ACTIVITY__DEVICE              = re.compile(r"^([A-Za-z0-9]{12,32})(?:\.([a-z
 NA__ACTIVITY__TOKEN               = re.compile(r"^[A-Za-z0-9_-]{16,64}$")       # <-- A share link's token (Theia's: 24 characters)
 NA__ACTIVITY__TEXT_MAX            = 200
 NA__ACTIVITY__FIELD_MAX           = 160
-NA__ACTIVITY__CLIENT_LIMIT        = 120                                        # <-- Client events per address ...
+NA__ACTIVITY__CLIENT_LIMIT        = 300                                        # <-- Client events per address (the office shares one) ...
 NA__ACTIVITY__CLIENT_WINDOW_S     = 600                                        # <-- ... in 10 minutes
 NA__ACTIVITY__CLIENT_SEEN         = {}                                         # <-- address -> [times]
 NA__ACTIVITY__THROTTLE_LOCK       = threading.Lock()
@@ -160,6 +172,21 @@ NA__ACTIVITY__CLIENT_ACTIONS      = {
     "link.qr"      : "Showed a QR code",
     "file.download": "Downloaded a file",
     "file.print"   : "Printed {target}",
+    # 1.2.0: what a visit does (Target and Detail hold the specifics, so they can be counted)
+    "image.export"      : "Exported an image",                                 # <-- Detail: Ratio, Resolution, Enhance, Lens
+    "camera.lens"       : "Changed the camera lens",                           # <-- Target: "35 mm"
+    "camera.correction" : "Switched perspective correction",                   # <-- Target: On / Off
+    "layer.toggle"      : "Showed or hid a model layer",                       # <-- Target: the layer; Detail: Shown
+    "view.fullscreen"   : "Switched full screen",                              # <-- Target: Entered / Left
+    "view.reset"        : "Reset the view",
+    "settings.change"   : "Changed a setting",                                 # <-- Target: "Profile Lines: on"
+    "menu.open"         : "Opened a menu",                                     # <-- Target: "Export Image"
+    "help.open"         : "Opened Help",
+    "tour.start"        : "Started the tour",                                  # <-- Target: first visit / asked for it
+    "tour.finish"       : "Finished the tour",
+    "tour.skip"         : "Left the tour early",                               # <-- Target: the step; Detail: Step, Of
+    "visit.summary"     : "Explored the model",                                # <-- Target: "4 min 20 s"; Detail: Seconds, ActiveSeconds, Turns, Zooms, Slides, Keys
+    "video.watch"       : "Watched a video",                                   # <-- Target: the video; Detail: Seconds, Percent, Finished, Length
 }
 
 # endregion ----------------------------------------------------

@@ -1,6 +1,245 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.79.0 - 28-Oct-2026 - Client Emails Sent From the App: the Send Check, the Sender CC'd, 30 / 10 / 20 an Hour
+### Adam: "now we need a way to send those beautifully formatted emails actually out to our Vale Garden Houses Clients"
+
+**Adam's choices (asked first):** sending to clients lives on the External tab only (the Internal tab stays Vale
+only); the sender is CC'd and Adam's copy stays blind (`VALE_EMAIL_BCC`, so a client's Reply All never reaches him);
+the sign-off is "Kind regards," then the sender's name and role; 10 client sends an hour per person and 20 for
+managers (his first ask was 5 for everyone), up to 10 client addresses a send; internal sends 30 an hour (was 10); a
+tick box unlocks Send.
+
+**Share Project Link > External Client Sharing > Client email** (`Na__ClientLinks__ShareTab__` 1.1.0)
+- A new first box, **Client email address**: one address or several (commas, semicolons or spaces), up to 10,
+  checked by the server's own rule; a name, "holt@example" or a stray space is flagged in amber when the box is left,
+  and the warning clears as it is put right.
+- **Send email** is the panel's main button now; **Generate & download email** stays beside it, unchanged, for
+  pasting into Outlook. The panel's tag reads SEND TO THE CLIENT.
+- "Addressed to" and the special notes are spell-checked by the browser (en-GB).
+- Send email makes the link if it is new (as Generate always did; it is then chosen, so a retry reuses it), builds the
+  email with the sender's sign-off, and opens the send check.
+
+**The send check** (`93__Feature__ClientLinks/Na__ClientLinks__SendCheck__.js` 1.0.0, new)
+- **This email is going outside Vale:** it goes to the client from Vale's apps address with you copied in, and their
+  replies come to you; "This is external correspondence: please check everything before it goes."
+- What goes where: **To** in large type, CC (you, with your address), the subject, "Opens with" (Dear ...), the
+  project, the client link, the special notes as typed.
+- The checklist: the address letter for letter; the names after "Dear"; the notes' spelling and grammar; the right
+  project and link for this client.
+- **Preview email** opens the very email in a new tab. **I have checked this email, and it is ready to go to the
+  client** must be ticked before **Send email** works. Enter never sends by itself; Escape and the backdrop go back;
+  no key reaches the model behind.
+- **Email sent** (green): "Your email was successfully sent to holt@example.co.uk." (several: one a line), "You were
+  copied in at ..., so it is in your inbox too", and the client emails left this hour. A toast says it too, the panel
+  keeps a record (to whom, the time and the date), and the form clears for the next client.
+- **Validated:** "Email sent" only when the server confirms every address (`sentTo`); otherwise "The send was not
+  confirmed" with no Try again (it may have gone: check your inbox copy). **Not sent:** the server's reason in red,
+  Try again only where it could help (never after the hourly limit); nothing typed is lost.
+- A local copy warns that its client link exists only on that PC.
+
+**The email** (`Na__ClientLinks__ClientEmail__Builder__` 1.1.0, the template)
+- A sent email ends with the sender's sign-off under the card: "Kind regards," then their name (bold) and role, from
+  their Vale account. A downloaded one is as it was (the sender's own Outlook close and signature follow it).
+- The template's page is a column now, so wherever its `<style>` is read (a browser, Apple Mail) the sign-off sits
+  under the card, never beside it. A download looks the same as before.
+
+**The server** (`ValeVision3D__Api__Email__.py` 1.2.0)
+- **Client emails go out:** an address outside Vale (outside `ALLOWED_SEND_DOMAINS`) takes only the client email,
+  which names its project and client link: the link must be that project's, live, and in the email. Otherwise 403
+  "Only the client email can go to an address outside Vale ...". Employee and up (designers, managers, developers);
+  never an Affiliate.
+- **Copies:** a client email CCs its sender (Reply-To them, as before); the admin copy (`VALE_EMAIL_BCC`) stays
+  blind. Internal emails as before: blind copies to the sender and the admin.
+- **Per sender, an hour:** internal 30 sends (was 10); client emails 10, Management and App Admins 20; at most 10
+  client addresses a send. A send counts once. The hour is one small file in the server's temp folder shared by both
+  gunicorn workers, under the library's cross-process lock (1.1.0 counted in each worker, so up to twice the limit
+  could pass); a send Graph refuses gives its place back. Over it: 429 "You have sent 10 client emails in the last
+  hour, the most allowed. You can send the next one in 23 minutes."
+- **Every address checked** first (one plain address, a domain with a dot): 400 "Not a valid email address: ...". A
+  Graph 400 says Microsoft 365 refused the email and nothing was sent.
+- The answer names where it went: `sentTo`, `cc`, `outside`, `limitPerHour`, `remainingQuota`. `GET api/email/health`
+  shows the `limits` (a quick check that the new code is live).
+- **Settings:** `EMAIL_LIMIT_INTERNAL_PER_HOUR` (30), `EMAIL_LIMIT_CLIENT_PER_HOUR` (10),
+  `EMAIL_LIMIT_CLIENT_MANAGEMENT_PER_HOUR` (20). **`RATE_LIMIT_MAX_PER_HOUR` is no longer read.**
+- **The activity ledger:** a sent client email is `email.client` "Sent a client email": Target the addresses, Link the
+  client link, Detail To, Cc and Subject (`ValeVision3D__Api__Activity__` 1.2.0 lets a route name its action and
+  link). Refusals are recorded too (Ok false): an outside address without a client link, a client send over the limit.
+
+**The Internal tab** (`62__Feature__EmailWorkers`): both sends say where the email went, from the server's answer
+("Email successfully sent to derek@..., roger@... and 2 more."); the hint says Vale addresses only, and that a client
+is emailed from External Client Sharing.
+
+**Modules**
+- New: `93__Feature__ClientLinks/Na__ClientLinks__SendCheck__.js`.
+- `Na__ClientLinks__ShareTab__` 1.1.0, `Na__ClientLinks__ClientEmail__Builder__` 1.1.0 and `__Template__.html`,
+  `Na__ClientLinks__Helpers__` 1.1.0 (the address rule; send, eye and alert icons), `Na__ClientLinks__Styles__.css`.
+- `62__Feature__EmailWorkers`: `UiInteractionLogic__`, `FormOverlay__`, `Config.json` (its note), and the README,
+  rewritten: it still described the Cloudflare Worker retired on 06-Oct-2026.
+- Server: `ValeVision3D__Api__Email__.py` 1.2.0, `ValeVision3D__Api__Activity__.py` 1.2.0, `wsgi.py` (its settings note).
+- `ValeVision__README__.md`.
+
+**Tested** (no browser): the send route in a sandbox with Graph faked, 32 checks (internal copies and the 30; an
+outside address refused without a link, with a switched-off link, an unknown project or an email missing its link;
+six bad addresses and 11 client addresses refused; a client email CC'd to its sender with the admin blind, and an
+admin sending one CC'd once; a failed send giving its place back; an Employee stopped at 10, a manager and an app
+admin at 20, an Affiliate refused; the ledger lines; health's limits); the page's address rule against the server's
+on 11 cases. The panel and the modal are not tried in a browser.
+
+**Not live yet.** To go live: push `server-api` and `valevision3d`, restart `vale@ValeVision3D` (a push never
+restarts it), then `GET /valevision/api/email/health` should show `limits`. Take `RATE_LIMIT_MAX_PER_HOUR` out of
+`/etc/vale/apps/ValeVision3D.env` if it is set there.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.78.0 - 28-Oct-2026 - Analytics: What Clients and Staff Do, and a Tour Step for Sharing
+### Adam: "ensure there is robust support for actions reporting so we can see if clients / external users are exporting images, changing camera angle in the menu and using anything else etc so over time I can gain rich analytics"
+
+**Adam's choices (asked first):** the menu actions plus a summary of each visit; an Insights view in the Server
+Manager's tab 05; ValeVision 3D and Theia (watch time); push when done.
+
+**What ValeVision 3D now reports** (`03__AppUtils/Na__AppUtils__ActivityLog__.js` 1.2.0, by listening: no other
+module changed). On a client link the shared script adds the link's token to every report, so the Server Manager
+knows which client did what.
+- `image.export` when an image actually downloads after Download Image (Ratio, Resolution, Enhance, Custom, Lens);
+  the shared script's own download report then stays quiet.
+- `camera.lens` once the lens slider settles ("35 mm"); `camera.correction` On / Off.
+- `layer.toggle` a model layer shown or hidden; `view.fullscreen` Entered / Left; `view.reset` and `help.open` from
+  the bar; `settings.change` (a Visual Effects switch, Purge App Cache).
+- `menu.open` Tools & Settings or one of its panels opened by the person (not the start-up teaser, not the tour).
+- `visit.summary` when the page is hidden or closed after the model showed: time on screen, time active (an input in
+  each 5 seconds), turns, zooms (wheel bursts and pinches), slides and key moves on the model. Under 10 s is left out.
+- The client tour (`Na__ClientLinks__ClientTour__` 1.1.0): `tour.start` (first visit, or asked for),
+  `tour.finish`, or `tour.skip` with the step it was left at.
+- ValeVision Theia (no Theia code changed): the shared `ValeShared__ActivityLog__.js` 1.2.0 reports `video.watch`
+  for every video: the seconds actually played (seeks not counted), how far as a percentage, whether it ran to the
+  end, and its length. Once per video: at its end, when the player moves on, or when the page is hidden or closed.
+- The server takes them: `ValeShared__Activity__.py` 1.2.0 (14 new actions; the limit is 300 reports per address per
+  10 minutes, was 120: the office shares one address).
+
+**The tour: "See the tour again, or share"** (Adam, with a screenshot of the person icon's menu), before the last
+card: the guest menu opened and lit, with Take the tour again, How to look around, and Copy the link to this project
+("Share it with family and friends, so they can see your design too."). The last card is now the sign-off alone. A
+tour step can light several elements together (the icon and its menu).
+
+**The Server Manager** (0.13.0, its own DEVLOG): tab 05's fourth view, **Insights**: headline figures, what clients
+and staff use (split bars), activity day by day, each client link's and each project's engagement, the most used
+sizes, lenses, scenes, layers, menus and videos. ValeVision 3D's client links join Theia's in Generated links.
+
+**Live (Adam: push when done), 28-Oct-2026:** `server-api` scoped to `Api__Shared` (10:57 UTC, stamp
+`20261028-105725`), then all four APIs restarted (Gallery, 3D, Theia, Lantern: each imports the shared module), then
+`commonassets` scoped to `Shared__ActivityLog` and `valevision3d` (`20261028-105754`, `20261028-105804`). Checked:
+every service active with its health route answering; the live files are byte for byte the PC's. The Server Manager
+on this PC restarted on 0.13.0.
+
+**Tested** (no browser): jsdom with ValeVision 3D's real page and the real scripts, 19 checks (the export logged only
+on its download, the download report quiet, the lens once, correction, a layer, a panel opened and not when closed,
+the tour's menu left out, Reset View, Help, full screen, a visit's 2 turns, 1 slide and 2 zooms with its time, and a
+video's 16 s with a seek left out, to the end, carrying its project and link); the server route in a sandbox (all 14
+new actions accepted with Target and Detail kept, an unknown one refused); the Insights view in jsdom with the
+Manager's real page code, 21 checks.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.77.0 - 28-Oct-2026 - Client Links: Theia's Sharing for the 3D Model, a Client's View and a First-Launch Tour
+### Adam: "Add a robust client link sharing system to ValeVision 3D so Clients can view their 3D Models"
+
+**Adam's choices (asked first):** a plain project link needs a sign-in (as Theia's staff link); the External tab is
+Theia's client panel plus a client email; Theia's permissions; the Layout Editor's sheet tabs hidden from clients.
+
+**Share Project Link: two tabs**
+- **Internal Vale Company Sharing** (the default, every time the form opens): the form exactly as it was (address
+  book, greeting, notes, Generate & download, Send app notification, Send email).
+- **External Client Sharing**: Theia's Share dialog client panel (1.6.0), identically: the green edge, the person
+  badge, "Client link", SAFE TO SEND TO CLIENTS, how many links are active; Who is it for?, Never expires / 7 / 30 /
+  90 / 365 days, **Create client link** (shown and copied at once); "Client links for this project" with who made
+  each, when, how often it was opened, its end date, **Copy** and **Switch off** (the app's confirm dialog). One panel
+  open at a time; the client link panel opens with the tab.
+- **Client email** (the tab's second panel, Theia's client email 1.0.0): Addressed to (Dear ...), the client link (a
+  new never-expiring one by default, labelled "<addressee> - Email 28-Oct-26", or one of the project's live links,
+  flagged amber when it ends within 30 days), Special notes, **Generate & download email**, then the subject line
+  ("Your Project in 3D | Holt - 64135") with Copy, and **Open the email** to paste into Outlook. The card is the link
+  email's (the pavilion mark, "ValeVision 3D" with the Cambria 3D): "You are invited to view your project in
+  ValeVision 3D...", the special notes, "It opens in any web browser, with nothing to install and no account
+  needed. A short tour shows you how to look around.", the end date when the link has one, and the **View Your
+  Project in 3D** button at the bottom (moved there the same day, on Adam's screenshot). The link is always the
+  production one. A local copy warns that a link made there exists only on that PC.
+- The panel is 560px wide (was 520px) so both tab names fit.
+
+**Client links on the server** (`Server__Api/Api__ValeVision3D/ValeVision3D__Api__ClientLinks__.py` 1.0.0, Theia's
+share links for the model)
+- A client link is `/valevision/?project=<id>&share=<token>`: 24 random characters, for that project only, with a
+  label, an optional expiry, a view count, never deleted (Switch off stamps it). Stored in
+  `<project>/ValeVision3D/UserData__ShareLinks/<id>__ValeVision3DShareLinks__.json` (user data: never web-served,
+  git-ignored), each change keeping a revision.
+- Employee and up make and list links and switch off their own; Management and App Admins switch off anyone's.
+- **The door**, `GET api/projects/<id>/client-link?share=`: a live link sets the `vale_vv3d_client` cookie (HttpOnly,
+  the API's own path, up to eight links) and answers the project's name (the Gallery's) and the end date; `view=1`
+  counts the visit (once per browser session) and records `link.open` in the activity ledger; a dead link answers 404
+  and is recorded as `link.open-refused`.
+- **The guard**, one hook before every request: a read needs a Vale sign-in or a live client link for THE PROJECT IT
+  NAMES; a read that names no project (the project list, the scrapbook, the spellings) needs a sign-in. A client link
+  opens reads only: every write keeps its own decorator and every one needs a signed-in account (AppAdmin to author).
+  Switching a link off, or its expiry, locks the client out at once.
+- `wsgi.py` 1.3.0 registers both; `ValeVision3D__Api__Projects__.py` 1.2.1 says so in its notes (no route changed).
+
+**A plain project link is now a staff link** (`Na__AppUtils__UserSession__` 1.1.0): `?project=<id>` without a client
+token shows the Vale sign-in first, and the API refuses its reads otherwise. **Links already emailed to clients stop
+working**: send those clients a client link (the client email does it in one go). The bubble menu's item reads "Copy
+staff link to this project".
+
+**The client's view** (`93__Feature__ClientLinks/Na__ClientLinks__ClientMode__.js` 1.0.0)
+- index.html checks a client link with the server before anything else; the shared sign-in is never started.
+- **Tools & Settings:** Camera Settings, Export Image, Toggle Model Layers, Enter Full Screen and App Settings only.
+  Those five carry `data-na-client-menu` in index.html; every other item is hidden from clients, so a menu item added
+  later stays hidden until it is marked. A head script sets `<html class="na-client-mode">` before anything draws, so
+  the full menu never flashes up.
+- **Hidden:** the Dev Tools, the breadcrumb back to the Gallery, the Create Drawing page and Saved Drawings, the
+  Layout Editor's sheet tabs (its loader refuses on a client link: never fetched), the Sign in pill, the install card.
+- **Never an admin feature:** `Na__DevGate__IsAuthoringEnabled` answers no on a client link whoever is signed in on
+  the device (`Na__DevGate__IsClientLink`, DevGate 2.1.0), and the server refuses every write.
+- **The guest bubble** (Theia's): "Shared with you by Vale Garden Houses.", the link's end date, Take the tour again,
+  How to look around, Copy the link to this project. The browser tab reads "<project> · ValeVision 3D".
+- **A dead link** (expired, switched off, no such project) shows "This link is no longer active ... Please contact
+  your designer at Vale Garden Houses for a new link." and the app does not start behind it.
+
+**The first-launch tour** (`Na__ClientLinks__ClientTour__.js` 1.0.0), for clients, written for people who rarely use
+apps: large words and buttons, one idea a step, Back / Next, Skip tour.
+1. Welcome: what this is (Show me around / No thanks).
+2. Your saved views: the carousel lit, the rest of the screen dimmed; click a picture and the model moves to that view
+   (it can be tried while the step is up).
+3. Looking around: the navigation bar, with turn, zoom and slide for a mouse (or one finger, pinch and two fingers on
+   a touchscreen, as the app's own controls), and Reset View.
+4. Tools & Settings dropped down: Export Image (picked out: high quality pictures), Camera Settings, Toggle Model
+   Layers, Enter Full Screen. On a narrow screen the bar's Menu opens it.
+5. Help is always here: the Help button.
+6. "You are all set ... If you have any issues, contact your designer and they will be more than happy to help."
+- Finishing or skipping writes the cookie `ValeVision3D__ClientTour` for a week (the app's path); after that the
+  tour starts again. It waits for the model, and for Help or a dialog to close. Escape closes it; the arrows step it;
+  no key reaches the model while it is open.
+
+**Modules**
+- New `02__Src__AppModules/93__Feature__ClientLinks/` (the next free VV-only number, registry updated):
+  `Na__ClientLinks__Helpers__`, `Na__ClientLinks__ShareTab__`, `Na__ClientLinks__ClientEmail__Builder__` and
+  `__Template__.html`, `Na__ClientLinks__ClientMode__`, `Na__ClientLinks__ClientTour__`, `Na__ClientLinks__Styles__.css`.
+- `62__Feature__EmailWorkers`: `FormOverlay__` (the tabs), `UiInteractionLogic__` (the External tab), the stylesheet.
+- `Na__AppUtils__DevGate__` 2.1.0, `Na__AppUtils__UserSession__` 1.1.0, `Na__LayoutEditor__Loader__` 1.1.9,
+  `index.html` (the head script, the five marked items, the start-up order), the CSS index.
+- Server: `ValeVision3D__Api__ClientLinks__.py` 1.0.0 (new), `wsgi.py` 1.3.0, `ValeVision3D__Api__Projects__.py` 1.2.1.
+
+**Not covered:** the model files and project JSON that nginx serves straight from the library still open for anyone
+holding their exact address, as Theia's MP4s do. Gating them is an nginx change (the URL Configurator).
+Closed the same day by the library gate, server side only (`ValeVision3D__Api__ClientLinks__.py` 1.1.0, Theia's API,
+the Server Manager 0.14.0, `ValeDev__LocalServer__.py` 1.2.0): live once nginx is applied. See the README.
+
+**Tested**: every changed module parses (`node --check`) and its named imports resolve. The server in a sandbox
+library with Flask's test client, 47 checks, all passed: anonymous reads refused (record, location, notes, user data,
+published files, scrapbook, project list); staff read; a temporary password refused; a link needs a model; the door
+opens a live link, sets the HttpOnly cookie on the API path and counts the view; a client reads its own project (also
+by bare job number) and nothing else, and can neither save, merge nor make links; a header or query token works, a
+made-up one does not; Switch off (maker or manager only) and expiry lock the client out at once and the door clears
+the cookie. Not run in a browser: the tabs, the client's view and the tour are for Adam to try. **The server needs a
+push of `server-api` and a restart of `vale@ValeVision3D`.**
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.76.6 - 22-Oct-2026 - The Email Banner's 3 Sits on the Line
 ### Adam: "the 3 and D arent aligned see?"
 

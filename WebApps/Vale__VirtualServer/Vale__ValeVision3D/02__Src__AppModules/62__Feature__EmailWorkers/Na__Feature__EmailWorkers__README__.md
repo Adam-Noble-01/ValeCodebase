@@ -1,157 +1,123 @@
-# 62__Feature__EmailWorkers — Architecture Guide
+# 62__Feature__EmailWorkers - Architecture Guide
 
 ## What It Does
 
-Sends ValeVision3D project share emails directly from the browser to internal Vale staff via Microsoft Graph. Recipients are selected from an encrypted internal address book with Outlook-style autocomplete.
+**Share Project Link** (Tools menu, Send project email): ValeVision 3D's emails, sent from the browser through the
+app's own server, which sends them with Microsoft Graph from Vale's apps mailbox on behalf of whoever is signed in
+(Employee and up: designers, managers, developers).
+
+- **Internal Vale Company Sharing** (this folder): the share-link email and the app notification email to Vale staff,
+  with an address book of every active Vale user. Vale addresses only.
+- **External Client Sharing** (built into the same form by `93__Feature__ClientLinks`): client links, and the
+  **client email**, which goes to clients (since v2.79.0, 28-Oct-2026).
+
+The folder keeps its old name: until 06-Oct-2026 (v2.72.0) the sending was a Cloudflare Worker with its own password,
+token and encrypted address book on R2. All of that is gone: the Vale sign-in is the authorisation and the users
+register is the address book.
 
 ## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  BROWSER (ValeVision3D on GitHub Pages)                     │
-│                                                             │
-│  ┌─────────────────┐    ┌──────────────────────────────┐    │
-│  │ Tools Menu      │───>│ Send Email Overlay            │    │
-│  │ "Send project   │    │  - Recipient chips + search   │    │
-│  │  email"         │    │  - Greeting names              │    │
-│  └─────────────────┘    │  - Special notes               │    │
-│                         │  - Cancel / Download / Send    │    │
-│                         └──────┬────────────┬────────────┘    │
-│                                │            │                 │
-│                    ┌───────────┘            └──────────┐      │
-│                    ▼                                   ▼      │
-│  ┌──────────────────────────┐   ┌──────────────────────────┐ │
-│  │ AddressBook Decryptor    │   │ PayloadBuilder           │ │
-│  │ fetch CDN → AES-GCM     │   │ recipients + HTML body   │ │
-│  │ decrypt → contact list   │   │ from Share template      │ │
-│  └────────────┬─────────────┘   └──────────┬───────────────┘ │
-│               │                            │                 │
-│               ▼                            ▼                 │
-│  ┌──────────────────┐          ┌──────────────────────────┐  │
-│  │ R2 CDN           │          │ Cloudflare Worker        │  │
-│  │ cdn.noble-       │          │ /api/email/send          │  │
-│  │ architecture.com │          │ /api/email/verify-auth   │  │
-│  └──────────────────┘          └──────────┬───────────────┘  │
-└───────────────────────────────────────────┼──────────────────┘
-                                            │
-                                            ▼
-                              ┌──────────────────────────┐
-                              │ Microsoft Graph API      │
-                              │ sendMail (OAuth2 client  │
-                              │ credentials flow)        │
-                              └──────────────────────────┘
+BROWSER  app.valegardenhouses.com/valevision/
+  Tools menu "Send project email"  ->  Share Project Link form (FormOverlay, two tabs)
+
+    Internal tab (this folder)                        External tab (93__Feature__ClientLinks)
+      recipients from the address book                  Client email: client address(es),
+      greeting names, special notes                     Dear ..., client link, special notes
+      PayloadBuilder (61 Share template)                ClientEmail Builder (+ the sender's sign-off)
+      ApiClient                                         SendCheck modal: check, tick, send, "Email sent"
+            |                                                     |
+            +---------------------+-------------------------------+
+                                  v
+SERVER  Server__Api/Api__ValeVision3D/ValeVision3D__Api__Email__.py  (Flask, systemd vale@ValeVision3D)
+  GET  api/email/contacts   the users register: active users in Vale's domains
+  POST api/email/send       signed in (Employee+), every address checked, outside addresses only
+                            with the client email's live client link, hourly limits, the copies
+                                  |
+                                  v
+Microsoft Graph sendMail (client credentials) from MICROSOFT_SENDER_USER (no-reply-apps@valegardenhouses.com),
+Reply-To the sender
 ```
 
 ## File Map
 
-### Frontend Modules (browser-side)
+### This folder (the Internal tab and the form)
 
 | File | Purpose |
 |------|---------|
-| `Na__Feature__EmailWorkers__UiInteractionLogic__.js` | Main entry — wires menu, overlay, contacts, auth, send flow |
-| `Na__Feature__EmailWorkers__FormOverlay__.js` | Builds the modal DOM (recipients, greeting, notes, buttons) |
-| `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` | All overlay + auth overlay CSS |
-| `Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js` | Chip input with address book filtering and keyboard support |
-| `Na__Feature__EmailWorkers__AddressBook__Decryptor__.js` | Fetches encrypted JSON from R2 CDN, decrypts client-side |
-| `Na__Feature__EmailWorkers__ApiClient__.js` | HTTP client for Worker endpoints (send, verify-auth) |
-| `Na__Feature__EmailWorkers__PayloadBuilder__.js` | Builds email payload using Share Project Link HTML template |
-| `Na__Feature__EmailWorkers__AuthManager__.js` | localStorage token persistence + auth overlay orchestration |
-| `Na__Feature__EmailWorkers__AuthOverlay__.js` | Password modal DOM for email send authorization |
-| `Na__Feature__EmailWorkers__Config.json` | CDN URL, decrypt key, Worker API URL, timeouts |
+| `Na__Feature__EmailWorkers__UiInteractionLogic__.js` | Main entry: the menu item, the form, the address book, the Internal tab's sends; builds the External tab on first use |
+| `Na__Feature__EmailWorkers__FormOverlay__.js` | The form: the two tabs; the Internal tab's recipients, greeting, notes and buttons |
+| `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` | The form and its tabs |
+| `Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js` | Recipient chips with address book suggestions |
+| `Na__Feature__EmailWorkers__ApiClient__.js` | `api/email/contacts` and `api/email/send` |
+| `Na__Feature__EmailWorkers__PayloadBuilder__.js` | The share-link email, from the Share Project Link template (`61__Feature__ShareProjectLink`) |
+| `Na__Feature__EmailWorkers__Config.json` | The request timeout |
 
-### Cloudflare Worker (server-side)
+### The client email (`93__Feature__ClientLinks/`)
 
 | File | Purpose |
 |------|---------|
-| `CloudflareWorker/src/index.js` | Worker entry: auth verify, send mail, rate limit, BCC |
-| `CloudflareWorker/wrangler.jsonc` | Worker config and non-secret env vars |
-| `CloudflareWorker/package.json` | Dependencies (jose for JWT/HMAC) |
-| `CloudflareWorker/.dev.vars` | Local dev secrets (gitignored) |
-| `CloudflareWorker/.env.template` | Secret names reference (all values redacted) |
-| `CloudflareWorker/Deploy__Worker.bat` | One-click deploy + set secrets |
-| `CloudflareWorker/Dev__Worker.bat` | One-click local dev server |
+| `Na__ClientLinks__ShareTab__.js` | The External tab: client links, and the Client email panel (addresses, Send email, Generate & download) |
+| `Na__ClientLinks__SendCheck__.js` | The modal: "This email is going outside Vale", the checklist, the tick box, the send, "Email sent to ..." |
+| `Na__ClientLinks__ClientEmail__Builder__.js` | Fills the template; a sent email gets the sender's sign-off (Kind regards, name, role) |
+| `Na__ClientLinks__ClientEmail__Template__.html` | The client email card |
+| `Na__ClientLinks__Helpers__.js` | The API call, the email address rule (the server's own) |
 
-### Address Book (offline tooling)
+### The server
 
 | File | Purpose |
 |------|---------|
-| `Na__Email__AddressBook__Source__.json.--HIDDEN` | Plaintext contacts (gitignored) |
-| `Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN` | Encrypts + uploads to R2 + patches keys (gitignored) |
-| `CloudflareWorker/assets/Na__Email__AddressBook__Encrypted__.json` | Local encrypted copy (for dev) |
+| `Server__Api/Api__ValeVision3D/ValeVision3D__Api__Email__.py` | Contacts, the send, the rules below |
+| `Server__Api/Api__ValeVision3D/ValeVision3D__Api__Activity__.py` | Each send in the activity ledger (`email.send`; a client email is `email.client`, with its link) |
 
-## Security Model
+## The Rules (the server decides)
 
-**Nothing sensitive is committed to git.** Here is where each secret lives:
+| | Internal | Client email |
+|---|---|---|
+| **Addresses** | Vale's own domains (`ALLOWED_SEND_DOMAINS`, default `valegardenhouses.com`) | any, with the project and a live client link of it, carried in the email; up to 10 a send |
+| **Who** | Employee and up | Employee and up |
+| **An hour, per sender** | 30 sends | 10 sends; Management and App Admins 20 |
+| **Copies** | blind: the sender, the admin (`VALE_EMAIL_BCC`) | the sender in **CC** (the client sees who sent it); the admin blind |
 
-| Secret | Where it lives | Accessible to |
-|--------|---------------|---------------|
-| Email addresses (plaintext) | `.json.--HIDDEN` file (gitignored) | Local machine only |
-| Email addresses (encrypted) | R2 CDN (public but encrypted) | Anyone, but useless without key |
-| AES-256-GCM decrypt key | Config JSON (committed) | Browser JS (obfuscation only) |
-| Microsoft Graph client secret | Wrangler secret (Cloudflare) | Worker runtime only |
-| Auth password | Wrangler secret (Cloudflare) | Worker runtime only |
-| HMAC signing key | Wrangler secret (Cloudflare) | Worker runtime only |
-| BCC admin email | Encrypted address book (first entry) | Resolved at runtime, not in code |
-| Cloudflare API tokens | `Token__CloudflareAPI.env` (gitignored via `*.env`) | Local machine only |
-
-**Key principle:** The frontend handles contact display (encrypted + obfuscated). The Worker handles email sending (real secrets never leave Cloudflare). The address book key in the config JSON is deliberate obfuscation, not true security — acceptable for internal company email addresses.
+- An address outside Vale without a client link is refused (403), and the refusal is recorded in the ledger.
+- Every address is checked first: one plain address, no name, no spaces, a domain with a dot.
+- Each send counts once, whatever number of addresses. The hour is one small file in the server's temp folder,
+  shared by both gunicorn workers under a cross-process lock; a send Graph refuses gives its place back.
+- The answer names where it went (`sentTo`, `cc`) and what is left (`limitPerHour`, `remainingQuota`); the page says
+  "Email sent to ..." only from that answer.
 
 ## Send Flow
 
-1. User clicks "Send project email" in Tools menu
-2. Overlay opens, contacts fetched from R2 CDN and decrypted client-side
-3. User selects recipients, fills greeting + notes
-4. User clicks "Send email"
-5. Auth manager checks localStorage for valid HMAC token
-6. If no token: password overlay appears, password sent to `/verify-auth`, HMAC token returned and stored (30-day expiry)
-7. PayloadBuilder generates HTML email body using the Share Project Link template
-8. ApiClient POSTs to `/api/email/send` with Bearer token + payload
-9. Worker validates HMAC token, checks rate limit (10/hr), validates recipient domains
-10. Worker fetches + decrypts address book from R2, uses first entry as BCC
-11. Worker sends via Microsoft Graph `sendMail` (client-credentials OAuth2)
-12. Success toast shown to user
+**Internal:** pick recipients, fill greeting and notes, **Send email** (or **Send app notification**). The toast says
+where it went: "Email successfully sent to derek@..., roger@... and 2 more."
 
-## Adding a New Contact
+**Client email:**
+1. External Client Sharing, Client email: the client's address(es), Addressed to (Dear ...), the client link (a new
+   never-expiring one by default), special notes.
+2. **Send email**: the link is made if new, the email is built with the sender's sign-off, the send check opens.
+3. The send check: To in large type, CC (you), subject, greeting, project, link, notes; the checklist; **Preview
+   email**; tick "I have checked this email, and it is ready to go to the client"; **Send email**.
+4. "Email sent": successfully sent to the address(es), who was copied in, the client emails left this hour. The panel
+   keeps a record and the form clears.
 
-```
-1. Edit  Na__Email__AddressBook__Source__.json.--HIDDEN
-2. Run   python "Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN"
-3. Done. Script encrypts → uploads to R2 → patches .dev.vars → patches Config.json
-4. Commit and push (Config.json has the updated key)
-```
+**Generate & download** (both tabs) still makes the HTML to paste into Outlook; a downloaded client email has no
+sign-off (the sender's own Outlook signature follows it).
 
-No Worker redeployment needed for contact changes.
+## Server Settings
 
-## Deploying the Worker
+Read from the environment (`/etc/vale/apps/ValeVision3D.env`, the secret in `/etc/vale/secrets/ValeVision3D.env`):
 
-```
-Double-click  CloudflareWorker/Deploy__Worker.bat
-```
+| Setting | Default | |
+|---|---|---|
+| `MICROSOFT_TENANT_ID`, `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `MICROSOFT_SENDER_USER` | none | without them a send answers 503 |
+| `ALLOWED_SEND_DOMAINS` | `valegardenhouses.com` | Vale's own domains: internal |
+| `VALE_EMAIL_BCC` | none | the admin's blind copy of every send (comma-separated) |
+| `EMAIL_LIMIT_INTERNAL_PER_HOUR` | 30 | |
+| `EMAIL_LIMIT_CLIENT_PER_HOUR` | 10 | |
+| `EMAIL_LIMIT_CLIENT_MANAGEMENT_PER_HOUR` | 20 | Management and App Admins |
 
-Or manually:
-```
-cd CloudflareWorker
-set CLOUDFLARE_API_TOKEN=<from Token__CloudflareAPI.env>
-npx wrangler deploy
-npx wrangler secret put MICROSOFT_CLIENT_SECRET
-npx wrangler secret put EMAIL_ADDRESSBOOK_KEY_B64
-npx wrangler secret put EMAIL_AUTH_PASSWORD
-npx wrangler secret put EMAIL_AUTH_TOKEN_SECRET
-npx wrangler secret put ALLOWED_ORIGIN
-npx wrangler secret put R2_SECRET_ACCESS_KEY
-```
+`RATE_LIMIT_MAX_PER_HOUR` (the one limit before v2.79.0) is no longer read. `GET /valevision/api/email/health`
+answers `configured`, `adminBcc` and the `limits` in force.
 
-## Local Development
-
-```
-Double-click  CloudflareWorker/Dev__Worker.bat
-```
-
-Starts Worker at `http://127.0.0.1:8787` using `.dev.vars` for secrets. The frontend config has a localhost override that auto-switches when running from `127.0.0.1`.
-
-## Dependencies on Module 61 (Share Project Link)
-
-The email body is generated by reusing the Share Project Link HTML template system:
-- `PayloadBuilder` imports `GetShareContext` and `BuildEmailHtml` from `61__Feature__ShareProjectLink`
-- `UiInteractionLogic` imports `DownloadHtmlFile` for the "Generate & download" button
-- The email template at `61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__ProjectEmail__Template__.html` is the single source of truth for email layout
+A change to the server code needs a `server-api` push **and** a restart of `vale@ValeVision3D`: a push never restarts
+it.

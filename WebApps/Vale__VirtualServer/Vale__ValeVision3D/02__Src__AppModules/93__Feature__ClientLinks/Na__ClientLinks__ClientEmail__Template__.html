@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION3D - CLIENT LINKS - CLIENT EMAIL (RUNTIME TEMPLATE)
+     =============================================================================
+
+     FILE       : Na__ClientLinks__ClientEmail__Template__.html
+     NAMESPACE  : ValeVision3D
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Tokenised HTML for the email that invites a client to view
+                  their project in ValeVision 3D through a client link
+     CREATED    : 28-Oct-2026
+
+     DESCRIPTION:
+     - ValeVision Theia's client email card (Na__ClientEmail__Template__.html),
+       with ValeVision 3D's banner: a 2px navy frame 440px wide; the Vale
+       pavilion mark, then "ValeVision 3D" and "By Vale Garden Houses" in
+       Georgia; Project Code / Project Name; the greeting; the invitation; the
+       optional special notes; how it opens, and the end date when the link
+       has one; then, at the bottom, one button to the client link (Adam,
+       28-Oct-2026: the button last); the grey copyright footer.
+     - The "3D" is set in Cambria (then Times New Roman), as the link email's
+       banner: Georgia's figures are old-style, so its 3 drops below the line.
+     - No closing line in the card. A DOWNLOADED email has none at all: the
+       sender's own close and Outlook signature follow the card (Adam,
+       22-Oct-2026, for Theia's). An email SENT from ValeVision 3D carries the
+       sender's sign-off under the card (Adam, 28-Oct-2026): Kind regards,
+       their name and their role.
+     - Pasted into Outlook from a browser (Ctrl+A, Ctrl+C), or sent whole by
+       the server, so every style that matters is inline. The <style> block
+       only frames the page in a browser and guards against mail apps' dark
+       modes. The page is a column, so a sign-off sits under the card wherever
+       the <style> block is read (a browser, Apple Mail).
+     - The button's padding is on its cell, not the link: Outlook ignores
+       padding on a link.
+     - Every address is the production one (app.valegardenhouses.com).
+
+     TOKENS (replaced by Na__ClientLinks__ClientEmail__Builder__.js):
+     - __EMAIL_SUBJECT__        the page title: the suggested subject line
+     - __PROJECT_META_HTML__    Project Code / Project Name (two lines)
+     - __GREETING_HTML__        Dear Mr and Mrs Holt,
+     - __SPECIAL_NOTES_BLOCK__  the special notes card, or nothing
+     - __PROJECT_URL__          the client link (/valevision/?project=<id>&share=<token>)
+     - __LINK_EXPIRY_HTML__     "This link works until 22-Nov-2026." or nothing
+     - __YEAR__                 the copyright year
+     - __SIGN_OFF_HTML__        a sent email's sign-off under the card, or nothing (a download)
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta Tags and Template Styles -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>__EMAIL_SUBJECT__</title>
+    <style>
+        /* ----------------------------------------------------------------- */
+        /* REGION | Core Email Card Layout Styles */
+        /* ----------------------------------------------------------------- */
+        :root {
+            color-scheme                   : light;
+        }
+
+        body {
+            font-family                    : Arial, sans-serif;
+            background-color               : #f5f5f5;
+            padding-top                    : 8vh;
+            padding-bottom                 : 8vh;
+            padding-left                   : 10px;
+            padding-right                  : 10px;
+            margin                         : 0;
+            display                        : flex;
+            flex-direction                 : column;                        /* <-- The card, then a sent email's sign-off under it */
+            justify-content                : flex-start;
+            align-items                    : center;
+            min-height                     : 100vh;
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* SUB REGION | Adaptive Layout Styles (Phone / Narrow Width) */
+        /* ----------------------------------------------------------------- */
+        @media only screen and (max-width: 432px) {
+            .vv3d-email-banner-cell {
+                padding                    : 20px 18px 6px !important;
+            }
+
+            .vv3d-email-content-cell {
+                padding                    : 14px 18px 22px !important;
+            }
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* REGION | Email Client Dark-Mode Safety Overrides */
+        /* ----------------------------------------------------------------- */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color           : #f5f5f5 !important;
+            }
+
+            .vv3d-email-root .vv3d-email-white,
+            .vv3d-email-root .vv3d-email-white td {
+                background-color           : #ffffff !important;
+            }
+
+            .vv3d-email-root .vv3d-email-inner,
+            .vv3d-email-root .vv3d-email-inner td {
+                background-color           : #ffffff !important;
+                color                      : #172b3a !important;
+            }
+
+            .vv3d-email-root .vv3d-email-inner a {
+                color                      : #336699 !important;
+            }
+
+            .vv3d-email-root .vv3d-email-inner td.vv3d-email-button-cell {
+                background-color           : #172b3a !important;
+            }
+
+            .vv3d-email-root .vv3d-email-inner a.vv3d-email-button {
+                color                      : #ffffff !important;
+            }
+
+            .vv3d-email-root .vv3d-email-footer {
+                background-color           : #f5f5f5 !important;
+                color                      : #656565 !important;
+                border-top-color           : #e0e0e0 !important;
+            }
+        }
+
+        [data-ogsc] .vv3d-email-root .vv3d-email-white,
+        [data-ogsc] .vv3d-email-root .vv3d-email-white td,
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner,
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner td {
+            background-color               : #ffffff !important;
+        }
+
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner,
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner td {
+            color                          : #172b3a !important;
+        }
+
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner td.vv3d-email-button-cell {
+            background-color               : #172b3a !important;
+        }
+
+        [data-ogsc] .vv3d-email-root .vv3d-email-inner a.vv3d-email-button {
+            color                          : #ffffff !important;
+        }
+
+        [data-ogsc] .vv3d-email-root .vv3d-email-footer {
+            background-color               : #f5f5f5 !important;
+            color                          : #656565 !important;
+        }
+        /* endregion --------------------------------------------------------- */
+    </style>
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Email Card HTML Markup -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+                <!-- ========================================================= -->
+                <!-- VALEVISION3D CLIENT EMAIL - START                         -->
+                <!-- ========================================================= -->
+                <table class="vv3d-email-root" role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; max-width: 440px; width: 100%; margin: 10px auto 20px; border: 2px solid #172b3a;">
+                    <tr>
+                        <td class="vv3d-email-white" bgcolor="#ffffff" style="background-color: #ffffff !important; padding: 0;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+                                <tr>
+                                    <td class="vv3d-email-banner-cell" align="left" bgcolor="#ffffff" style="background-color: #ffffff !important; padding: 22px 24px 6px; text-align: left;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td valign="middle" style="padding: 0 14px 0 0; vertical-align: middle;">
+                                                    <img src="https://app.valegardenhouses.com/AppAssets__CommonApplicationAssets/Logo__ValeGardenHouses/Logo__ValeGardenHouses__PavilionMark__Navy__EmailLogo__.png"
+                                                         alt=""
+                                                         width="44"
+                                                         height="60"
+                                                         border="0"
+                                                         style="display: block; width: 44px; height: 60px;">
+                                                </td>
+                                                <td valign="middle" style="vertical-align: middle;">
+                                                    <p style="margin: 0; padding: 0; color: #172b3a; font-size: 24px; line-height: 1.2; font-family: Georgia, 'Times New Roman', serif;">
+                                                        ValeVision <span style="font-family: Cambria, 'Times New Roman', Times, serif;">3D</span>
+                                                    </p>
+                                                    <p style="margin: 3px 0 0; padding: 0; color: #9aa3ad; font-size: 14px; line-height: 1.3; font-family: Georgia, 'Times New Roman', serif;">
+                                                        By Vale Garden Houses
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="vv3d-email-content-cell vv3d-email-inner" bgcolor="#ffffff" style="background-color: #ffffff !important; color: #172b3a; padding: 16px 26px 26px;">
+                                        __PROJECT_META_HTML__
+                                        <p style="margin: 10px 0 12px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            __GREETING_HTML__
+                                        </p>
+                                        <p style="margin: 0 0 20px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            You are invited to view your project in <strong>ValeVision&nbsp;3D</strong>, Vale Garden Houses' interactive 3D viewer. Your design is ready to explore from every angle.
+                                        </p>
+                                        __SPECIAL_NOTES_BLOCK__
+                                        <p style="margin: 0; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            It opens in any web browser, with nothing to install and no account needed. A short tour shows you how to look around.
+                                        </p>
+                                        __LINK_EXPIRY_HTML__
+                                        <!-- The button at the bottom (Adam, 28-Oct-2026); its space above is the cell's padding: Outlook ignores a table's margin -->
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+                                            <tr>
+                                                <td align="center" style="padding: 22px 0 0;">
+                                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+                                                        <tr>
+                                                            <td class="vv3d-email-button-cell" align="center" bgcolor="#172b3a" style="background-color: #172b3a; padding: 12px 26px; border-radius: 4px;">
+                                                                <a class="vv3d-email-button" href="__PROJECT_URL__" target="_blank" style="color: #ffffff; font-size: 14px; font-weight: 600; line-height: 1.4; text-decoration: none; font-family: Arial, sans-serif;">View Your Project in 3D</a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vv3d-email-footer" align="center" bgcolor="#f5f5f5" style="background-color: #f5f5f5 !important; padding: 14px 30px; border-top: 1px solid #e0e0e0;">
+                            <p align="center" style="margin: 0; padding: 0; color: #656565; font-size: 12px; line-height: 1.5; font-family: Arial, sans-serif;">
+                                &copy; __YEAR__ Vale Garden Houses | All Rights Reserved
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                __SIGN_OFF_HTML__
+                <!-- ========================================================= -->
+                <!-- VALEVISION3D CLIENT EMAIL - END                           -->
+                <!-- ========================================================= -->
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+</html>

@@ -1,5 +1,89 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.14.0, 28-Oct-2026: The Library Gate (nginx auth_request for Project Files)
+
+**Asked:** stop nginx serving a project's ValeVision 3D model files and its `ProjectData__<id>__.json` (and Theia's
+MP4s, same hole) to anyone who knows the address: open them only for a Vale sign-in or a live client link to THAT
+project. **Adam's choices (asked first):** also Theia's videos (a limited link opens only its own videos) and Theia's
+data file (blocked for everyone); scene thumbnails, Gallery images and Theia posters stay public; the lists live in
+the routes file, shown read-only in tab 03; checked with a local nginx and a server dry run.
+
+**Routes file** (`VirtualServerManager__UrlRoutes__.json`): an app route may carry `LibraryProtected` and
+`LibraryHidden`, paths inside every library project. Set on 28-Oct-2026:
+- valevision: `ProjectData__*.json`, `ValeVision3D/Content__3dModel__GlbFiles/`, `Content__3dModel__AppGenerated/`,
+  `Content__SitePlanData/`;
+- theia: `ValeVision__TheiaVideo/Content__VideoFiles/`; hidden `ValeVision__TheiaVideo/AppData__VideoData/`.
+
+**Engine** (`Na__Routes__Render`, `Na__Routes__LibraryRegex`, `Na__Routes__Validate`, `Na__Engine__Nginx`, the
+agent's `mode_nginx`):
+- each route's protected list is one regex location below the never-served denies:
+  `set $vale_library_path $uri; auth_request /_vale_library_access/<route>; add_header Cache-Control "private,
+  no-cache" always;`. The internal location proxies `GET /api/library-access` on the route's API port with the
+  path in `X-Vale-Library-Path` (no body). A 2xx sends the file (byte ranges as before), 401 / 403 go back as
+  they are, anything else is a 500. `private` keeps Cloudflare from ever keeping a copy;
+- hidden paths, and the protected paths of a route switched off, are one `return 404` location;
+- validation: lists of paths (letters, digits, `_ . - *` and `/`, no `.` or `..`), each in one route only, and an
+  enabled route's protected paths need its API proxy on;
+- Apply also probes each protected path in a project that does not exist (`must_401`) and restores the previous
+  files when one answers anything else, so an API not yet restarted with the route can never leave files
+  refusing everyone.
+
+**Tab 03:** an app route's card shows its library rules, read-only (`Vsm__LibraryRow`). The draft keeps them
+through every save, as it keeps every key: reload the tab before saving if the file changed under it.
+
+**The other halves** (outside this app): `Api__Shared/ValeShared__LibraryGate__.py` 1.0.0 (the question, the
+answer, the per-project cookie), `ValeVision3D__Api__ClientLinks__.py` 1.1.0, Theia's API (Core 1.1.0, ShareLinks
+1.1.0, Videos 1.2.0), `Server__DeveloperTools/ValeDev__LocalServer__.py` 1.2.0 (the same rule on the PC).
+
+**Tested** (sandbox VALE_ROOT, synthetic accounts, tiny ffmpeg MP4s; no server data): 24 generator checks in
+memory; 60 HTTP checks through the local server; 64 through nginx 1.24.0 for Windows running the generated body
+(paths and ports moved to this PC); `engine nginx-test` on the server: syntax ok (auth_request present), body
+hash `7bc76aff4b54`. Not applied.
+
+## Version 0.13.0, 28-Oct-2026: Insights (Tab 05), and ValeVision 3D's Client Links
+
+**Asked by Adam:** "ensure there is robust support for actions reporting so we can see if clients / external users
+are exporting images, changing camera angle in the menu and using anything else etc so over time I can gain rich
+analytics". Chosen in prompts: menu actions plus a visit summary, an Insights view in tab 05, ValeVision 3D and
+Theia, push when done.
+
+**Insights, tab 05's fourth view** (beside Activity ledger, Generated links, People and devices):
+- **Headline tiles:** client visits (devices, link opens), time clients spent exploring (and how much of it active),
+  images exported, scenes viewed, the client tour (finished of started, left early), video watched.
+- **What people use:** every action as a bar split clients / staff, most used first (21 kinds: apps and models
+  opened, scenes, image exports, the lens, perspective correction, layers, full screen, Reset View, walk / orbit /
+  fly, drawing views, menus, settings, Help, the tour, videos played and watched to the end, links copied, downloads).
+- **Activity day by day** (week by week past 92 days): one axis, clients at the foot, staff above.
+- **Client links:** each link used in the period, newest first: opens, visitors, time exploring, images, scenes, the
+  tour, video watched, last used. **Projects clients opened:** the same per project, the most explored first.
+- **Most used:** image sizes and ratios, camera lenses, scenes, model layers, menus, videos (watch time).
+- The period, app, account type, search and Hide my actions filters apply (not the action filter, the ledger's).
+  Point at any bar, tile or row for its numbers; click a row for its events in the ledger.
+- **Colours:** clients `#2a78d6`, staff `#eb6834` (the reference data palette's first two, run through its
+  validator: colour-blind separation 24.7, target 8; contrast at least 3:1 on white). Bars carry the colour; numbers
+  and names stay in the text colours; segments sit 2 px apart, only a bar's far end rounded.
+- **New action kinds** in the ledger and its filter: Exported (image exports), Changed (camera, layers, full screen,
+  Reset View, settings), Guided (Help, the tour), Visit (visit summaries); `menu.open` is Opened, `video.watch` Video.
+
+**ValeVision 3D's client links** (its v2.77.0) join Theia's in Generated links: the engine's
+`Na__Activity__ShareLinks` reads both registers (`NA__ACTIVITY__LINK_FILES`); a link's panel gives its own address
+(`/valevision/` or `/theia/`) and what its visitors did (time exploring, images, scenes, the tour, video watched).
+Links made since the last Collect show from the ledger.
+
+**Where the events come from** (live 28-Oct-2026): `ValeShared__Activity__.py` 1.2.0 (14 new client actions; 300
+reports per address per 10 minutes), ValeVision 3D's `Na__AppUtils__ActivityLog__.js` 1.2.0 and the client tour,
+`ValeShared__ActivityLog__.js` 1.2.0 (`video.watch`). See ValeVision 3D's DEVLOG v2.78.0.
+
+**Changes:** `Ui__Activity__.js` (Insights, kinds, links), `VirtualServerManager__App__.html` (the view, four action
+filters, the Insights page and its tip), the stylesheet (Insights region, two colour tokens), the engine 0.13.0
+(`Na__Activity__ShareLinks`, the CLI's link count), `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker
+cache 0.13.0. Restarted on this PC (0.13.0).
+
+**Tested:** the Insights view in jsdom with this page's real code and a synthetic ledger (a client on a ValeVision 3D
+link, a Theia viewer, staff, Adam): 21 checks (the tiles, split bars, a layer counted once shown and hidden, the day
+chart, links and projects, video minutes, no NaN, the counts, Hide my actions, External only, the hover tip, a row
+click opening the ledger filtered, the 3D link's address and engagement). The payload loads (657 events, 7 days).
+
 ## Version 0.12.0, 13-Oct-2026: Hide My Actions (Tab 05)
 
 **Asked by Adam:** "Add a toggle so I can filter myself out, seeing everyone and everything else

@@ -21,10 +21,17 @@
      result or a readable error. "Test on server" checks the generated nginx config
      against a copy of the live one (no change). "Apply" installs it, reloads nginx,
      verifies, and restores the previous config on any failure.
+   - The library gate: an app route's LibraryProtected paths (inside every library
+     project: nginx asks the app's API before it sends one) and LibraryHidden paths
+     (never served) show on its card, read-only: they are edited in the routes file.
 
    =============================================================================
 
    DEVELOPMENT LOG:
+   28-Oct-2026 - Version 0.14.0
+   - An app route's card shows its library rules (LibraryProtected, LibraryHidden),
+     read-only. The draft keeps them through every save, as it keeps every key.
+
    07-Oct-2026 - Version 0.6.1
    - + App route re-reads the mirror's folders, picks the first Vale__ app folder
      with no route (never AppAssets__ or the project library), suggests its path
@@ -125,6 +132,23 @@
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | An App Route's Library Rules, Read-Only (edited in the routes file)
+    // ------------------------------------------------------------
+    function Vsm__LibraryRow(r) {
+        var list = function(label, title, paths) {
+            if (!Array.isArray(paths) || !paths.length) return '';
+            return '<span class="Vsm__Muted" title="' + Vsm.Esc(title) + '">' + label + '</span> ' +
+                   paths.map(function(p) { return '<code class="Vsm__UrlExample">' + Vsm.Esc(p) + '</code>'; }).join(' ');
+        };
+        var body = list('Sign-in or client link', 'Inside every library project: nginx asks this app\'s API before it sends one of these. ' +
+                        'Edited in the routes file (LibraryProtected).', r.LibraryProtected) +
+                   list('Never served', 'Inside every library project: 404 for everyone. Edited in the routes file (LibraryHidden).',
+                        r.LibraryHidden);
+        return body ? '<div class="Vsm__RouteBody">' + body + '</div>' : '';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB HELPER FUNCTION | One App Route Card
     // ------------------------------------------------------------
     function Vsm__AppCard(r, i) {
@@ -158,7 +182,7 @@
                 '<code class="Vsm__Muted" data-d="api">/' + Vsm.Esc(Vsm__CleanPath(r.Path)) + '/api/ → 127.0.0.1:</code>' +
                 '<input class="Vsm__UrlInput is-port" data-f="ApiPort" value="' + Vsm.Esc(r.ApiPort || '') + '">' +
                 '<input class="Vsm__UrlInput is-note" data-f="Note" value="' + Vsm.Esc(r.Note || '') + '" placeholder="Note">' +
-            '</div></article>';
+            '</div>' + Vsm__LibraryRow(r) + '</article>';
     }
     // ------------------------------------------------------------
 

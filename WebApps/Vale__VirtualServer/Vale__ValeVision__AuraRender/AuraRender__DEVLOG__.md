@@ -1,5 +1,53 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.14, Pots and Furniture Land Square (No App Version of Its Own)
+
+**Asked by Adam:** "It hasn't fixed it in Aura ... It's still inserted rotated ... There should be an "is item auto-rotate"
+data field for everything, on or off ... It only needs to be done for organic things like trees", then "Commit, sync,
+push".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.14 at 26d6b6b, pinned as
+`01__CoreLib__PainterlyNPR__v0.8.14` from the commit (424 files; its lock says WorkingTreeClean true; 46 uncommitted
+engine files of other sessions left out). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`)
+moved to it from v0.8.13; the worker's cache version 2026-10-30-16.
+
+**What it brings AURA:** every library asset now carries `AutoRotate` and `AutoScale`. The potted standards, the
+terracotta planter, the garden bench, the picket fence and the clipped hedge have both off, so a drop lands square to the
+world at its own size, as SketchUp inserts it; trees and plants still turn and vary in size. The camera fix below stays:
+an asset whose AutoRotate is on and Facing Camera faces the view on screen. Plops already in a drawing keep the turn and
+size they were given.
+
+**Checked here (no browser):** all 62 of AURA's references to the engine resolve in the new pin; `--check` finds it
+untouched and the same as the repository. **Not checked:** a drop in AURA (Adam tests).
+
+## Fix, 30-Oct-2026: Assets Dropped at 45 Degrees in the 3D Environment (No App Version of Its Own)
+
+**Reported by Adam:** "Why do the assets insert at a 45° angle? I noticed this with the bench as well ... They insert
+into SketchUp perfectly fine. It's in the three.js environment", then "Fix ... the rotation bug".
+
+**Cause:** an asset whose DAT says Facing Camera (the potted standards, the bench) is turned to face the engine's camera
+eye as it is dropped (`MakePlacement`), and the drop's ground point comes from the same camera. The engine keeps one
+camera, the last one it drew. The render queue draws each viewport's still with that viewport's camera
+(`Na__EngineHost__RenderStill`), then puts `State.Camera` back without redrawing, so until the 3D Environment's drawing
+next ran a frame the engine's camera was the last still's: a drop faced the still's eye (a bird's-eye at 45 degrees),
+not the view on screen. A borrowed viewport's Release left it the same way. PainterlyNPR's own app never draws stills
+in between, so it never showed there; SketchUp places from its own tool.
+
+**Fixed** (`10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js`): after a still is drawn and after Release, the
+host recomputes the engine's camera from the live `State.Camera` at once (`PainterlyNPR__CameraRig__Compute`, as its
+`ProjectWorld` and `PointerRay` already do), so a drop's facing and ground point, the drop marker, the Move Tool and a
+pick all read the view on screen.
+
+**Checked (no browser in AURA):** in PainterlyNPR v0.8.12 in headless Edge, the same drop from one view turned 7 degrees;
+after a still drawn from a 45-degree camera with the live camera put back as the host did, 54.9 degrees; with the camera
+recomputed, 7 degrees again. The host parses. **Not checked:** dropping in AURA itself (Adam tests).
+
+**Live:** pushed at Adam's word ("Push AURA"), 30-Oct-2026 18:55 UTC (stamp 20261030-185521: 358 added, 4 replaced,
+nothing deleted), with the ground plane session's v0.8.13 pin (1fa7f2c, WorkingTreeClean true, built on v0.8.12) and
+its import map and worker (2026-10-30-15). Before it, every import in AURA's files resolved in the v0.8.13 pin. Checked
+on the server: the host holds both recomputes, `index.html` names v0.8.13, both potted standards are in the pin, and
+`/aura/` answers 200. No API change.
+
 ## Version 0.5.13, 30-Oct-2026: The Ground Cut, an Elevation Ending in a Swish of Wash
 
 **Asked by Adam** (with an elevation viewport whose bottom handle cut straight through the planting, and three of Vale's
@@ -117,7 +165,15 @@ the same as the repository.
 **No app version of its own:** AURA 0.5.11 is open in another session (the note placeholder, Scene API 1.2.0), so this
 sync leaves `AuraConfig__App__Version` alone and ships with that version, or as the next one, when committed.
 
-**Live:** needs `aura` pushed with the new pin folder. No API change.
+**Live:** the pin folder and the import map's record pushed at Adam's word ("Push the pin"), scoped to
+`04__Lib__CoreEngine__VersionLocked` (30-Oct-2026 18:35 UTC, stamp 20261030-183511: 355 files added, the record replaced,
+nothing deleted), so the API's `store_assets` copies from v0.8.12 now. `index.html`'s import map and the worker went up in
+another session's whole `aura` push at 18:36 UTC (stamp 20261030-183604); Adam then said "Push all of aura" and the
+whole push at 18:39 (20261030-183907: 2 added, 4 replaced, nothing deleted) carried the ground plane session's newer
+files. Checked on the server: `index.html` names `01__CoreLib__PainterlyNPR__v0.8.12`, the worker 2026-10-30-14, the
+record v0.8.12; `/aura/`, the v0.8.12 asset library module and `NPR_07_2022`'s MOD `.glb` answer 200. Before it, every
+import in AURA's 55 files resolved in the pin (the GroundCut host loads its engine modules only when first wanted). No
+API change.
 
 ## Version 0.5.10, 30-Oct-2026: One Hand for Every Word on the Sheet
 

@@ -1,0 +1,144 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2502",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "250",
+            "Item": 2,
+            "Name": "Lavender",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Perennials__Lavender__Var-02",
+            "DisplayName": "Lavender, edging",
+            "Description": "A low lavender for path edging: the same plant, smaller and tighter."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2502__Perennials__Lavender__Var-02__",
+            "DAT": {
+                "File": "NPR_07_2502__DAT__VegetationElements__Perennials__Lavender__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2502__MOD__VegetationElements__Perennials__Lavender__Var-02__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2502__SKP__VegetationElements__Perennials__Lavender__Var-02__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2502__PXY__VegetationElements__Perennials__Lavender__Var-02__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2502__RND__VegetationElements__Perennials__Lavender__Var-02__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.45,
+            "NominalSpreadM": 0.65,
+            "Bounds": {
+                "Min": [
+                    -0.237,
+                    0.023,
+                    -0.228
+                ],
+                "Max": [
+                    0.266,
+                    0.418,
+                    0.234
+                ],
+                "Size": [
+                    0.503,
+                    0.395,
+                    0.462
+                ],
+                "RadiusM": 0.394
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 0.6,
+                "HeightM": 0.42,
+                "Masses": 4
+            },
+            "Kind": "Lavender",
+            "Material": "Lavender",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Lavender",
+                "Density": 0.9,
+                "SizeMm": [
+                    0.45,
+                    0.8
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.33
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "lavender",
+                "lavandula",
+                "edging",
+                "path",
+                "low",
+                "purple"
+            ],
+            "Season": "Summer",
+            "Botanical": "Lavandula angustifolia"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1648572328,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:57",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 1.601,
+                "Target": [
+                    0.015,
+                    0.221,
+                    0.003
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

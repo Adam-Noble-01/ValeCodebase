@@ -1,0 +1,144 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2501",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "250",
+            "Item": 1,
+            "Name": "Lavender",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Lavender__Var-01",
+            "DisplayName": "Lavender",
+            "Description": "A lavender clump: grey-green spikes under purple flower heads - the front border's."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2501__Perennials__Lavender__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2501__DAT__VegetationElements__Perennials__Lavender__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2501__MOD__VegetationElements__Perennials__Lavender__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2501__SKP__VegetationElements__Perennials__Lavender__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2501__PXY__VegetationElements__Perennials__Lavender__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2501__RND__VegetationElements__Perennials__Lavender__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.6,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+                "Min": [
+                    -0.4,
+                    -0.095,
+                    -0.41
+                ],
+                "Max": [
+                    0.253,
+                    0.546,
+                    0.395
+                ],
+                "Size": [
+                    0.653,
+                    0.64,
+                    0.806
+                ],
+                "RadiusM": 0.609
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 0.75,
+                "HeightM": 0.55,
+                "Masses": 5
+            },
+            "Kind": "Lavender",
+            "Material": "Lavender",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Lavender",
+                "Density": 1.0,
+                "SizeMm": [
+                    0.5,
+                    0.9
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "lavender",
+                "lavandula",
+                "herb",
+                "purple",
+                "border",
+                "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Lavandula angustifolia"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2068473362,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:57",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.432,
+                "Target": [
+                    -0.074,
+                    0.226,
+                    -0.007
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

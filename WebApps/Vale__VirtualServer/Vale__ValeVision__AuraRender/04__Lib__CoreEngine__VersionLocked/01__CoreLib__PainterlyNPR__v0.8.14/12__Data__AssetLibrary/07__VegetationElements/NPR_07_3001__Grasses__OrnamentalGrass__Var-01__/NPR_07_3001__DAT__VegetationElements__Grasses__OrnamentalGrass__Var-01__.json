@@ -1,0 +1,131 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_3001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Grasses",
+            "TypeBlock": "30",
+            "Family": "300",
+            "Item": 1,
+            "Name": "OrnamentalGrass",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Grasses__OrnamentalGrass__Var-01",
+            "DisplayName": "Ornamental grass",
+            "Description": "An ornamental grass: a low crown and tapering blades arching out and leaning with the wind."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_3001__Grasses__OrnamentalGrass__Var-01__",
+            "DAT": {
+                "File": "NPR_07_3001__DAT__VegetationElements__Grasses__OrnamentalGrass__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_3001__MOD__VegetationElements__Grasses__OrnamentalGrass__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_3001__SKP__VegetationElements__Grasses__OrnamentalGrass__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_3001__PXY__VegetationElements__Grasses__OrnamentalGrass__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_3001__RND__VegetationElements__Grasses__OrnamentalGrass__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.8,
+            "NominalSpreadM": 1.1,
+            "Bounds": {
+                "Min": [
+                    -0.304,
+                    -0.06,
+                    -0.299
+                ],
+                "Max": [
+                    0.305,
+                    0.489,
+                    0.296
+                ],
+                "Size": [
+                    0.608,
+                    0.548,
+                    0.594
+                ],
+                "RadiusM": 0.506
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Grass",
+            "Params": {},
+            "Kind": "Grass",
+            "Material": "Grass",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.55
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "grass",
+                "ornamental grass",
+                "blades",
+                "border",
+                "planter"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1161675676,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:48:42",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 1.993,
+                "Target": [
+                    0.001,
+                    0.215,
+                    -0.002
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

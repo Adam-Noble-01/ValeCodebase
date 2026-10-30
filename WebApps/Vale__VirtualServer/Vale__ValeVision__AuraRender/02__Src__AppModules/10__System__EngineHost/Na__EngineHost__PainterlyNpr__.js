@@ -1076,6 +1076,7 @@
         Ui.SelectedPointId = PainterlyNPR__Interface__PointById(b.Selected) ? b.Selected : null;
         if (b.Proxy) PainterlyNPR__RenderGraph__SetProxy(true);
         PainterlyNPR__RenderGraph__Bump('Camera', 'ArtDirection', 'Overlay');
+        PainterlyNPR__CameraRig__Compute();                                      // <-- As after a still: the live camera again before the next frame, not the viewport's
         if (b.OnRelease) { try { b.OnRelease(); } catch (error) { console.error(error); } }
         const list = Na__EngineHost__PointList();
         if (S.listHome && list.parentElement !== S.listHome) S.listHome.appendChild(list);   // <-- The list goes home with the points
@@ -1253,6 +1254,7 @@
             try { PainterlyNPR__GpuResources__SetScale(1); } catch (error) { console.error(error); }
             PainterlyNPR__RenderGraph__Bump('Size');
         }
+        PainterlyNPR__CameraRig__Compute();                                      // <-- The engine's camera is the live one again at once, not the still's: a drop, the Move Tool and a pick read it before the next frame (assets dropped after a still faced the still's camera, 45 degrees off)
         Na__EngineHost__State.busy = false;
         if (failure) throw failure;
 

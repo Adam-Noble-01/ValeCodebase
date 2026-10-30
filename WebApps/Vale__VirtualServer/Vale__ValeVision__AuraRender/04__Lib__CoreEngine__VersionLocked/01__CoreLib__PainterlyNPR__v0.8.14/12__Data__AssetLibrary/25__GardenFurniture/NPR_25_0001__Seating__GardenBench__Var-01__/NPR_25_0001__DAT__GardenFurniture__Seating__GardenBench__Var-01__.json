@@ -1,0 +1,131 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_25_0001",
+            "Namespace": "NPR",
+            "Collection": "25",
+            "CollectionName": "GardenFurniture",
+            "Type": "Seating",
+            "TypeBlock": "00",
+            "Family": "000",
+            "Item": 1,
+            "Name": "GardenBench",
+            "Variant": "Var-01",
+            "Stem": "GardenFurniture__Seating__GardenBench__Var-01",
+            "DisplayName": "Garden bench",
+            "Description": "A weathered timber garden bench: seat, back and four legs, turned to face the view when placed - the bench by the pond."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "25__GardenFurniture/NPR_25_0001__Seating__GardenBench__Var-01__",
+            "DAT": {
+                "File": "NPR_25_0001__DAT__GardenFurniture__Seating__GardenBench__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_25_0001__MOD__GardenFurniture__Seating__GardenBench__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_25_0001__SKP__GardenFurniture__Seating__GardenBench__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_25_0001__PXY__GardenFurniture__Seating__GardenBench__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_25_0001__RND__GardenFurniture__Seating__GardenBench__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.82,
+            "NominalSpreadM": 0.9,
+            "Bounds": {
+                "Min": [
+                    -0.425,
+                    0,
+                    -0.21
+                ],
+                "Max": [
+                    0.425,
+                    0.82,
+                    0.21
+                ],
+                "Size": [
+                    0.85,
+                    0.82,
+                    0.42
+                ],
+                "RadiusM": 0.627
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Bench",
+            "Params": {},
+            "Kind": null,
+            "Material": "Timber",
+            "Role": "Furniture",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": false,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0,
+            "NewShapeEachPlop": false,
+            "MinSpacingM": 0.45
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "bench",
+                "seat",
+                "garden bench",
+                "timber",
+                "furniture"
+            ],
+            "Season": "AllYear"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 232774736,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:05",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.253,
+                "Target": [
+                    0,
+                    0.41,
+                    0
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

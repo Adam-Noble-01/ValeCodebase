@@ -1,0 +1,144 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_1021",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "102",
+            "Item": 1,
+            "Name": "ShrubRose",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__ShrubRose__Var-01",
+            "DisplayName": "Shrub rose",
+            "Description": "A shrub rose: an upright bush of arcing foliage dotted with pink roses - either side of the cottage door."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_1021__Shrubs__ShrubRose__Var-01__",
+            "DAT": {
+                "File": "NPR_07_1021__DAT__VegetationElements__Shrubs__ShrubRose__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_1021__MOD__VegetationElements__Shrubs__ShrubRose__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_1021__SKP__VegetationElements__Shrubs__ShrubRose__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_1021__PXY__VegetationElements__Shrubs__ShrubRose__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_1021__RND__VegetationElements__Shrubs__ShrubRose__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.2,
+            "NominalSpreadM": 1.0,
+            "Bounds": {
+                "Min": [
+                    -0.485,
+                    0.187,
+                    -0.386
+                ],
+                "Max": [
+                    0.491,
+                    1.139,
+                    0.438
+                ],
+                "Size": [
+                    0.977,
+                    0.952,
+                    0.824
+                ],
+                "RadiusM": 0.797
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 0.9,
+                "HeightM": 1.15,
+                "Masses": 7
+            },
+            "Kind": "Rose",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Rose",
+                "Density": 0.45,
+                "SizeMm": [
+                    0.9,
+                    1.5
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.5
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "rose",
+                "shrub rose",
+                "rosa",
+                "flowering",
+                "pink flowers",
+                "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Rosa"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1560439189,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:53",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.996,
+                "Target": [
+                    0.003,
+                    0.663,
+                    0.026
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

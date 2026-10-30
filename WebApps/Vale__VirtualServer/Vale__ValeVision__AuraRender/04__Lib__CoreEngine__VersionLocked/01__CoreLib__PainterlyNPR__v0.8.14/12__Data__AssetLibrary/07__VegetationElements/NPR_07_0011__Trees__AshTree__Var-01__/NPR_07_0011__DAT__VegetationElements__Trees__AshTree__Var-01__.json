@@ -1,0 +1,137 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_0011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "001",
+            "Item": 1,
+            "Name": "AshTree",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__AshTree__Var-01",
+            "DisplayName": "Ash",
+            "Description": "A tall ash: a long clear trunk and an open crown of masses, branches drawn partly through it - the tree behind the cottage."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_0011__Trees__AshTree__Var-01__",
+            "DAT": {
+                "File": "NPR_07_0011__DAT__VegetationElements__Trees__AshTree__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_0011__MOD__VegetationElements__Trees__AshTree__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_0011__SKP__VegetationElements__Trees__AshTree__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_0011__PXY__VegetationElements__Trees__AshTree__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_0011__RND__VegetationElements__Trees__AshTree__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 9.0,
+            "NominalSpreadM": 7.6,
+            "Bounds": {
+                "Min": [
+                    -3.018,
+                    -0.011,
+                    -2.642
+                ],
+                "Max": [
+                    3.416,
+                    9.225,
+                    3.026
+                ],
+                "Size": [
+                    6.434,
+                    9.236,
+                    5.668
+                ],
+                "RadiusM": 6.301
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+                "TrunkHeightM": 4.2,
+                "CrownRadiusM": 2.8,
+                "Masses": 16
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 3.8
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "ash",
+                "fraxinus",
+                "deciduous",
+                "broadleaf",
+                "large tree",
+                "hedgerow tree"
+            ],
+            "Season": "Summer",
+            "Botanical": "Fraxinus excelsior"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1318280499,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:46",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 24.328,
+                "Target": [
+                    0.199,
+                    4.607,
+                    0.192
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

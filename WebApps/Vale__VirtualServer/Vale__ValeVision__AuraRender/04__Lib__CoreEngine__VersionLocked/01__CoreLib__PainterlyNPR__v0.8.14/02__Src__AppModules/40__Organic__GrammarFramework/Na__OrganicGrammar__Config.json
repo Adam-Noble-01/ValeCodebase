@@ -1,0 +1,125 @@
+{
+    "PainterlyNPR__OrganicGrammar__Config" : {
+        "PainterlyNPR__OrganicGrammar__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - Organic Styles: How Each Kind of Plant Is Drawn",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Plants are drawn by stroke grammar, never by their mesh edges. A style says how much of the canopy's contour survives, how broken it is, and the interior rhythm.",
+            "ReadBy"        : "02__Src__AppModules/40__Organic__GrammarFramework/PainterlyNPR__OrganicGrammar__Styles__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__OrganicGrammar__Config__Styles" : {
+            "Note"        : "Outline scales how much of the contour survives; Gap how broken it is; Marks the internal rhythm (arcs, upright spikes, drooping ticks) at Density per square millimetre; Edge the outline's own hand and EdgeMm the size of a clump or needle along it. A style has no width: every plant is drawn with the base technical pen, 0.13 mm (32__Line__ClassAndPriority/Na__TechnicalPens__Config.json, v0.8.0).",
+            "Styles"      : {
+                "Shrub"     : {
+                    "Outline" : 1,
+                    "Gap"     : 1,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.06,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 1.4
+                },
+                "Rose"      : {
+                    "Outline" : 1,
+                    "Gap"     : 1.1,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.07,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 1.1
+                },
+                "Lavender"  : {
+                    "Outline" : 0.7,
+                    "Gap"     : 1.4,
+                    "Marks"   : "Spikes",
+                    "Density" : 0.16,
+                    "Edge"    : "Jagged",
+                    "EdgeMm"  : 0.8
+                },
+                "Hollyhock" : {
+                    "Outline" : 0.8,
+                    "Gap"     : 1.3,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.08,
+                    "Edge"    : "Loose",
+                    "EdgeMm"  : 1
+                },
+                "Climber"   : {
+                    "Outline" : 0.85,
+                    "Gap"     : 1.3,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.09,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 0.9
+                },
+                "Hedge"     : {
+                    "Outline" : 1.2,
+                    "Gap"     : 0.6,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.05,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 1.2
+                },
+                "Tree"      : {
+                    "Outline" : 0.75,
+                    "Gap"     : 1.6,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.035,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 1.9
+                },
+                "Conifer"   : {
+                    "Outline" : 0.9,
+                    "Gap"     : 1,
+                    "Marks"   : "Ticks",
+                    "Density" : 0.07,
+                    "Edge"    : "Jagged",
+                    "EdgeMm"  : 1.1
+                },
+                "Chamomile" : {
+                    "Outline" : 0.7,
+                    "Gap"     : 1.6,
+                    "Marks"   : "Ticks",
+                    "Density" : 0.12,
+                    "Edge"    : "Loose",
+                    "EdgeMm"  : 0.7
+                },
+                "Calendula" : {
+                    "Outline" : 0.85,
+                    "Gap"     : 1.2,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.09,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 0.8
+                },
+                "Catmint"   : {
+                    "Outline" : 0.65,
+                    "Gap"     : 1.4,
+                    "Marks"   : "Spikes",
+                    "Density" : 0.15,
+                    "Edge"    : "Jagged",
+                    "EdgeMm"  : 0.7
+                },
+                "Foxglove"  : {
+                    "Outline" : 0.8,
+                    "Gap"     : 1.3,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.08,
+                    "Edge"    : "Loose",
+                    "EdgeMm"  : 0.9
+                },
+                "Topiary"   : {
+                    "Outline" : 1.25,
+                    "Gap"     : 0.5,
+                    "Marks"   : "Arcs",
+                    "Density" : 0.025,
+                    "Edge"    : "Scallop",
+                    "EdgeMm"  : 2
+                }
+            },
+            "StylesNotes" : {
+                "Chamomile" : "Feathery, starred with daisies",
+                "Topiary"   : "A clipped ball or cone in a planter (v0.8.12): a firm outline in big lobes, nearly unbroken, and fewer leaf marks inside than a hedge - as the hand draws a standard by a door"
+            }
+        }
+    }
+}

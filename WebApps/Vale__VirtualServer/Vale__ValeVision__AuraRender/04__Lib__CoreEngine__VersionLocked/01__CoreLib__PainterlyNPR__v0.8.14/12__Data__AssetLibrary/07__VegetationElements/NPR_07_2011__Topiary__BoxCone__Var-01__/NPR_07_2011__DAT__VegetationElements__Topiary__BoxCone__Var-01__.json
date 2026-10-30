@@ -1,0 +1,135 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "201",
+            "Item": 1,
+            "Name": "BoxCone",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Topiary__BoxCone__Var-01",
+            "DisplayName": "Box cone",
+            "Description": "A clipped box cone: broad at the foot and pointed at the top, drawn with the clipped hedge's firm outline."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2011__Topiary__BoxCone__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2011__DAT__VegetationElements__Topiary__BoxCone__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2011__MOD__VegetationElements__Topiary__BoxCone__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2011__SKP__VegetationElements__Topiary__BoxCone__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2011__PXY__VegetationElements__Topiary__BoxCone__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2011__RND__VegetationElements__Topiary__BoxCone__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.45,
+            "NominalSpreadM": 0.9,
+            "Bounds": {
+                "Min": [
+                    -0.408,
+                    -0.063,
+                    -0.405
+                ],
+                "Max": [
+                    0.421,
+                    1.401,
+                    0.429
+                ],
+                "Size": [
+                    0.829,
+                    1.463,
+                    0.834
+                ],
+                "RadiusM": 0.939
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Topiary",
+            "Params": {},
+            "Kind": "Hedge",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.45
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "box",
+                "buxus",
+                "topiary",
+                "cone",
+                "pyramid",
+                "clipped",
+                "evergreen",
+                "formal"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1687852472,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:56",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 3.762,
+                "Target": [
+                    0.007,
+                    0.669,
+                    0.012
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

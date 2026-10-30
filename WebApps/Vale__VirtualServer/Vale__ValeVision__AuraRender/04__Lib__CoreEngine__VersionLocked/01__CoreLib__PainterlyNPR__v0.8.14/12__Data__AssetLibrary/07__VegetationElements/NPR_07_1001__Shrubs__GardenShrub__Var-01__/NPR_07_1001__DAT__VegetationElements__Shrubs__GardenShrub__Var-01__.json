@@ -1,0 +1,135 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_1001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 1,
+            "Name": "GardenShrub",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__GardenShrub__Var-01",
+            "DisplayName": "Garden shrub, large",
+            "Description": "A large garden shrub: a domed mound of foliage masses with a scalloped outline and cupped shade beneath."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_1001__Shrubs__GardenShrub__Var-01__",
+            "DAT": {
+                "File": "NPR_07_1001__DAT__VegetationElements__Shrubs__GardenShrub__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_1001__MOD__VegetationElements__Shrubs__GardenShrub__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_1001__SKP__VegetationElements__Shrubs__GardenShrub__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_1001__PXY__VegetationElements__Shrubs__GardenShrub__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_1001__RND__VegetationElements__Shrubs__GardenShrub__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.3,
+            "NominalSpreadM": 1.7,
+            "Bounds": {
+                "Min": [
+                    -0.856,
+                    -0.157,
+                    -0.808
+                ],
+                "Max": [
+                    0.916,
+                    1.263,
+                    0.653
+                ],
+                "Size": [
+                    1.771,
+                    1.42,
+                    1.462
+                ],
+                "RadiusM": 1.35
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 1.6,
+                "HeightM": 1.25,
+                "Masses": 9
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.85
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "shrub",
+                "bush",
+                "evergreen",
+                "border",
+                "large shrub"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1865681687,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:50",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 5.384,
+                "Target": [
+                    0.03,
+                    0.553,
+                    -0.078
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

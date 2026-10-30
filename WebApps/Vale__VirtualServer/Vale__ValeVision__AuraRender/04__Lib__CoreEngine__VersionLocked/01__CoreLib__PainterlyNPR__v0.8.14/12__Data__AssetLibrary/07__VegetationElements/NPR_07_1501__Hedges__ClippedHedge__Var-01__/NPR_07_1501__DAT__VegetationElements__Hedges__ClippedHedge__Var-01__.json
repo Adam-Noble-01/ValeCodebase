@@ -1,0 +1,133 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_1501",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Hedges",
+            "TypeBlock": "15",
+            "Family": "150",
+            "Item": 1,
+            "Name": "ClippedHedge",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Hedges__ClippedHedge__Var-01",
+            "DisplayName": "Clipped hedge, 3.6 m",
+            "Description": "A clipped garden hedge, 3.6 m of it: a run of masses with a firm, scalloped top, its face turned to the view when placed."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_1501__Hedges__ClippedHedge__Var-01__",
+            "DAT": {
+                "File": "NPR_07_1501__DAT__VegetationElements__Hedges__ClippedHedge__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_1501__MOD__VegetationElements__Hedges__ClippedHedge__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_1501__SKP__VegetationElements__Hedges__ClippedHedge__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_1501__PXY__VegetationElements__Hedges__ClippedHedge__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_1501__RND__VegetationElements__Hedges__ClippedHedge__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.6,
+            "NominalSpreadM": 4.2,
+            "Bounds": {
+                "Min": [
+                    -2.062,
+                    0.055,
+                    -0.758
+                ],
+                "Max": [
+                    2.166,
+                    1.73,
+                    0.798
+                ],
+                "Size": [
+                    4.228,
+                    1.675,
+                    1.556
+                ],
+                "RadiusM": 2.403
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Hedge",
+            "Params": {},
+            "Kind": "Hedge",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": false,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0.03,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 2.1
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "hedge",
+                "clipped hedge",
+                "privet",
+                "beech",
+                "boundary",
+                "screen"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Ligustrum or Fagus"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1778371068,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:54",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 10.562,
+                "Target": [
+                    0.052,
+                    0.893,
+                    0.02
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

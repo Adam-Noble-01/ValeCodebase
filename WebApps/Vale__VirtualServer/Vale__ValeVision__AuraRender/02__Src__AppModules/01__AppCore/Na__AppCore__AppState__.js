@@ -16,7 +16,8 @@
 //   change is announced and the drawing set's save follows from one place.
 // - EVENTS: 'tab' (the open tab changed), 'select' (the selection), 'tool',
 //   'changed' (the drawing set was edited: { reason, sheetId }), 'saved',
-//   'engine' (the engine's settings moved).
+//   'engine' (the engine's settings moved), 'restored' (an undo or redo wrote
+//   a step back into the drawing set: { direction, reason, label, tab }; 0.3.1).
 //
 // -----------------------------------------------------------------------------
 //

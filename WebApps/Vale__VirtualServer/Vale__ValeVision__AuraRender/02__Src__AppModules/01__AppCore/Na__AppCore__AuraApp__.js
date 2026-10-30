@@ -30,6 +30,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.3.1
+// - Undo and redo start with the saving (Na__DrawingSet__History__, its
+//   arrows in the header's #auraHistory); an undo or redo reopens the tab it
+//   was made on and keeps the selection if it is still there (Na__Aura__Restored).
+//
 // 30-Oct-2026 - Version 0.2.2
 // - The refresh guard starts with the saving (Na__DrawingSet__RefreshGuard__).
 //
@@ -49,7 +54,7 @@
 // -----------------------------------------------------------------------------
 
     import { Na__AppConfig__Load, Na__AppConfig__Get } from './Na__AppCore__AppConfig__.js';
-    import { Na__AppState__Data, Na__AppState__Touch } from './Na__AppCore__AppState__.js';
+    import { Na__AppState__Data, Na__AppState__On, Na__AppState__Select, Na__AppState__Touch } from './Na__AppCore__AppState__.js';
     import { Na__Api__Get } from '../03__AppUtils/Na__AppUtils__ApiClient__.js';
     import { Na__Dom__El, Na__Dom__Icon, Na__Dom__Clear } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__EngineHost__Boot, Na__EngineHost__OnChange, Na__EngineHost__Settings, Na__EngineHost__Version } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
@@ -59,6 +64,7 @@
     import { Na__RenderQueue__Pause } from '../21__System__Viewports/Na__Viewports__RenderQueue__.js';
     import { Na__Persistence__Load, Na__Persistence__Start, Na__Persistence__Save } from '../40__Feature__DrawingSet/Na__DrawingSet__Persistence__.js';
     import { Na__RefreshGuard__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__RefreshGuard__.js';
+    import { Na__History__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__History__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -168,6 +174,31 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Is a Selected Viewport or Note on the Open Sheet?
+    // ------------------------------------------------------------
+    function Na__Aura__OnOpenSheet(sel) {
+        const d = Na__AppState__Data;
+        const sheet = (d.doc.AuraDrawingSet__Sheets || []).find((s) => s.Sheet__Id === d.tab);
+        if (!sheet || !sel) return false;
+        return sel.kind === 'viewport' ? (sheet.Sheet__Viewports || []).some((v) => v.Viewport__Id === sel.id)
+                                       : (sheet.Sheet__Annotations || []).some((a) => a.Annotation__Id === sel.id);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | An Undo or Redo Wrote a Step Back: open the tab it was made on, drawn again
+    // ------------------------------------------------------------
+    // Showing a sheet clears the selection; what was selected is selected
+    // again if it is still on the sheet now open.
+    // ------------------------------------------------------------
+    function Na__Aura__Restored(restore) {
+        const keep = Na__AppState__Data.selection;
+        Na__Tabs__Open(restore && restore.tab ? restore.tab : Na__AppState__Data.tab);
+        if (keep && Na__Aura__OnOpenSheet(keep)) Na__AppState__Select(keep.kind, keep.id);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -218,6 +249,8 @@
         Na__Workspace__Mount(document.getElementById('auraSheets'), () => Na__Tabs__Render());
         Na__Persistence__Start(Na__Aura__SaveState);
         Na__RefreshGuard__Start();                                               // <-- Ctrl + R and F5 ask first: save, cancel, or abandon (0.2.2)
+        Na__History__Start(document.getElementById('auraHistory'));              // <-- Undo and redo: Ctrl + Z, Ctrl + Y and the header's arrows (0.3.1)
+        Na__AppState__On('restored', Na__Aura__Restored);                       // <-- After the modules' own listeners: they take their state from the drawing set first
         document.getElementById('auraTabs').hidden = false;
         Na__Tabs__Mount(document.getElementById('auraTabs'), Na__Aura__ShowTab);
         Na__Tabs__Open(Na__Tabs__FromAddress());

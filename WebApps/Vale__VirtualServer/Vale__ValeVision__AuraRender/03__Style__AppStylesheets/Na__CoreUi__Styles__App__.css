@@ -138,6 +138,45 @@
         font-weight                        : var(--Aura_FontSemiBold);
     }
 
+    /* Undo and redo (0.3.1): two quiet arrows before the save state, greyed with nothing to undo or redo */
+    .aura-header__history {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 2px;
+    }
+
+    .aura-header__history[hidden] {
+        display                            : none;
+    }
+
+    .aura-history__button {
+        color                              : var(--Aura_Brand);
+    }
+
+    .aura-history__button:disabled {
+        opacity                            : 0.35;
+        cursor                             : default;
+    }
+
+    .aura-history__button:disabled:hover {
+        background                         : var(--Aura_Surface);
+    }
+
+    /* Used, from its arrow or its key: navy, fading out */
+    .aura-history__button.is-flash {
+        animation                          : aura-history-flash 450ms ease-out;
+    }
+
+    @keyframes aura-history-flash {
+        from {
+            background                     : var(--Aura_Brand);
+            color                          : var(--Aura_OnBrand);
+        }
+        to {
+            background                     : var(--Aura_Surface);
+        }
+    }
+
     .aura-header__user {
         flex-shrink                        : 0;
         display                            : flex;

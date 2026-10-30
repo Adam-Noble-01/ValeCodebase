@@ -3,7 +3,7 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.2.1",
+    "AuraConfig__App__Version"                          : "0.3.1",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked and reached only through 02__Src__AppModules/10__System__EngineHost.",
 
@@ -120,5 +120,14 @@
 
     "AuraConfig__Save__AutosaveDelayMs"                 : 2000,
     "AuraConfig__Save__MaxSheets"                       : 60,
-    "AuraConfig__Save__MaxBytes"                        : 4194304
+    "AuraConfig__Save__MaxBytes"                        : 4194304,
+
+    "AuraConfig__History__MaxUndo"                      : 100,
+    "AuraConfig__History__MaxRedo"                      : 100,
+    "AuraConfig__History__MaxNote"                      : "Adam, 30-Oct-2026: '100 undos and 100 redos'. One history for the whole drawing set (his call), kept in the browser for this visit only: the oldest step goes when a 101st is made, and a new edit after an undo clears the steps forward. The keys are 40__Feature__DrawingSet/Na__Hotkeys__DrawingSet__.json.",
+    "AuraConfig__History__SettleMs"                     : 400,
+    "AuraConfig__History__TypingSettleMs"               : 1200,
+    "AuraConfig__History__SettleNote"                   : "An announced edit becomes a step once nothing more has changed for SettleMs and no pointer button is held, so a drag is one step; in a text box TypingSettleMs, or when the box is left, so a run of typing is one step.",
+    "AuraConfig__History__ChunkMinChars"                : 512,
+    "AuraConfig__History__ChunkNote"                    : "Parts of a step this long or longer (as JSON) are stored once and shared by every step that holds them (03__AppUtils Snapshot Store): a handwritten note's pen paths are kept once, however many steps it is in."
 }

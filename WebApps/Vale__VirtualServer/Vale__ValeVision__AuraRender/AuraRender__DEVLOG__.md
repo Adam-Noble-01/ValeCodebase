@@ -1,5 +1,65 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.3.1, 30-Oct-2026: Undo and Redo
+
+**Asked by Adam:** "Add a comprehensive user undo / redo caching system to both The NPR Demo Environment and Aura so
+to both apps to store 100 undos and 100 redos then add control +z and control + y as keyboard mappings". **His calls:**
+one history for the whole drawing set, Ctrl + Z opening the tab the change was on; Undo and Redo buttons as well as
+the keys; kept for this visit only. PainterlyNPR's half is its v0.7.4.
+
+**Built:**
+- **`40__Feature__DrawingSet/Na__DrawingSet__History__.js`** (1.0.0): one history for the whole drawing set, 100 steps
+  back and 100 forward (`AuraConfig__History__MaxUndo`, `__MaxRedo`). A step is the drawing set but its Meta: sheets
+  and title blocks, viewports, notes and leaders, saved views, art direction points and the engine's settings; adding
+  and deleting a sheet too. The 3D camera, the open tab, the zoom, the selection and the tool are not edits.
+  - Every edit is already announced (`Na__AppState__Touch`); it becomes a step once it has settled (400 ms with no
+    pointer button held; 1.2 s in a text box, or when the box is left), so a drag or a run of typing is one step. A
+    note's handwriting arriving (`ink`) is written into the step that made the note, never a step of its own. What is
+    announced before the first key or press (the drawing set opening) is the starting point.
+  - Undo writes the step back into the live records by Id, as the Layout Editor's history writes into its sheet
+    record: a sheet, viewport, note or saved view still there is the same object, its lists the same arrays. Engine
+    settings that differ are applied again (the viewports redraw); handwriting seen before comes back from a small
+    cache (120 notes), so an undone note is not written again. The restore is saved like the edit it reverses (a
+    Touch with that edit's reason), then `restored` is announced on the app state ({ direction, reason, label, tab }).
+  - It opens the tab the change was made on (a sheet the undo brings back first, so undoing a deletion shows the
+    sheet); AuraApp keeps the selection if it is still on that sheet. The art direction modules (0.3.0) listen to
+    `restored` and take their points from the drawing set again.
+  - Each step is named for the arrows' titles: "Move a view", "Resize a view", "Add a note", "Change a note's words",
+    "Move a leader's arrow", "Delete a sheet", "Change the title block", "Change the parameters", "Save a view" ...
+    else "Several changes".
+- **`40__Feature__DrawingSet/Na__Hotkeys__DrawingSet__.json`**: the keys, in the sheets' key map's form: `Edit__Undo`
+  Ctrl + Z, `Edit__Redo` Ctrl + Y and `Edit__RedoShift` Ctrl + Shift + Z (the Layout Editor's three), and Cmd + Z and
+  Cmd + Shift + Z for a Mac or an iPad keyboard. On every tab; in a text box they are the box's own undo; an open
+  dialog (New sheet, the refresh guard) keeps them.
+- **`03__AppUtils/Na__AppUtils__SnapshotStore__.js`**: PainterlyNPR v0.7.4's snapshot store, ported: whole snapshots,
+  each part of 512 characters or more kept once under a hash of its text and shared by every step that holds it, so a
+  note's pen paths are kept once however many steps it is in.
+- **The header**: two quiet arrows before the save state (`#auraHistory` in `index.html`; the `undo` and `redo` icons
+  in `Na__AppUtils__Dom__`; their styles in the App stylesheet's Header region), greyed when there is nothing, titled
+  "Undo: Move a view (Ctrl + Z)", a navy flash when used. They are how a tablet without a keyboard undoes.
+- **AuraApp** starts the history after the refresh guard and answers `restored` (`Na__Aura__Restored`). **AppState**
+  lists the new event. **Config**: `AuraConfig__History__*`; `AuraConfig__App__Version` 0.3.1.
+
+**Checked here (no browser):** every module parses and every import resolves (33 modules, 162 imports; the only flags
+are other modules' browser globals the checker does not know, DOMPoint and WebAssembly). The history itself in Node,
+with AURA's own AppState, snapshot store and key map, and stand-ins for the engine, the handwriting and the page: a
+drag is one step ("Move a view"), Ctrl + Z puts it back into the same viewport object on its sheet's tab and is saved,
+Ctrl + Y and Ctrl + Shift + Z redo; a deleted sheet comes back and its tab opens; a parameter is undone by applying the
+engine's settings again (from a new set's null too); typing in a note is one step, and Ctrl + Z in its box is the
+box's; a note's handwriting arriving amends its step and comes back with the undo; 130 steps keep 100 undos and give
+100 redos; a new edit after an undo clears the redos. 101 steps of a set with a handwritten note took a thirty-ninth of
+the room of whole copies.
+
+**Not checked:** anything in a browser (Adam tests): the arrows in the header, the tab reopening, the viewports
+redrawing after a parameter is undone, an iPad.
+
+**Not yet:**
+- Kept for this visit only (Adam's call): a reload starts a fresh history.
+- The 3D Environment's camera is never undone: it is not in the drawing set (a saved view is).
+- The push is the `aura` lane on its own; no server change.
+
+(Uncommitted in git, waiting on Adam.)
+
 ## Version 0.3.0, 30-Oct-2026: Panels That Fold and Resize, Art Direction Points a View
 
 **Asked by Adam:** "Make the parameters and Saved views sections dropdowns / then add a new section for the Art

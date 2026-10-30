@@ -1,0 +1,90 @@
+{
+    "DrawingSet__KeyMappings__Description": "The drawing set's edit keys: undo and redo of any change to the drawing set (sheets, title blocks, views, notes, saved views, art direction points and the 3D Environment's parameters), read on every tab. Adam, 30-Oct-2026: 'add control +z and control + y as keyboard mappings'. The bindings are the Layout Editor's Edit__ ones (ValeVision 3D 51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json), with Cmd for a Mac or an iPad keyboard. Each binding carries an Id, a Label and an Enabled flag; the sheets' navigation keys are Na__Hotkeys__DrawingSheets__.json's.",
+    "DrawingSet__KeyMappings__SchemaVersion": 1,
+    "DrawingSet__KeyMappings__Notes": [
+        "Keys are KeyboardEvent.key values. Both cases are listed: Shift makes the Z a capital.",
+        "Modifiers are named Ctrl, Shift, Alt and Meta. ModifierMatch Exact means the listed modifiers must be the only ones held, so AltGr (Ctrl and Alt together) and a Z never undoes.",
+        "Bindings are tested in list order and the first enabled match wins.",
+        "IgnoreWhenTyping true: while a text box has the keyboard (a note's words, a title block field, a view's name), Ctrl + Z is the box's own undo, on its words. What it changes is then saved and kept as a step, like any typing."
+    ],
+    "DrawingSet__KeyboardBindings__Config": {
+        "DrawingSet__KeyboardBindings__Description": "Undo and redo. Undo steps back through the last 100 changes (AuraConfig__History__MaxUndo) and opens the tab each was made on; redo steps forward again through up to 100 (AuraConfig__History__MaxRedo). The header's two arrows do the same, for a tablet without a keyboard.",
+        "DrawingSet__KeyboardBindings__IgnoreWhenTyping": true,
+        "DrawingSet__KeyboardBindings__RepeatMs": 90,
+        "DrawingSet__KeyboardBindings__RepeatMsNote": "A held Ctrl + Z steps back once each this many milliseconds at most, so a long hold never piles up redraws.",
+        "DrawingSet__KeyboardBindings__List": [
+            {
+                "Id": "Edit__Undo",
+                "Label": "Undo the last change to the drawing set",
+                "Action": "Edit__Undo",
+                "Enabled": true,
+                "Keys": [
+                    "z",
+                    "Z"
+                ],
+                "Modifiers": [
+                    "Ctrl"
+                ],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Edit__Redo",
+                "Label": "Redo the change just undone",
+                "Action": "Edit__Redo",
+                "Enabled": true,
+                "Keys": [
+                    "y",
+                    "Y"
+                ],
+                "Modifiers": [
+                    "Ctrl"
+                ],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Edit__RedoShift",
+                "Label": "Redo (Ctrl + Shift + Z)",
+                "Action": "Edit__Redo",
+                "Enabled": true,
+                "Keys": [
+                    "z",
+                    "Z"
+                ],
+                "Modifiers": [
+                    "Ctrl",
+                    "Shift"
+                ],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Edit__UndoCmd",
+                "Label": "Undo (Cmd + Z, a Mac or iPad keyboard)",
+                "Action": "Edit__Undo",
+                "Enabled": true,
+                "Keys": [
+                    "z",
+                    "Z"
+                ],
+                "Modifiers": [
+                    "Meta"
+                ],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Edit__RedoCmd",
+                "Label": "Redo (Cmd + Shift + Z, a Mac or iPad keyboard)",
+                "Action": "Edit__Redo",
+                "Enabled": true,
+                "Keys": [
+                    "z",
+                    "Z"
+                ],
+                "Modifiers": [
+                    "Meta",
+                    "Shift"
+                ],
+                "ModifierMatch": "Exact"
+            }
+        ]
+    }
+}

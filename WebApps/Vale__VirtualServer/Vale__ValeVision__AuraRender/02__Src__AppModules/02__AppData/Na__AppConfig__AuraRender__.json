@@ -3,7 +3,7 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.5.10",
+    "AuraConfig__App__Version"                          : "0.5.11",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked (its modules, and the libraries and stylesheets it reads) and reached only through 02__Src__AppModules/10__System__EngineHost. Nothing of it is copied into AURA: what AURA needs from it is a seam in PainterlyNPR, synced.",
 
@@ -107,6 +107,8 @@
     "AuraConfig__Annotation__DefaultSizeMm"             : 4.5,
     "AuraConfig__Annotation__Sizes"                     : [3, 3.5, 4.5, 6, 8],
     "AuraConfig__Annotation__DefaultWidthMm"            : 70,
+    "AuraConfig__Annotation__PlaceholderText"           : "Lorem ipsum dolor sit amet",
+    "AuraConfig__Annotation__PlaceholderTextNote"       : "The words a new note or leader starts with (AURA 0.5.11; Adam: \"Lorem Ipsum, a standard placeholder text used in printing, typesetting\"). It opens selected in the note's in-place box, so typing replaces it; Esc keeps it.",
     "AuraConfig__Annotation__Inks"                      : [
         { "Key": "Forest",      "Label": "Forest",        "Colour": "#263b37" },
         { "Key": "Graphite",    "Label": "Graphite",      "Colour": "#303335" },

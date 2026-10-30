@@ -17,7 +17,7 @@
 //   hand-drawn arrow from the note to a tip on the drawing.
 // - TOOLS: Note - press on the sheet to place a note there. Leader - press on
 //   the thing to point at, drag to where the words go, let go. Either opens the
-//   note's words in the panel.
+//   note's words in place on the sheet, the placeholder selected (1.6.0).
 // - INK: written notes draw the engine's strokes; a note not yet written (new
 //   words, or the engine still loading or unable to run here) shows its words
 //   typed, pale, until the engine writes it. The engine runs in this browser
@@ -50,10 +50,24 @@
 //   drag either to size the box its words wrap to (Adam: "Add a handle here so
 //   you can drag to set the text box size, remove the box size from the menu
 //   its simply not intuitive"). The panel's Width (mm) is gone.
+// - WORDS TYPED IN PLACE (1.6.0; Adam: "Have it edit the text in place like
+//   any CAD software, rather than having to use the menu"): a new note or
+//   leader opens a box on the sheet over its words, holding the placeholder
+//   (AuraConfig__Annotation__PlaceholderText, Lorem ipsum) selected, so typing
+//   replaces it; double-click any note to type in it again. Inside the box it
+//   is plain typing (Enter a new line; no sheet shortcut sees a key). Esc, or
+//   a press anywhere outside it, leaves the box and the note is lettered. A
+//   note left with no words is taken out. The panel's Words box is gone.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.6.0
+// - Words typed in place on the sheet (AURA 0.5.11): Na__Annotations__EditInPlace,
+//   opened by a new note (its placeholder selected) or a double-click, left by
+//   Esc or a press outside; the panel's Words box replaced by a hint and
+//   Edit the words.
+//
 // 30-Oct-2026 - Version 1.5.0
 // - Architect's capitals or joined-up handwriting per note, a joined-up note
 //   drawn line by line as it is written, and a left-side handle to size the box
@@ -94,7 +108,7 @@
     import { Na__AppState__Data, Na__AppState__Select, Na__AppState__Touch, Na__AppState__Set, Na__AppState__On } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Dom__El, Na__Dom__Svg, Na__Dom__Field, Na__Dom__Select, Na__Dom__IconButton } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__Seed, Na__Format__Round, Na__Format__Clamp } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
+    import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm, Na__Surface__Elements } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import { Na__DrawingSet__NewAnnotation, Na__DrawingSet__Annotation } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
     import { Na__Handwriting__Ink, Na__Handwriting__KeyFor, Na__Handwriting__Loading, Na__Handwriting__NeedsWriting, Na__Handwriting__Queue, Na__Handwriting__Status } from '../31__System__Handwriting/Na__Handwriting__Client__.js';
     import { Na__PenLeaders__Strokes, Na__PenLeaders__Start, Na__PenLeaders__Place } from '../31__System__Handwriting/Na__Handwriting__PenLeaders__.js';
@@ -117,6 +131,7 @@
         failures  : new Map(),                   // <-- Note id -> why it could not be written
         partial   : new Map(),                   // <-- Note id -> its ink so far, line by line, while the model writes it
         editing   : null,                        // <-- The note whose words are being typed: written once the typing stops
+        inPlace   : null,                        // <-- The box on the sheet being typed in: { id, sheetId, box, finish }
         bend      : null,                        // <-- The selected bend point: { id, index }; Delete removes it
         onPanel   : null                         // <-- The workspace's "show this note's panel" (focus the words)
     };
@@ -222,6 +237,7 @@
         }
 
         Na__Dom__Svg('rect', { x: box.X, y: box.Y, width: box.W, height: box.H, class: 'aura-note__hit' }, g);
+        if (Na__Annotations__State.inPlace && Na__Annotations__State.inPlace.id === id) return g;   // <-- Its words are in the box on top, being typed
         const shown = Na__Annotations__Showing(annotation);
         if (shown) {
             const written = shown.ink;
@@ -355,16 +371,16 @@
         if (!sheet || (tool !== 'note' && tool !== 'leader')) return null;
         const start = { X: Na__Format__Round(mm.X, 1), Y: Na__Format__Round(mm.Y, 1) };
         const finish = (at) => {
+            const text = Na__AppConfig__Get('Annotation__PlaceholderText', 'Lorem ipsum dolor sit amet');
             const annotation = Na__DrawingSet__NewAnnotation(tool === 'leader'
-                ? { kind: 'Leader', at, tip: start }
-                : { kind: 'Note', at: start });
+                ? { kind: 'Leader', at, tip: start, text }
+                : { kind: 'Note', at: start, text });
             sheet.Sheet__Annotations.push(annotation);
             Na__AppState__Set({ tool: 'select' });
             Na__AppState__Select('annotation', annotation.Annotation__Id);
             Na__AppState__Touch('annotation', sheet.Sheet__Id);
-            Na__Surface__RedrawLayer('annotations');
-            Na__Surface__RedrawOverlay();
-            if (Na__Annotations__State.onPanel) Na__Annotations__State.onPanel(true);
+            if (Na__Annotations__State.onPanel) Na__Annotations__State.onPanel();
+            Na__Annotations__EditInPlace(annotation, true);                      // <-- Straight into its words, the placeholder selected: typing replaces it
         };
         if (tool === 'note') { finish(start); return {}; }                       // <-- Placed at once: an empty drag, so the press goes no further
         let last = start;
@@ -549,6 +565,131 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Words Typed in Place
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Fit the Box Over Its Note: the note's place, width and letter height at the zoom now
+    // ------------------------------------------------------------
+    function Na__Annotations__PlaceBox(annotation, box) {
+        const svg = Na__Surface__Elements().svg;
+        if (!svg) return;
+        const k = Na__Surface__PxPerMm();
+        const style = Na__HandwritingStyle__Effective(annotation);
+        const size = annotation.Annotation__SizeMm * k;
+        const align = annotation.Annotation__Align;
+        const place = {
+            left       : `${(svg.offsetLeft + annotation.Annotation__AtMm.X * k).toFixed(1)}px`,
+            top        : `${(svg.offsetTop + annotation.Annotation__AtMm.Y * k).toFixed(1)}px`,
+            width      : `${(annotation.Annotation__WidthMm * k).toFixed(1)}px`,
+            fontSize   : `${size.toFixed(2)}px`,
+            lineHeight : `${(size * style.LineSpacing).toFixed(2)}px`,
+            padding    : `${Math.max(2, style.MarginMm * k).toFixed(1)}px`,
+            textAlign  : align === 'Centre' ? 'center' : align === 'Right' ? 'right' : align === 'Box' ? 'justify' : 'left'
+        };
+        Object.keys(place).forEach((key) => { if (box.style[key] !== place[key]) box.style[key] = place[key]; });
+        box.style.height = 'auto';                                               // <-- As tall as its words
+        box.style.height = `${box.scrollHeight + 2}px`;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Type a Note's Words in Place on the Sheet (selectAll: the placeholder selected, so typing replaces it)
+    // ------------------------------------------------------------
+    // Plain typing inside: Enter is a new line and every key stays in the box,
+    // so no sheet shortcut acts. Esc, a press anywhere outside it, leaving the
+    // sheet or the note going (an undo) ends it; then the note is lettered. A
+    // note left with no words is taken out. Every keystroke is saved as the
+    // panel's box did, and the history makes the run one step.
+    // ------------------------------------------------------------
+    function Na__Annotations__EditInPlace(annotation, selectAll) {
+        const S = Na__Annotations__State;
+        const sheet = Na__Annotations__Sheet();
+        const { desk, svg } = Na__Surface__Elements();
+        if (!sheet || !annotation || !svg || !svg.parentNode) return;
+        if (S.inPlace) {
+            if (S.inPlace.id === annotation.Annotation__Id) { S.inPlace.box.focus(); return; }
+            S.inPlace.finish(true);
+        }
+        const id = annotation.Annotation__Id;
+        const capitals = Na__HandwritingStyle__Letters(annotation) === 'Capitals';
+        const box = Na__Dom__El('textarea', `aura-note-editor${capitals ? ' is-capitals' : ''}`, null,
+                                { rows: 1, spellcheck: 'true', maxlength: Na__AppConfig__Get('Handwriting__MaxChars', 600), 'aria-label': 'The note\'s words' });
+        box.value = annotation.Annotation__Text || '';
+        box.style.color = Na__Handwriting__Ink(annotation.Annotation__InkKey);
+        svg.parentNode.appendChild(box);
+
+        let done = false, frame = 0;
+        const outside = (event) => { if (event.target !== box) finish(true); };  // <-- Before the sheet sees the press: a press elsewhere ends the typing first
+        const finish = (keep) => {
+            if (done) return;
+            done = true;
+            cancelAnimationFrame(frame);
+            if (desk) desk.removeEventListener('pointerdown', outside, true);
+            S.inPlace = null;
+            S.editing = null;                                                    // <-- Typing stopped: now the engine may write it
+            box.remove();
+            const still = Na__DrawingSet__Annotation(Na__Annotations__Sheet(), id);
+            if (!still) return;                                                  // <-- Gone (an undo, another sheet): nothing to keep
+            if (keep && !String(still.Annotation__Text || '').trim()) { Na__Annotations__Remove(still); return; }   // <-- No words left: no note
+            S.failures.delete(id);
+            Na__Surface__RedrawLayer('annotations');
+            Na__Surface__RedrawOverlay();
+            const sel = Na__AppState__Data.selection;
+            if (S.onPanel && sel && sel.kind === 'annotation' && sel.id === id) S.onPanel();
+        };
+        S.inPlace = { id, sheetId: sheet.Sheet__Id, box, finish };
+        S.editing = id;
+
+        box.addEventListener('input', () => {
+            annotation.Annotation__Text = box.value;
+            Na__AppState__Touch('annotation', sheet.Sheet__Id);
+            Na__Annotations__PlaceBox(annotation, box);
+            Na__Surface__RedrawOverlay();
+        });
+        box.addEventListener('keydown', (event) => {
+            event.stopPropagation();                                             // <-- Plain typing: Delete, V, N, L and Space never reach the sheet
+            if (event.key === 'Escape') { event.preventDefault(); finish(true); }
+        });
+        box.addEventListener('pointerdown', (event) => event.stopPropagation()); // <-- Placing the caret is not a press on the desk
+        box.addEventListener('dblclick', (event) => event.stopPropagation());
+        box.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== box) finish(true); }, 0));   // <-- Another field, another window
+        if (desk) desk.addEventListener('pointerdown', outside, true);
+
+        const follow = () => {                                                   // <-- Keeps over its note through zoom and scroll; ends if the note or sheet went
+            const live = Na__Annotations__Sheet();
+            const now = live && live.Sheet__Id === sheet.Sheet__Id ? Na__DrawingSet__Annotation(live, id) : null;
+            if (!now || !box.isConnected) { finish(false); return; }
+            Na__Annotations__PlaceBox(now, box);
+            frame = requestAnimationFrame(follow);
+        };
+        Na__Annotations__PlaceBox(annotation, box);
+        if (!Na__AppState__Data.selection || Na__AppState__Data.selection.id !== id) Na__AppState__Select('annotation', id);
+        Na__Surface__RedrawLayer('annotations');                                 // <-- Its drawn words step aside for the box
+        Na__Surface__RedrawOverlay();
+        frame = requestAnimationFrame(follow);
+        box.focus({ preventScroll: true });
+        if (selectAll) box.select();
+        else box.setSelectionRange(box.value.length, box.value.length);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Double-Click on a Note With the Select Tool: type in it
+    // ------------------------------------------------------------
+    function Na__Annotations__OnDoubleClick(event) {
+        if (Na__AppState__Data.tool !== 'select' || Na__AppState__Data.tab === 'environment') return;
+        const hit = event.target && event.target.closest ? event.target.closest('[data-hit="annotation"]') : null;
+        const annotation = hit ? Na__DrawingSet__Annotation(Na__Annotations__Sheet(), hit.getAttribute('data-id')) : null;
+        if (!annotation) return;
+        event.preventDefault();
+        Na__Annotations__EditInPlace(annotation, false);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | The Note Panel
 // -----------------------------------------------------------------------------
 
@@ -564,17 +705,12 @@
         };
         container.appendChild(Na__Dom__El('h2', 'aura-panel__title', annotation.Annotation__Kind === 'Leader' ? 'Leader note' : 'Note'));
 
-        const words = Na__Dom__El('textarea', 'aura-input aura-input--words', null, { rows: 4, maxlength: Na__AppConfig__Get('Handwriting__MaxChars', 600), placeholder: 'Write the note here' });
-        words.value = annotation.Annotation__Text || '';
-        words.addEventListener('focus', () => { Na__Annotations__State.editing = annotation.Annotation__Id; });
-        words.addEventListener('input', () => { annotation.Annotation__Text = words.value; Na__AppState__Touch('annotation', sheet.Sheet__Id); redraw(); });
-        words.addEventListener('blur', () => {
-            Na__Annotations__State.editing = null;                               // <-- Typing stopped: now the engine may write it
-            Na__Annotations__State.failures.delete(annotation.Annotation__Id);
-            redraw();
-        });
-        container.appendChild(Na__Dom__Field('Words', words));
-        if (focusWords) requestAnimationFrame(() => words.focus());
+        // The words are typed on the sheet (1.6.0): a hint, and a way in for a touch screen
+        container.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Double-click the note on the sheet to type its words in place. Esc, or a click away, finishes.'));
+        const type = Na__Dom__IconButton('note', 'aura-button', 'Edit the words', 'Type this note\'s words in place on the sheet');
+        type.addEventListener('click', () => Na__Annotations__EditInPlace(annotation, false));
+        container.appendChild(type);
+        if (focusWords) requestAnimationFrame(() => Na__Annotations__EditInPlace(annotation, false));
 
         const sizes = Na__AppConfig__Get('Annotation__Sizes', [3, 4.5, 6]).map((s) => ({ value: s, label: `${s} mm` }));
         const size = Na__Dom__Select(sizes, annotation.Annotation__SizeMm);
@@ -710,6 +846,8 @@
         Na__Surface__On('annotation', Na__Annotations__OnPress);
         Na__Surface__On('handle:annotation', Na__Annotations__OnHandle);
         Na__AppState__On('tool', () => Na__Surface__RedrawOverlay());
+        const desk = Na__Surface__Elements().desk;
+        if (desk) desk.addEventListener('dblclick', Na__Annotations__OnDoubleClick);   // <-- Type in a note where it is (1.6.0)
     }
     // ------------------------------------------------------------
 
@@ -722,6 +860,7 @@
 
     export {
         Na__Annotations__Mount,
+        Na__Annotations__EditInPlace,
         Na__Annotations__OnPaper,
         Na__Annotations__Panel,
         Na__Annotations__Remove,

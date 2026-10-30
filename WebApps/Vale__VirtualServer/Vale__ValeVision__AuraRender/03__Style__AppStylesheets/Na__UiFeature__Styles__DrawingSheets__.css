@@ -163,6 +163,32 @@
         opacity                            : 0.55;                         /* <-- Typed, pale: waiting for the engine to write it */
     }
 
+    .aura-note-editor {
+        position                           : absolute;                     /* <-- Over its note on the sheet; placed and sized from the zoom by the code (AURA 0.5.11) */
+        z-index                            : 3;
+        box-sizing                         : border-box;
+        margin                             : 0;
+        min-height                         : 1em;
+        border                             : 1px dashed var(--Aura_Select);
+        border-radius                      : 2px;
+        background                         : rgba(255, 255, 255, 0.88);
+        font-family                        : "Segoe UI", Arial, sans-serif;
+        white-space                        : pre-wrap;
+        overflow                           : hidden;
+        resize                             : none;
+        outline                            : none;
+        cursor                             : text;
+        box-shadow                         : 0 1px 4px rgba(40, 32, 20, 0.18);
+    }
+
+    .aura-note-editor.is-capitals {
+        text-transform                     : uppercase;                    /* <-- What it will be lettered in; the words keep the case typed */
+    }
+
+    .aura-note-editor::selection {
+        background                         : rgba(51, 102, 153, 0.25);
+    }
+
 /* endregion ------------------------------------------------------------------- */
 
 

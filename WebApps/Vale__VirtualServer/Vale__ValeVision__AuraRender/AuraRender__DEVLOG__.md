@@ -1,5 +1,34 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.11, 30-Oct-2026: Words Typed in Place, and Lorem Ipsum for New Notes
+
+**Asked by Adam:** "Lorem Ipsum ... Add that as the standard placeholder text for new leaders when they're created.
+Make it so you can edit the text in place as well. You can just double-click and then type and edit text ... when you
+press escape, you leave the text box, and then it renders ... Have it edit the text in place like any CAD software,
+rather than having to use the menu."
+
+**Built** (`Na__Annotations__Layer__.js` 1.6.0):
+- **The placeholder:** `AuraConfig__Annotation__PlaceholderText` "Lorem ipsum dolor sit amet", the words every new
+  note and leader starts with (both tools: one rule for both).
+- **Typing in place:** `Na__Annotations__EditInPlace` puts a plain text box over the note on the sheet, at its place,
+  width, letter height, line spacing and justification at the zoom now, in its ink, in capitals when the note is
+  lettered in capitals (the words keep the case typed). It follows zoom and scroll every frame. A new note or leader
+  opens it at once with the placeholder selected, so the first key replaces it; a double-click on a note with the select
+  tool opens it with the caret at the end. The note's drawn words step aside while it is open.
+- **Plain typing:** every key stays in the box (Enter a new line; Delete, Space, V, N, L and Esc never reach the sheet),
+  and Ctrl + Z is the box's own undo, as the history already does in any box. Each keystroke saves as the panel's box
+  did; the history makes the run one step.
+- **Leaving:** Esc, a press anywhere outside the box (caught before the sheet acts on it), focus going elsewhere, the
+  sheet changing or the note going (an undo) closes it; then the note is lettered. A note left with no words is taken
+  out.
+- **The panel:** its Words box is gone (Adam: "Using it in the menu is weird"); a hint and **Edit the words** (for a
+  touch screen, where there is no double-click) take its place.
+- Styles: `.aura-note-editor` in `Na__UiFeature__Styles__DrawingSheets__.css`.
+
+**Checked here:** the module parses (`node --check`) and the config is valid JSON. Not run in a browser (Adam tests).
+
+**Live:** `aura` (page only).
+
 ## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.12, the Potted Standards (No App Version of Its Own)
 
 **Asked by Adam:** "Sync AURA", after committing PainterlyNPR v0.8.12 ("Commit it").

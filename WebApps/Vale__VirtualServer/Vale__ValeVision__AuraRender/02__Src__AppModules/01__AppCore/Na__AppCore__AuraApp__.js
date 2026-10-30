@@ -36,6 +36,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.5.11
+// - A note's words are typed in place on the sheet, a new note starting
+//   with Lorem ipsum selected (Na__Annotations__Layer__ 1.6.0; see the
+//   DEVLOG).
+//
 // 30-Oct-2026 - Version 0.5.10
 // - One hand for every word on the sheet: the Example Cottage's leader note
 //   is the standard (the Steady hand with StepsPerChar 150 and MinNeatness

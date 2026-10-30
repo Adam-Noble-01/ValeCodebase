@@ -166,8 +166,12 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   millimetres too, with the engine's vignette fitted inside the frame. They are lossless PNG; a resized frame is drawn
   again once it rests, its last picture standing in, pale.
 - **Notes:** the **Note** tool (N) places words where you press; the **Leader** tool (L) is pressed on what it points at
-  and dragged to where the words go. The panel holds the words, letter height, ink, hand, **Letters**, **Pen** and
-  **Write a new copy**. Size the box by dragging the handle on either side of a selected note; the words wrap to it.
+  and dragged to where the words go. A new one opens straight into its words on the sheet with the placeholder
+  "Lorem ipsum dolor sit amet" selected, so you just type (0.5.11); double-click any note to type in it again, as in
+  any CAD program. Inside the box it is plain typing (Enter for a new line); **Esc**, or a click anywhere else, leaves
+  it and the note is lettered; a note left empty is taken out. The panel holds the letter height, ink, hand,
+  **Letters**, **Pen** and **Write a new copy**. Size the box by dragging the handle on either side of a selected note;
+  the words wrap to it.
 - **Letters:** a note is lettered in drawn **architect's capitals** (the default: single-stroke capitals, neat, never
   misspelt, drawn at once with no download) or written in **joined-up handwriting** by the model in the browser (a
   moment a line, shown line by line as it is written; the first on a device waits while the 15 MB model is fetched,

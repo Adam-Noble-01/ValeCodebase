@@ -1,0 +1,67 @@
+{
+    "PainterlyNPR__Lettering__Config" : {
+        "PainterlyNPR__Lettering__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Lettering: a Single-Stroke Draughting Font",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Lettering drawn as pen strokes, as a draughtsman letters with a technical pen and a stencil: every glyph is a few polylines, so its line width is the pen's and nothing else. Drawn with the lettering pen (the Minor features pen, 0.18 mm, in 32__Line__ClassAndPriority/Na__TechnicalPens__Config.json).",
+            "ReadBy"        : "02__Src__AppModules/38__Line__Lettering/PainterlyNPR__Lettering__Strokes__.mjs",
+            "Source"        : "Written for the technical pen calibration sheet, 30-Oct-2026, v0.8.0"
+        },
+
+        "PainterlyNPR__Lettering__Config__Font" : {
+            "Note"             : "Glyphs on a grid 4 units wide and CapUnits tall, y up from the baseline; each glyph is polylines separated by ';', each point 'x,y', points by spaces. Monospaced, as stencil lettering is: every glyph advances Advance units. Capitals, figures and a little punctuation; x is the times sign, m the millimetre.",
+            "CapUnits"         : 6,
+            "Advance"          : 6,
+            "SpaceAdvance"     : 4,
+            "SpaceAdvanceNote" : "A word space, narrower than a glyph",
+            "Glyphs"           : {
+                "0" : "1,0 3,0 4,1 4,5 3,6 1,6 0,5 0,1 1,0",
+                "1" : "1,5 2,6 2,0;1,0 3,0",
+                "2" : "0,5 1,6 3,6 4,5 4,4 0,0 4,0",
+                "3" : "0,5 1,6 3,6 4,5 4,4 3,3 1.5,3;3,3 4,2 4,1 3,0 1,0 0,1",
+                "4" : "3,0 3,6 0,2 4,2",
+                "5" : "4,6 0,6 0,3.5 3,3.5 4,2.5 4,1 3,0 1,0 0,1",
+                "6" : "3.5,6 1.5,6 0,4.5 0,1 1,0 3,0 4,1 4,2.5 3,3.5 0,3.5",
+                "7" : "0,6 4,6 1.5,0",
+                "8" : "1,3.2 0,4.2 0,5 1,6 3,6 4,5 4,4.2 3,3.2 1,3.2 0,2.2 0,1 1,0 3,0 4,1 4,2.2 3,3.2",
+                "9" : "4,3.5 3,2.5 1,2.5 0,3.5 0,5 1,6 3,6 4,5 4,1.5 2.5,0 0.5,0",
+                "." : "2,0 2,0.35",
+                "," : "2,0.4 2,0 1.4,-0.9",
+                "-" : "1,3 3,3",
+                "/" : "0,0 4,6",
+                "%" : "0,0 4,6;0.4,6 1.2,6 1.2,5 0.4,5 0.4,6;2.8,1 3.6,1 3.6,0 2.8,0 2.8,1",
+                ":" : "2,1 2,1.4;2,4 2,4.4",
+                "(" : "3,6.5 1.8,5 1.4,3 1.8,1 3,-0.5",
+                ")" : "1,6.5 2.2,5 2.6,3 2.2,1 1,-0.5",
+                "x" : "0.8,0 3.2,3.6;0.8,3.6 3.2,0",
+                "m" : "0,0 0,4;0,3 1,4 1.5,4 2,3 2,0;2,3 2.5,4 3,4 4,3 4,0",
+                "A" : "0,0 2,6 4,0;0.67,2 3.33,2",
+                "B" : "0,0 0,6 3,6 4,5 4,4 3,3 0,3;3,3 4,2 4,1 3,0 0,0",
+                "C" : "4,5 3,6 1,6 0,5 0,1 1,0 3,0 4,1",
+                "D" : "0,0 0,6 2.5,6 4,4.5 4,1.5 2.5,0 0,0",
+                "E" : "4,6 0,6 0,0 4,0;0,3 3,3",
+                "F" : "4,6 0,6 0,0;0,3 3,3",
+                "G" : "4,5 3,6 1,6 0,5 0,1 1,0 3,0 4,1 4,3 2.2,3",
+                "H" : "0,0 0,6;4,0 4,6;0,3 4,3",
+                "I" : "1,6 3,6;2,6 2,0;1,0 3,0",
+                "J" : "4,6 4,1 3,0 1,0 0,1",
+                "K" : "0,0 0,6;4,6 0,2;1.3,3.2 4,0",
+                "L" : "0,6 0,0 4,0",
+                "M" : "0,0 0,6 2,3 4,6 4,0",
+                "N" : "0,0 0,6 4,0 4,6",
+                "O" : "1,0 3,0 4,1 4,5 3,6 1,6 0,5 0,1 1,0",
+                "P" : "0,0 0,6 3,6 4,5 4,4 3,3 0,3",
+                "Q" : "1,0 3,0 4,1 4,5 3,6 1,6 0,5 0,1 1,0;2.5,1.5 4,0",
+                "R" : "0,0 0,6 3,6 4,5 4,4 3,3 0,3;2,3 4,0",
+                "S" : "4,5 3,6 1,6 0,5 0,4 1,3 3,3 4,2 4,1 3,0 1,0 0,1",
+                "T" : "0,6 4,6;2,6 2,0",
+                "U" : "0,6 0,1 1,0 3,0 4,1 4,6",
+                "V" : "0,6 2,0 4,6",
+                "W" : "0,6 1,0 2,4 3,0 4,6",
+                "X" : "0,0 4,6;0,6 4,0",
+                "Y" : "0,6 2,3 4,6;2,3 2,0",
+                "Z" : "0,6 4,6 0,0 4,0"
+            }
+        }
+    }
+}

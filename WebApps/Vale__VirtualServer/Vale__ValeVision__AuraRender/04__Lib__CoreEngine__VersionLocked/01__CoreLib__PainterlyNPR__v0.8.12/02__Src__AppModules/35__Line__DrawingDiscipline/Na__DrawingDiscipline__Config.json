@@ -1,0 +1,295 @@
+{
+    "PainterlyNPR__DrawingDiscipline__Config" : {
+        "PainterlyNPR__DrawingDiscipline__Config__Meta"        : {
+            "ConfigLabel"   : "PainterlyNPR - Line Classes, the Drawing Discipline and the Pen",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The line hierarchy (manifest section 06), the four stops of the Drawing Discipline macro, and the Pen: every line control, its defaults and presets, and the vegetation presets.",
+            "ReadBy"        : "02__Src__AppModules/35__Line__DrawingDiscipline/PainterlyNPR__DrawingDiscipline__Constants__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__DrawingDiscipline__Config__LineClasses" : {
+            "Note"                : "Line classes are visibility and priority, Primary to Optional: how much presence a class needs to survive (optional detail is lost to the paper first, primary profiles last), how readily it is lost in light, its ink. A class has no width: since v0.8.0 every line is drawn with one of four technical pens, decided by what it belongs to (32__Line__ClassAndPriority/Na__TechnicalPens__Config.json).",
+            "Names"               : ["Primary", "Secondary", "Tertiary", "Optional"],
+            "Ink"                 : [1, 0.95, 0.88, 0.78],
+            "Fade"                : [0.08, 0.24, 0.4, 0.56],
+            "Lost"                : [0.45, 0.8, 1, 1],
+            "LostNote"            : "How readily each class is lost in light: primary profiles resist",
+            "PairMergeMm"         : 0.5,
+            "PairMergeMmNote"     : "A thin member's two arrises closer than this on the sheet are drawn as one line down its middle, as a hand draws a glazing bar",
+            "Debug"               : [
+                [0.17, 0.16, 0.16, 1],
+                [0.74, 0.4, 0.25, 1],
+                [0.8, 0.62, 0.3, 1],
+                [0.42, 0.55, 0.68, 1]
+            ],
+            "DebugSimplified"     : [0.86, 0.18, 0.62, 0.75],
+            "DebugSimplifiedNote" : "Visible, but simplified away or lost to the paper",
+            "DebugConstruction"   : [0.2, 0.56, 0.58, 0.85],
+            "DebugHatch"          : [0.5, 0.38, 0.7, 0.85]
+        },
+
+        "PainterlyNPR__DrawingDiscipline__Config__Roles"       : {
+            "Note"      : "How much looser a role is drawn than the discipline asks: focal tighter, planting and furniture looser.",
+            "Looseness" : {
+                "Focal"        : -0.05,
+                "Architecture" : 0,
+                "Planting"     : 0.12,
+                "Furniture"    : 0.22,
+                "Ground"       : 0.05,
+                "Context"      : 0.2
+            }
+        },
+
+        "PainterlyNPR__DrawingDiscipline__Config__Discipline"  : {
+            "Note"  : "Four named stops on one continuous control. As the drawing loosens, low-priority lines are simplified away first (Keep, by class), and only then do the survivors wobble, overshoot and overdraw.",
+            "Stops" : [
+                { "Name": "Technical", "At": 0, "WobbleMm": 0, "DriftMm": 0, "TremorMm": 0, "OvershootMm": 0, "UndershootChance": 0, "PressureVar": 0.05, "BreakChance": 0, "OverdrawChance": 0, "TaperInMm": 0.1, "TaperOutMm": 0.15, "ConstructionChance": 0, "DwellChance": 0, "FlickChance": 0, "Keep": [1, 1, 1, 1], "MinLenMm": 0, "Marks": 0.55 },
+                { "Name": "Natural Pen", "At": 0.33, "WobbleMm": 0.05, "DriftMm": 0.12, "TremorMm": 0.008, "OvershootMm": 0.6, "UndershootChance": 0.04, "PressureVar": 0.18, "BreakChance": 0.04, "OverdrawChance": 0.04, "TaperInMm": 0.35, "TaperOutMm": 0.7, "ConstructionChance": 0.05, "DwellChance": 0.1, "FlickChance": 0.06, "Keep": [1, 1, 0.95, 0.85], "MinLenMm": 0.6, "Marks": 0.85 },
+                { "Name": "Architectural Sketch", "At": 0.66, "WobbleMm": 0.13, "DriftMm": 0.35, "TremorMm": 0.018, "OvershootMm": 1.8, "UndershootChance": 0.1, "PressureVar": 0.32, "BreakChance": 0.16, "OverdrawChance": 0.22, "TaperInMm": 0.7, "TaperOutMm": 1.4, "ConstructionChance": 0.3, "DwellChance": 0.18, "FlickChance": 0.2, "Keep": [1, 0.97, 0.72, 0.4], "MinLenMm": 1.5, "Marks": 1 },
+                { "Name": "Expressive Concept", "At": 1, "WobbleMm": 0.3, "DriftMm": 0.8, "TremorMm": 0.035, "OvershootMm": 3.4, "UndershootChance": 0.18, "PressureVar": 0.48, "BreakChance": 0.3, "OverdrawChance": 0.45, "TaperInMm": 1.1, "TaperOutMm": 2.2, "ConstructionChance": 0.55, "DwellChance": 0.24, "FlickChance": 0.36, "Keep": [1, 0.9, 0.42, 0.12], "MinLenMm": 3, "Marks": 1.15 }
+            ]
+        },
+
+        "PainterlyNPR__DrawingDiscipline__Config__Pen"         : {
+            "Note"          : "The four levels of pen work - which lines exist, weight and emphasis, the path, the mark - then tone and vegetation. The Pen tab's sliders multiply the macro's reading: x1 is the macro's own. WidthMode (Technical or Variable) is added to these defaults from Na__TechnicalPens__Config.json, its one home; a preset never changes it.",
+            "Defaults"      : {
+                "Detail"         : 0,
+                "LostInLight"    : 0.35,
+                "DepthFade"      : 1,
+                "Construction"   : 1,
+                "ConstructionMm" : 4,
+                "Contrast"       : 1,
+                "Profile"        : 1.15,
+                "Ground"         : 1.3,
+                "ShadowSide"     : 0.35,
+                "InkDensity"     : 1,
+                "Wobble"         : 1,
+                "Drift"          : 1,
+                "Tremor"         : 1,
+                "Overshoot"      : 1,
+                "MissedJoins"    : 1,
+                "Searching"      : 1,
+                "Pressure"       : 1,
+                "Taper"          : 1,
+                "Dwell"          : 1,
+                "Flick"          : 1,
+                "Breaks"         : 1,
+                "NibContrast"    : 0,
+                "NibAngle"       : 35,
+                "HatchAmount"    : 0,
+                "HatchAngle"     : 55,
+                "HatchSpacingMm" : 1.1,
+                "HatchCross"     : 0.6,
+                "HatchReach"     : 0.18,
+                "HatchLoose"     : 1,
+                "VegOutline"     : 1,
+                "VegEdge"        : "Kind",
+                "VegClump"       : 1,
+                "VegSketch"      : 0.6,
+                "VegLostInLight" : 0.45,
+                "VegLeaves"      : 1,
+                "VegLeafStyle"   : "Kind",
+                "VegLeafSize"    : 1,
+                "VegShade"       : 1,
+                "VegBranches"    : 1,
+                "VegTwigs"       : 0.6,
+                "VegWeight"      : 1,
+                "VegWild"        : 1,
+                "DistantOutline" : 1,
+                "DistantBelt"    : 1,
+                "DistantSketch"  : 1.5,
+                "DistantWeight"  : 1
+            },
+            "DefaultsNotes" : {
+                "DistantOutline" : "7 · Distant trees: the middle distance's outlines (x the Vegetation fold's), and the far belt's"
+            },
+            "LegacyKeys"    : {
+                "Discipline" : ["Discipline"],
+                "InkFamily"  : ["InkFamily"],
+                "LineWeight" : ["LineWeight"],
+                "InkDry"     : ["Paper", "InkDry"]
+            },
+            "Presets"       : {
+                "Technical"  : {
+                    "Label"  : "Technical",
+                    "Values" : {
+                        "Discipline"     : 0.04,
+                        "LineWeight"     : 1,
+                        "InkFamily"      : "WarmGrey",
+                        "InkDry"         : 0.12,
+                        "Detail"         : 0.4,
+                        "LostInLight"    : 0,
+                        "Contrast"       : 1.25,
+                        "Profile"        : 1.35,
+                        "Ground"         : 1.45,
+                        "ShadowSide"     : 0.15,
+                        "VegSketch"      : 0,
+                        "VegWild"        : 0.5,
+                        "VegLostInLight" : 0.4,
+                        "VegTwigs"       : 0.2
+                    }
+                },
+                "Fineliner"  : {
+                    "Label"  : "Fineliner",
+                    "Values" : {
+                        "Discipline" : 0.5,
+                        "LineWeight" : 1,
+                        "InkFamily"  : "Sepia",
+                        "InkDry"     : 0.05
+                    }
+                },
+                "Sketch"     : {
+                    "Label"  : "Sketch",
+                    "Values" : {
+                        "Discipline"     : 0.72,
+                        "LineWeight"     : 1,
+                        "InkFamily"      : "Sepia",
+                        "InkDry"         : 0.55,
+                        "Detail"         : -0.2,
+                        "LostInLight"    : 0.6,
+                        "Contrast"       : 1.35,
+                        "Construction"   : 1.6,
+                        "ConstructionMm" : 6,
+                        "Searching"      : 1.4,
+                        "Flick"          : 1.3,
+                        "Dwell"          : 1.2,
+                        "VegSketch"      : 1.1,
+                        "VegWild"        : 1.3,
+                        "VegTwigs"       : 0.9
+                    }
+                },
+                "Expressive" : {
+                    "Label"  : "Expressive",
+                    "Values" : {
+                        "Discipline"     : 0.95,
+                        "LineWeight"     : 1.05,
+                        "InkFamily"      : "Sepia",
+                        "InkDry"         : 0.7,
+                        "Detail"         : -0.45,
+                        "LostInLight"    : 0.8,
+                        "Contrast"       : 1.6,
+                        "Construction"   : 2,
+                        "ConstructionMm" : 7,
+                        "Searching"      : 2,
+                        "Wobble"         : 1.3,
+                        "Breaks"         : 1.6,
+                        "NibContrast"    : 0.25,
+                        "VegOutline"     : 1.3,
+                        "VegSketch"      : 1.8,
+                        "VegWild"        : 1.7,
+                        "VegLeaves"      : 1.3,
+                        "VegTwigs"       : 1.3
+                    }
+                },
+                "Hatched"    : {
+                    "Label"  : "Hatched",
+                    "Values" : {
+                        "Discipline"     : 0.38,
+                        "LineWeight"     : 1,
+                        "InkFamily"      : "PaynesGrey",
+                        "InkDry"         : 0.3,
+                        "Detail"         : 0.15,
+                        "ShadowSide"     : 0.5,
+                        "HatchAmount"    : 0.75,
+                        "HatchSpacingMm" : 1,
+                        "HatchCross"     : 0.55,
+                        "VegShade"       : 1.5
+                    }
+                },
+                "BroadNib"   : {
+                    "Label"  : "Broad nib",
+                    "Values" : {
+                        "Discipline"  : 0.45,
+                        "LineWeight"  : 1.35,
+                        "InkFamily"   : "Sepia",
+                        "InkDry"      : 0.35,
+                        "Contrast"    : 0.85,
+                        "NibContrast" : 0.85,
+                        "NibAngle"    : 30,
+                        "Taper"       : 1.5,
+                        "Dwell"       : 1.4,
+                        "VegSketch"   : 0.3
+                    }
+                }
+            },
+            "NeutralLocal"  : {
+                "Wobble"   : 1,
+                "Pressure" : 1,
+                "Overdraw" : 1,
+                "Breakup"  : 0
+            },
+            "HatchTake"     : {
+                "Render"      : 1,
+                "Brick"       : 1,
+                "Stone"       : 1,
+                "Slate"       : 0.8,
+                "ClayTile"    : 0.8,
+                "Joinery"     : 0.8,
+                "WhitePaint"  : 0.9,
+                "WindowPaint" : 0.9,
+                "Terracotta"  : 0.9,
+                "Paving"      : 0.8,
+                "Lawn"        : 0.55,
+                "Bark"        : 0.6,
+                "Timber"      : 0.9,
+                "Footway"     : 0.7,
+                "Tarmac"      : 0.6,
+                "Kerb"        : 0.9
+            }
+        },
+
+        "PainterlyNPR__DrawingDiscipline__Config__Vegetation"  : {
+            "Note"    : "Vegetation presets set the plants' keys only, from their defaults: the rest of the Pen stays as it is.",
+            "Presets" : {
+                "Quiet"    : {
+                    "Label"  : "Quiet",
+                    "Values" : {
+                        "VegOutline"     : 0.55,
+                        "VegSketch"      : 0,
+                        "VegLostInLight" : 1.2,
+                        "VegLeaves"      : 0.5,
+                        "VegShade"       : 0.4,
+                        "VegBranches"    : 0.6,
+                        "VegTwigs"       : 0,
+                        "VegWeight"      : 0.9
+                    }
+                },
+                "Natural"  : {
+                    "Label"  : "Natural",
+                    "Values" : {}
+                },
+                "Leafy"    : {
+                    "Label"  : "Leafy",
+                    "Values" : {
+                        "VegOutline"     : 1.25,
+                        "VegClump"       : 0.85,
+                        "VegSketch"      : 0.8,
+                        "VegLostInLight" : 0.5,
+                        "VegLeaves"      : 2.2,
+                        "VegLeafSize"    : 1.15,
+                        "VegShade"       : 1.8,
+                        "VegBranches"    : 1.1,
+                        "VegTwigs"       : 1
+                    }
+                },
+                "Scribbly" : {
+                    "Label"  : "Scribbly",
+                    "Values" : {
+                        "VegOutline"     : 1.6,
+                        "VegEdge"        : "Loose",
+                        "VegSketch"      : 2.4,
+                        "VegLostInLight" : 0.3,
+                        "VegLeaves"      : 1.6,
+                        "VegLeafStyle"   : "Loops",
+                        "VegShade"       : 1.4,
+                        "VegBranches"    : 1.6,
+                        "VegTwigs"       : 1.8,
+                        "VegWild"        : 2,
+                        "VegWeight"      : 1.1
+                    }
+                }
+            }
+        }
+    }
+}

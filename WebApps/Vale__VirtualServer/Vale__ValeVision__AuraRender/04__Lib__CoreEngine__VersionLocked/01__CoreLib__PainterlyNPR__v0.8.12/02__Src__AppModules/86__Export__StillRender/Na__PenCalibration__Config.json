@@ -1,0 +1,72 @@
+{
+    "PainterlyNPR__PenCalibration__Config" : {
+        "PainterlyNPR__PenCalibration__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - The Technical Pen Calibration Sheet",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "A sheet of the four technical pens drawn through the engine's own stroke synthesis and ink pass at a print resolution: straight, vertical, diagonal and curved lines, crossings and a small window for each pen, labelled in the lettering pen, with 10 mm and 100 mm marks to check a print with a ruler. Every position is millimetres from the sheet's top-left corner.",
+            "ReadBy"        : "02__Src__AppModules/86__Export__StillRender/PainterlyNPR__Export__PenCalibration__.mjs",
+            "Source"        : "Adam's technical pen brief, 30-Oct-2026, v0.8.0"
+        },
+
+        "PainterlyNPR__PenCalibration__Config__Sheet"   : {
+            "Note"             : "The resolutions the sheet is drawn and measured at, and its ink: full (Alpha above 1 is clamped to full along the whole line, so coverage is geometry) and soft black on white paper for printing.",
+            "TestDpi"          : [300, 600],
+            "ExportDpi"        : 300,
+            "ExportDpiNote"    : "Adam, 30-Oct-2026: \"Documents should be 300 dpi\". The panel also offers 600 dpi, for a measuring loupe",
+            "Alpha"            : 1.4,
+            "AlphaNote"        : "The pen's ink is (0.72 + 0.28 x pressure) x Alpha: from 1/0.72 up it is full everywhere, so the measured coverage is the line's area",
+            "InkSrgb"          : "#1a1918",
+            "PaperSrgb"        : "#ffffff",
+            "Title"            : "PAINTERLYNPR - TECHNICAL PEN CALIBRATION",
+            "Subtitle"         : "STAEDTLER MARS MATIC 700 - SHEET {W} x {H} mm - PRINT AT 100% (ACTUAL SIZE, NO FIT TO PAGE)",
+            "SubtitleNote"     : "{W} and {H} are the sheet's own width and height in millimetres (the main config's Sheet)"
+        },
+
+        "PainterlyNPR__PenCalibration__Config__Layout"  : {
+            "Note"            : "One row per pen, RowTopsMm down the sheet. In each row: the label, a horizontal line, a vertical one, three diagonals, a circle, a cross and a saltire, and a small window with its bars and cill. Lengths in millimetres, laid out on a DesignMm sheet and centred on the real one (A3 or any other); the corner marks stay at the real sheet's corners.",
+            "DesignMm"        : [300, 200],
+            "RowTopsMm"       : [46, 81, 116, 151],
+            "LabelAtMm"       : [15, 3.2],
+            "LabelHeightMm"   : 2.5,
+            "HorizontalMm"    : [15, 115, 9],
+            "HorizontalNote"  : "From x, to x, at the row's top plus y: 100 mm long",
+            "VerticalMm"      : [125, 2, 27],
+            "VerticalNote"    : "At x, from the row's top plus y, to plus y: 25 mm",
+            "Diagonals"       : [[131, 30], [150, 45], [169, 60]],
+            "DiagonalsNote"   : "Each from (x, the row's top + 27) rising at the angle in degrees, DiagonalMm long",
+            "DiagonalMm"      : 20,
+            "CircleMm"        : [196, 14, 10],
+            "CircleNote"      : "Centre x, the row's top + y, and radius",
+            "CrossMm"         : [220, 14, 6],
+            "SaltireMm"       : [235, 14, 6],
+            "CrossNote"       : "Centre x, the row's top + y, and half the arm",
+            "WindowMm"        : [246, 3, 266, 26],
+            "WindowNote"      : "Its frame from (x0, top + y0) to (x1, top + y1): a mullion, a transom and a cill 2 mm proud each side"
+        },
+
+        "PainterlyNPR__PenCalibration__Config__Rulers"  : {
+            "Note"              : "Drawn with the base pen, for a ruler or a measuring loupe: a 100 mm scale ticked every millimetre, a 10 mm square, a 100 mm upright scale, and corner marks 6 mm in from each corner.",
+            "ScaleAtMm"         : [15, 188],
+            "ScaleTicksMm"      : [1.2, 2.2, 3.6],
+            "ScaleTicksNote"    : "Tick lengths: every millimetre, every 5 mm, every 10 mm",
+            "SquareAtMm"        : [140, 181, 10],
+            "SquareAtNote"      : "Left, top and side: clear of the last pen row (which ends at 179 mm) and of the 100 mm scale's labels",
+            "UprightAtMm"       : [284, 46, 100],
+            "CornerMm"          : [6, 6],
+            "CornerNote"        : "Inset and arm length of the corner marks",
+            "LabelHeightMm"     : 2
+        },
+
+        "PainterlyNPR__PenCalibration__Config__Measure" : {
+            "Note"               : "How the pens are measured. Geometry: the ribbon half-widths stroke synthesis writes, which must equal the pen's to GeometryTolPx. Raster: the ink's coverage summed across a line (the box filter makes that its width in pixels) on its middle, kept clear of its ends by EndClearMm, within RasterTolMm. Every base-buffer pixel must lie inside the ink (ContainTol, in 1/255ths).",
+            "GeometryTolPx"      : 0.0001,
+            "RasterTolMm"        : 0.005,
+            "RasterTolNote"      : "5 microns: a twenty-sixth of the base pen. The coverage of a line is exact to well under a micron; the tolerance is for the 8-bit ink",
+            "EndClearMm"         : 2,
+            "WindowPx"           : 3,
+            "ContainTol"         : 2,
+            "HalfInkAlpha"       : 0.6,
+            "HalfInkNote"        : "A profile-pen line at this ink, drawn off the sheet's content, must peak at this ink: the base beneath it never darkens it"
+        }
+    }
+}

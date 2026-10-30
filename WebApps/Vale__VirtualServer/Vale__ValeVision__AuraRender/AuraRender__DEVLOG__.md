@@ -1,5 +1,36 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.12, the Potted Standards (No App Version of Its Own)
+
+**Asked by Adam:** "Sync AURA", after committing PainterlyNPR v0.8.12 ("Commit it").
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.12 at 0ab3a01, pinned as
+`01__CoreLib__PainterlyNPR__v0.8.12` from the commit (421 files, 7.3 MB; its lock says WorkingTreeClean true; 42
+uncommitted engine files of other sessions left out, as the sync always does). The import map (`index.html` and
+`Vale__CoreEngine__ImportMap__Index__.json`) moved to it from v0.8.10; the worker's cache version 2026-10-30-14 (an
+engine sync).
+
+**What it brings AURA:**
+- **The potted standards** in the Assets drawer: `NPR_07_2021` Potted ball standard (about 1.5 m) and `NPR_07_2022` the
+  small one (about 1.15 m), a clipped ball on a clear stem in a square lead planter, from Adam's orangery watercolour.
+  Their MOD `.glb` files are in the pin, so a drawing-set save stores them in a project's
+  `Content__AuraScene__AssetFiles` like any library asset (`AssetFile__LibraryVersion` now `PainterlyNPR v0.8.12`).
+- **The engine's v0.8.12 drawing:** the PottedStandard generator, the Topiary organic style, and an organic's own hand
+  of the pen (Overdraw, Wobble) carried by the asset. A plant without one draws exactly as before, so no existing AURA
+  drawing changes.
+- v0.8.11's panel icons are in the pin's panel config; AURA builds its own panel, so nothing of them shows here.
+
+**Checked here (no browser):** every one of the 89 names AURA's code imports from the engine resolves in the new pin;
+the engine's AppCore Init is the same as v0.8.10's, so the host needs no change; `--check` finds the copy untouched and
+the same as the repository.
+
+**Not checked:** a browser (Adam tests): the two cards in the drawer, a placement, a save storing their files.
+
+**No app version of its own:** AURA 0.5.11 is open in another session (the note placeholder, Scene API 1.2.0), so this
+sync leaves `AuraConfig__App__Version` alone and ships with that version, or as the next one, when committed.
+
+**Live:** needs `aura` pushed with the new pin folder. No API change.
+
 ## Version 0.5.10, 30-Oct-2026: One Hand for Every Word on the Sheet
 
 **Asked by Adam:** "Look at the annotation in the demo cottage in Aura. I want you to make the standard leader text always

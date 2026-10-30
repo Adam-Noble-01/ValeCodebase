@@ -1,0 +1,145 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Drawn from Adam's reference watercolour of an orangery (30-Oct-2026): the potted standards either side of its doors, built by the PottedStandard generator (v0.8.12)",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2022",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "202",
+            "Item": 2,
+            "Name": "PottedStandard",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Topiary__PottedStandard__Var-02",
+            "DisplayName": "Potted ball standard, small",
+            "Description": "The smaller potted standard: a tighter ball on a shorter stem in a smaller lead planter, for a doorstep or a narrow pier."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2022__Topiary__PottedStandard__Var-02__",
+            "DAT": {
+                "File": "NPR_07_2022__DAT__VegetationElements__Topiary__PottedStandard__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2022__MOD__VegetationElements__Topiary__PottedStandard__Var-02__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2022__SKP__VegetationElements__Topiary__PottedStandard__Var-02__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2022__PXY__VegetationElements__Topiary__PottedStandard__Var-02__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2022__RND__VegetationElements__Topiary__PottedStandard__Var-02__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.15,
+            "NominalSpreadM": 0.42,
+            "Bounds": {
+                "Min": [
+                    -0.206,
+                    0,
+                    -0.206
+                ],
+                "Max": [
+                    0.206,
+                    1.138,
+                    0.206
+                ],
+                "Size": [
+                    0.412,
+                    1.138,
+                    0.412
+                ],
+                "RadiusM": 0.639
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "PottedStandard",
+            "Params": {
+                "PlanterWidthM": 0.38,
+                "PlanterHeightM": 0.34,
+                "StemM": 0.42,
+                "HeadRadiusM": 0.2,
+                "HeadMasses": 8,
+                "UnderplantLeaves": 10,
+                "Overdraw": 1.5,
+                "Wobble": 1.2
+            },
+            "Kind": "Topiary",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "Facing": "Camera",
+            "ScaleJitter": 0.04,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.47
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "standard",
+                "topiary",
+                "ball",
+                "lollipop",
+                "box",
+                "bay",
+                "potted",
+                "tree",
+                "planter",
+                "pot",
+                "lead",
+                "versailles",
+                "formal",
+                "pair",
+                "orangery"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1730412022,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T18:14:41",
+            "EngineVersion": "0.8.12",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.761,
+                "Target": [
+                    0,
+                    0.569,
+                    0
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

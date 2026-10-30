@@ -1,0 +1,140 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2511",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "251",
+            "Item": 1,
+            "Name": "Hollyhock",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Hollyhock__Var-01",
+            "DisplayName": "Hollyhock",
+            "Description": "A hollyhock: a tall leaning spire of leaves and mixed flowers on one stem - against the cottage wall."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2511__Perennials__Hollyhock__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2511__DAT__VegetationElements__Perennials__Hollyhock__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2511__MOD__VegetationElements__Perennials__Hollyhock__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2511__SKP__VegetationElements__Perennials__Hollyhock__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2511__PXY__VegetationElements__Perennials__Hollyhock__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2511__RND__VegetationElements__Perennials__Hollyhock__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 2.0,
+            "NominalSpreadM": 0.5,
+            "Bounds": {
+                "Min": [
+                    -0.231,
+                    0.05,
+                    -0.231
+                ],
+                "Max": [
+                    0.208,
+                    2.039,
+                    0.226
+                ],
+                "Size": [
+                    0.439,
+                    1.99,
+                    0.457
+                ],
+                "RadiusM": 1.044
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Spire",
+            "Params": {
+                "HeightM": 2.0
+            },
+            "Kind": "Hollyhock",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Mixed",
+                "Density": 0.7,
+                "SizeMm": [
+                    1.0,
+                    1.7
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.25
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "hollyhock",
+                "alcea",
+                "tall",
+                "spire",
+                "cottage garden",
+                "mixed flowers"
+            ],
+            "Season": "Summer",
+            "Botanical": "Alcea rosea"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1649497939,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:58",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.635,
+                "Target": [
+                    -0.012,
+                    1.045,
+                    -0.003
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

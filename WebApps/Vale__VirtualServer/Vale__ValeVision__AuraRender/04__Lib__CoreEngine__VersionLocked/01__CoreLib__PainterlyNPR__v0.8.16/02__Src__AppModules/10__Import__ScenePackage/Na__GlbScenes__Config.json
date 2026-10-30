@@ -1,0 +1,61 @@
+{
+    "PainterlyNPR__GlbScenes__Config" : {
+        "PainterlyNPR__GlbScenes__Config__Meta"        : {
+            "ConfigLabel"   : "PainterlyNPR - GLB Scenes: Glass, Windows and Doors",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How a project's own model (a GLB scene) tells its glass, window frames and doors from the rest, by tag, by material and by name, and how each pane of glass becomes a window record the shadow lines draw from.",
+            "ReadBy"        : "02__Src__AppModules/10__Import__ScenePackage/PainterlyNPR__ScenePackage__Glb__.mjs and PainterlyNPR__ScenePackage__GlbWindows__.mjs",
+            "Source"        : "Adam, 30-Oct-2026: \"Naming from sketchup and using the SSOT Windows tags (there is one for existing and proposed) same with doors so use a tipple method tag/material/naming\" (v0.8.16)"
+        },
+
+        "PainterlyNPR__GlbScenes__Config__Recognition" : {
+            "Recognition"      : {
+                "Glass"        : { "Class": "Glass",       "Tags": "glass(?![a-z])|glaz(?:ing|ed|e)", "Materials": "glass(?![a-z])|glaz(?:ing|ed|e)", "Names": "glass(?![a-z])|glaz(?:ing|ed|e)", "SeeThroughAlpha": 0.95 },
+                "Window"       : { "Class": "WindowPaint", "Tags": "(?:^|[^a-z])windows?(?:[^a-z]|$)", "Names": "(?:^|[^a-z])(?:windows?|casements?|sash(?:es)?)(?:[^a-z]|$)" },
+                "Door"         : { "Class": "Joinery",     "Tags": "(?:^|[^a-z])doors?(?:[^a-z]|$)",   "Names": "(?:^|[^a-z])doors?(?:[^a-z]|$)" }
+            },
+            "RecognitionNotes" : {
+                "Order"        : "Glass first (its material, then its tag or name), then Window, then Door; nothing recognised keeps its object's class",
+                "Tags"         : "The part of a flattened node's name before '::' (TrueVision's GLB builder buckets faces as <tag>::<material>, so the SSOT tags 14__ExistingBuilding__Windows, 24__ProposedBuilding__Windows, 15__ and 25__ ... Doors arrive here), or a node's extras.tag",
+                "Materials"    : "The part after '::' (the SketchUp material's own name, kept even in a whitecard export) and the glTF material's name; case is ignored",
+                "Names"        : "The node's and the mesh's names: an instanced component arrives under its definition's name",
+                "SeeThrough"   : "A glTF material blended or less opaque than this is glass, whatever its name (TrueVision's builder passes the tray's Opacity through)"
+            }
+        },
+
+        "PainterlyNPR__GlbScenes__Config__Windows" : {
+            "Windows"      : {
+                "WeldM"         : 0.0005,
+                "CoplanarDot"   : 0.999,
+                "MinSideM"      : 0.08,
+                "DuplicateM"    : 0.04,
+                "ProbeOffsetsM" : [0.01, 0.05, 0.12],
+                "ProbeHeights"  : [0.25, 0.5, 0.75],
+                "MinRevealM"    : 0.005,
+                "MaxRevealM"    : 0.5,
+                "BarStepM"      : 0.01,
+                "BarRows"       : [0.3, 0.5, 0.7],
+                "BarMaxWidthM"  : 0.12,
+                "BarMinDepthM"  : 0.003,
+                "BarMaxDepthM"  : 0.15,
+                "BarMatchM"     : 0.02
+            },
+            "WindowsNotes" : {
+                "WeldM"         : "Corners closer than this are one corner when a pane's triangles are joined",
+                "CoplanarDot"   : "Triangles of one pane face the same way to within this (about 2.5 degrees)",
+                "MinSideM"      : "A pane narrower or shorter than this is a glass edge or a sliver, not a pane",
+                "DuplicateM"    : "Two panes facing the same way, overlapping and this close are the two faces of one sheet of glass: the outer one is kept",
+                "ProbeOffsetsM" : "How far beyond each upright edge of a pane the model is probed for what stands in front of the glass there",
+                "ProbeHeights"  : "Where up each upright edge it is probed, as shares of the pane's height",
+                "MinRevealM"    : "Less than this in front of the glass is flush: that side casts nothing",
+                "MaxRevealM"    : "The deepest reveal looked for in front of the glass",
+                "BarStepM"      : "The spacing of the probes across a pane that find glazing bars standing in front of one sheet of glass",
+                "BarRows"       : "The heights, as shares of the pane, of the rows of bar probes; a bar must show in two of them",
+                "BarMaxWidthM"  : "Anything wider in front of the glass is not a bar (a transom, a frame)",
+                "BarMinDepthM"  : "A bar stands at least this far in front of the glass",
+                "BarMaxDepthM"  : "and no further than this",
+                "BarMatchM"     : "A bar found in two rows within this of each other is one bar"
+            }
+        }
+    }
+}

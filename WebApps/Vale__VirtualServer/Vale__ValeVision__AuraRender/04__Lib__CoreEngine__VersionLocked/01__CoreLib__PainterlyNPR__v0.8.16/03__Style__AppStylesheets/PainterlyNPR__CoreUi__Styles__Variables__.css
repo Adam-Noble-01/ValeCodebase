@@ -1,0 +1,68 @@
+/* =============================================================================
+ * PAINTERLYNPR - CORE UI | STYLES - VARIABLES
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__CoreUi__Styles__Variables__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : CoreUi - Styles - Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The design tokens: the desk and the paper, ink that is never black, one pigment per meaning, the type and the shapes
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: VARIABLES.
+ * - Mirrors 02__Src__AppModules/02__AppData/Na__Palette__Config.json by hand, as
+ *   AudioSPACE's variables mirror its palette: change a value in both.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Design Tokens
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        /* Ground */
+        --PainterlyNPR_Desk                :  #E7E1D6;                     /* <-- The desk the sheet lies on */
+        --PainterlyNPR_DeskDeep            :  #DBD3C5;
+        --PainterlyNPR_Paper               :  #F4EFE4;                     /* <-- Cold-pressed tone; the canvas paints its own */
+        --PainterlyNPR_Cream               :  #FAF7F0;
+
+        /* Ink */
+        --PainterlyNPR_Ink                 :  #2B2A28;                     /* <-- Warm near-black, never #000 */
+        --PainterlyNPR_InkSoft             :  #5A554E;
+        --PainterlyNPR_InkFaint            :  #8C857A;
+        --PainterlyNPR_InkGhost            :  #B9B1A4;
+        --PainterlyNPR_Rule                :  rgba(43, 42, 40, 0.12);
+
+        /* Pigments - one meaning each */
+        --PainterlyNPR_Sepia               :  #4B3A2C;
+        --PainterlyNPR_Terracotta          :  #BC6540;                     /* <-- Running, fading to paper */
+        --PainterlyNPR_Slate               :  #5F7A91;                     /* <-- Focus, selection */
+        --PainterlyNPR_Ochre               :  #B58A3A;                     /* <-- Line control */
+        --PainterlyNPR_Brick               :  #9A4A35;                     /* <-- Material indication */
+        --PainterlyNPR_Sage                :  #7E9A70;                     /* <-- Ran */
+
+        /* Type */
+        --PainterlyNPR_FontStack           :  'Segoe UI', system-ui, -apple-system, sans-serif;
+        --PainterlyNPR_FontSerif           :  'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+        --PainterlyNPR_FontMono            :  'Cascadia Mono', Consolas, 'SF Mono', ui-monospace, monospace;
+        --PainterlyNPR_FontSize            :  13px;
+        --PainterlyNPR_FontSizeSmall       :  11.5px;
+        --PainterlyNPR_LetterSpacingLabel  :  0.07em;
+
+        /* Shape */
+        --PainterlyNPR_Radius              :  10px;
+        --PainterlyNPR_RadiusSmall         :  7px;
+        --PainterlyNPR_Gutter              :  16px;
+        --PainterlyNPR_PanelWidth          :  344px;
+        --PainterlyNPR_DrawerWidth         :  300px;                     /* <-- The Assets drawer, out (v0.6.0) */
+        --PainterlyNPR_DrawerTab           :  30px;                      /* <-- The Assets drawer's tab, folded */
+        --PainterlyNPR_SheetShadow         :  0 1px 2px rgba(60, 48, 36, 0.10), 0 10px 32px rgba(60, 48, 36, 0.16);
+        --PainterlyNPR_Transition          :  140ms ease;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

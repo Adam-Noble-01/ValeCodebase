@@ -1,0 +1,172 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - GRAPH STRIP
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__GraphStrip__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - GraphStrip
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The render graph along the foot: every pass a node, its state and its time
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: GRAPH.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * GRAPH | The Render Graph Along the Foot
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Graph {
+        padding                            :  8px var(--PainterlyNPR_Gutter) 12px;
+        border-top                         :  1px solid var(--PainterlyNPR_Rule);
+        background                         :  var(--PainterlyNPR_DeskDeep);
+    }
+
+    .PainterlyNPR__Graph__Head {
+        display                            :  flex;
+        align-items                        :  baseline;
+        gap                                :  14px;
+        margin-bottom                      :  8px;
+    }
+
+    .PainterlyNPR__Graph__Title {
+        margin                             :  0;
+        flex                               :  none;
+        font-size                          :  10.5px;
+        font-weight                        :  600;
+        text-transform                     :  uppercase;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        color                              :  var(--PainterlyNPR_InkSoft);
+    }
+
+    .PainterlyNPR__Graph__Lede {
+        margin                             :  0;
+        min-width                          :  0;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__Graph__Nodes {
+        display                            :  flex;
+        gap                                :  18px;
+        margin                             :  0;
+        padding                            :  0 0 4px;
+        list-style                         :  none;
+        overflow-x                         :  auto;
+        scrollbar-width                    :  thin;
+    }
+
+    .PainterlyNPR__Graph__Node {
+        position                           :  relative;
+        flex                               :  none;
+    }
+
+    /* The arrow from each pass to the next */
+    .PainterlyNPR__Graph__Node + .PainterlyNPR__Graph__Node::before {
+        content                            :  '';
+        position                           :  absolute;
+        left                               :  -14px;
+        top                                :  39px;
+        width                              :  10px;
+        height                             :  10px;
+        border-top                         :  1.5px solid var(--PainterlyNPR_InkFaint);
+        border-right                       :  1.5px solid var(--PainterlyNPR_InkFaint);
+        transform                          :  rotate(45deg);
+        opacity                            :  0.7;
+    }
+
+    .PainterlyNPR__Graph__Button {
+        display                            :  grid;
+        gap                                :  1px;
+        width                              :  128px;
+        padding                            :  4px 4px 5px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  var(--PainterlyNPR_Cream);
+        text-align                         :  left;
+        cursor                             :  pointer;
+        transition                         :  border-color var(--PainterlyNPR_Transition), opacity var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Graph__Button:hover {
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+    }
+
+    .PainterlyNPR__Graph__Thumb {
+        display                            :  block;
+        width                              :  118px;
+        height                             :  79px;
+        margin-bottom                      :  3px;
+        border-radius                      :  4px;
+        background                         :  var(--PainterlyNPR_Paper);
+    }
+
+    .PainterlyNPR__Graph__Label {
+        font-size                          :  11.5px;
+        font-weight                        :  600;
+        line-height                        :  1.2;
+    }
+
+    .PainterlyNPR__Graph__Home {
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  9px;
+        line-height                        :  1.25;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__Graph__Time {
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  10px;
+    }
+
+    /* Pass states: queued, running, ran this time, cached from before */
+    .PainterlyNPR__Graph__Node[data-status="Pending"] .PainterlyNPR__Graph__Button { opacity: 0.6; }
+    .PainterlyNPR__Graph__Node[data-status="Running"] .PainterlyNPR__Graph__Button { border-color: var(--PainterlyNPR_Terracotta); box-shadow: 0 0 0 1px var(--PainterlyNPR_Terracotta); }
+    .PainterlyNPR__Graph__Node[data-status="Ran"]     .PainterlyNPR__Graph__Time   { color: var(--PainterlyNPR_Sage); font-weight: 600; }
+    .PainterlyNPR__Graph__Node[data-status="Cached"]  .PainterlyNPR__Graph__Time   { color: var(--PainterlyNPR_InkFaint); }
+
+    .PainterlyNPR__Graph__Node--selected .PainterlyNPR__Graph__Button {
+        border-color                       :  var(--PainterlyNPR_Slate);
+        box-shadow                         :  0 0 0 1px var(--PainterlyNPR_Slate);
+    }
+
+    /* The truth buffers' six views, when that pass is selected */
+    .PainterlyNPR__ViewChips {
+        display                            :  flex;
+        flex-wrap                          :  wrap;
+        gap                                :  6px;
+    }
+
+    .PainterlyNPR__ViewChips:not(:empty) {
+        margin-top                         :  8px;
+    }
+
+    .PainterlyNPR__Chip {
+        padding                            :  3px 10px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  999px;
+        background                         :  var(--PainterlyNPR_Cream);
+        font-size                          :  11px;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__Chip--active {
+        border-color                       :  var(--PainterlyNPR_Slate);
+        background                         :  rgba(95, 122, 145, 0.14);
+        font-weight                        :  600;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

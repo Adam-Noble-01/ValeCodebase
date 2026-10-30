@@ -1,0 +1,40 @@
+{
+    "PainterlyNPR__GpuResources__Config" : {
+        "PainterlyNPR__GpuResources__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - Render Target Formats",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The texture formats a render target can take, by name: the GL constant names, so the context resolves them.",
+            "ReadBy"        : "02__Src__AppModules/21__System__GpuResources/PainterlyNPR__GpuResources__Core__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__GpuResources__Config__Targets" : {
+            "Formats" : {
+                "RGBA8"   : {
+                    "Internal" : "RGBA8",
+                    "Type"     : "UNSIGNED_BYTE",
+                    "Filter"   : "LINEAR",
+                    "Bytes"    : 4
+                },
+                "RGBA16F" : {
+                    "Internal" : "RGBA16F",
+                    "Type"     : "FLOAT",
+                    "Filter"   : "LINEAR",
+                    "Bytes"    : 8
+                },
+                "RGBA16N" : {
+                    "Internal" : "RGBA16F",
+                    "Type"     : "FLOAT",
+                    "Filter"   : "NEAREST",
+                    "Bytes"    : 8
+                },
+                "RGBA32F" : {
+                    "Internal" : "RGBA32F",
+                    "Type"     : "FLOAT",
+                    "Filter"   : "NEAREST",
+                    "Bytes"    : 16
+                }
+            }
+        }
+    }
+}

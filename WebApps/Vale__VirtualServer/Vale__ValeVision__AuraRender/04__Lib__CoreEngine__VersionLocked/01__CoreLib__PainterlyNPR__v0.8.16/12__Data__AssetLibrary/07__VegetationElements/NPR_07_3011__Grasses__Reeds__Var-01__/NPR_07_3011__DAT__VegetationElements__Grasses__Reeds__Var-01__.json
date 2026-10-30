@@ -1,0 +1,133 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_3011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Grasses",
+            "TypeBlock": "30",
+            "Family": "301",
+            "Item": 1,
+            "Name": "Reeds",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Grasses__Reeds__Var-01",
+            "DisplayName": "Reeds",
+            "Description": "Reeds at a margin: a narrow crown and upright blades - at the pond's edge."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_3011__Grasses__Reeds__Var-01__",
+            "DAT": {
+                "File": "NPR_07_3011__DAT__VegetationElements__Grasses__Reeds__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_3011__MOD__VegetationElements__Grasses__Reeds__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_3011__SKP__VegetationElements__Grasses__Reeds__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_3011__PXY__VegetationElements__Grasses__Reeds__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_3011__RND__VegetationElements__Grasses__Reeds__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.25,
+            "NominalSpreadM": 0.6,
+            "Bounds": {
+                "Min": [
+                    -0.295,
+                    -0.024,
+                    -0.25
+                ],
+                "Max": [
+                    0.298,
+                    0.787,
+                    0.266
+                ],
+                "Size": [
+                    0.593,
+                    0.811,
+                    0.516
+                ],
+                "RadiusM": 0.565
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Reeds",
+            "Params": {},
+            "Kind": "Grass",
+            "Material": "Grass",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.3
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "reeds",
+                "rushes",
+                "marginal",
+                "pond",
+                "water",
+                "grass"
+            ],
+            "Season": "Summer",
+            "Botanical": "Phragmites"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1546056413,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:03",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.153,
+                "Target": [
+                    0.002,
+                    0.382,
+                    0.008
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

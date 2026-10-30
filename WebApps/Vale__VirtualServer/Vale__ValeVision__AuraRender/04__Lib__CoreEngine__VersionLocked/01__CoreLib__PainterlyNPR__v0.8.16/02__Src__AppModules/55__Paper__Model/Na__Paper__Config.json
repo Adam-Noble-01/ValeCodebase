@@ -1,0 +1,57 @@
+{
+    "PainterlyNPR__Paper__Config" : {
+        "PainterlyNPR__Paper__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - Papers",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The papers the drawing is made on, procedural and measured in millimetres on the sheet.",
+            "ReadBy"        : "02__Src__AppModules/55__Paper__Model/PainterlyNPR__Paper__Presets__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__Paper__Config__Presets" : {
+            "Note"    : "CellMm is the cold-pressed bump spacing, ToothMm the fine tooth, both in millimetres on the sheet. Contrast scales the relief the pigment and the pen respond to.",
+            "Presets" : {
+                "ColdPressed"   : {
+                    "Label"       : "Cold-pressed (NOT)",
+                    "Tone"        : "#F4EFE4",
+                    "CellMm"      : 1.15,
+                    "CellWeight"  : 0.6,
+                    "ToothMm"     : 0.3,
+                    "ToothWeight" : 0.3,
+                    "FibreWeight" : 0.15,
+                    "Contrast"    : 1
+                },
+                "HotPressed"    : {
+                    "Label"       : "Hot-pressed",
+                    "Tone"        : "#F6F3EA",
+                    "CellMm"      : 1.6,
+                    "CellWeight"  : 0.15,
+                    "ToothMm"     : 0.24,
+                    "ToothWeight" : 0.35,
+                    "FibreWeight" : 0.2,
+                    "Contrast"    : 0.45
+                },
+                "Cartridge"     : {
+                    "Label"       : "Cartridge",
+                    "Tone"        : "#F7F4EC",
+                    "CellMm"      : 0.9,
+                    "CellWeight"  : 0.2,
+                    "ToothMm"     : 0.2,
+                    "ToothWeight" : 0.6,
+                    "FibreWeight" : 0.2,
+                    "Contrast"    : 0.6
+                },
+                "TexturedIvory" : {
+                    "Label"       : "Textured ivory",
+                    "Tone"        : "#F1E8D5",
+                    "CellMm"      : 1.7,
+                    "CellWeight"  : 0.65,
+                    "ToothMm"     : 0.4,
+                    "ToothWeight" : 0.25,
+                    "FibreWeight" : 0.1,
+                    "Contrast"    : 1.25
+                }
+            }
+        }
+    }
+}

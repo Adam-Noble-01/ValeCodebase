@@ -51,7 +51,15 @@
 //   only the part of the sheet the frame shows is read back, with the
 //   engine's vignette fitted to it (SetFrame), and a perspective smaller than
 //   the sheet widens its field of view so its framing is as before, so its
-//   pens, grain and bleed are their true millimetres on the paper.
+//   pens and grain are their true millimetres on the paper.
+// - THE PAINT FOLLOWS THE PICTURE, THE PENS STAY TRUE (PainterlyNPR 0.8.15 on,
+//   SetPaintScale; Adam, 30-Oct-2026: "bring eveyrthing inline with the new
+//   scaling rules (the new pens) because thats they validated sizes / so scale
+//   all of the other things back"): a still sets the engine's paint scale to
+//   how much smaller its picture is than the preview's (a perspective's
+//   Picture; a true-scale view against the engine's 1:50, never above 1), so
+//   bleed, edges, rings, flower dabs and the windows' shadow lines are the
+//   preview's against the building. Put back to 1 after.
 // - POINTS FROM ANOTHER SHEET (RefitPoints): a drawing set placed its points
 //   on the sheet the engine had then; the engine's own RefitPoints moves them
 //   to stand over the same part of the drawing on today's.
@@ -67,6 +75,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.10.0 (AURA 0.5.12)
+// - The paint scale (PaintScale, RenderStill): a still's washes shrink with
+//   its picture while its pens stay true, through the engine's SetPaintScale
+//   (PainterlyNPR 0.8.15), reached by name through the module's namespace so
+//   an older pin still loads and draws as before.
+//
 // 30-Oct-2026 - Version 1.9.0 (AURA 0.5.9)
 // - The sun is a scene's: 'Sun' leaves the settings AURA keeps; Sun, SetSun,
 //   EnvironmentSun and IsSunControl; RenderStill takes request.sun and Borrow options.sun,
@@ -157,6 +171,7 @@
         PainterlyNPR__GpuResources__SetScale,
         PainterlyNPR__GpuResources__Gpu  as  Gpu
     } from 'PainterlyNPR/21__System__GpuResources/PainterlyNPR__GpuResources__Core__.mjs';
+    import * as PainterlyNPR__GpuCore from 'PainterlyNPR/21__System__GpuResources/PainterlyNPR__GpuResources__Core__.mjs';   // <-- SetPaintScale (0.8.15 on) by name at call time: an older pin still loads
     import {
         PainterlyNPR__Shaders__VS_FULLSCREEN  as  VS_FULLSCREEN,
         PainterlyNPR__Shaders__VS_LINES       as  VS_LINES,
@@ -1102,6 +1117,31 @@
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | The Scale the Engine's Washes Were Tuned At, for True-Scale Views
+    // ------------------------------------------------------------
+    const PAINT_REFERENCE_SCALE  =  50;                                      // <-- The engine's Measured and Concept elevations are 1:50: a 1:100 roof plan's paint is half theirs
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Still's Paint Scale: how much smaller its picture is than the preview's (1 at most)
+    // ------------------------------------------------------------
+    // The pens are true on the paper whatever the frame; the paint was tuned on
+    // the preview's drawing. A perspective drawn smaller on the sheet (Picture)
+    // has its paint shrunk as much; a true-scale view against the engine's 1:50
+    // (its scale read from the camera: sheet height x scale / 2000 metres). An
+    // enlarged frame (Magnify) and the whole-sheet fallback keep 1.
+    // ------------------------------------------------------------
+    function Na__EngineHost__PaintScale(fit, camera, scaled) {
+        if (!fit) return 1;
+        const halfHeight = Number(camera && camera.HalfHeight);
+        let k = 1;
+        if (!scaled) k = Number(fit.Picture) || 1;
+        else if (camera && camera.Mode === 'Ortho' && halfHeight > 0) k = PAINT_REFERENCE_SCALE / (halfHeight * 2000 / SHEET_HEIGHT_MM);
+        return k > 0.9999 ? 1 : k;                                               // <-- 1:50's half-height is 7.425 m, a float a hair either side of 1: the preview's paint exactly
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | How a Still Fills Its Frame: { Picture, Magnify, Region, Show } (sheet mm), or null
     // ------------------------------------------------------------
     // frameMm: the viewport's frame on the paper; scaled: an elevation or the
@@ -1207,6 +1247,11 @@
                                                                            Scale: [fit.Region[0] / SHEET_WIDTH_MM, fit.Region[1] / SHEET_HEIGHT_MM] });
                 PainterlyNPR__RenderGraph__Bump('Composition');                  // <-- The paint dissolves inside the frame's edges, not the sheet's
             }
+            const paint = Na__EngineHost__PaintScale(fit, State.Camera, !!request.scaled);
+            if (paint !== 1 && typeof PainterlyNPR__GpuCore.PainterlyNPR__GpuResources__SetPaintScale === 'function') {
+                PainterlyNPR__GpuCore.PainterlyNPR__GpuResources__SetPaintScale(paint);   // <-- The washes shrink with the picture; the pens stay true
+                PainterlyNPR__RenderGraph__Bump('Size');
+            }
             Object.entries(request.controls || {}).forEach(([key, value]) => {
                 const spec = CONTROLS[key];
                 if (!spec) return;
@@ -1240,6 +1285,10 @@
         if (fit) {
             PainterlyNPR__Field.PainterlyNPR__ArtDirection__SetFrame(null);    // <-- The 3D Environment's drawing is the whole sheet again
             PainterlyNPR__RenderGraph__Bump('Composition');
+        }
+        if (typeof PainterlyNPR__GpuCore.PainterlyNPR__GpuResources__SetPaintScale === 'function' && Gpu.PaintScale !== 1) {
+            PainterlyNPR__GpuCore.PainterlyNPR__GpuResources__SetPaintScale(1);   // <-- The live drawing's paint is the sheet's own again
+            PainterlyNPR__RenderGraph__Bump('Size');
         }
         saved.Controls.reverse().forEach(({ spec, value }) => { PainterlyNPR__Interface__Set(spec.Path, value); PainterlyNPR__RenderGraph__Bump(...spec.Bump); });
         State.Camera = saved.Camera;

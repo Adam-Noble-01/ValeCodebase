@@ -2,9 +2,9 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "30-Oct-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.14/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.16/02__Src__AppModules/"
     },
-    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.14 at 26d6b6b (v0.8.13's ground cut, and v0.8.14's AutoRotate and AutoScale: pots, furniture, fences and the hedge land square at their own size, only trees and plants are turned and sized on a drop), copied from the commit (its lock says WorkingTreeClean true).",
+    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.16 at bc79525 (v0.8.14's AutoRotate and AutoScale; v0.8.15's paint scale, which RenderStill sets so a viewport's washes, edges, rings and shadow lines shrink with its picture while the pens stay true; v0.8.16's window shadow lines on a project's own model, its glass, window frames and doors recognised by tag, material and name), copied from the commit (its lock says WorkingTreeClean true).",
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Panel__.js",

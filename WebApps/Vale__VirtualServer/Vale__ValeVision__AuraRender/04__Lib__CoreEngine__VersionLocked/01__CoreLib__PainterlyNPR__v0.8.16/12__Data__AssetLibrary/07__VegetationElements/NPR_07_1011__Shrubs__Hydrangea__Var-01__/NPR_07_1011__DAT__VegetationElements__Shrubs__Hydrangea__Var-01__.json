@@ -1,0 +1,143 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_1011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "101",
+            "Item": 1,
+            "Name": "Hydrangea",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__Hydrangea__Var-01",
+            "DisplayName": "Hydrangea",
+            "Description": "A mophead hydrangea: a rounded shrub carrying big heads of soft blue flowers."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_1011__Shrubs__Hydrangea__Var-01__",
+            "DAT": {
+                "File": "NPR_07_1011__DAT__VegetationElements__Shrubs__Hydrangea__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_1011__MOD__VegetationElements__Shrubs__Hydrangea__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_1011__SKP__VegetationElements__Shrubs__Hydrangea__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_1011__PXY__VegetationElements__Shrubs__Hydrangea__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_1011__RND__VegetationElements__Shrubs__Hydrangea__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.45,
+            "NominalSpreadM": 1.3,
+            "Bounds": {
+                "Min": [
+                    -0.479,
+                    0.137,
+                    -0.773
+                ],
+                "Max": [
+                    0.664,
+                    1.396,
+                    0.57
+                ],
+                "Size": [
+                    1.143,
+                    1.259,
+                    1.343
+                ],
+                "RadiusM": 1.083
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 1.2,
+                "HeightM": 1.4,
+                "Masses": 7
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Hydrangea",
+                "Density": 0.7,
+                "SizeMm": [
+                    1.1,
+                    1.8
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.65
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "hydrangea",
+                "mophead",
+                "flowering shrub",
+                "blue flowers",
+                "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Hydrangea macrophylla"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1982806614,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:52",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.134,
+                "Target": [
+                    0.093,
+                    0.767,
+                    -0.102
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

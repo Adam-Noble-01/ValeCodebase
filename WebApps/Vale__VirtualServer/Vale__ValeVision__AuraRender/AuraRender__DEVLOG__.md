@@ -1,5 +1,35 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.16, the Paint Scale and Window Shadow Lines (No App Version of Its Own)
+
+**Asked by Adam:** "Commit and sync", for PainterlyNPR's paint scale and window shadow lines on project models.
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.16 at bc79525 (v0.8.15 and v0.8.16
+committed together, on top of the other session's v0.8.14 at 26d6b6b), pinned as `01__CoreLib__PainterlyNPR__v0.8.16`
+from the commit (426 files; its lock says WorkingTreeClean true; 26 uncommitted engine files of other sessions left out,
+as the sync always does). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from
+v0.8.14; the worker's cache version 2026-10-30-17; the README's engine row.
+
+**What it brings AURA:**
+- **The paint scale** (v0.8.15): `RenderStill` (AURA 0.5.12, below) now finds `SetPaintScale` in the pin, so a
+  perspective viewport's washes, bleed, edges, rings, flower dabs and window shadow lines shrink with its picture while
+  the pens stay true; a 1:100 roof plan's paint is half a 1:50 elevation's. The 3D Environment draws as before.
+- **Window shadow lines on a project's own model** (v0.8.16): a whitecard's glass, window frames and doors recognised by
+  SketchUp tag (the SSOT Windows and Doors tags), material and name, and each pane of glass made into a window record;
+  also glass painted in the Materials tab. Thrower has no glass in its model yet, so it draws as before.
+
+**Checked here (no browser):** `--check`: the copy untouched and the same as the repository; the engine's AppCore Init
+the same as v0.8.14's (one hash), so the host needs no change; every one of the 100 engine references in AURA's modules
+resolves in the new pin; the host parses.
+
+**Not checked:** a browser (Adam tests): the Example Cottage's perspective viewport, its window shadows and washes,
+the elevations unchanged.
+
+**Live:** since 19:14 UTC, 30-Oct-2026: the files went up with the other session's `aura` push (stamp
+20261030-191403), made while this sync was on disk. Read on the server at 19:25: `index.html`'s import map names
+`01__CoreLib__PainterlyNPR__v0.8.16`, the worker is `2026-10-30-17`, the pin's lock says `bc79525`, and the engine
+host has the paint scale. An `engine compare aura` at 19:24 found nothing to push. No API change.
+
 ## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.14, Pots and Furniture Land Square (No App Version of Its Own)
 
 **Asked by Adam:** "It hasn't fixed it in Aura ... It's still inserted rotated ... There should be an "is item auto-rotate"
@@ -139,6 +169,45 @@ rather than having to use the menu."
 **Checked here:** the module parses (`node --check`) and the config is valid JSON. Not run in a browser (Adam tests).
 
 **Live:** `aura` (page only).
+
+## Version 0.5.12, 30-Oct-2026: The Paint Follows the Picture, the Pens Stay True
+
+**Asked by Adam:** "Since the recent line work update and viewport rescaling update, the window shadow effect no longer
+works ... The line work is all correct now. It's just all of the stuff to do with the washes and the shading. I think
+the scale might be off now", then, on the demo cottage: "yes bring eveyrthing inline with the new scaling rules (the new
+pens) because thats they validated sizes / so scale all of the other things back".
+
+**What was wrong:** since 0.5.5 a perspective viewport is drawn at its frame's true size by widening its field of view,
+so the building shrinks on the engine's sheet by the frame's picture factor (0.548 for a 230 x 153 frame). The pens
+stay true, as calibrated; the washes were also left at the paper's millimetres, so against the building every bleed,
+edge, ring, blotch, flower dab and shadow line was 1.8 times too coarse. On the cottage a casement's 0.35 mm white
+frame, which carries the reveal's shadow, was mostly under the true pens, and the wall's wash bled across it onto the
+glass, where the shadow line may not paint. A project's whitecard has no window records or glass, so it never drew
+window shadows: not changed here.
+
+**Built:**
+- **PainterlyNPR v0.8.15** (bc79525, committed with v0.8.16 at Adam's word: "Commit and sync"): the engine's paint scale, `SetPaintScale` and
+  `PaintPxPerMm`, read by every wash pass in place of the sheet's density. At 1 nothing changes.
+- **Each still sets it** (`Na__EngineHost__PainterlyNpr__.js` 1.10.0, `Na__EngineHost__PaintScale` and
+  `RenderStill`): a perspective takes its picture factor; a true-scale view takes 1:50 over its own scale, never above 1
+  (a 1:100 roof plan's paint is half a 1:50 elevation's; the elevations at 1:50 are unchanged); an enlarged frame and the
+  whole-sheet fallback keep 1. It is put back to 1 after the still, whatever happened, so the 3D Environment draws as
+  the preview does.
+- Reached by name through the module's namespace: the current pin (v0.8.12) has no seam, loads as before and draws as
+  0.5.11 did until the engine is synced.
+
+**Checked here (no browser):** the host parses; PainterlyNPR's module and config tests pass; in Node the seam gives the
+sheet's own density at 1, 0.548 for a 230 x 153 frame, 1 at 1:50, 0.5 at 1:100 and 1 at 1:20; the cottage's bleed in a
+230 x 153 frame reaches about 0.77 mm against its 0.35 to 0.39 mm frame, the preview's proportion.
+
+**Not yet:**
+- AURA draws it once the pin moves to PainterlyNPR bc79525 (v0.8.16), with the import map and the worker's cache version.
+- Not tested in a browser (Adam tests): the Example Cottage's perspective viewport, its window shadows and washes, an
+  elevation (unchanged) and the roof plan.
+- The live preview while a viewport's points are edited still shrinks the whole sheet (its paint was already at the
+  picture's scale).
+
+(Uncommitted, waiting on Adam.)
 
 ## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.12, the Potted Standards (No App Version of Its Own)
 

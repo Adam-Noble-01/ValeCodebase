@@ -1,0 +1,143 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2541",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "254",
+            "Item": 1,
+            "Name": "Chamomile",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Chamomile__Var-01",
+            "DisplayName": "Chamomile",
+            "Description": "Chamomile: a feathery deep green mound starred with white daisies."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2541__Perennials__Chamomile__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2541__DAT__VegetationElements__Perennials__Chamomile__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2541__MOD__VegetationElements__Perennials__Chamomile__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2541__SKP__VegetationElements__Perennials__Chamomile__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2541__PXY__VegetationElements__Perennials__Chamomile__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2541__RND__VegetationElements__Perennials__Chamomile__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.0,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+                "Min": [
+                    -0.361,
+                    0.11,
+                    -0.41
+                ],
+                "Max": [
+                    0.221,
+                    0.957,
+                    0.407
+                ],
+                "Size": [
+                    0.582,
+                    0.847,
+                    0.817
+                ],
+                "RadiusM": 0.657
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 0.75,
+                "HeightM": 0.95,
+                "Masses": 5
+            },
+            "Kind": "Chamomile",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Chamomile",
+                "Density": 1.1,
+                "SizeMm": [
+                    0.8,
+                    1.25
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Random",
+            "AutoScale": true,
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "chamomile",
+                "daisy",
+                "white flowers",
+                "border",
+                "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Chamaemelum nobile"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 522625814,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:01",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.352,
+                "Target": [
+                    -0.07,
+                    0.534,
+                    -0.002
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

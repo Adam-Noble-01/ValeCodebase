@@ -1,0 +1,132 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_10_0001",
+            "Namespace": "NPR",
+            "Collection": "10",
+            "CollectionName": "BoundaryElements",
+            "Type": "Fences",
+            "TypeBlock": "00",
+            "Family": "000",
+            "Item": 1,
+            "Name": "PicketFencePanel",
+            "Variant": "Var-01",
+            "Stem": "BoundaryElements__Fences__PicketFencePanel__Var-01",
+            "DisplayName": "Picket fence, 2.4 m",
+            "Description": "A 2.4 m panel of white picket fence: posts and caps, two rails behind, pointed pickets in front - the front fence's."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "10__BoundaryElements/NPR_10_0001__Fences__PicketFencePanel__Var-01__",
+            "DAT": {
+                "File": "NPR_10_0001__DAT__BoundaryElements__Fences__PicketFencePanel__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_10_0001__MOD__BoundaryElements__Fences__PicketFencePanel__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_10_0001__SKP__BoundaryElements__Fences__PicketFencePanel__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_10_0001__PXY__BoundaryElements__Fences__PicketFencePanel__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_10_0001__RND__BoundaryElements__Fences__PicketFencePanel__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.08,
+            "NominalSpreadM": 2.5,
+            "Bounds": {
+                "Min": [
+                    -1.28,
+                    0,
+                    -0.09
+                ],
+                "Max": [
+                    1.28,
+                    1.08,
+                    0.07
+                ],
+                "Size": [
+                    2.56,
+                    1.08,
+                    0.16
+                ],
+                "RadiusM": 1.392
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "PicketFence",
+            "Params": {},
+            "Kind": null,
+            "Material": "WhitePaint",
+            "Role": "Context",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": false,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0,
+            "NewShapeEachPlop": false,
+            "MinSpacingM": 1.25
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "fence",
+                "picket fence",
+                "white fence",
+                "boundary",
+                "panel",
+                "gate"
+            ],
+            "Season": "AllYear"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1828345726,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:04",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 6.013,
+                "Target": [
+                    0,
+                    0.54,
+                    -0.01
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "PainterlyNPR__AssetCatalogue__Config" : {
+        "PainterlyNPR__AssetCatalogue__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - The Assets Drawer",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The pull-out catalogue left of the sheet: what it remembers per viewer, how a card is dragged onto the sheet, the drop marker, its Materials tab (v0.7.0), and its words.",
+            "ReadBy"        : "02__Src__AppModules/82__Hud__AssetCatalogue/PainterlyNPR__Interface__AssetDrawer__.mjs, PainterlyNPR__Interface__MaterialTab__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.6.0; the Materials section v0.7.0"
+        },
+
+        "PainterlyNPR__AssetCatalogue__Config__Drawer" : {
+            "Note"            : "Remembered per viewer, as the folds are: whether the drawer is out, and which pictures its cards show.",
+            "Store"           : "PainterlyNPR.App.AssetDrawer",
+            "Thumbs"          : "RND",
+            "ThumbsNote"      : "RND shows each asset as it is drawn (pen and wash); PXY its proxy, as the SketchUp and three.js apps preview it",
+            "SearchHint"      : "Search: oak, lavender, NPR_07 ...",
+            "Empty"           : "Nothing in the library matches.",
+            "NoThumbnail"     : "No picture yet",
+            "Pane"            : "Objects",
+            "PaneNote"        : "The tab the drawer opens on: Objects (the asset library) or Materials; the viewer's last choice is remembered"
+        },
+
+        "PainterlyNPR__AssetCatalogue__Config__Materials" : {
+            "Note"            : "The Materials tab (v0.7.0): the material classes as swatches, given to an object or one face of it by a click on the sheet (the brush), by dragging a swatch onto the sheet, or from the right-click menu.",
+            "SearchHint"      : "Search: brick, slate, paving ...",
+            "Empty"           : "No material matches.",
+            "Mode"            : "Object",
+            "ModeNote"        : "Object gives the class to the whole object (a plop's part, the cottage's walls); Face to the one face clicked, as SketchUp paints. Shift flips it for one click",
+            "NoSwatch"        : "Its colour: no swatch yet"
+        },
+
+        "PainterlyNPR__AssetCatalogue__Config__Drag" : {
+            "Note"            : "A card moved this far with the button down is a drag; less is a click, which arms a placement - the next click on the sheet places it (Esc cancels), as an art direction point is placed.",
+            "ThresholdPx"     : 6,
+            "GhostPx"         : 76,
+            "FootprintSides"  : 28,
+            "FootprintMinM"   : 0.4,
+            "FootprintMinMNote" : "The marker's smallest radius on the ground, so a lavender's still shows where it lands"
+        }
+    }
+}

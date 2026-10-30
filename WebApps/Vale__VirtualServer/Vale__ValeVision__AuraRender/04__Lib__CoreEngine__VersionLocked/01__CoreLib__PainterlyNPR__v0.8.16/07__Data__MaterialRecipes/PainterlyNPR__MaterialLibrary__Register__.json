@@ -1,0 +1,529 @@
+{
+    "PainterlyNPR__MaterialLibrary__Register": {
+        "PainterlyNPR__MaterialLibrary__Register__Meta": {
+            "RegisterLabel": "PainterlyNPR - Material Library Register",
+            "RegisterVersion": "1.0.0",
+            "RegisterNote": "The material classes as the Assets drawer's Materials tab shows them: each class's group, its words for the search, and its two swatches. The class itself (its Id, label, albedo and wash recipe) is 13__Scene__MaterialClasses's; this register only catalogues it.",
+            "ReadBy": "02__Src__AppModules/17__Scene__MaterialAssignment/PainterlyNPR__MaterialAssignment__Library__.mjs; the local server's /api/materials marks a swatch present when the factory writes it",
+            "Source": "Written 30-Oct-2026, v0.7.0",
+            "SwatchFile": "PainterlyNPR__MaterialSwatch__{Id}__{Key}__{Slot}__.webp",
+            "SwatchFileNote": "Each swatch's file, in its group's folder: Id in two digits (Brick is 02), Slot RND (pen and wash) or PXY (the proxy). Drawn by the asset factory on the class's sample (17, Samples)"
+        },
+        "PainterlyNPR__MaterialLibrary__Register__Groups": {
+            "Note": "The tab's chips, in this order. Folder is where the group's swatches (and, to come, its recipes) are kept",
+            "Groups": [
+                {
+                    "Code": "Walls",
+                    "Label": "Walls",
+                    "Folder": "10__Recipes__WallsAndMasonry",
+                    "Note": "What walls are built of: render, brick, stone and fired clay"
+                },
+                {
+                    "Code": "Roofs",
+                    "Label": "Roofs",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Note": "Slate and clay tile: both laid in courses"
+                },
+                {
+                    "Code": "Joinery",
+                    "Label": "Joinery and glazing",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Note": "Glass, paintwork, timber and cast iron"
+                },
+                {
+                    "Code": "Ground",
+                    "Label": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Note": "Paving, paths, roads, lawn and water"
+                },
+                {
+                    "Code": "Planting",
+                    "Label": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Note": "Foliage, hedges, grasses and bark: drawn by the organic grammars"
+                },
+                {
+                    "Code": "Distance",
+                    "Label": "Distance",
+                    "Folder": "40__Recipes__SkyAndAtmosphere",
+                    "Note": "The soft greens of trees seen far off"
+                }
+            ]
+        },
+        "PainterlyNPR__MaterialLibrary__Register__Materials": {
+            "Note": "Every class but the sky, in group order. Swatches: which pictures are on disk (the server sets them), RenderedOn: when they were last drawn",
+            "Materials": [
+                {
+                    "Key": "Render",
+                    "Id": 1,
+                    "Group": "Walls",
+                    "Folder": "10__Recipes__WallsAndMasonry",
+                    "Description": "Lime render or plaster, washed pale; its lit planes are left as paper.",
+                    "Tags": [
+                        "plaster",
+                        "stucco",
+                        "white",
+                        "wall"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Brick",
+                    "Id": 2,
+                    "Group": "Walls",
+                    "Folder": "10__Recipes__WallsAndMasonry",
+                    "Description": "Red brick, laid in courses at true gauge; a face given it gets courses of its own.",
+                    "Tags": [
+                        "masonry",
+                        "courses",
+                        "wall",
+                        "red"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Stone",
+                    "Id": 3,
+                    "Group": "Walls",
+                    "Folder": "10__Recipes__WallsAndMasonry",
+                    "Description": "Stone dressings: cills, steps, quoins and copings.",
+                    "Tags": [
+                        "masonry",
+                        "sandstone",
+                        "cill",
+                        "step",
+                        "quoin"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Terracotta",
+                    "Id": 8,
+                    "Group": "Walls",
+                    "Folder": "10__Recipes__WallsAndMasonry",
+                    "Description": "Fired clay: chimney pots, planters and pots.",
+                    "Tags": [
+                        "clay",
+                        "pot",
+                        "planter"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Slate",
+                    "Id": 4,
+                    "Group": "Roofs",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Slate roofing, laid in courses as tiles are.",
+                    "Tags": [
+                        "roof",
+                        "grey",
+                        "courses"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "ClayTile",
+                    "Id": 17,
+                    "Group": "Roofs",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Clay plain tiles, laid in courses.",
+                    "Tags": [
+                        "roof",
+                        "tile",
+                        "courses",
+                        "red"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Glass",
+                    "Id": 5,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Glazing: dark panes holding the sky.",
+                    "Tags": [
+                        "window",
+                        "pane",
+                        "glazing"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:34"
+                },
+                {
+                    "Key": "Joinery",
+                    "Id": 6,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Painted joinery: doors, boards and trims.",
+                    "Tags": [
+                        "door",
+                        "paint",
+                        "green",
+                        "timber"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Metal",
+                    "Id": 7,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Cast iron: gutters, downpipes and railings.",
+                    "Tags": [
+                        "iron",
+                        "gutter",
+                        "downpipe",
+                        "rainwater"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Timber",
+                    "Id": 14,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Weathered oak or softwood: porches, benches and posts.",
+                    "Tags": [
+                        "oak",
+                        "wood",
+                        "bench",
+                        "post"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "WhitePaint",
+                    "Id": 18,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "White-painted timber: fences, gates and trellis.",
+                    "Tags": [
+                        "fence",
+                        "picket",
+                        "paint",
+                        "white"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "WindowPaint",
+                    "Id": 27,
+                    "Group": "Joinery",
+                    "Folder": "20__Recipes__RoofsGlazingAndJoinery",
+                    "Description": "Painted window joinery: frames, sashes and glazing bars.",
+                    "Tags": [
+                        "window",
+                        "frame",
+                        "paint",
+                        "white"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Paving",
+                    "Id": 9,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Sandstone flags; a path given it keeps its flagstone joints.",
+                    "Tags": [
+                        "flagstone",
+                        "path",
+                        "patio",
+                        "stone"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Lawn",
+                    "Id": 10,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Mown lawn.",
+                    "Tags": [
+                        "grass",
+                        "turf",
+                        "green"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Water",
+                    "Id": 22,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A garden pond: still water.",
+                    "Tags": [
+                        "pond",
+                        "pool"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Footway",
+                    "Id": 24,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A tarmac footpath.",
+                    "Tags": [
+                        "path",
+                        "pavement",
+                        "asphalt"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Tarmac",
+                    "Id": 25,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A tarmac road.",
+                    "Tags": [
+                        "road",
+                        "asphalt",
+                        "drive"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Kerb",
+                    "Id": 26,
+                    "Group": "Ground",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A granite kerb.",
+                    "Tags": [
+                        "granite",
+                        "edge",
+                        "road"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:35"
+                },
+                {
+                    "Key": "Foliage",
+                    "Id": 11,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Shrub foliage.",
+                    "Tags": [
+                        "shrub",
+                        "bush",
+                        "leaves",
+                        "green"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "TreeFoliage",
+                    "Id": 12,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A tree canopy.",
+                    "Tags": [
+                        "tree",
+                        "canopy",
+                        "leaves"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "Bark",
+                    "Id": 13,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Bark: trunks and limbs.",
+                    "Tags": [
+                        "trunk",
+                        "tree",
+                        "wood"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "Grass",
+                    "Id": 16,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Ornamental grass.",
+                    "Tags": [
+                        "grasses",
+                        "border",
+                        "straw"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "Lavender",
+                    "Id": 19,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Lavender: grey-green and soft.",
+                    "Tags": [
+                        "herb",
+                        "border",
+                        "grey"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "Hedge",
+                    "Id": 20,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "A clipped hedge.",
+                    "Tags": [
+                        "box",
+                        "privet",
+                        "green"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "Conifer",
+                    "Id": 21,
+                    "Group": "Planting",
+                    "Folder": "30__Recipes__GroundAndPlanting",
+                    "Description": "Conifer: yew and the like, dark and dense.",
+                    "Tags": [
+                        "yew",
+                        "evergreen",
+                        "topiary"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "DistantTrees",
+                    "Id": 15,
+                    "Group": "Distance",
+                    "Folder": "40__Recipes__SkyAndAtmosphere",
+                    "Description": "The distant tree belt: soft and pale with distance.",
+                    "Tags": [
+                        "belt",
+                        "far",
+                        "trees"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:36"
+                },
+                {
+                    "Key": "MidTrees",
+                    "Id": 23,
+                    "Group": "Distance",
+                    "Folder": "40__Recipes__SkyAndAtmosphere",
+                    "Description": "Trees in the middle distance.",
+                    "Tags": [
+                        "trees",
+                        "middle",
+                        "far"
+                    ],
+                    "Swatches": {
+                        "RND": true,
+                        "PXY": true
+                    },
+                    "RenderedOn": "2026-10-30T13:52:37"
+                }
+            ]
+        }
+    }
+}

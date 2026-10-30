@@ -48,6 +48,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.5.13)
+// - A right click that did not pan asks the sheet's menus (OnMenu: the ground
+//   cut's, over an elevation viewport); a right drag still pans and opens
+//   nothing. Where the browser sends the menu on the press, it waits for the
+//   release.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.1.3)
 // - Initial port.
 //
@@ -82,13 +88,18 @@
     const Na__SheetPc__BUTTON_NAMES    = ['Left', 'Middle', 'Right'];            // <-- Indexed by MouseEvent.button
     const Na__SheetPc__LINE_HEIGHT_PX  = 20;                                     // <-- deltaMode 1 reports lines, not pixels
     const Na__SheetPc__OWN_FOCUS       = 'input, select, textarea, button, [contenteditable="true"], [contenteditable=""], [contenteditable="plaintext-only"]';
+    const Na__SheetPc__MENU_SLOP_PX    = 5;                                      // <-- A right press that moved this far was a pan: no menu
+    const Na__SheetPc__MENU_WINDOW_MS  = 600;                                    // <-- How long after a right release its menu event may still arrive
 
     const Na__SheetPc__State = {
         desk      : null,
         handlers  : null,
-        pan       : null,                        // <-- { pointerId, lastX, lastY, claimsLeft }
+        pan       : null,                        // <-- { pointerId, lastX, lastY, claimsLeft, button, startX, startY, moved }
         spaceHeld : false,
-        wheel     : null                         // <-- { factor, x, y, frame }: wheel steps gathered for the next animation frame
+        wheel     : null,                        // <-- { factor, x, y, frame }: wheel steps gathered for the next animation frame
+        menus     : [],                          // <-- (event) => true when it opened a menu: the sheet's right-click menus
+        lastRight : null,                        // <-- { moved, at }: the last right press, once released
+        pending   : null                         // <-- A menu event sent on the press, waiting for the release
     };
 
 // endregion -------------------------------------------------------------------
@@ -224,7 +235,9 @@
         const S = Na__SheetPc__State;
         event.preventDefault();                                                  // <-- Stops the middle button's autoscroll, and tells the surface the press is taken
         const claimsLeft = (event.button === 0);
-        S.pan = { pointerId: event.pointerId, lastX: event.clientX, lastY: event.clientY, claimsLeft };
+        S.pan = { pointerId: event.pointerId, lastX: event.clientX, lastY: event.clientY, claimsLeft,
+                  button: event.button, startX: event.clientX, startY: event.clientY, moved: 0 };
+        S.pending = null;
         if (claimsLeft) Na__Surface__SetSuppressed(true);                        // <-- A pan on the left button must not also edit
         try { S.desk.setPointerCapture(event.pointerId); } catch (error) { /* capture refused */ }
         S.desk.classList.add('is-panning');
@@ -236,6 +249,7 @@
         Na__SheetNav__PanBy(pan.lastX - event.clientX, pan.lastY - event.clientY);
         pan.lastX = event.clientX;
         pan.lastY = event.clientY;
+        pan.moved = Math.max(pan.moved, Math.hypot(event.clientX - pan.startX, event.clientY - pan.startY));
     }
 
     function Na__SheetPc__OnPointerUp(event) {
@@ -243,14 +257,40 @@
         if (!S.pan || (event && event.pointerId !== S.pan.pointerId)) return;
         if (event) { try { S.desk.releasePointerCapture(event.pointerId); } catch (error) { /* already released */ } }
         if (S.pan.claimsLeft) Na__Surface__SetSuppressed(false);
+        const right = S.pan.button === 2 ? { moved: S.pan.moved, at: performance.now() } : null;
         S.pan = null;
         S.desk.classList.remove('is-panning');
+        if (!right) return;
+        S.lastRight = right;
+        const pending = S.pending;
+        S.pending = null;
+        if (pending && event && right.moved < Na__SheetPc__MENU_SLOP_PX) Na__SheetPc__AskMenus(pending);   // <-- The press's menu, now it is known to be a click
     }
 
-    // A right drag pans, which leaves no room for the browser's menu
+    // A right drag pans; a right click that did not move asks the sheet's menus. The browser's never shows.
     function Na__SheetPc__OnContextMenu(event) {
         if (Na__SheetPc__Matches(event, Na__SheetKeys__GetGuards().contextMenuKeepSelector)) return;
         event.preventDefault();
+        const S = Na__SheetPc__State;
+        if (S.pan && S.pan.button === 2) { S.pending = event; return; }          // <-- Sent on the press (not Windows): wait for the release
+        const last = S.lastRight;
+        if (last && performance.now() - last.at < Na__SheetPc__MENU_WINDOW_MS && last.moved >= Na__SheetPc__MENU_SLOP_PX) return;   // <-- The end of a pan
+        Na__SheetPc__AskMenus(event);
+    }
+
+    function Na__SheetPc__AskMenus(event) {
+        if (!Na__SheetPc__OnSheet()) return;
+        for (const provider of Na__SheetPc__State.menus) {
+            try { if (provider(event)) return; } catch (error) { console.error('[AURA] A sheet menu failed', error); }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Add a Right-Click Menu to the Sheet: provider(event) returns true when it opened one
+    // ------------------------------------------------------------
+    function Na__SheetPc__OnMenu(provider) {
+        if (typeof provider === 'function' && !Na__SheetPc__State.menus.includes(provider)) Na__SheetPc__State.menus.push(provider);
     }
     // ------------------------------------------------------------
 
@@ -367,7 +407,8 @@
     export {
         Na__SheetPc__Attach,
         Na__SheetPc__TakeKeyboard,
-        Na__SheetPc__IsPanning
+        Na__SheetPc__IsPanning,
+        Na__SheetPc__OnMenu
     };
 
 // endregion -------------------------------------------------------------------

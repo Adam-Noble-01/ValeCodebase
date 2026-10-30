@@ -1,5 +1,64 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.13, 30-Oct-2026: The Ground Cut, an Elevation Ending in a Swish of Wash
+
+**Asked by Adam** (with an elevation viewport whose bottom handle cut straight through the planting, and three of Vale's
+hand-coloured elevations standing on a swish of hardstanding, of lawn and of a thin grass strip): "create a special
+effect on elevation viewports when they have the bottom handle brought upwards. It effectively becomes a ground plane
+clipping boundary ... just allow the user to right-click and change the ground elevation ground plane cutoff effect. In
+the right-click context menu, you should be able to adjust different settings and be able to seed new watercolour
+swishes so it looks realistic and artistic like this". **His calls:** the painter in PainterlyNPR, synced into AURA; on
+by itself when the bottom handle is dragged up past the ground line; Grass sweep, Grass strip, Hardstanding, Gravel and
+Paving, with Plain cut always there; the right-click menu plus a small Adjust panel.
+
+**Built** (the swish, its kinds, colours, settings, labels, ranges and readouts are PainterlyNPR v0.8.13's
+`72__Paper__SheetComposer`; nothing of it is copied here):
+- **The cut** (`21__System__Viewports/Na__Viewports__GroundCut__.js` 1.0.0): an elevation viewport whose bottom edge is
+  brought up past the building's ground line (its lowest Architecture or Focal point, put on the paper through the
+  viewport's own camera and scale) by `GroundCut__TriggerMm` (1 mm) is cut there:
+  - the picture keeps its clip and gains a mask: kept above the cut, its foot lost into the swish as the engine's foot
+    mask says, nothing below;
+  - the engine's swish is laid over the picture and the paper with a multiply blend, past the frame's sides and below
+    it, and prints;
+  - the title goes under the swish;
+  - a resize carries the cut on the frame's bottom while the handle moves (the ground line stays put);
+  - each painting is made at the stills' 300 dpi, once, off the redraw, kept by what it depends on (the last stands in
+    while the next is painted).
+- **On each viewport:** `Viewport__GroundCut` = `{ GroundCut__Mode, GroundCut__Settings }`. The mode is AURA's (Auto, On,
+  Off: `GroundCut__Modes`); the settings are the engine's kept form (its `Clean`: only what has moved from the kind's
+  look), saved and undone with the drawing set. A cut with no seed takes one from the viewport's id, so it never changes
+  until New swish. The history names the step "Change the ground cut" (History 1.0.1).
+- **The menu** (`Na__Viewports__GroundCutMenu__.js` 1.0.0, the engine's own menu through the host): right-click an
+  elevation viewport on a sheet for the kinds, New swish, Flip, Colour, Ink ground line, Adjust..., Show it (when dragged
+  into the drawing, always, never), Undo and Redo. A right drag still pans the sheet: only a right click that did not
+  move opens it (Controls PC 1.1.0: `OnMenu`; where the browser sends the menu on the press it waits for the release).
+- **The Adjust panel:** floats beside the viewport, its head drags it; kind, colour, Show it, New swish, Flip, Reset, the
+  ink line and every slider the engine lists, its readout typable. A slider shows a quick painting (the engine's 4 px/mm)
+  swapped into the sheet in place as it moves; let go, the change is one step and the finished painting follows. Escape,
+  its x, another tab or its viewport going close it; an undo or redo refills it.
+- **The host** (`10__System__EngineHost/Na__EngineHost__GroundCut__.js` 1.0.0): the engine's two ground cut modules by
+  dynamic import (a pin without them keeps the plain cut, and the menu says to sync the engine), the engine's
+  `ContextMenu` Open and Close, its stylesheets linked from the pin when the drawer has not linked them yet.
+- `Na__UiFeature__Styles__GroundCut__.css` (the blend, the panel); the config's `GroundCut__TriggerMm`,
+  `GroundCut__MaskReachMm` and `GroundCut__Modes`; the import map record lists the new host file.
+
+**Checked here (no browser):** every new and edited module parses, and every name imported is exported where it points.
+The engine's painter was run in Node and looked at (see PainterlyNPR's DEVLOG, v0.8.13).
+
+**The engine, synced** (at Adam's word: "Commit NPR, sync AURA"): PainterlyNPR v0.8.13 committed as 1fa7f2c (only the
+ground cut: another session's v0.8.14 stays uncommitted there) and pinned as
+`04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.13` from the commit (424 files, its lock
+WorkingTreeClean true, `--check` untouched; Init unchanged, so the host needs nothing). The import map (index.html and
+`Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.12, the worker's cache version 2026-10-30-15, the README's
+engine row. Before the sync the live page asked the v0.8.12 pin for the ground cut's two modules and got 404s (Adam's
+console): the dynamic import failed as designed and the elevations kept their plain cut.
+
+**Not checked:** a browser (Adam tests).
+
+**Live:** needs `aura` (this version and the v0.8.13 pin). No API change.
+
+(Committed at Adam's word: "Commit NPR, sync AURA" and "Just fucking commit this"; not pushed.)
+
 ## Version 0.5.11, 30-Oct-2026: Words Typed in Place, and Lorem Ipsum for New Notes
 
 **Asked by Adam:** "Lorem Ipsum ... Add that as the standard placeholder text for new leaders when they're created.

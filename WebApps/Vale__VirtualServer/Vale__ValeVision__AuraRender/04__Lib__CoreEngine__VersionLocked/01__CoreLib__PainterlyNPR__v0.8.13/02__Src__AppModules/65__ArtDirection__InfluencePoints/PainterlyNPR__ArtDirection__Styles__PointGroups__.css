@@ -1,0 +1,194 @@
+/* =============================================================================
+ * PAINTERLYNPR - ART DIRECTION | STYLES - POINT GROUPS
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__ArtDirection__Styles__PointGroups__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : ArtDirection - Styles - PointGroups
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Elliptical points, the node fading back, and groups of points
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: ELLIPTICAL POINTS, NODE FADE, POINT GROUPS.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * ELLIPTICAL POINTS | The Long-Axis Dot Sizes and Turns, the Short-Axis Dot Flattens
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Handle__Size {
+        cursor                             :  grab;                        /* <-- It turns now as well as sizes */
+    }
+
+    .PainterlyNPR__Handle__Shape {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        width                              :  11px;
+        height                             :  11px;
+        margin                             :  -5.5px 0 0 -5.5px;
+        padding                            :  0;
+        border                             :  2px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_PointColour);
+        cursor                             :  grab;
+        pointer-events                     :  auto;
+    }
+
+    .PainterlyNPR__Handle:not(.PainterlyNPR__Handle--selected) .PainterlyNPR__Handle__Shape {
+        display                            :  none;
+    }
+
+    @media (pointer: coarse) {
+        .PainterlyNPR__Handle__Shape {
+            width                          :  20px;
+            height                         :  20px;
+            margin                         :  -10px 0 0 -10px;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * NODE FADE | The Point's Sliders Fade Back Until They Are Used
+ * ----------------------------------------------------------------------------- */
+
+    /* Idle: faint and unblurred, so the painting under it can be read */
+    .PainterlyNPR__Node {
+        opacity                            :  0.32;
+        backdrop-filter                    :  none;
+        transition                         :  opacity 0.45s ease;
+    }
+
+    /* In use: nearly opaque again, quickly. Hover only where there is hover, and
+       keyboard focus only (a tapped slider keeps its focus, which must not hold
+       the node open on a touchscreen) */
+    .PainterlyNPR__Node--awake,
+    .PainterlyNPR__Node:has(:focus-visible) {
+        opacity                            :  0.97;
+        backdrop-filter                    :  blur(3px);
+        transition-duration                :  0.15s;
+    }
+
+    @media (hover: hover) {
+        .PainterlyNPR__Node:hover {
+            opacity                        :  0.97;
+            backdrop-filter                :  blur(3px);
+            transition-duration            :  0.15s;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * POINT GROUPS | Unselected Points Fade; Groups; Hidden on the Sheet, Still Acting
+ * ----------------------------------------------------------------------------- */
+
+    /* Only the point being edited is at full strength; the rest step back, and
+       come forward under the pointer or when their row in the list is hovered */
+    .PainterlyNPR__Handle {
+        transition                         :  opacity 0.2s ease;
+    }
+
+    .PainterlyNPR__Handle:not(.PainterlyNPR__Handle--selected) {
+        opacity                            :  0.42;
+    }
+
+    .PainterlyNPR__Handle:not(.PainterlyNPR__Handle--selected):hover,
+    .PainterlyNPR__Handle--hover {
+        opacity                            :  0.9;
+    }
+
+    .PainterlyNPR__Handle--hidden {
+        display                            :  none;
+    }
+
+    /* The eye: shown, or struck through */
+    .PainterlyNPR__EyeButton {
+        position                           :  relative;
+    }
+
+    .PainterlyNPR__EyeButton svg {
+        width                              :  14px;
+        height                             :  9px;
+    }
+
+    .PainterlyNPR__EyeButton--off {
+        opacity                            :  0.5;
+    }
+
+    .PainterlyNPR__EyeButton--off::after {
+        content                            :  '';
+        position                           :  absolute;
+        left                               :  22%;
+        right                              :  22%;
+        top                                :  50%;
+        border-top                         :  1.5px solid currentColor;
+        transform                          :  rotate(-35deg);
+    }
+
+    .PainterlyNPR__PointList__Count {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  6px;
+    }
+
+    .PainterlyNPR__PointList__Count .PainterlyNPR__EyeButton {
+        margin-left                        :  auto;
+    }
+
+    /* A group: a header to name it and switch it, its points indented under it */
+    .PainterlyNPR__GroupHead {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  4px;
+        margin                             :  8px 0 3px;
+        padding                            :  3px 4px 3px 6px;
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  rgba(231, 225, 214, 0.55);
+    }
+
+    .PainterlyNPR__GroupHead__Name {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        padding                            :  2px 4px;
+        border                             :  1px solid transparent;
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_Ink);
+        font                               :  inherit;
+        font-size                          :  11px;
+        font-weight                        :  600;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+    }
+
+    .PainterlyNPR__GroupHead__Name:hover,
+    .PainterlyNPR__GroupHead__Name:focus {
+        border-color                       :  var(--PainterlyNPR_Rule);
+        background                         :  var(--PainterlyNPR_Cream);
+        outline                            :  none;
+    }
+
+    .PainterlyNPR__GroupHead__Count {
+        min-width                          :  1.6em;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+        text-align                         :  center;
+    }
+
+    .PainterlyNPR__PointGroup {
+        margin-left                        :  8px;
+        padding-left                       :  6px;
+        border-left                        :  2px solid var(--PainterlyNPR_Rule);
+    }
+
+/* #endregion ------------------------------------------------------------------- */

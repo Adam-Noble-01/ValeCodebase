@@ -1,0 +1,136 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_0021",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "002",
+            "Item": 1,
+            "Name": "MatureOak",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__MatureOak__Var-01",
+            "DisplayName": "Mature oak",
+            "Description": "A mature English oak: a short, leaning trunk under a broad, lumpy crown, its outline broken toward the light and its branches seen through the canopy."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_0021__Trees__MatureOak__Var-01__",
+            "DAT": {
+                "File": "NPR_07_0021__DAT__VegetationElements__Trees__MatureOak__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_0021__MOD__VegetationElements__Trees__MatureOak__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_0021__SKP__VegetationElements__Trees__MatureOak__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_0021__PXY__VegetationElements__Trees__MatureOak__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_0021__RND__VegetationElements__Trees__MatureOak__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 8.9,
+            "NominalSpreadM": 8.4,
+            "Bounds": {
+                "Min": [
+                    -3.612,
+                    -0.006,
+                    -3.065
+                ],
+                "Max": [
+                    3.207,
+                    9.002,
+                    2.848
+                ],
+                "Size": [
+                    6.819,
+                    9.008,
+                    5.914
+                ],
+                "RadiusM": 6.376
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+                "TrunkHeightM": 3.4,
+                "CrownRadiusM": 3.1,
+                "Masses": 18
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 4.2
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "oak",
+                "english oak",
+                "quercus",
+                "deciduous",
+                "broadleaf",
+                "large tree",
+                "parkland"
+            ],
+            "Season": "Summer",
+            "Botanical": "Quercus robur"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1706954480,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:47",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 24.059,
+                "Target": [
+                    -0.203,
+                    4.498,
+                    -0.109
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

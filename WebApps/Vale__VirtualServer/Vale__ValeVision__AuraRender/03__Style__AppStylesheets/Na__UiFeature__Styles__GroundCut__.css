@@ -1,0 +1,119 @@
+/* =============================================================================
+ * VALEVISION AURA - THE GROUND CUT
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__GroundCut__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Ground Cut Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : An elevation cut off at the ground: the engine's swish laid
+ *              over the picture and the paper, and the small Adjust panel
+ *              (21__System__Viewports/Na__Viewports__GroundCut__ and
+ *              __GroundCutMenu__)
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - The swish is a wash: laid with a multiply blend, so the drawing's ink and
+ *   the paper's grain show through it. It prints.
+ * - The panel floats over the page in AURA's own look (its parameters' rows).
+ *
+ * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.0.0 (AURA 0.5.13)
+ * - Initial build.
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Swish on the Sheet
+ * ----------------------------------------------------------------------------- */
+
+    .aura-ground__swish {
+        mix-blend-mode                     : multiply;                      /* <-- Paper times pigment, as the engine's wash */
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Adjust Panel
+ * ----------------------------------------------------------------------------- */
+
+    .aura-groundcut {
+        position                           : fixed;
+        z-index                            : 75;                            /* <-- Over the sheet, under the engine's right-click menu (80) */
+        width                              : 272px;
+        max-height                         : calc(100vh - 16px);
+        display                            : flex;
+        flex-direction                     : column;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        box-shadow                         : 0 8px 24px rgba(23, 43, 58, 0.18);
+        font-family                        : var(--Aura_Font);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-groundcut__head {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : 8px;
+        padding                            : 6px 6px 6px 12px;
+        border-bottom                      : 1px solid var(--Aura_Border);
+        cursor                             : move;                          /* <-- Drag the head to move the panel */
+        user-select                        : none;
+    }
+
+    .aura-groundcut__title {
+        font-size                          : 13px;
+        font-weight                        : 600;
+    }
+
+    .aura-groundcut__close {
+        padding                            : 4px;
+        min-width                          : 0;
+    }
+
+    .aura-groundcut__close .aura-icon svg {
+        width                              : 16px;
+        height                             : 16px;
+    }
+
+    .aura-groundcut__body {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 10px;
+        padding                            : 10px 12px 12px;
+        overflow-y                         : auto;
+    }
+
+    .aura-groundcut__buttons {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+    }
+
+    .aura-groundcut__buttons .aura-button[aria-pressed="true"] {
+        background                         : var(--Aura_SurfaceHover);
+        border-color                       : var(--Aura_Brand);
+    }
+
+    .aura-groundcut .aura-panel__hint {
+        margin                             : 0;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Print
+ * ----------------------------------------------------------------------------- */
+
+    @media print {
+        .aura-groundcut {
+            display                        : none;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

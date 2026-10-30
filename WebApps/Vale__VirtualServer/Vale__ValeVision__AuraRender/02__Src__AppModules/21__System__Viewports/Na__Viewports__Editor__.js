@@ -32,6 +32,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.2.0 (AURA 0.5.13)
+// - The ground cut (Na__Viewports__GroundCut__): an elevation whose bottom
+//   handle is brought up into the drawing ends in the engine's swish of wash,
+//   its foot lost into it; the title goes under the swish; a resize carries
+//   the cut with the frame's bottom; a right click on an elevation opens the
+//   ground cut's menu (Na__Viewports__GroundCutMenu__).
+//
 // 30-Oct-2026 - Version 2.1.2 (AURA 0.5.10)
 // - A viewport's title is written as a note is: a note's height
 //   (Annotation__DefaultSizeMm), the notes' ink and the same M018 pen.
@@ -94,6 +101,9 @@
     import { Na__RenderQueue__Picture, Na__RenderQueue__Request } from './Na__Viewports__RenderQueue__.js';
     import { Na__ViewportPoints__Place } from './Na__Viewports__ArtDirection__.js';
     import { Na__Lettering__Draw } from '../31__System__Handwriting/Na__Handwriting__Lettering__.js';
+    import { Na__SheetPc__OnMenu } from '../20__System__DrawingSheets/Na__DrawingSheets__Controls__Pc__.js';
+    import { Na__GroundCut__Decorate, Na__GroundCut__Drag } from './Na__Viewports__GroundCut__.js';
+    import { Na__GroundCutMenu__OnContextMenu } from './Na__Viewports__GroundCutMenu__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -161,12 +171,14 @@
                 if (Na__AppState__Data.tab !== 'environment') Na__Surface__RedrawLayer('viewports');
             });
         }
+        const swishFoot = Na__GroundCut__Decorate(g, inner, defs, viewport, doc);   // <-- An elevation cut at the ground: its foot lost into the engine's swish (AURA 0.5.13)
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, class: 'aura-vp__frame' }, g);
 
         if (viewport.Viewport__ShowTitle !== false) {                           // <-- Written by hand (the lettering), typed until written (AURA 0.3.4)
             const size = Na__AppConfig__Get('Viewport__TitleSizeMm', 4);
             const gap = Na__AppConfig__Get('Viewport__TitleGapMm', 3);
-            const y = f.Y + f.HeightMm + gap + size;
+            const under = Math.max(f.Y + f.HeightMm, swishFoot === null ? -Infinity : swishFoot);   // <-- Under the swish, when there is one
+            const y = under + gap + size;
             const title = Na__Views__Title(viewport, doc);
             const scale = Na__Views__ScaleLabel(viewport);
             const typed = () => {
@@ -181,7 +193,7 @@
             Na__Lettering__Draw(g, {
                 Text     : [title, scale].filter(Boolean).join(' '),
                 X        : f.X,
-                Y        : f.Y + f.HeightMm + gap,
+                Y        : under + gap,
                 WidthMm  : Math.max(f.WidthMm, 80),                             // <-- A title may run past a narrow frame, as the typed one did
                 SizeMm   : Na__AppConfig__Get('Annotation__DefaultSizeMm', 4.5),   // <-- A note's height: the same hand at the same size (2.1.2)
                 OneLine  : true,
@@ -307,6 +319,7 @@
                 Object.assign(viewport.Viewport__FrameMm, { X: Na__Format__Round(x0, 1), Y: Na__Format__Round(y0, 1), WidthMm: Na__Format__Round(x1 - x0, 1), HeightMm: Na__Format__Round(y1 - y0, 1) });
                 const clip = document.querySelector(`#aura-clip-${viewport.Viewport__Id} rect`);
                 if (clip) ['x', 'y', 'width', 'height'].forEach((k, i) => clip.setAttribute(k, String([x0, y0, x1 - x0, y1 - y0][i])));
+                Na__GroundCut__Drag(viewport, Na__AppState__Data.doc);           // <-- An elevation's cut rides on the frame's bottom while it moves
                 Na__Surface__RedrawOverlay();
             },
             end() {
@@ -522,6 +535,7 @@
         Na__Surface__On('viewport', Na__ViewportEditor__OnPress);
         Na__Surface__On('handle:viewport', Na__ViewportEditor__OnHandle);
         Na__AppState__On('select', () => Na__Surface__RedrawOverlay());
+        Na__SheetPc__OnMenu(Na__GroundCutMenu__OnContextMenu);                   // <-- A right click on an elevation: how it meets the ground (AURA 0.5.13)
     }
     // ------------------------------------------------------------
 

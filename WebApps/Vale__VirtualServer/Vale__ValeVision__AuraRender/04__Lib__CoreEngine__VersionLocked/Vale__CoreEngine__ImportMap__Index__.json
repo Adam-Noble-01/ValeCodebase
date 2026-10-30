@@ -2,15 +2,16 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "30-Oct-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.12/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.13/02__Src__AppModules/"
     },
-    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.12 at 0ab3a01 (v0.8.10's Move Tool and wireable right-click menu, v0.8.11's panel icons (AURA keeps its own panel), and v0.8.12's potted standards NPR_07_2021 and NPR_07_2022 with the PottedStandard generator, the Topiary style and an organic's own hand of the pen), copied from the commit (its lock says WorkingTreeClean true; other sessions' uncommitted engine files are left out, as the sync always does).",
+    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.13 at 1fa7f2c (v0.8.10's Move Tool and wireable right-click menu, v0.8.11's panel icons (AURA keeps its own panel), v0.8.12's potted standards NPR_07_2021 and NPR_07_2022 with the PottedStandard generator, the Topiary style and an organic's own hand of the pen, and v0.8.13's ground cut in 72__Paper__SheetComposer for AURA 0.5.13's elevation viewports), copied from the commit (its lock says WorkingTreeClean true; other sessions' uncommitted engine files are left out, as the sync always does).",
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Panel__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Assets__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Dump__.js",
-        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Scene__.js"
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Scene__.js",
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__GroundCut__.js"
     ],
     "AuraRender__CoreEngine__ImportMap__RuntimeNote" : "The pin also holds what the engine reads from outside its modules (12__Data__AssetLibrary, 07__Data__MaterialRecipes, 03__Style__AppStylesheets): the engine finds them from its own files, and the host links its stylesheets from the folder above this prefix."
 }

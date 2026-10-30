@@ -49,6 +49,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.0.1 (AURA 0.5.13)
+// - A change to a viewport's ground cut is named "Change the ground cut".
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.3.1)
 // - Initial build.
 //
@@ -99,6 +102,7 @@
             const a = was.Viewport__FrameMm || {}, b = now.Viewport__FrameMm || {};
             if (a.WidthMm !== b.WidthMm || a.HeightMm !== b.HeightMm) return 'Resize a view';
             if (a.X !== b.X || a.Y !== b.Y) return 'Move a view';
+            if (JSON.stringify(was.Viewport__GroundCut || null) !== JSON.stringify(now.Viewport__GroundCut || null)) return 'Change the ground cut';   // <-- 1.0.1
             return 'Change a view';
         }
     };

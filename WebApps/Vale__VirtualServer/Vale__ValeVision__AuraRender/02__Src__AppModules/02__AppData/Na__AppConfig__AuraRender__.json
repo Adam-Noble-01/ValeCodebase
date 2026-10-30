@@ -3,7 +3,7 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.5.11",
+    "AuraConfig__App__Version"                          : "0.5.13",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked (its modules, and the libraries and stylesheets it reads) and reached only through 02__Src__AppModules/10__System__EngineHost. Nothing of it is copied into AURA: what AURA needs from it is a seam in PainterlyNPR, synced.",
 
@@ -67,6 +67,16 @@
     "AuraConfig__Viewport__PictureCacheMbNote"          : "How much memory the viewports' pictures may take in this browser before the oldest are let go (and drawn again when next shown). They are lossless PNG since AURA 0.5.5, as the engine's own export (WebP at 0.92 halved the colour and smoothed the pens, grain and washes): a 180 x 120 mm frame at 300 dpi is a few megabytes, a whole A3 sheet tens of them. At most forty are kept, whatever their size.",
     "AuraConfig__Viewport__RedrawSettleMs"              : 400,
     "AuraConfig__Viewport__RedrawSettleMsNote"          : "A picture is drawn for its frame, so a resized viewport is drawn again: this long after the frame stops changing, so a drag never waits on the engine. Meanwhile its last picture stands in, pale.",
+    "AuraConfig__GroundCut__TriggerMm"                  : 1,
+    "AuraConfig__GroundCut__TriggerMmNote"              : "An elevation viewport is cut at the ground by itself (Show it: when dragged into the drawing) once its bottom edge is this far above the building's ground line on the paper (1 mm is 50 mm of the world at 1:50). Adam, 30-Oct-2026: \"when they have the bottom handle brought upwards. It effectively becomes a ground plane clipping boundary\". The swish itself, its kinds, colours and every setting are PainterlyNPR's (72__Paper__SheetComposer), never AURA's.",
+    "AuraConfig__GroundCut__MaskReachMm"                : 400,
+    "AuraConfig__GroundCut__MaskReachMmNote"            : "How far round its frame a cut viewport's mask reaches, so a resize can carry the cut before the sheet is drawn again.",
+    "AuraConfig__GroundCut__Modes"                      : [
+        { "Key": "Auto", "Label": "When dragged into the drawing", "Hint": "Once the bottom edge is brought up past the building's ground line, cut there" },
+        { "Key": "On",   "Label": "Always",                        "Hint": "Cut at the ground line, or at the bottom edge when that is higher" },
+        { "Key": "Off",  "Label": "Never",                         "Hint": "The drawing stops at the frame, as before" }
+    ],
+    "AuraConfig__GroundCut__ModesNote"                  : "When a viewport's cut is made (Viewport__GroundCut.GroundCut__Mode): the right-click menu's Show it and the Adjust panel list these, in this order. Elevations only.",
     "AuraConfig__Viewport__TitleSizeMm"                 : 4,
     "AuraConfig__Viewport__TitleGapMm"                  : 3,
     "AuraConfig__Viewport__OrthoDistanceM"              : 60,

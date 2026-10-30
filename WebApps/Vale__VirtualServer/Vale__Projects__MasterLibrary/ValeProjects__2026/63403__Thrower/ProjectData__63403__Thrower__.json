@@ -1,7 +1,6 @@
 {
     "projectName": "Thrower",
     "projectCode": "63403",
-    "projectNameAlias": "",
     "CrossSection__Config": {
         "CrossSection__Enabled": true,
         "CrossSection__FillColor": "#f0f0f0",
@@ -347,5 +346,6 @@
             }
         ]
     },
-    "_rev": 8
+    "_rev": 13,
+    "auraEnabled": true
 }

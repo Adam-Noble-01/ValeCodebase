@@ -277,6 +277,46 @@ controls' ranges. Not run in a browser (Adam tests).
 
 **Live:** `aura` (page only, no API change).
 
+## Scene API 1.2.0, 30-Oct-2026: Method Two, the Model Sent From SketchUp (ValeVision Cloud Sync's Sync Aura)
+
+**Asked by Adam:** "the new tab should update the model on the Vale server, exporting new GLBs, archiving the old one in
+a zip file, and replacing it with a newer version of the model (but keeping all of the other assets, such as the NPR
+assets, etc.), and then syncing those back with the SketchUp model ... We can reuse a lot of the same API workers".
+**His calls:** AURA keeps its own model set (ValeVision 3D's whitecard is untouched); Cloud Sync signs in with his Vale
+account; AURA wins an asset clash.
+
+**Built (the server side; the SketchUp side is ValeVision Cloud Sync 0.5.2 in the 2027 Plugins repo):**
+- **`AuraRender__Api__Scene__.py` 1.2.0:** `POST api/projects/<id>/scene/import` takes `{"source": "SketchUp" |
+  "ValeVision3D", "modelName": "..."}`. SketchUp reads the project's `ValeVision__AuraRender/Content__AuraScenePackages`
+  (Cloud Sync pushes the set there with `--prune`, so the folder is the list), then the import is the one AURA already
+  had: the scene's set zipped into `Content__AuraScene__ModelFiles/00__Archive` and read back before older zips go,
+  object Ids kept, the placement, stored assets, placed assets and materials untouched. The scene records
+  `Method: SketchUpScenePackage` (the contract's reserved method), `Folder` the package, `ListKey` null and the model
+  name Cloud Sync sends. An import naming no source keeps the scene's own; a new scene starts from ValeVision 3D. A
+  bad source answers 400; an empty package 409 noSource ("run Sync Aura").
+- **GET scene** compares the scene with its own source: `source` gains `Method` and `Label`, so a scene sent from
+  SketchUp is never offered ValeVision 3D's whitecard as "newer".
+- **The page** (`Na__EngineHost__Scene__.js` 1.0.1): the note says "SketchUp has sent a newer model" for such a
+  scene, and its Update the scene re-imports from SketchUp's set.
+- **The assets** need nothing new here: Cloud Sync reads and saves the drawing set through the existing
+  `GET`/`PUT api/projects/<id>/drawings` (`_rev` checked; a new asset is stored once by `store_assets`, as for the page).
+  An open AURA page whose drawing set Cloud Sync saved meets a 409 on its next autosave.
+- The contract's descriptions name method two as built (schema still 1.0.0: no key added).
+
+**Checked here (no browser):** Flask's test client on a sandbox copy of Thrower, sign-in stubbed, 29 checks: no
+package 409 with Sync Aura's words; a bad source 400; GET says ValeVision 3D before; a SketchUp import (Thrower's set
+without the orbit cube) is method two with the model name, import 2, six files, the cube's copy gone, one zip holding
+the old set byte for byte and named in the history, every object Id, the placement and a stored asset kept, valid
+against the contract; GET then compares with SketchUp; a file added to the package shows as newer and an import naming
+no source stays SketchUp; asking for ValeVision 3D goes back to method one with Ids kept; a body that is not an object
+is a no-source import. A deliberate fault (the source ignored) fails 6 of them. The page module was not run (a browser:
+Adam tests).
+
+**Live:** the scene API since 30-Oct-2026 18:26 UTC (the file reached the server in another session's `server-api` push
+at 18:16; `vale@ValeVision__AuraRender` restarted at Adam's word, "Yes, push it"). The page note went up in the same
+push. The contract's wording rides the next `aura` push (another session's unfinished files were pending, so it was
+not pushed alone).
+
 ## Version 0.5.9, 30-Oct-2026: Each Scene Keeps Its Own Sun
 
 **Asked by Adam:** "each scene when saved IS NOT SAVING each of the different scenes' sun location and what this means

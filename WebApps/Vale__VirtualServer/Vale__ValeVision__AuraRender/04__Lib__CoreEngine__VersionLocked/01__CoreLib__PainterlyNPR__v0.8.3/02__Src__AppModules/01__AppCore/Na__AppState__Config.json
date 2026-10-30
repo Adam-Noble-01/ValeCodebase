@@ -1,0 +1,96 @@
+{
+    "PainterlyNPR__AppState__Config" : {
+        "PainterlyNPR__AppState__Config__Meta"  : {
+            "ConfigLabel"   : "PainterlyNPR - The Starting State",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Everything a render depends on, as it starts: one flat object, serialised whole as the settings JSON. Pen and Kuwahara start as copies of their defaults (the Pen's in Na__DrawingDiscipline__Config.json); Camera is computed from its preset at boot.",
+            "ReadBy"        : "02__Src__AppModules/01__AppCore/PainterlyNPR__AppCore__State__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__AppState__Config__Start" : {
+            "Note"             : "The Kuwahara filter's wash settings for 57__Wash__KuwaharaFilter. Amount 0: a drawing made before the filter, or with it off, is the drawing it was. Sky is its amount on the sky, kept apart so the sky's own paint can stay as it is.",
+            "KuwaharaDefaults" : {
+                "Amount"     : 0,
+                "Sky"        : 0,
+                "RadiusMm"   : 1.2,
+                "Sharpness"  : 8,
+                "Hardness"   : 255,
+                "Anisotropy" : 1,
+                "FlowMm"     : 0.4,
+                "Overlap"    : 0.33,
+                "Passes"     : 1
+            },
+            "State"            : {
+                "Seed"          : 20261029,
+                "CameraPreset"  : "ThreeQuarter",
+                "Camera"        : null,
+                "Sun"           : {
+                    "Azimuth"  : -44,
+                    "Altitude" : 38
+                },
+                "Discipline"    : 0.5,
+                "InkFamily"     : "Sepia",
+                "LineWeight"    : 1,
+                "Pen"           : null,
+                "PenPreset"     : "Fineliner",
+                "Wash"          : {
+                    "Strength"        : 1,
+                    "Granulation"     : 1,
+                    "Pooling"         : 1,
+                    "Coffee"          : 0.6,
+                    "BleedMm"         : 0.9,
+                    "Wetness"         : 1,
+                    "Withdraw"        : 1,
+                    "Shadow"          : 0.55,
+                    "ShadowLines"     : 1,
+                    "ShadowLineWidth" : 1,
+                    "DistantUnfade"   : 0.6,
+                    "DistantColour"   : 0.5,
+                    "DistantLoose"    : 1
+                },
+                "Sky"           : {
+                    "Strength"   : 0.75,
+                    "Clouds"     : 0.9,
+                    "Type"       : "FairWeather",
+                    "Coverage"   : 0.45,
+                    "ScaleKm"    : 2,
+                    "BaseKm"     : 1,
+                    "DriftKm"    : 0,
+                    "Undersides" : 0.6,
+                    "SoftnessMm" : 1.4,
+                    "SimplifyMm" : 5,
+                    "Crispness"  : 0.75,
+                    "Pool"       : 0.8,
+                    "Blooms"     : 0.8
+                },
+                "Kuwahara"      : null,
+                "Indication"    : {
+                    "Amount" : 1
+                },
+                "Paper"         : {
+                    "Preset"        : "Cartridge",
+                    "Emboss"        : 1.5,
+                    "PaintedEmboss" : 1,
+                    "InkDry"        : 0.05
+                },
+                "Composition"   : {
+                    "Vignette"  : 0.62,
+                    "Roughness" : 0.64
+                },
+                "Points"        : [],
+                "Assets"        : [],
+                "Materials"     : [],
+                "ShowInfluence" : false,
+                "View"          : "Final"
+            },
+            "StateNotes"       : {
+                "Paper"    : "Adam's paper and finish (v0.8.1, both apps): cartridge, grain relief 150%, dry ink 5% (the Fineliner preset's own, so the drawing starts as that preset), painted area 62%, edge irregularity 64%. Composition is the painted area and its edge",
+                "Sky"      : "Type to SoftnessMm: the volumetric clouds (63, 60); SimplifyMm to Blooms: how their masses are painted (60)",
+                "Kuwahara" : "57__Wash__KuwaharaFilter on the wash",
+                "Assets"   : "Library assets placed in the drawing (v0.6.0), each a plop: its asset, recipe, seed, turn, scale and place (11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetPlacement__1.0.0__.json). Built into the scene after the cottage (16__Scene__AssetLibrary)",
+                "Materials": "Material assignments (v0.7.0): a class given to an object or a face, each { Uid, Target, Object, Face, Material } (11__Contracts__JsonSchemas/PainterlyNPR__Schema__MaterialAssignment__1.0.0__.json). Applied to the built scene in the order made, a later one winning (17__Scene__MaterialAssignment)"
+            }
+        }
+    }
+}

@@ -44,17 +44,34 @@
 #   set's save). One record per asset Id however many placements; a project
 #   with no scene yet stores nothing (the scene is made on its first open).
 #   An asset the pin cannot give (no MOD .glb) is left for a later save.
+# - TWO SOURCES, ONE IMPORT (Adam, 30-Oct-2026: "update the model on the Vale
+#   server, exporting new GLBs, archiving the old one in a zip file, and
+#   replacing it ... but keeping all of the other assets"): method one copies
+#   ValeVision 3D's whitecard; method two (SketchUpScenePackage) copies the set
+#   ValeVision Cloud Sync's Sync Aura pushes into Content__AuraScenePackages,
+#   so AURA's model can follow SketchUp without touching what ValeVision 3D
+#   shows. Both run the same archive, the same Id rules and keep the same
+#   placement and stored assets. An import that names no source keeps the
+#   scene's own; a new scene starts from ValeVision 3D.
 # - WHO: Management and AppAdmin, on projects switched on for AURA, as every
 #   project route.
 #
 # ROUTES:
 #   GET  /api/projects/<id>/scene          the scene and its _rev, or null; where its model and asset files are served;
-#                                          whether ValeVision 3D has a whitecard, and a newer one than the scene's
-#   POST /api/projects/<id>/scene/import   make the scene from ValeVision 3D's whitecard, or bring it up to date
+#                                          whether its source has a set, and a newer one than the scene's
+#   POST /api/projects/<id>/scene/import   make the scene, or bring it up to date, from a source:
+#                                          {"source": "ValeVision3D" | "SketchUp", "modelName": "..."}, both optional
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.2.0
+# - Method two: the import reads Content__AuraScenePackages (ValeVision Cloud
+#   Sync's Sync Aura) when asked for source "SketchUp", or when the scene was
+#   made that way and the call names no source. GET scene's source block says
+#   which source it compared against (Method, Label), so the page's "newer"
+#   note names the right app.
+#
 # 30-Oct-2026 - Version 1.1.0
 # - Library assets stored: store_assets copies a placed asset's MOD and DAT
 #   from the pinned engine (the import map's PainterlyNPR/ folder) into
@@ -86,7 +103,7 @@ import struct
 import zipfile
 from datetime import datetime, timezone
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 import AuraRender__Api__Core__ as aura_core
 from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__Locked, Na__Library__ReadJson, Na__Library__Url,
@@ -111,6 +128,11 @@ ASSET_ID                 = re.compile(r'^NPR_[0-9]{2}_[0-9]{4}$')
 ARCHIVE_DIR              = '00__Archive'
 SOURCE_PARTS             = ('ValeVision3D', 'Content__3dModel__GlbFiles')
 LIST_KEY                 = 'valeVision_ModelUrls'
+PACKAGE_DIR              = 'Content__AuraScenePackages'                           # <-- Cloud Sync's Sync Aura pushes SketchUp's set here (an exact copy: --prune)
+METHOD_WHITECARD         = 'ValeVision3dWhitecard'
+METHOD_SKETCHUP          = 'SketchUpScenePackage'
+SOURCE_NAMES             = {'ValeVision3D': METHOD_WHITECARD, 'SketchUp': METHOD_SKETCHUP}   # <-- What a caller asks for -> the scene's Method
+SOURCE_LABELS            = {METHOD_WHITECARD: 'ValeVision 3D', METHOD_SKETCHUP: 'SketchUp'}
 SCHEMA_VERSION           = '1.0.0'
 SCHEMA_PATH              = '05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json'
 KINDS                    = {'MeshModel': 'Mesh', 'LineworkModel': 'Linework'}
@@ -144,8 +166,19 @@ def asset_dir(folder):
     return folder / aura_core.BUCKET / ASSET_DIR
 
 
-def source_dir(folder):
-    return folder.joinpath(*SOURCE_PARTS)
+def source_dir(folder, method=METHOD_WHITECARD):
+    return folder / aura_core.BUCKET / PACKAGE_DIR if method == METHOD_SKETCHUP else folder.joinpath(*SOURCE_PARTS)
+
+
+def source_folder_rel(method):
+    """The source folder as the scene records it, relative to the project."""
+    return f'{aura_core.BUCKET}/{PACKAGE_DIR}' if method == METHOD_SKETCHUP else '/'.join(SOURCE_PARTS)
+
+
+def scene_method(scene):
+    """The source a scene was made from (method one when it says nothing else)."""
+    method = ((scene or {}).get('AuraScene__Source') or {}).get('Method')
+    return method if method in SOURCE_LABELS else METHOD_WHITECARD
 
 
 def copy_in(source, target, digest):
@@ -186,11 +219,16 @@ def rules():
             re.compile(cfg.get('AuraConfig__SceneImport__SkipNodes') or r'^90_\d{4}__Note__'))
 
 
-def source_files(folder):
-    """ValeVision 3D's whitecard: (names in the order the record lists them, then any it does not, listed, missing)."""
+def source_files(folder, method=METHOD_WHITECARD):
+    """A source's GLBs: (names in the order the record lists them, then any it does not, listed, missing).
+    SketchUp's package has no list in the record: the push makes the folder an exact copy of the sync's set, so the
+    folder is the list."""
     record = aura_core.project_record(folder)
+    src = source_dir(folder, method)
+    on_disk = sorted(p.name for p in src.glob('*.glb')) if src.is_dir() else []
+    if method == METHOD_SKETCHUP:
+        return on_disk, list(on_disk), [], record
     listed = [str(n) for n in (record.get(LIST_KEY) or []) if str(n).lower().endswith('.glb')]
-    on_disk = sorted(p.name for p in source_dir(folder).glob('*.glb')) if source_dir(folder).is_dir() else []
     names = [n for n in listed if n in on_disk] + [n for n in on_disk if n not in listed]
     return names, listed, [n for n in listed if n not in on_disk], record
 
@@ -361,11 +399,12 @@ def archive_current(folder, scene, stamp_day):
     return name
 
 
-def build_import(folder, previous):
-    """Copy the whitecard, then the scene document (not yet written). previous: the scene now, or None."""
-    names, listed, missing, record = source_files(folder)
+def build_import(folder, previous, method=METHOD_WHITECARD, model_name=None):
+    """Copy the source's set, then the scene document (not yet written). previous: the scene now, or None.
+    model_name: the SketchUp model a package came from (Cloud Sync says; the record's camera block names method one's)."""
+    names, listed, missing, record = source_files(folder, method)
     file_rules, component_rules, skip = rules()
-    src, dst = source_dir(folder), model_dir(folder)
+    src, dst = source_dir(folder, method), model_dir(folder)
     dst.mkdir(parents=True, exist_ok=True)
     now, user = iso_now(), aura_core.user_code()
 
@@ -456,13 +495,18 @@ def build_import(folder, previous):
     history.append({'Import__Number': number, 'Import__Iso': now, 'Import__By': user, 'Import__Files': len(model_files),
                     'Import__Bytes': total, 'Import__ArchivedAs': None})
     meta = previous['AuraScene__Meta'] if previous else {}
+    if method == METHOD_SKETCHUP:
+        sketchup_name = model_name or ((previous or {}).get('AuraScene__Source') or {}).get('SketchUpModelName')
+    else:
+        sketchup_name = (record.get('ValeVison3D__SketchUpCameraData') or {}).get('model_name')
     scene = {
         'AuraScene__Meta': {'SchemaVersion': SCHEMA_VERSION, 'Schema': SCHEMA_PATH, 'ProjectId': folder.name,
                             'CreatedIso': meta.get('CreatedIso') or now, 'UpdatedIso': now,
                             'CreatedBy': meta.get('CreatedBy') or user, 'UpdatedBy': user, 'Description': DESCRIPTION},
-        'AuraScene__Source': {'Method': 'ValeVision3dWhitecard', 'Folder': '/'.join(SOURCE_PARTS), 'ListKey': LIST_KEY,
+        'AuraScene__Source': {'Method': method, 'Folder': source_folder_rel(method),
+                              'ListKey': None if method == METHOD_SKETCHUP else LIST_KEY,
                               'ListedFiles': len(listed), 'Unlisted': [n for n in names if n not in listed], 'Missing': missing,
-                              'SketchUpModelName': (record.get('ValeVison3D__SketchUpCameraData') or {}).get('model_name'),
+                              'SketchUpModelName': sketchup_name,
                               'ImportNumber': number, 'ImportedIso': now, 'ImportedBy': user, 'History': history},
         'AuraScene__ModelPlacement': placement,
         'AuraScene__ModelFiles': model_files,
@@ -472,18 +516,20 @@ def build_import(folder, previous):
     return scene
 
 
-def source_state(folder, scene):
-    """{ Available, Files, Newer }: does ValeVision 3D have a whitecard, and is it newer than the scene's copies?"""
-    names, _listed, _missing, _record = source_files(folder)
+def source_state(folder, scene, method=None):
+    """{ Available, Files, Newer, Method, Label }: does the scene's source (or the one named) have a set, and is it newer
+    than the scene's copies? A scene made from SketchUp is compared with SketchUp's package, never with ValeVision 3D."""
+    method = method or scene_method(scene)
+    names, _listed, _missing, _record = source_files(folder, method)
     names = [n for n in names if parse_model_file(n)]
-    state = {'Available': bool(names), 'Files': len(names), 'Newer': False}
+    state = {'Available': bool(names), 'Files': len(names), 'Newer': False, 'Method': method, 'Label': SOURCE_LABELS[method]}
     if scene:
         copies = {f['ModelFile__FileName']: f for f in scene.get('AuraScene__ModelFiles', [])}
         if set(copies) != set(names):
             state['Newer'] = True
         else:
             for n in names:
-                p = source_dir(folder) / n
+                p = source_dir(folder, method) / n
                 if p.stat().st_size != copies[n]['ModelFile__Bytes'] or iso_of(p) > copies[n]['ModelFile__SourceModifiedIso']:
                     state['Newer'] = True
                     break
@@ -628,14 +674,23 @@ def import_scene(pid):
     folder, refused = _open(pid)
     if refused:
         return refused
-    names = [n for n in source_files(folder)[0] if parse_model_file(n)]
-    if not names:
-        return aura_core.fail('ValeVision 3D has no whitecard for this project yet: sync its GLBs from SketchUp first.', 409, noSource=True)
+    body = request.get_json(silent=True)
+    body = body if isinstance(body, dict) else {}
+    asked = str(body.get('source') or '')
+    if asked and asked not in SOURCE_NAMES:
+        return aura_core.fail(f'No scene source {asked!r}: ask for ValeVision3D or SketchUp.', 400)
+    model_name = str(body.get('modelName') or '')[:200] or None
     path = scene_path(folder)
+    method = SOURCE_NAMES[asked] if asked else scene_method(Na__Library__ReadJson(path))   # <-- No source named: the scene's own (a new one: ValeVision 3D)
+    names = [n for n in source_files(folder, method)[0] if parse_model_file(n)]
+    if not names:
+        if method == METHOD_SKETCHUP:
+            return aura_core.fail('No SketchUp model has been sent to AURA for this project yet: run Sync Aura in ValeVision Cloud Sync.', 409, noSource=True)
+        return aura_core.fail('ValeVision 3D has no whitecard for this project yet: sync its GLBs from SketchUp first.', 409, noSource=True)
     try:
         with Na__Library__Locked(folder / aura_core.BUCKET / 'SceneImport'):   # <-- One import a project at a time, across workers
             previous = Na__Library__ReadJson(path)
-            scene = build_import(folder, previous)
+            scene = build_import(folder, previous, method, model_name)
             result = Na__Library__WriteJson(path, scene, aura_core.user_code(), folder,
                                             expected_rev=int((previous or {}).get('_rev', 0) or 0) if previous else None)
     except Na__Library__Conflict as conflict:
@@ -644,7 +699,7 @@ def import_scene(pid):
         aura_core.log(f'[AURA API] scene import failed for {folder.name}: {error}')
         return aura_core.fail(f'The scene could not be made: {error}', 500)
     number = scene['AuraScene__Source']['ImportNumber']
-    aura_core.activity('scene.import', f'Made the AURA scene from ValeVision 3D (import {number}, {len(scene["AuraScene__ModelFiles"])} files)', folder)
+    aura_core.activity('scene.import', f'Made the AURA scene from {SOURCE_LABELS[method]} (import {number}, {len(scene["AuraScene__ModelFiles"])} files)', folder)
     scene['_rev'] = result['rev']
     response = jsonify({'ok': True, 'scene': scene, 'rev': result['rev'],
                         'modelBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{MODEL_DIR}/',

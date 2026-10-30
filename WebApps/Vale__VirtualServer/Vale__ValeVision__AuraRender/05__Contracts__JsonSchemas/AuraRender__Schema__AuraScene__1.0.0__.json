@@ -44,9 +44,9 @@
             "required" : ["Method", "Folder", "ListKey", "ListedFiles", "Unlisted", "Missing", "SketchUpModelName", "ImportNumber", "ImportedIso", "ImportedBy", "History"],
             "additionalProperties" : false,
             "properties" : {
-                "Method"            : { "enum": ["ValeVision3dWhitecard", "SketchUpScenePackage"], "description": "ValeVision3dWhitecard: copies of ValeVision 3D's whitecard GLBs (method one). SketchUpScenePackage: ValeVision Cloud Sync's AURA export, read from Content__AuraScenePackages (method two, not built yet)" },
-                "Folder"            : { "type": "string", "description": "Where the model files were copied from, relative to the project: ValeVision3D/Content__3dModel__GlbFiles for method one" },
-                "ListKey"           : { "type": ["string", "null"], "description": "The project record's list the folder was checked against: valeVision_ModelUrls for method one" },
+                "Method"            : { "enum": ["ValeVision3dWhitecard", "SketchUpScenePackage"], "description": "ValeVision3dWhitecard: copies of ValeVision 3D's whitecard GLBs (method one). SketchUpScenePackage: ValeVision Cloud Sync's Sync Aura, its GLB set read from Content__AuraScenePackages (method two, scene API 1.2.0)" },
+                "Folder"            : { "type": "string", "description": "Where the model files were copied from, relative to the project: ValeVision3D/Content__3dModel__GlbFiles for method one, ValeVision__AuraRender/Content__AuraScenePackages for method two" },
+                "ListKey"           : { "type": ["string", "null"], "description": "The project record's list the folder was checked against: valeVision_ModelUrls for method one; null for method two (the push makes the folder an exact copy of the set)" },
                 "ListedFiles"       : { "type": "integer", "minimum": 0 },
                 "Unlisted"          : { "type": "array", "items": { "type": "string" }, "description": "In the folder but not in the list: copied all the same" },
                 "Missing"           : { "type": "array", "items": { "type": "string" }, "description": "In the list but not in the folder" },

@@ -1,0 +1,45 @@
+/* =============================================================================
+ * PAINTERLYNPR - CORE UI | STYLES - INDEX
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__CoreUi__Styles__Index__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : CoreUi - Styles - Index
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The one stylesheet the page links: every part, in the order the
+ *              cascade needs - a drawing office around the sheet
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - The interface stays out of the drawing's way: warm paper and ink, matte, no
+ *   gradients, one accent per meaning. The sheet is the only thing with depth.
+ * - The sheet keeps the 3:2 of the 300 x 200 mm paper at any window size: it is
+ *   sized from its container's width AND height (container query units), so it
+ *   never crops and never scrolls. Below 1100 px the panel drops under the sheet.
+ * - The parts live beside the modules they dress (AudioSPACE's way). Their order
+ *   below is Experiment 01's single stylesheet's, region for region: a part that
+ *   moved would change which rule wins.
+ * - System fonts only: nothing is fetched, so the app works offline.
+ *
+ * ============================================================================= */
+
+@import url('PainterlyNPR__CoreUi__Styles__Variables__.css');
+@import url('PainterlyNPR__CoreUi__Styles__BaseLayout__.css');
+@import url('../02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointHandles__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__Panel__.css');
+@import url('../02__Src__AppModules/81__Hud__PassViewer/PainterlyNPR__Hud__Styles__GraphStrip__.css');
+@import url('PainterlyNPR__CoreUi__Styles__Responsive__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__Pen__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__ZoomAndFolds__.css');
+@import url('../02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointNode__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__InfoBubbles__.css');
+@import url('../02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointGroups__.css');
+@import url('../02__Src__AppModules/85__System__ProjectPersistence/PainterlyNPR__Persistence__Styles__Saves__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__ViewLock__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__WorkMode__.css');
+@import url('../02__Src__AppModules/82__Hud__AssetCatalogue/PainterlyNPR__Hud__Styles__AssetDrawer__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__Resize__.css');
+@import url('../02__Src__AppModules/85__System__ProjectPersistence/PainterlyNPR__Persistence__Styles__RefreshGuard__.css');
+@import url('../02__Src__AppModules/83__Hud__SceneEditing/PainterlyNPR__Hud__Styles__SceneEditing__.css');
+@import url('../02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__ContextMenu__.css');
+@import url('../02__Src__AppModules/84__System__UndoHistory/PainterlyNPR__UndoHistory__Styles__Buttons__.css');

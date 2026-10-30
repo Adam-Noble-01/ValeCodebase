@@ -10,6 +10,8 @@
   "Built" section near the end); what is still to come is listed after it.
 - **Built (scene API 1.1.0):** a drawing-set save stores each placed library asset once (its MOD and DAT), from the
   v0.8.10 pin on (the pin carries the `.glb` files).
+- **Built (scene API 1.2.0):** method two: ValeVision Cloud Sync's Sync Aura sends SketchUp's GLBs and the import
+  reads them ("Method Two" below).
 
 **Asked by Adam:** "update Aura so it can now load the Whitecard model from ValeVision or (SketchUp Eventually) ...
 This first method of creating an aura file should copy all GLB files accross and make them avaiblible to Auras tools,
@@ -35,9 +37,9 @@ up as a failsage."
   is made of: the model files, the objects made from them, and the library assets stored in the project. The
   **drawing set** (as before) holds everything done with it: placed assets and given materials (AURA 0.4.0), saved
   views and their art direction points, sheets, notes, the engine's style.
-- **Two ways to make a scene, one file either way.** Now: copy ValeVision 3D's whitecard GLBs (`Method:
-  ValeVision3dWhitecard`). Later: ValeVision Cloud Sync's AURA export from SketchUp, a Painterly Scene Package in the
-  reserved `Content__AuraScenePackages` (`Method: SketchUpScenePackage`).
+- **Two ways to make a scene, one file either way.** Copy ValeVision 3D's whitecard GLBs (`Method:
+  ValeVision3dWhitecard`), or ValeVision Cloud Sync's Sync Aura: SketchUp's GLBs pushed into `Content__AuraScenePackages`
+  (`Method: SketchUpScenePackage`, scene API 1.2.0). A scene keeps its own method until an import names the other.
 - **Copies, not links.** AURA draws its own copies, so a SketchUp sync (which replaces ValeVision 3D's GLBs and prunes
   the old ones) never changes a finished drawing. Each copy keeps its SHA-256, so AURA can tell when ValeVision 3D has
   a newer whitecard and offer to update.
@@ -60,7 +62,7 @@ ValeProjects__<year>\<id>\
 │   ├── Content__AuraScene__AssetFiles\                  library assets stored: each one's MOD .glb and DAT .json, library names
 │   ├── Content__AuraScene__ModelFiles\                  the model set: copies of the whitecard GLBs, names unchanged
 │   │   └── 00__Archive\                                 the last replaced set, one zip (never synced)
-│   ├── Content__AuraScenePackages\                      reserved: SketchUp's Painterly Scene Package (method two)
+│   ├── Content__AuraScenePackages\                      method two: the GLB set Cloud Sync's Sync Aura pushed (an exact copy)
 │   ├── UserData__AuraDrawings\                          <id>__AuraDrawingSet__.json: the drawing set
 │   └── UserData__AuraScene\                             <id>__AuraScene__.json: the AURA scene
 └── ProjectData__Revisions\ValeVision__AuraRender\
@@ -276,6 +278,28 @@ origin.
   scene answers `assetBase`.
 - **The pin:** the sync (1.2.0) carries the library's 26 MOD `.glb` files (3.0 MB); AURA's v0.8.10 pin has them. A
   pin synced before that rule stores nothing, and a save says why in the service's log.
+
+## Built (Scene API 1.2.0, 30-Oct-2026): Method Two, the Model Sent From SketchUp
+
+- **ValeVision Cloud Sync 0.5.2's Sync Aura tab** (SketchUp 2027 Plugins repo) exports the model's GLBs into the
+  SketchUp project's `10__ContentDelivered__Local/ValeVision__AuraFileSync`, puts them in the library's
+  `<id>/ValeVision__AuraRender/Content__AuraScenePackages` (nothing else there), and pushes the project with that folder
+  pruned to the set. The folder is in the content lane and is not server-made, so `--prune` may make it exact.
+- It then calls `POST api/projects/<id>/scene/import` with `{"source": "SketchUp", "modelName": ...}`, signed in as the
+  user (the plugin keeps a session, never a password). The import is method one's, reading the package: the replaced
+  set zipped and read back in `00__Archive`, object Ids kept by file and node then persistent id, the placement and the
+  stored assets kept. `AuraScene__Source`: `Method` SketchUpScenePackage, `Folder`
+  ValeVision__AuraRender/Content__AuraScenePackages, `ListKey` null, `ListedFiles` the package's count, `SketchUpModelName`
+  what Cloud Sync sent (kept from the previous import when none is sent).
+- **Which source an import uses:** the one it names; else the scene's own; else (a new scene) ValeVision 3D. GET scene
+  compares the scene with its own source and says which (`source.Method`, `source.Label`).
+- **Placed assets both ways:** Cloud Sync reads and saves `AuraDrawingSet__Engine.Settings.Assets` through the drawing
+  set routes, a three-way merge against the last synced state it keeps in the SketchUp model; AURA wins a clash. Its
+  coordinates: SketchUp inches -> glTF `(x, z, -y)` metres (the GLB builder) -> `AuraScene__ModelPlacement` (turn about
+  +Y, then move). A plop taken out from SketchUp takes its materials with it, as the engine's take-out does.
+- **Then** Cloud Sync collects the project, so the PC has the new scene and model files, and moves any PC copy of a
+  model file the scene no longer lists into `00__Archive` on the PC (never synced), closing the "comes back from the
+  PC's copy" gap above for its own syncs.
 
 ## To Build Next
 

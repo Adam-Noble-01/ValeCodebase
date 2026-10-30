@@ -39,6 +39,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.0.1
+// - The "newer" note names the scene's own source (the API's source.Label):
+//   a scene ValeVision Cloud Sync sent from SketchUp says SketchUp, and its
+//   Update the scene re-imports from SketchUp's set (the import keeps the
+//   scene's own source when none is named).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build, at Adam's word ("STOP GIVING UP": AURA loads the
 //   whitecard model from ValeVision 3D).
@@ -188,7 +194,8 @@
         S.loaded  =  true;
         S.counts  =  ScenePackage.PainterlyNPR__ScenePackage__Scene ? ScenePackage.PainterlyNPR__ScenePackage__Scene.Source || null : null;
         console.info('[AURA Scene] Loaded', S.counts);
-        return { Loaded: true, Files: wanted.length, Megabytes: +mb(total), Counts: S.counts, Newer: !!(S.source && S.source.Newer) };
+        return { Loaded: true, Files: wanted.length, Megabytes: +mb(total), Counts: S.counts, Newer: !!(S.source && S.source.Newer),
+                 From: (S.source && S.source.Label) || 'ValeVision 3D' };   // <-- The scene's own source: a scene sent from SketchUp is compared with SketchUp's set (scene API 1.2.0)
     }
     // ------------------------------------------------------------
 
@@ -209,7 +216,8 @@
     function Na__EngineHost__SceneNotes(projectId, opened) {
         if (!opened) return;
         if (opened.Loaded && opened.Newer) {
-            Na__Toast__Show('ValeVision 3D has a newer whitecard than this AURA scene.', { ms: 20000, action: { label: 'Update the scene', onClick: async () => {
+            const what  =  opened.From === 'SketchUp' ? 'SketchUp has sent a newer model' : `${opened.From} has a newer whitecard`;
+            Na__Toast__Show(`${what} than this AURA scene.`, { ms: 20000, action: { label: 'Update the scene', onClick: async () => {
                 try {
                     await Na__EngineHost__SceneImport(projectId);
                     window.location.reload();

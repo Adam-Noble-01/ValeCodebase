@@ -1,0 +1,35 @@
+{
+    "PainterlyNPR__RenderGraph__Config" : {
+        "PainterlyNPR__RenderGraph__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - The Render Graph's Passes",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The passes, in order: each declares its inputs and the passes it reads, and runs only when its key changes. Home is the module folder each pass lives in.",
+            "ReadBy"        : "02__Src__AppModules/20__System__RenderGraph/PainterlyNPR__RenderGraph__Graph__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__RenderGraph__Config__Passes" : {
+            "Note"   : "Milestone passes hand the sheet a picture before they start, so a camera move refines visibly: preview, then ink on paper, then the washes.",
+            "Passes" : [
+                { "Id": "ShadowMap", "Label": "Sun shadow map", "Home": "23__Pass__LightAndShadow", "Inputs": ["Scene", "Sun"], "Deps": [], "Views": ["Light"] },
+                { "Id": "GeometryBuffers", "Label": "Truth buffers", "Home": "22__Pass__GeometryBuffers", "Inputs": ["Scene", "Camera", "Sun", "Size"], "Deps": ["ShadowMap"], "Views": ["Albedo", "Normals", "WorldNormals", "Depth", "ObjectId", "Material", "Light"] },
+                { "Id": "TruthReadback", "Label": "Truth readback", "Home": "21__System__GpuResources", "Inputs": [], "Deps": ["GeometryBuffers"], "Views": ["ObjectId"] },
+                { "Id": "ArtDirection", "Label": "Art direction field", "Home": "65 · 66 · 72", "Inputs": ["ArtDirection", "Composition", "Seed", "Discipline"], "Deps": ["GeometryBuffers"], "Views": ["Field", "LineField"] },
+                { "Id": "LineCandidates", "Label": "Line candidates", "Home": "30 · 31 · 32 · 40–43", "Inputs": ["Discipline", "Seed"], "Deps": ["TruthReadback", "ArtDirection"], "Views": ["Lines"], "Milestone": "Preview" },
+                { "Id": "MaterialIndication", "Label": "Material indication", "Home": "36__Line__MaterialIndication", "Inputs": ["Indication", "Discipline", "Seed"], "Deps": ["TruthReadback", "ArtDirection"], "Views": ["Indication"] },
+                { "Id": "StrokeSynthesis", "Label": "Stroke synthesis", "Home": "33__Stroke__Synthesis · 35", "Inputs": ["Discipline", "Lines", "Seed"], "Deps": ["LineCandidates", "MaterialIndication"], "Views": ["Ink"] },
+                { "Id": "InkLayer", "Label": "Ink layer", "Home": "34__Stroke__InkCompositing", "Inputs": [], "Deps": ["StrokeSynthesis"], "Views": ["Ink"] },
+                { "Id": "AccentLayer", "Label": "Accent dabs", "Home": "36 · 40 · 52", "Inputs": [], "Deps": ["LineCandidates", "MaterialIndication"], "Views": ["Accents"] },
+                { "Id": "ShadowLines", "Label": "Shadow lines", "Home": "52__Wash__LayerStack · 23", "Inputs": ["ShadowLines"], "Deps": ["GeometryBuffers"], "Views": ["ShadowLines"] },
+                { "Id": "WashRegions", "Label": "Loosened wash masks", "Home": "51__Wash__RegionMasks", "Inputs": ["Wash", "Seed"], "Deps": ["GeometryBuffers"], "Views": ["Regions"], "Milestone": "Ink" },
+                { "Id": "BoundaryDistance", "Label": "Distance to wash edge", "Home": "24__Pass__DerivedFields", "Inputs": [], "Deps": ["WashRegions"], "Views": ["Distance"] },
+                { "Id": "Paper", "Label": "Paper", "Home": "55__Paper__Model", "Inputs": ["Paper", "Seed", "Size"], "Deps": [], "Views": ["Paper"] },
+                { "Id": "Clouds", "Label": "Volumetric clouds", "Home": "63__Atmos__VolumetricClouds", "Inputs": ["Sky", "Sun", "Camera", "Seed", "Size"], "Deps": [], "Views": ["Clouds"] },
+                { "Id": "CloudMasses", "Label": "Cloud masses", "Home": "60__Atmos__SkyAndClouds", "Inputs": ["Sky", "Size"], "Deps": ["Clouds"], "Views": ["CloudMasses"] },
+                { "Id": "Watercolour", "Label": "Pigment washes", "Home": "50–54 · 60–63", "Inputs": ["Wash", "Sky", "Seed"], "Deps": ["WashRegions", "BoundaryDistance", "Paper", "ArtDirection", "GeometryBuffers", "AccentLayer", "ShadowLines", "Clouds", "CloudMasses"], "Views": ["Wash"] },
+                { "Id": "Kuwahara", "Label": "Kuwahara filter", "Home": "57__Wash__KuwaharaFilter", "Inputs": ["Kuwahara"], "Deps": ["Watercolour", "GeometryBuffers"], "Views": ["Kuwahara"] },
+                { "Id": "Composite", "Label": "Paper compositor", "Home": "56__Paper__Compositor", "Inputs": ["Finish", "Overlay"], "Deps": ["Watercolour", "Kuwahara", "InkLayer", "Paper", "ArtDirection"], "Views": ["Final"] }
+            ]
+        }
+    }
+}

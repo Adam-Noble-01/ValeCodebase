@@ -1,0 +1,271 @@
+{
+    "PainterlyNPR__AppConfig__Main" : {
+        "PainterlyNPR__AppConfig__Main__Meta"           : {
+            "ConfigLabel"   : "PainterlyNPR - Main Application Config",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The application's identity, the sheet everything artistic is measured on, the engine's limits, and every config document the modules read. A document is read by the module beside it, through a JSON import, so it is there before any code runs.",
+            "ReadBy"        : "02__Src__AppModules/02__AppData/PainterlyNPR__AppData__Engine__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__AppConfig__Main__App"            : {
+            "AppName"           : "PainterlyNPR",
+            "AppLongName"       : "PainterlyNPR - Pen and Wash Renderer",
+            "AppVersion"        : "0.8.3",
+            "AppVersionNote"    : "The application's version: shown in the meta strip over the panel, written into every settings object and save. Bump it here, in the README and in a new DEVLOG entry together.",
+            "AppStage"          : "Application - the Experiment 01 renderer as an installable app",
+            "AppStageNote"      : "v0.5.0 is Experiment 01 taken apart into modules and rebuilt as a PWA: it draws exactly what the experiment drew, pixel for pixel. The experiment stays in 80__Experiments__RenderPrototypes as the reference. v0.6.0 adds the asset library (12__Data__AssetLibrary): a pull-out catalogue, drag and drop into the scene, the thumbnail factory and the Proxy work mode.",
+            "Author"            : "Adam Noble - Noble Architecture",
+            "Created"           : "29-Oct-2026",
+            "Namespace"         : "PainterlyNPR",
+            "LocalhostPort"     : 8020,
+            "LocalhostPortNote" : "Port 8020 is reserved for PainterlyNPR; AudioSPACE has 8010 and the Vale apps 8001 to 8006."
+        },
+
+        "PainterlyNPR__AppConfig__Main__Sheet"          : {
+            "Note"             : "Everything artistic is measured on the sheet, an A3 landscape page since v0.8.3 (Adam: the line work must look as it would printed at scale): pen widths, wobble, pooling, every noise scale and the grain. An export multiplies the pixels per millimetre, never the drawing.",
+            "SheetName"        : "A3",
+            "SheetNameNote"    : "The paper's name, shown in the meta strip beside its size",
+            "SheetWidthMm"     : 420,
+            "SheetWidthMmNote" : "Everything artistic is measured on the sheet",
+            "SheetHeightMm"    : 297,
+            "BasePxPerMm"      : 5,
+            "BasePxPerMmNote"  : "2100 x 1485 on screen; an export multiplies this, never the drawing",
+            "PreviousSheetMm"  : [300, 200],
+            "PreviousSheetMmNote" : "The sheet every drawing before v0.8.3 was placed on. A settings object (or a host's saved points) that names no sheet was drawn on it: its paper-placed Art Direction Points are refitted from it (PainterlyNPR__ArtDirection__RefitPoints)"
+        },
+
+        "PainterlyNPR__AppConfig__Main__Engine"         : {
+            "ShadowMapSize"       : 4096,
+            "ShadowMapSizeNote"   : "The garden is 34 m across: 8 mm texels; clamped to the GPU's limit at boot",
+            "MaxPoints"           : 8,
+            "MaxPointsNote"       : "Art Direction Points the field shader holds",
+            "JfaReachMm"          : 10,
+            "JfaReachMmNote"      : "Past this a wash edge has no effect, so the distance field stops looking",
+            "RefineIdleMs"        : 260,
+            "RefineIdleMsNote"    : "The navigation preview holds until the camera has been still this long",
+            "StrokeSpacingMm"     : 0.3,
+            "StrokeSpacingMmNote" : "Ribbon sample spacing: in millimetres, so an export draws the same strokes",
+            "AaPx"                : 1,
+            "AaPxNote"            : "Ribbons are widened by this and faded in the shader: antialiasing without MSAA"
+        },
+
+        "PainterlyNPR__AppConfig__Main__ConfigRegistry" : {
+            "ConfigRegistryNote"      : "Every config document in the application, by a short name: its path from the app root, its root key and the module that reads it. Modules read their documents through JSON imports; this list is for people, the build utilities (the service worker's precache list) and the config test.",
+            "appConfigMain"           : {
+                "Path"    : "02__Src__AppModules/02__AppData/PainterlyNPR__AppConfig__Main__.json",
+                "RootKey" : "PainterlyNPR__AppConfig__Main",
+                "ReadBy"  : "02__Src__AppModules/02__AppData/PainterlyNPR__AppData__Engine__.mjs"
+            },
+            "drawingDiscipline"       : {
+                "Path"    : "02__Src__AppModules/35__Line__DrawingDiscipline/Na__DrawingDiscipline__Config.json",
+                "RootKey" : "PainterlyNPR__DrawingDiscipline__Config",
+                "ReadBy"  : "02__Src__AppModules/35__Line__DrawingDiscipline/PainterlyNPR__DrawingDiscipline__Constants__.mjs"
+            },
+            "materialClasses"         : {
+                "Path"    : "02__Src__AppModules/13__Scene__MaterialClasses/Na__MaterialClasses__Config.json",
+                "RootKey" : "PainterlyNPR__MaterialClasses__Config",
+                "ReadBy"  : "02__Src__AppModules/13__Scene__MaterialClasses/PainterlyNPR__MaterialClasses__Table__.mjs"
+            },
+            "pigmentModel"            : {
+                "Path"    : "02__Src__AppModules/50__Wash__PigmentModel/Na__PigmentModel__Config.json",
+                "RootKey" : "PainterlyNPR__PigmentModel__Config",
+                "ReadBy"  : "02__Src__AppModules/50__Wash__PigmentModel/PainterlyNPR__PigmentModel__Pigments__.mjs"
+            },
+            "materialIndication"      : {
+                "Path"    : "02__Src__AppModules/36__Line__MaterialIndication/Na__MaterialIndication__Config.json",
+                "RootKey" : "PainterlyNPR__MaterialIndication__Config",
+                "ReadBy"  : "02__Src__AppModules/36__Line__MaterialIndication/PainterlyNPR__MaterialIndication__Patterns__.mjs"
+            },
+            "materialIndicationViews" : {
+                "Path"    : "02__Src__AppModules/36__Line__MaterialIndication/Na__MaterialIndication__Views__Config.json",
+                "RootKey" : "PainterlyNPR__MaterialIndicationViews__Config",
+                "ReadBy"  : "02__Src__AppModules/36__Line__MaterialIndication/PainterlyNPR__MaterialIndication__Pass__.mjs"
+            },
+            "organicGrammar"          : {
+                "Path"    : "02__Src__AppModules/40__Organic__GrammarFramework/Na__OrganicGrammar__Config.json",
+                "RootKey" : "PainterlyNPR__OrganicGrammar__Config",
+                "ReadBy"  : "02__Src__AppModules/40__Organic__GrammarFramework/PainterlyNPR__OrganicGrammar__Styles__.mjs"
+            },
+            "paper"                   : {
+                "Path"    : "02__Src__AppModules/55__Paper__Model/Na__Paper__Config.json",
+                "RootKey" : "PainterlyNPR__Paper__Config",
+                "ReadBy"  : "02__Src__AppModules/55__Paper__Model/PainterlyNPR__Paper__Presets__.mjs"
+            },
+            "inkLayer"                : {
+                "Path"    : "02__Src__AppModules/34__Stroke__InkCompositing/Na__InkLayer__Config.json",
+                "RootKey" : "PainterlyNPR__InkLayer__Config",
+                "ReadBy"  : "02__Src__AppModules/34__Stroke__InkCompositing/PainterlyNPR__InkLayer__InkFamilies__.mjs"
+            },
+            "cameraRig"               : {
+                "Path"    : "02__Src__AppModules/70__Camera__ViewTypes/Na__CameraRig__Config.json",
+                "RootKey" : "PainterlyNPR__CameraRig__Config",
+                "ReadBy"  : "02__Src__AppModules/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Presets__.mjs"
+            },
+            "navigation"              : {
+                "Path"    : "02__Src__AppModules/74__Camera__Navigation/Na__Navigation__Config.json",
+                "RootKey" : "PainterlyNPR__Navigation__Config",
+                "ReadBy"  : "02__Src__AppModules/74__Camera__Navigation/PainterlyNPR__Navigation__Mappings__.mjs"
+            },
+            "passViewer"              : {
+                "Path"    : "02__Src__AppModules/81__Hud__PassViewer/Na__PassViewer__Config.json",
+                "RootKey" : "PainterlyNPR__PassViewer__Config",
+                "ReadBy"  : "02__Src__AppModules/81__Hud__PassViewer/PainterlyNPR__PassViewer__ViewList__.mjs"
+            },
+            "appState"                : {
+                "Path"    : "02__Src__AppModules/01__AppCore/Na__AppState__Config.json",
+                "RootKey" : "PainterlyNPR__AppState__Config",
+                "ReadBy"  : "02__Src__AppModules/01__AppCore/PainterlyNPR__AppCore__State__.mjs"
+            },
+            "renderGraph"             : {
+                "Path"    : "02__Src__AppModules/20__System__RenderGraph/Na__RenderGraph__Config.json",
+                "RootKey" : "PainterlyNPR__RenderGraph__Config",
+                "ReadBy"  : "02__Src__AppModules/20__System__RenderGraph/PainterlyNPR__RenderGraph__Graph__.mjs"
+            },
+            "artDirection"            : {
+                "Path"    : "02__Src__AppModules/65__ArtDirection__InfluencePoints/Na__ArtDirection__Config.json",
+                "RootKey" : "PainterlyNPR__ArtDirection__Config",
+                "ReadBy"  : "02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Points__.mjs"
+            },
+            "smartFields"             : {
+                "Path"    : "02__Src__AppModules/66__ArtDirection__SmartFields/Na__SmartFields__Config.json",
+                "RootKey" : "PainterlyNPR__SmartFields__Config",
+                "ReadBy"  : "02__Src__AppModules/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs"
+            },
+            "shadowLines"             : {
+                "Path"    : "02__Src__AppModules/52__Wash__LayerStack/Na__ShadowLines__Config.json",
+                "RootKey" : "PainterlyNPR__ShadowLines__Config",
+                "ReadBy"  : "02__Src__AppModules/52__Wash__LayerStack/PainterlyNPR__ShadowLines__Pass__.mjs"
+            },
+            "watercolour"             : {
+                "Path"    : "02__Src__AppModules/52__Wash__LayerStack/Na__Watercolour__Config.json",
+                "RootKey" : "PainterlyNPR__Watercolour__Config",
+                "ReadBy"  : "02__Src__AppModules/52__Wash__LayerStack/PainterlyNPR__Watercolour__Pass__.mjs"
+            },
+            "strokeSynthesis"         : {
+                "Path"    : "02__Src__AppModules/33__Stroke__Synthesis/Na__StrokeSynthesis__Config.json",
+                "RootKey" : "PainterlyNPR__StrokeSynthesis__Config",
+                "ReadBy"  : "02__Src__AppModules/33__Stroke__Synthesis/PainterlyNPR__StrokeSynthesis__Pen__.mjs"
+            },
+            "skyCloudsHost"           : {
+                "Path"    : "02__Src__AppModules/60__Atmos__SkyAndClouds/Na__SkyCloudsHost__Config.json",
+                "RootKey" : "PainterlyNPR__SkyCloudsHost__Config",
+                "ReadBy"  : "02__Src__AppModules/60__Atmos__SkyAndClouds/PainterlyNPR__SkyClouds__Host__.mjs"
+            },
+            "gpuResources"            : {
+                "Path"    : "02__Src__AppModules/21__System__GpuResources/Na__GpuResources__Config.json",
+                "RootKey" : "PainterlyNPR__GpuResources__Config",
+                "ReadBy"  : "02__Src__AppModules/21__System__GpuResources/PainterlyNPR__GpuResources__Core__.mjs"
+            },
+            "projectPersistence"      : {
+                "Path"    : "02__Src__AppModules/85__System__ProjectPersistence/Na__ProjectPersistence__Config.json",
+                "RootKey" : "PainterlyNPR__ProjectPersistence__Config",
+                "ReadBy"  : "02__Src__AppModules/85__System__ProjectPersistence/PainterlyNPR__Saves__SavedSettings__.mjs"
+            },
+            "interfaceControls"       : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__Controls__Config.json",
+                "RootKey" : "PainterlyNPR__InterfaceControls__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Controls__.mjs"
+            },
+            "pointControls"           : {
+                "Path"    : "02__Src__AppModules/65__ArtDirection__InfluencePoints/Na__ArtDirection__PointControls__Config.json",
+                "RootKey" : "PainterlyNPR__PointControls__Config",
+                "ReadBy"  : "02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs"
+            },
+            "interfaceResize"         : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__Resize__Config.json",
+                "RootKey" : "PainterlyNPR__InterfaceResize__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Resize__.mjs"
+            },
+            "interfaceFolds"          : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__Folds__Config.json",
+                "RootKey" : "PainterlyNPR__InterfaceFolds__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Folds__.mjs"
+            },
+            "interfaceCamera"         : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__CameraControls__Config.json",
+                "RootKey" : "PainterlyNPR__InterfaceCamera__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__CameraControls__.mjs"
+            },
+            "palette"                 : {
+                "Path"       : "02__Src__AppModules/02__AppData/Na__Palette__Config.json",
+                "RootKey"    : "PainterlyNPR__Palette__Config",
+                "ReadBy"     : "03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Variables__.css",
+                "ReadByNote" : "Mirrored by hand: a stylesheet cannot read JSON."
+            },
+            "interfacePanel"          : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__Panel__Config.json",
+                "RootKey" : "PainterlyNPR__InterfacePanel__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Panel__.mjs"
+            },
+            "kuwaharaFilter"          : {
+                "Path"        : "02__Src__AppModules/57__Wash__KuwaharaFilter/Na__KuwaharaFilter__Config.json",
+                "RootKey"     : null,
+                "RootKeyNote" : "One of the first modules' own configs (v0.4.x): Name, Version and its sections at the top level.",
+                "ReadBy"      : "02__Src__AppModules/57__Wash__KuwaharaFilter/PainterlyNPR__KuwaharaFilter__Settings__.mjs"
+            },
+            "volumetricClouds"        : {
+                "Path"        : "02__Src__AppModules/63__Atmos__VolumetricClouds/Na__VolumetricClouds__Config.json",
+                "RootKey"     : null,
+                "RootKeyNote" : "One of the first modules' own configs (v0.4.x): Name, Version and its sections at the top level.",
+                "ReadBy"      : "02__Src__AppModules/63__Atmos__VolumetricClouds/PainterlyNPR__VolumetricClouds__Settings__.mjs"
+            },
+            "skyAndClouds"            : {
+                "Path"        : "02__Src__AppModules/60__Atmos__SkyAndClouds/Na__SkyAndClouds__Config.json",
+                "RootKey"     : null,
+                "RootKeyNote" : "One of the first modules' own configs (v0.4.x): Name, Version and its sections at the top level.",
+                "ReadBy"      : "02__Src__AppModules/60__Atmos__SkyAndClouds/PainterlyNPR__SkyAndClouds__CloudPaint__.mjs"
+            },
+            "assetLibrary"            : {
+                "Path"    : "02__Src__AppModules/16__Scene__AssetLibrary/Na__AssetLibrary__Config.json",
+                "RootKey" : "PainterlyNPR__AssetLibrary__Config",
+                "ReadBy"  : "02__Src__AppModules/16__Scene__AssetLibrary/PainterlyNPR__AssetLibrary__Placement__.mjs"
+            },
+            "assetCatalogue"          : {
+                "Path"    : "02__Src__AppModules/82__Hud__AssetCatalogue/Na__AssetCatalogue__Config.json",
+                "RootKey" : "PainterlyNPR__AssetCatalogue__Config",
+                "ReadBy"  : "02__Src__AppModules/82__Hud__AssetCatalogue/PainterlyNPR__Interface__AssetDrawer__.mjs"
+            },
+            "assetFactory"            : {
+                "Path"    : "02__Src__AppModules/88__Export__AssetFactory/Na__AssetFactory__Config.json",
+                "RootKey" : "PainterlyNPR__AssetFactory__Config",
+                "ReadBy"  : "02__Src__AppModules/88__Export__AssetFactory/PainterlyNPR__AssetFactory__Run__.mjs"
+            },
+            "undoHistory"             : {
+                "Path"    : "02__Src__AppModules/84__System__UndoHistory/Na__UndoHistory__Config.json",
+                "RootKey" : "PainterlyNPR__UndoHistory__Config",
+                "ReadBy"  : "02__Src__AppModules/84__System__UndoHistory/PainterlyNPR__Interface__UndoHistory__.mjs"
+            },
+            "materialAssignment"      : {
+                "Path"    : "02__Src__AppModules/17__Scene__MaterialAssignment/Na__MaterialAssignment__Config.json",
+                "RootKey" : "PainterlyNPR__MaterialAssignment__Config",
+                "ReadBy"  : "02__Src__AppModules/17__Scene__MaterialAssignment/PainterlyNPR__MaterialAssignment__Apply__.mjs"
+            },
+            "interfaceContextMenu"    : {
+                "Path"    : "02__Src__AppModules/80__System__HudOverlay/Na__Interface__ContextMenu__Config.json",
+                "RootKey" : "PainterlyNPR__ContextMenu__Config",
+                "ReadBy"  : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__ContextMenu__.mjs"
+            },
+            "sceneEditing"            : {
+                "Path"    : "02__Src__AppModules/83__Hud__SceneEditing/Na__SceneEditing__Config.json",
+                "RootKey" : "PainterlyNPR__SceneEditing__Config",
+                "ReadBy"  : "02__Src__AppModules/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Selection__.mjs"
+            },
+            "technicalPens"           : {
+                "Path"    : "02__Src__AppModules/32__Line__ClassAndPriority/Na__TechnicalPens__Config.json",
+                "RootKey" : "PainterlyNPR__TechnicalPens__Config",
+                "ReadBy"  : "02__Src__AppModules/32__Line__ClassAndPriority/PainterlyNPR__TechnicalPens__Tiers__.mjs"
+            },
+            "lettering"               : {
+                "Path"    : "02__Src__AppModules/38__Line__Lettering/Na__Lettering__Config.json",
+                "RootKey" : "PainterlyNPR__Lettering__Config",
+                "ReadBy"  : "02__Src__AppModules/38__Line__Lettering/PainterlyNPR__Lettering__Strokes__.mjs"
+            },
+            "penCalibration"          : {
+                "Path"    : "02__Src__AppModules/86__Export__StillRender/Na__PenCalibration__Config.json",
+                "RootKey" : "PainterlyNPR__PenCalibration__Config",
+                "ReadBy"  : "02__Src__AppModules/86__Export__StillRender/PainterlyNPR__Export__PenCalibration__.mjs"
+            }
+        }
+    }
+}

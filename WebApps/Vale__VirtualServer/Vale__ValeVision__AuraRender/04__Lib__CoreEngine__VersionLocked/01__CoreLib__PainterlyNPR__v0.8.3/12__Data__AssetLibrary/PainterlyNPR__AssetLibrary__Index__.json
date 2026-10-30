@@ -1,0 +1,3924 @@
+{
+  "PainterlyNPR__AssetLibrary__Index": {
+    "PainterlyNPR__AssetLibrary__Index__Meta": {
+      "IndexLabel": "PainterlyNPR - The Asset Library's Index",
+      "IndexNote": "Written by 60__Dev__WebBuildUtils/PainterlyNPR__BuildUtil__AssetLibrary__.py (and by the local server after the factory writes): never by hand. The app reads /api/assets when served, this file otherwise.",
+      "Library": "12__Data__AssetLibrary",
+      "RegisterVersion": "1.0.0",
+      "AssetCount": 26
+    },
+    "PainterlyNPR__AssetLibrary__Index__Slots": {
+      "Slots": [
+        {
+          "Slot": "DAT",
+          "Ext": "json",
+          "Label": "Data"
+        },
+        {
+          "Slot": "MOD",
+          "Ext": "glb",
+          "Label": "three.js model"
+        },
+        {
+          "Slot": "SKP",
+          "Ext": "skp",
+          "Label": "SketchUp model"
+        },
+        {
+          "Slot": "PXY",
+          "Ext": "webp",
+          "Label": "Proxy preview"
+        },
+        {
+          "Slot": "RND",
+          "Ext": "webp",
+          "Label": "Rendered preview"
+        }
+      ]
+    },
+    "PainterlyNPR__AssetLibrary__Index__Collections": {
+      "Collections": [
+        {
+          "Code": "05",
+          "Name": "GroundAndTerrain",
+          "Label": "Ground and terrain",
+          "Folder": "05__GroundAndTerrain",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Mounds",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Beds",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Surfaces",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Rocks",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "07",
+          "Name": "VegetationElements",
+          "Label": "Vegetation",
+          "Folder": "07__VegetationElements",
+          "Count": 23,
+          "Types": [
+            {
+              "Type": "Trees",
+              "Block": "00",
+              "Count": 5
+            },
+            {
+              "Type": "Conifers",
+              "Block": "05",
+              "Count": 1
+            },
+            {
+              "Type": "Shrubs",
+              "Block": "10",
+              "Count": 5
+            },
+            {
+              "Type": "Hedges",
+              "Block": "15",
+              "Count": 1
+            },
+            {
+              "Type": "Topiary",
+              "Block": "20",
+              "Count": 2
+            },
+            {
+              "Type": "Perennials",
+              "Block": "25",
+              "Count": 7
+            },
+            {
+              "Type": "Grasses",
+              "Block": "30",
+              "Count": 2
+            },
+            {
+              "Type": "Climbers",
+              "Block": "35",
+              "Count": 0
+            },
+            {
+              "Type": "Ferns",
+              "Block": "40",
+              "Count": 0
+            },
+            {
+              "Type": "GroundCover",
+              "Block": "45",
+              "Count": 0
+            },
+            {
+              "Type": "Aquatic",
+              "Block": "50",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "10",
+          "Name": "BoundaryElements",
+          "Label": "Boundaries",
+          "Folder": "10__BoundaryElements",
+          "Count": 1,
+          "Types": [
+            {
+              "Type": "Fences",
+              "Block": "00",
+              "Count": 1
+            },
+            {
+              "Type": "Gates",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Walls",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Railings",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "15",
+          "Name": "HardLandscaping",
+          "Label": "Hard landscaping",
+          "Folder": "15__HardLandscaping",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Paths",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Paving",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Steps",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Edging",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Kerbs",
+              "Block": "20",
+              "Count": 0
+            },
+            {
+              "Type": "Driveways",
+              "Block": "25",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "20",
+          "Name": "WaterFeatures",
+          "Label": "Water features",
+          "Folder": "20__WaterFeatures",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Ponds",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Fountains",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "BirdBaths",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Rills",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "25",
+          "Name": "GardenFurniture",
+          "Label": "Garden furniture",
+          "Folder": "25__GardenFurniture",
+          "Count": 2,
+          "Types": [
+            {
+              "Type": "Seating",
+              "Block": "00",
+              "Count": 1
+            },
+            {
+              "Type": "Tables",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "PlantersAndPots",
+              "Block": "10",
+              "Count": 1
+            },
+            {
+              "Type": "Accessories",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "30",
+          "Name": "GardenStructures",
+          "Label": "Garden structures",
+          "Folder": "30__GardenStructures",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Pergolas",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Arbours",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Arches",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Sheds",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Summerhouses",
+              "Block": "20",
+              "Count": 0
+            },
+            {
+              "Type": "Greenhouses",
+              "Block": "25",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "35",
+          "Name": "Glasshouses",
+          "Label": "Glasshouses and orangeries",
+          "Folder": "35__Glasshouses",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Orangeries",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Glasshouses",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "RoofLanterns",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Conservatories",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "40",
+          "Name": "BuildingElements",
+          "Label": "Building elements",
+          "Folder": "40__BuildingElements",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Porches",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Doors",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Windows",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Chimneys",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Dormers",
+              "Block": "20",
+              "Count": 0
+            },
+            {
+              "Type": "RainwaterGoods",
+              "Block": "25",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "45",
+          "Name": "Lighting",
+          "Label": "Lighting",
+          "Folder": "45__Lighting",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "WallLights",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "PostLights",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "BollardLights",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "StreetLamps",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "50",
+          "Name": "StreetFurniture",
+          "Label": "Street furniture",
+          "Folder": "50__StreetFurniture",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "PostBoxes",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Bins",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Signs",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Bollards",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Benches",
+              "Block": "20",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "55",
+          "Name": "Vehicles",
+          "Label": "Vehicles",
+          "Folder": "55__Vehicles",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Cars",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Vans",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Bicycles",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "GardenMachinery",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "60",
+          "Name": "People",
+          "Label": "People",
+          "Folder": "60__People",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Adults",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Children",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Groups",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Silhouettes",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "65",
+          "Name": "Animals",
+          "Label": "Animals",
+          "Folder": "65__Animals",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Dogs",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Cats",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Birds",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Horses",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Livestock",
+              "Block": "20",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "70",
+          "Name": "ContextMassing",
+          "Label": "Context and massing",
+          "Folder": "70__ContextMassing",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Buildings",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "TreeBelts",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Hedgerows",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Hills",
+              "Block": "15",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "75",
+          "Name": "Ornament",
+          "Label": "Sculpture and ornament",
+          "Folder": "75__Ornament",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "Urns",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "Statues",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "Sundials",
+              "Block": "10",
+              "Count": 0
+            },
+            {
+              "Type": "Obelisks",
+              "Block": "15",
+              "Count": 0
+            },
+            {
+              "Type": "Finials",
+              "Block": "20",
+              "Count": 0
+            }
+          ]
+        },
+        {
+          "Code": "80",
+          "Name": "Calibration",
+          "Label": "Calibration",
+          "Folder": "80__Calibration",
+          "Count": 0,
+          "Types": [
+            {
+              "Type": "ReferenceShapes",
+              "Block": "00",
+              "Count": 0
+            },
+            {
+              "Type": "ScaleFigures",
+              "Block": "05",
+              "Count": 0
+            },
+            {
+              "Type": "ColourCharts",
+              "Block": "10",
+              "Count": 0
+            }
+          ]
+        }
+      ]
+    },
+    "PainterlyNPR__AssetLibrary__Index__Assets": {
+      "Assets": [
+        {
+          "AssetId": "NPR_07_0001",
+          "Folder": "07__VegetationElements/NPR_07_0001__Trees__AppleTree__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "000",
+            "Item": 1,
+            "Name": "AppleTree",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__AppleTree__Var-01",
+            "DisplayName": "Apple tree",
+            "Description": "An apple in blossom: a short trunk under a domed crown, wider than it is tall, with pink blossom dabbed through it - the cottage garden's apple."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0001__DAT__VegetationElements__Trees__AppleTree__Var-01__.json",
+              "Present": true,
+              "Bytes": 5108
+            },
+            "MOD": {
+              "File": "NPR_07_0001__MOD__VegetationElements__Trees__AppleTree__Var-01__.glb",
+              "Present": true,
+              "Bytes": 303660
+            },
+            "SKP": {
+              "File": "NPR_07_0001__SKP__VegetationElements__Trees__AppleTree__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0001__PXY__VegetationElements__Trees__AppleTree__Var-01__.webp",
+              "Present": true,
+              "Bytes": 8306
+            },
+            "RND": {
+              "File": "NPR_07_0001__RND__VegetationElements__Trees__AppleTree__Var-01__.webp",
+              "Present": true,
+              "Bytes": 28926
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 3.6,
+            "NominalSpreadM": 4.2,
+            "Bounds": {
+              "Min": [
+                -1.714,
+                -0.002,
+                -1.836
+              ],
+              "Max": [
+                1.931,
+                3.58,
+                1.682
+              ],
+              "Size": [
+                3.645,
+                3.582,
+                3.518
+              ],
+              "RadiusM": 3.102
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+              "TrunkHeightM": 1.35,
+              "CrownRadiusM": 1.7,
+              "Masses": 13,
+              "Dome": true
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Rose",
+              "Density": 0.22,
+              "SizeMm": [
+                0.6,
+                1.1
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 2.1
+          },
+          "Catalogue": {
+            "Keywords": [
+              "apple",
+              "fruit tree",
+              "orchard",
+              "blossom",
+              "malus",
+              "deciduous",
+              "small tree"
+            ],
+            "Season": "Spring",
+            "Botanical": "Malus domestica"
+          },
+          "Factory": {
+            "StageSeed": 1468558450,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:46",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 11.876,
+              "Target": [
+                0.109,
+                1.789,
+                -0.077
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_0011",
+          "Folder": "07__VegetationElements/NPR_07_0011__Trees__AshTree__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "001",
+            "Item": 1,
+            "Name": "AshTree",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__AshTree__Var-01",
+            "DisplayName": "Ash",
+            "Description": "A tall ash: a long clear trunk and an open crown of masses, branches drawn partly through it - the tree behind the cottage."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0011__DAT__VegetationElements__Trees__AshTree__Var-01__.json",
+              "Present": true,
+              "Bytes": 4841
+            },
+            "MOD": {
+              "File": "NPR_07_0011__MOD__VegetationElements__Trees__AshTree__Var-01__.glb",
+              "Present": true,
+              "Bytes": 372764
+            },
+            "SKP": {
+              "File": "NPR_07_0011__SKP__VegetationElements__Trees__AshTree__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0011__PXY__VegetationElements__Trees__AshTree__Var-01__.webp",
+              "Present": true,
+              "Bytes": 7542
+            },
+            "RND": {
+              "File": "NPR_07_0011__RND__VegetationElements__Trees__AshTree__Var-01__.webp",
+              "Present": true,
+              "Bytes": 26240
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 9.0,
+            "NominalSpreadM": 7.6,
+            "Bounds": {
+              "Min": [
+                -3.018,
+                -0.011,
+                -2.642
+              ],
+              "Max": [
+                3.416,
+                9.225,
+                3.026
+              ],
+              "Size": [
+                6.434,
+                9.236,
+                5.668
+              ],
+              "RadiusM": 6.301
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+              "TrunkHeightM": 4.2,
+              "CrownRadiusM": 2.8,
+              "Masses": 16
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 3.8
+          },
+          "Catalogue": {
+            "Keywords": [
+              "ash",
+              "fraxinus",
+              "deciduous",
+              "broadleaf",
+              "large tree",
+              "hedgerow tree"
+            ],
+            "Season": "Summer",
+            "Botanical": "Fraxinus excelsior"
+          },
+          "Factory": {
+            "StageSeed": 1318280499,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:46",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 24.328,
+              "Target": [
+                0.199,
+                4.607,
+                0.192
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_0021",
+          "Folder": "07__VegetationElements/NPR_07_0021__Trees__MatureOak__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0021",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "002",
+            "Item": 1,
+            "Name": "MatureOak",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__MatureOak__Var-01",
+            "DisplayName": "Mature oak",
+            "Description": "A mature English oak: a short, leaning trunk under a broad, lumpy crown, its outline broken toward the light and its branches seen through the canopy."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0021__DAT__VegetationElements__Trees__MatureOak__Var-01__.json",
+              "Present": true,
+              "Bytes": 4913
+            },
+            "MOD": {
+              "File": "NPR_07_0021__MOD__VegetationElements__Trees__MatureOak__Var-01__.glb",
+              "Present": true,
+              "Bytes": 418860
+            },
+            "SKP": {
+              "File": "NPR_07_0021__SKP__VegetationElements__Trees__MatureOak__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0021__PXY__VegetationElements__Trees__MatureOak__Var-01__.webp",
+              "Present": true,
+              "Bytes": 8930
+            },
+            "RND": {
+              "File": "NPR_07_0021__RND__VegetationElements__Trees__MatureOak__Var-01__.webp",
+              "Present": true,
+              "Bytes": 29266
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 8.9,
+            "NominalSpreadM": 8.4,
+            "Bounds": {
+              "Min": [
+                -3.612,
+                -0.006,
+                -3.065
+              ],
+              "Max": [
+                3.207,
+                9.002,
+                2.848
+              ],
+              "Size": [
+                6.819,
+                9.008,
+                5.914
+              ],
+              "RadiusM": 6.376
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+              "TrunkHeightM": 3.4,
+              "CrownRadiusM": 3.1,
+              "Masses": 18
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 4.2
+          },
+          "Catalogue": {
+            "Keywords": [
+              "oak",
+              "english oak",
+              "quercus",
+              "deciduous",
+              "broadleaf",
+              "large tree",
+              "parkland"
+            ],
+            "Season": "Summer",
+            "Botanical": "Quercus robur"
+          },
+          "Factory": {
+            "StageSeed": 1706954480,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:47",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 24.059,
+              "Target": [
+                -0.203,
+                4.498,
+                -0.109
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_0031",
+          "Folder": "07__VegetationElements/NPR_07_0031__Trees__FieldMaple__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0031",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "003",
+            "Item": 1,
+            "Name": "FieldMaple",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__FieldMaple__Var-01",
+            "DisplayName": "Field maple",
+            "Description": "A field maple: a medium tree with a rounded crown on a short trunk - the garden's corner tree."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0031__DAT__VegetationElements__Trees__FieldMaple__Var-01__.json",
+              "Present": true,
+              "Bytes": 4840
+            },
+            "MOD": {
+              "File": "NPR_07_0031__MOD__VegetationElements__Trees__FieldMaple__Var-01__.glb",
+              "Present": true,
+              "Bytes": 280624
+            },
+            "SKP": {
+              "File": "NPR_07_0031__SKP__VegetationElements__Trees__FieldMaple__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0031__PXY__VegetationElements__Trees__FieldMaple__Var-01__.webp",
+              "Present": true,
+              "Bytes": 7056
+            },
+            "RND": {
+              "File": "NPR_07_0031__RND__VegetationElements__Trees__FieldMaple__Var-01__.webp",
+              "Present": true,
+              "Bytes": 25144
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 6.1,
+            "NominalSpreadM": 5.4,
+            "Bounds": {
+              "Min": [
+                -2.111,
+                -0.004,
+                -1.734
+              ],
+              "Max": [
+                1.587,
+                5.564,
+                2.126
+              ],
+              "Size": [
+                3.698,
+                5.568,
+                3.86
+              ],
+              "RadiusM": 3.859
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+              "TrunkHeightM": 2.6,
+              "CrownRadiusM": 2.0,
+              "Masses": 12
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 2.7
+          },
+          "Catalogue": {
+            "Keywords": [
+              "maple",
+              "field maple",
+              "acer",
+              "deciduous",
+              "medium tree",
+              "hedgerow tree"
+            ],
+            "Season": "Summer",
+            "Botanical": "Acer campestre"
+          },
+          "Factory": {
+            "StageSeed": 2091204529,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:48",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 14.754,
+              "Target": [
+                -0.262,
+                2.78,
+                0.196
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_0041",
+          "Folder": "07__VegetationElements/NPR_07_0041__Trees__SilverBirch__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0041",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Trees",
+            "TypeBlock": "00",
+            "Family": "004",
+            "Item": 1,
+            "Name": "SilverBirch",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Trees__SilverBirch__Var-01",
+            "DisplayName": "Silver birch",
+            "Description": "A silver birch: a slender trunk and a small, light crown - the birch by the pond."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0041__DAT__VegetationElements__Trees__SilverBirch__Var-01__.json",
+              "Present": true,
+              "Bytes": 4838
+            },
+            "MOD": {
+              "File": "NPR_07_0041__MOD__VegetationElements__Trees__SilverBirch__Var-01__.glb",
+              "Present": true,
+              "Bytes": 211508
+            },
+            "SKP": {
+              "File": "NPR_07_0041__SKP__VegetationElements__Trees__SilverBirch__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0041__PXY__VegetationElements__Trees__SilverBirch__Var-01__.webp",
+              "Present": true,
+              "Bytes": 5518
+            },
+            "RND": {
+              "File": "NPR_07_0041__RND__VegetationElements__Trees__SilverBirch__Var-01__.webp",
+              "Present": true,
+              "Bytes": 19304
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 6.0,
+            "NominalSpreadM": 4.0,
+            "Bounds": {
+              "Min": [
+                -1.249,
+                -0.009,
+                -0.897
+              ],
+              "Max": [
+                0.879,
+                5.908,
+                1.718
+              ],
+              "Size": [
+                2.128,
+                5.916,
+                2.616
+              ],
+              "RadiusM": 3.405
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Tree",
+            "Params": {
+              "TrunkHeightM": 3.4,
+              "CrownRadiusM": 1.5,
+              "Masses": 9
+            },
+            "Kind": "Tree",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 2.0
+          },
+          "Catalogue": {
+            "Keywords": [
+              "birch",
+              "silver birch",
+              "betula",
+              "deciduous",
+              "light canopy",
+              "slender tree"
+            ],
+            "Season": "Summer",
+            "Botanical": "Betula pendula"
+          },
+          "Factory": {
+            "StageSeed": 870623606,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:48",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 14.523,
+              "Target": [
+                -0.185,
+                2.95,
+                0.411
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_0501",
+          "Folder": "07__VegetationElements/NPR_07_0501__Conifers__EnglishYew__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_0501",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Conifers",
+            "TypeBlock": "05",
+            "Family": "050",
+            "Item": 1,
+            "Name": "EnglishYew",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Conifers__EnglishYew__Var-01",
+            "DisplayName": "English yew",
+            "Description": "An English yew: a short trunk and a dark stack of masses narrowing to the top, drawn with needle ticks."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_0501__DAT__VegetationElements__Conifers__EnglishYew__Var-01__.json",
+              "Present": true,
+              "Bytes": 4744
+            },
+            "MOD": {
+              "File": "NPR_07_0501__MOD__VegetationElements__Conifers__EnglishYew__Var-01__.glb",
+              "Present": true,
+              "Bytes": 188152
+            },
+            "SKP": {
+              "File": "NPR_07_0501__SKP__VegetationElements__Conifers__EnglishYew__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_0501__PXY__VegetationElements__Conifers__EnglishYew__Var-01__.webp",
+              "Present": true,
+              "Bytes": 5286
+            },
+            "RND": {
+              "File": "NPR_07_0501__RND__VegetationElements__Conifers__EnglishYew__Var-01__.webp",
+              "Present": true,
+              "Bytes": 19690
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 7.2,
+            "NominalSpreadM": 3.0,
+            "Bounds": {
+              "Min": [
+                -1.326,
+                -0.325,
+                -1.521
+              ],
+              "Max": [
+                1.406,
+                7.171,
+                1.234
+              ],
+              "Size": [
+                2.733,
+                7.496,
+                2.755
+              ],
+              "RadiusM": 4.22
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Conifer",
+            "Params": {},
+            "Kind": "Conifer",
+            "Material": "Conifer",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.1,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 1.5
+          },
+          "Catalogue": {
+            "Keywords": [
+              "yew",
+              "taxus",
+              "conifer",
+              "evergreen",
+              "dark",
+              "churchyard"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Taxus baccata"
+          },
+          "Factory": {
+            "StageSeed": 1363390105,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:49",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 18.205,
+              "Target": [
+                0.04,
+                3.423,
+                -0.143
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1001",
+          "Folder": "07__VegetationElements/NPR_07_1001__Shrubs__GardenShrub__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_1001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 1,
+            "Name": "GardenShrub",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__GardenShrub__Var-01",
+            "DisplayName": "Garden shrub, large",
+            "Description": "A large garden shrub: a domed mound of foliage masses with a scalloped outline and cupped shade beneath."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1001__DAT__VegetationElements__Shrubs__GardenShrub__Var-01__.json",
+              "Present": true,
+              "Bytes": 4780
+            },
+            "MOD": {
+              "File": "NPR_07_1001__MOD__VegetationElements__Shrubs__GardenShrub__Var-01__.glb",
+              "Present": true,
+              "Bytes": 208812
+            },
+            "SKP": {
+              "File": "NPR_07_1001__SKP__VegetationElements__Shrubs__GardenShrub__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1001__PXY__VegetationElements__Shrubs__GardenShrub__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6792
+            },
+            "RND": {
+              "File": "NPR_07_1001__RND__VegetationElements__Shrubs__GardenShrub__Var-01__.webp",
+              "Present": true,
+              "Bytes": 28730
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.3,
+            "NominalSpreadM": 1.7,
+            "Bounds": {
+              "Min": [
+                -0.856,
+                -0.157,
+                -0.808
+              ],
+              "Max": [
+                0.916,
+                1.263,
+                0.653
+              ],
+              "Size": [
+                1.771,
+                1.42,
+                1.462
+              ],
+              "RadiusM": 1.35
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 1.6,
+              "HeightM": 1.25,
+              "Masses": 9
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.85
+          },
+          "Catalogue": {
+            "Keywords": [
+              "shrub",
+              "bush",
+              "evergreen",
+              "border",
+              "large shrub"
+            ],
+            "Season": "Summer"
+          },
+          "Factory": {
+            "StageSeed": 1865681687,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:50",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 5.384,
+              "Target": [
+                0.03,
+                0.553,
+                -0.078
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1002",
+          "Folder": "07__VegetationElements/NPR_07_1002__Shrubs__GardenShrub__Var-02__",
+          "Identity": {
+            "AssetId": "NPR_07_1002",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 2,
+            "Name": "GardenShrub",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Shrubs__GardenShrub__Var-02",
+            "DisplayName": "Garden shrub, medium",
+            "Description": "A medium garden shrub: the same habit as the large one, a size smaller."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1002__DAT__VegetationElements__Shrubs__GardenShrub__Var-02__.json",
+              "Present": true,
+              "Bytes": 4721
+            },
+            "MOD": {
+              "File": "NPR_07_1002__MOD__VegetationElements__Shrubs__GardenShrub__Var-02__.glb",
+              "Present": true,
+              "Bytes": 185772
+            },
+            "SKP": {
+              "File": "NPR_07_1002__SKP__VegetationElements__Shrubs__GardenShrub__Var-02__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1002__PXY__VegetationElements__Shrubs__GardenShrub__Var-02__.webp",
+              "Present": true,
+              "Bytes": 6560
+            },
+            "RND": {
+              "File": "NPR_07_1002__RND__VegetationElements__Shrubs__GardenShrub__Var-02__.webp",
+              "Present": true,
+              "Bytes": 27440
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.05,
+            "NominalSpreadM": 1.4,
+            "Bounds": {
+              "Min": [
+                -0.596,
+                -0.157,
+                -0.778
+              ],
+              "Max": [
+                0.697,
+                0.988,
+                0.543
+              ],
+              "Size": [
+                1.293,
+                1.145,
+                1.322
+              ],
+              "RadiusM": 1.087
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 1.3,
+              "HeightM": 1.0,
+              "Masses": 8
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.7
+          },
+          "Catalogue": {
+            "Keywords": [
+              "shrub",
+              "bush",
+              "border",
+              "medium shrub"
+            ],
+            "Season": "Summer"
+          },
+          "Factory": {
+            "StageSeed": 1983732397,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:51",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 4.335,
+              "Target": [
+                0.05,
+                0.416,
+                -0.117
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1003",
+          "Folder": "07__VegetationElements/NPR_07_1003__Shrubs__GardenShrub__Var-03__",
+          "Identity": {
+            "AssetId": "NPR_07_1003",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 3,
+            "Name": "GardenShrub",
+            "Variant": "Var-03",
+            "Stem": "VegetationElements__Shrubs__GardenShrub__Var-03",
+            "DisplayName": "Garden shrub, flowering",
+            "Description": "A low flowering shrub, flecked with cream flowers - the one by the front fence."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1003__DAT__VegetationElements__Shrubs__GardenShrub__Var-03__.json",
+              "Present": true,
+              "Bytes": 4934
+            },
+            "MOD": {
+              "File": "NPR_07_1003__MOD__VegetationElements__Shrubs__GardenShrub__Var-03__.glb",
+              "Present": true,
+              "Bytes": 128172
+            },
+            "SKP": {
+              "File": "NPR_07_1003__SKP__VegetationElements__Shrubs__GardenShrub__Var-03__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1003__PXY__VegetationElements__Shrubs__GardenShrub__Var-03__.webp",
+              "Present": true,
+              "Bytes": 6382
+            },
+            "RND": {
+              "File": "NPR_07_1003__RND__VegetationElements__Shrubs__GardenShrub__Var-03__.webp",
+              "Present": true,
+              "Bytes": 28276
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.95,
+            "NominalSpreadM": 1.3,
+            "Bounds": {
+              "Min": [
+                -0.6,
+                -0.087,
+                -0.744
+              ],
+              "Max": [
+                0.532,
+                0.895,
+                0.69
+              ],
+              "Size": [
+                1.132,
+                0.982,
+                1.434
+              ],
+              "RadiusM": 1.037
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 1.2,
+              "HeightM": 0.9,
+              "Masses": 7
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Cream",
+              "Density": 0.2,
+              "SizeMm": [
+                0.6,
+                1.0
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.65
+          },
+          "Catalogue": {
+            "Keywords": [
+              "shrub",
+              "bush",
+              "flowering",
+              "cream flowers",
+              "border"
+            ],
+            "Season": "Summer"
+          },
+          "Factory": {
+            "StageSeed": 20605499,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:52",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 4.283,
+              "Target": [
+                -0.034,
+                0.404,
+                -0.027
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1011",
+          "Folder": "07__VegetationElements/NPR_07_1011__Shrubs__Hydrangea__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_1011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "101",
+            "Item": 1,
+            "Name": "Hydrangea",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__Hydrangea__Var-01",
+            "DisplayName": "Hydrangea",
+            "Description": "A mophead hydrangea: a rounded shrub carrying big heads of soft blue flowers."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1011__DAT__VegetationElements__Shrubs__Hydrangea__Var-01__.json",
+              "Present": true,
+              "Bytes": 4978
+            },
+            "MOD": {
+              "File": "NPR_07_1011__MOD__VegetationElements__Shrubs__Hydrangea__Var-01__.glb",
+              "Present": true,
+              "Bytes": 145432
+            },
+            "SKP": {
+              "File": "NPR_07_1011__SKP__VegetationElements__Shrubs__Hydrangea__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1011__PXY__VegetationElements__Shrubs__Hydrangea__Var-01__.webp",
+              "Present": true,
+              "Bytes": 7124
+            },
+            "RND": {
+              "File": "NPR_07_1011__RND__VegetationElements__Shrubs__Hydrangea__Var-01__.webp",
+              "Present": true,
+              "Bytes": 34428
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.45,
+            "NominalSpreadM": 1.3,
+            "Bounds": {
+              "Min": [
+                -0.479,
+                0.137,
+                -0.773
+              ],
+              "Max": [
+                0.664,
+                1.396,
+                0.57
+              ],
+              "Size": [
+                1.143,
+                1.259,
+                1.343
+              ],
+              "RadiusM": 1.083
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 1.2,
+              "HeightM": 1.4,
+              "Masses": 7
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Hydrangea",
+              "Density": 0.7,
+              "SizeMm": [
+                1.1,
+                1.8
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.65
+          },
+          "Catalogue": {
+            "Keywords": [
+              "hydrangea",
+              "mophead",
+              "flowering shrub",
+              "blue flowers",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Hydrangea macrophylla"
+          },
+          "Factory": {
+            "StageSeed": 1982806614,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:52",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 4.134,
+              "Target": [
+                0.093,
+                0.767,
+                -0.102
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1021",
+          "Folder": "07__VegetationElements/NPR_07_1021__Shrubs__ShrubRose__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_1021",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "102",
+            "Item": 1,
+            "Name": "ShrubRose",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Shrubs__ShrubRose__Var-01",
+            "DisplayName": "Shrub rose",
+            "Description": "A shrub rose: an upright bush of arcing foliage dotted with pink roses - either side of the cottage door."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1021__DAT__VegetationElements__Shrubs__ShrubRose__Var-01__.json",
+              "Present": true,
+              "Bytes": 5000
+            },
+            "MOD": {
+              "File": "NPR_07_1021__MOD__VegetationElements__Shrubs__ShrubRose__Var-01__.glb",
+              "Present": true,
+              "Bytes": 59028
+            },
+            "SKP": {
+              "File": "NPR_07_1021__SKP__VegetationElements__Shrubs__ShrubRose__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1021__PXY__VegetationElements__Shrubs__ShrubRose__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6660
+            },
+            "RND": {
+              "File": "NPR_07_1021__RND__VegetationElements__Shrubs__ShrubRose__Var-01__.webp",
+              "Present": true,
+              "Bytes": 33454
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.2,
+            "NominalSpreadM": 1.0,
+            "Bounds": {
+              "Min": [
+                -0.485,
+                0.187,
+                -0.386
+              ],
+              "Max": [
+                0.491,
+                1.139,
+                0.438
+              ],
+              "Size": [
+                0.977,
+                0.952,
+                0.824
+              ],
+              "RadiusM": 0.797
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.9,
+              "HeightM": 1.15,
+              "Masses": 7
+            },
+            "Kind": "Rose",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Rose",
+              "Density": 0.45,
+              "SizeMm": [
+                0.9,
+                1.5
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.5
+          },
+          "Catalogue": {
+            "Keywords": [
+              "rose",
+              "shrub rose",
+              "rosa",
+              "flowering",
+              "pink flowers",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Rosa"
+          },
+          "Factory": {
+            "StageSeed": 1560439189,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:53",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.996,
+              "Target": [
+                0.003,
+                0.663,
+                0.026
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_1501",
+          "Folder": "07__VegetationElements/NPR_07_1501__Hedges__ClippedHedge__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_1501",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Hedges",
+            "TypeBlock": "15",
+            "Family": "150",
+            "Item": 1,
+            "Name": "ClippedHedge",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Hedges__ClippedHedge__Var-01",
+            "DisplayName": "Clipped hedge, 3.6 m",
+            "Description": "A clipped garden hedge, 3.6 m of it: a run of masses with a firm, scalloped top, its face turned to the view when placed."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_1501__DAT__VegetationElements__Hedges__ClippedHedge__Var-01__.json",
+              "Present": true,
+              "Bytes": 4774
+            },
+            "MOD": {
+              "File": "NPR_07_1501__MOD__VegetationElements__Hedges__ClippedHedge__Var-01__.glb",
+              "Present": true,
+              "Bytes": 116644
+            },
+            "SKP": {
+              "File": "NPR_07_1501__SKP__VegetationElements__Hedges__ClippedHedge__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_1501__PXY__VegetationElements__Hedges__ClippedHedge__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6796
+            },
+            "RND": {
+              "File": "NPR_07_1501__RND__VegetationElements__Hedges__ClippedHedge__Var-01__.webp",
+              "Present": true,
+              "Bytes": 28324
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.6,
+            "NominalSpreadM": 4.2,
+            "Bounds": {
+              "Min": [
+                -2.062,
+                0.055,
+                -0.758
+              ],
+              "Max": [
+                2.166,
+                1.73,
+                0.798
+              ],
+              "Size": [
+                4.228,
+                1.675,
+                1.556
+              ],
+              "RadiusM": 2.403
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Hedge",
+            "Params": {},
+            "Kind": "Hedge",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Camera",
+            "ScaleJitter": 0.03,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 2.1
+          },
+          "Catalogue": {
+            "Keywords": [
+              "hedge",
+              "clipped hedge",
+              "privet",
+              "beech",
+              "boundary",
+              "screen"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Ligustrum or Fagus"
+          },
+          "Factory": {
+            "StageSeed": 1778371068,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:54",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 10.562,
+              "Target": [
+                0.052,
+                0.893,
+                0.02
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2001",
+          "Folder": "07__VegetationElements/NPR_07_2001__Topiary__BoxBall__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "200",
+            "Item": 1,
+            "Name": "BoxBall",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Topiary__BoxBall__Var-01",
+            "DisplayName": "Box ball",
+            "Description": "A clipped box ball, dark and dense - one each side of the garden gate."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2001__DAT__VegetationElements__Topiary__BoxBall__Var-01__.json",
+              "Present": true,
+              "Bytes": 4805
+            },
+            "MOD": {
+              "File": "NPR_07_2001__MOD__VegetationElements__Topiary__BoxBall__Var-01__.glb",
+              "Present": true,
+              "Bytes": 30216
+            },
+            "SKP": {
+              "File": "NPR_07_2001__SKP__VegetationElements__Topiary__BoxBall__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2001__PXY__VegetationElements__Topiary__BoxBall__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6688
+            },
+            "RND": {
+              "File": "NPR_07_2001__RND__VegetationElements__Topiary__BoxBall__Var-01__.webp",
+              "Present": true,
+              "Bytes": 36688
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.95,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+              "Min": [
+                -0.402,
+                0.123,
+                -0.295
+              ],
+              "Max": [
+                0.384,
+                0.951,
+                0.369
+              ],
+              "Size": [
+                0.786,
+                0.828,
+                0.664
+              ],
+              "RadiusM": 0.66
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.75,
+              "HeightM": 0.95,
+              "Masses": 5
+            },
+            "Kind": "Shrub",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+          },
+          "Catalogue": {
+            "Keywords": [
+              "box",
+              "buxus",
+              "topiary",
+              "ball",
+              "clipped",
+              "evergreen",
+              "formal"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+          },
+          "Factory": {
+            "StageSeed": 2105648377,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:55",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.412,
+              "Target": [
+                -0.009,
+                0.537,
+                0.037
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2011",
+          "Folder": "07__VegetationElements/NPR_07_2011__Topiary__BoxCone__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "201",
+            "Item": 1,
+            "Name": "BoxCone",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Topiary__BoxCone__Var-01",
+            "DisplayName": "Box cone",
+            "Description": "A clipped box cone: broad at the foot and pointed at the top, drawn with the clipped hedge's firm outline."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2011__DAT__VegetationElements__Topiary__BoxCone__Var-01__.json",
+              "Present": true,
+              "Bytes": 4766
+            },
+            "MOD": {
+              "File": "NPR_07_2011__MOD__VegetationElements__Topiary__BoxCone__Var-01__.glb",
+              "Present": true,
+              "Bytes": 76300
+            },
+            "SKP": {
+              "File": "NPR_07_2011__SKP__VegetationElements__Topiary__BoxCone__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2011__PXY__VegetationElements__Topiary__BoxCone__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6914
+            },
+            "RND": {
+              "File": "NPR_07_2011__RND__VegetationElements__Topiary__BoxCone__Var-01__.webp",
+              "Present": true,
+              "Bytes": 27992
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.45,
+            "NominalSpreadM": 0.9,
+            "Bounds": {
+              "Min": [
+                -0.408,
+                -0.063,
+                -0.405
+              ],
+              "Max": [
+                0.421,
+                1.401,
+                0.429
+              ],
+              "Size": [
+                0.829,
+                1.463,
+                0.834
+              ],
+              "RadiusM": 0.939
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Topiary",
+            "Params": {},
+            "Kind": "Hedge",
+            "Material": "Hedge",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.45
+          },
+          "Catalogue": {
+            "Keywords": [
+              "box",
+              "buxus",
+              "topiary",
+              "cone",
+              "pyramid",
+              "clipped",
+              "evergreen",
+              "formal"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+          },
+          "Factory": {
+            "StageSeed": 1687852472,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:56",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 3.762,
+              "Target": [
+                0.007,
+                0.669,
+                0.012
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2501",
+          "Folder": "07__VegetationElements/NPR_07_2501__Perennials__Lavender__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2501",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "250",
+            "Item": 1,
+            "Name": "Lavender",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Lavender__Var-01",
+            "DisplayName": "Lavender",
+            "Description": "A lavender clump: grey-green spikes under purple flower heads - the front border's."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2501__DAT__VegetationElements__Perennials__Lavender__Var-01__.json",
+              "Present": true,
+              "Bytes": 5020
+            },
+            "MOD": {
+              "File": "NPR_07_2501__MOD__VegetationElements__Perennials__Lavender__Var-01__.glb",
+              "Present": true,
+              "Bytes": 30244
+            },
+            "SKP": {
+              "File": "NPR_07_2501__SKP__VegetationElements__Perennials__Lavender__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2501__PXY__VegetationElements__Perennials__Lavender__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6754
+            },
+            "RND": {
+              "File": "NPR_07_2501__RND__VegetationElements__Perennials__Lavender__Var-01__.webp",
+              "Present": true,
+              "Bytes": 36686
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.6,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+              "Min": [
+                -0.4,
+                -0.095,
+                -0.41
+              ],
+              "Max": [
+                0.253,
+                0.546,
+                0.395
+              ],
+              "Size": [
+                0.653,
+                0.64,
+                0.806
+              ],
+              "RadiusM": 0.609
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.75,
+              "HeightM": 0.55,
+              "Masses": 5
+            },
+            "Kind": "Lavender",
+            "Material": "Lavender",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Lavender",
+              "Density": 1.0,
+              "SizeMm": [
+                0.5,
+                0.9
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+          },
+          "Catalogue": {
+            "Keywords": [
+              "lavender",
+              "lavandula",
+              "herb",
+              "purple",
+              "border",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Lavandula angustifolia"
+          },
+          "Factory": {
+            "StageSeed": 2068473362,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:57",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.432,
+              "Target": [
+                -0.074,
+                0.226,
+                -0.007
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2502",
+          "Folder": "07__VegetationElements/NPR_07_2502__Perennials__Lavender__Var-02__",
+          "Identity": {
+            "AssetId": "NPR_07_2502",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "250",
+            "Item": 2,
+            "Name": "Lavender",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Perennials__Lavender__Var-02",
+            "DisplayName": "Lavender, edging",
+            "Description": "A low lavender for path edging: the same plant, smaller and tighter."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2502__DAT__VegetationElements__Perennials__Lavender__Var-02__.json",
+              "Present": true,
+              "Bytes": 5006
+            },
+            "MOD": {
+              "File": "NPR_07_2502__MOD__VegetationElements__Perennials__Lavender__Var-02__.glb",
+              "Present": true,
+              "Bytes": 24488
+            },
+            "SKP": {
+              "File": "NPR_07_2502__SKP__VegetationElements__Perennials__Lavender__Var-02__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2502__PXY__VegetationElements__Perennials__Lavender__Var-02__.webp",
+              "Present": true,
+              "Bytes": 5632
+            },
+            "RND": {
+              "File": "NPR_07_2502__RND__VegetationElements__Perennials__Lavender__Var-02__.webp",
+              "Present": true,
+              "Bytes": 36842
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.45,
+            "NominalSpreadM": 0.65,
+            "Bounds": {
+              "Min": [
+                -0.237,
+                0.023,
+                -0.228
+              ],
+              "Max": [
+                0.266,
+                0.418,
+                0.234
+              ],
+              "Size": [
+                0.503,
+                0.395,
+                0.462
+              ],
+              "RadiusM": 0.394
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.6,
+              "HeightM": 0.42,
+              "Masses": 4
+            },
+            "Kind": "Lavender",
+            "Material": "Lavender",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Lavender",
+              "Density": 0.9,
+              "SizeMm": [
+                0.45,
+                0.8
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.33
+          },
+          "Catalogue": {
+            "Keywords": [
+              "lavender",
+              "lavandula",
+              "edging",
+              "path",
+              "low",
+              "purple"
+            ],
+            "Season": "Summer",
+            "Botanical": "Lavandula angustifolia"
+          },
+          "Factory": {
+            "StageSeed": 1648572328,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:57",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 1.601,
+              "Target": [
+                0.015,
+                0.221,
+                0.003
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2511",
+          "Folder": "07__VegetationElements/NPR_07_2511__Perennials__Hollyhock__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2511",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "251",
+            "Item": 1,
+            "Name": "Hollyhock",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Hollyhock__Var-01",
+            "DisplayName": "Hollyhock",
+            "Description": "A hollyhock: a tall leaning spire of leaves and mixed flowers on one stem - against the cottage wall."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2511__DAT__VegetationElements__Perennials__Hollyhock__Var-01__.json",
+              "Present": true,
+              "Bytes": 4976
+            },
+            "MOD": {
+              "File": "NPR_07_2511__MOD__VegetationElements__Perennials__Hollyhock__Var-01__.glb",
+              "Present": true,
+              "Bytes": 59052
+            },
+            "SKP": {
+              "File": "NPR_07_2511__SKP__VegetationElements__Perennials__Hollyhock__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2511__PXY__VegetationElements__Perennials__Hollyhock__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6480
+            },
+            "RND": {
+              "File": "NPR_07_2511__RND__VegetationElements__Perennials__Hollyhock__Var-01__.webp",
+              "Present": true,
+              "Bytes": 21254
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 2.0,
+            "NominalSpreadM": 0.5,
+            "Bounds": {
+              "Min": [
+                -0.231,
+                0.05,
+                -0.231
+              ],
+              "Max": [
+                0.208,
+                2.039,
+                0.226
+              ],
+              "Size": [
+                0.439,
+                1.99,
+                0.457
+              ],
+              "RadiusM": 1.044
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Spire",
+            "Params": {
+              "HeightM": 2.0
+            },
+            "Kind": "Hollyhock",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Mixed",
+              "Density": 0.7,
+              "SizeMm": [
+                1.0,
+                1.7
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.25
+          },
+          "Catalogue": {
+            "Keywords": [
+              "hollyhock",
+              "alcea",
+              "tall",
+              "spire",
+              "cottage garden",
+              "mixed flowers"
+            ],
+            "Season": "Summer",
+            "Botanical": "Alcea rosea"
+          },
+          "Factory": {
+            "StageSeed": 1649497939,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:58",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 4.635,
+              "Target": [
+                -0.012,
+                1.045,
+                -0.003
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2521",
+          "Folder": "07__VegetationElements/NPR_07_2521__Perennials__Foxglove__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2521",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "252",
+            "Item": 1,
+            "Name": "Foxglove",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Foxglove__Var-01",
+            "DisplayName": "Foxglove",
+            "Description": "A foxglove: a spire of pink bells on a single stem - in the fence border."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2521__DAT__VegetationElements__Perennials__Foxglove__Var-01__.json",
+              "Present": true,
+              "Bytes": 4966
+            },
+            "MOD": {
+              "File": "NPR_07_2521__MOD__VegetationElements__Perennials__Foxglove__Var-01__.glb",
+              "Present": true,
+              "Bytes": 53284
+            },
+            "SKP": {
+              "File": "NPR_07_2521__SKP__VegetationElements__Perennials__Foxglove__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2521__PXY__VegetationElements__Perennials__Foxglove__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6706
+            },
+            "RND": {
+              "File": "NPR_07_2521__RND__VegetationElements__Perennials__Foxglove__Var-01__.webp",
+              "Present": true,
+              "Bytes": 22596
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.7,
+            "NominalSpreadM": 0.45,
+            "Bounds": {
+              "Min": [
+                -0.167,
+                0.049,
+                -0.222
+              ],
+              "Max": [
+                0.249,
+                1.741,
+                0.231
+              ],
+              "Size": [
+                0.417,
+                1.693,
+                0.452
+              ],
+              "RadiusM": 0.9
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Spire",
+            "Params": {
+              "HeightM": 1.7
+            },
+            "Kind": "Foxglove",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Rose",
+              "Density": 0.85,
+              "SizeMm": [
+                0.8,
+                1.3
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.23
+          },
+          "Catalogue": {
+            "Keywords": [
+              "foxglove",
+              "digitalis",
+              "spire",
+              "tall",
+              "pink",
+              "woodland",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Digitalis purpurea"
+          },
+          "Factory": {
+            "StageSeed": 1232864400,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:59",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 3.981,
+              "Target": [
+                0.041,
+                0.895,
+                0.005
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2531",
+          "Folder": "07__VegetationElements/NPR_07_2531__Perennials__Catmint__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2531",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "253",
+            "Item": 1,
+            "Name": "Catmint",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Catmint__Var-01",
+            "DisplayName": "Catmint",
+            "Description": "Catmint: a soft grey-green mound hazed with small blue flowers."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2531__DAT__VegetationElements__Perennials__Catmint__Var-01__.json",
+              "Present": true,
+              "Bytes": 4948
+            },
+            "MOD": {
+              "File": "NPR_07_2531__MOD__VegetationElements__Perennials__Catmint__Var-01__.glb",
+              "Present": true,
+              "Bytes": 87840
+            },
+            "SKP": {
+              "File": "NPR_07_2531__SKP__VegetationElements__Perennials__Catmint__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2531__PXY__VegetationElements__Perennials__Catmint__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6272
+            },
+            "RND": {
+              "File": "NPR_07_2531__RND__VegetationElements__Perennials__Catmint__Var-01__.webp",
+              "Present": true,
+              "Bytes": 35118
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.1,
+            "NominalSpreadM": 1.0,
+            "Bounds": {
+              "Min": [
+                -0.349,
+                0.07,
+                -0.491
+              ],
+              "Max": [
+                0.477,
+                1.043,
+                0.482
+              ],
+              "Size": [
+                0.826,
+                0.972,
+                0.973
+              ],
+              "RadiusM": 0.802
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.95,
+              "HeightM": 1.05,
+              "Masses": 6
+            },
+            "Kind": "Catmint",
+            "Material": "Lavender",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Cornflower",
+              "Density": 0.9,
+              "SizeMm": [
+                0.45,
+                0.8
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.5
+          },
+          "Catalogue": {
+            "Keywords": [
+              "catmint",
+              "nepeta",
+              "blue",
+              "border",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Nepeta"
+          },
+          "Factory": {
+            "StageSeed": 1348941265,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:00",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.992,
+              "Target": [
+                0.064,
+                0.557,
+                -0.005
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2541",
+          "Folder": "07__VegetationElements/NPR_07_2541__Perennials__Chamomile__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2541",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "254",
+            "Item": 1,
+            "Name": "Chamomile",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Chamomile__Var-01",
+            "DisplayName": "Chamomile",
+            "Description": "Chamomile: a feathery deep green mound starred with white daisies."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2541__DAT__VegetationElements__Perennials__Chamomile__Var-01__.json",
+              "Present": true,
+              "Bytes": 4989
+            },
+            "MOD": {
+              "File": "NPR_07_2541__MOD__VegetationElements__Perennials__Chamomile__Var-01__.glb",
+              "Present": true,
+              "Bytes": 30248
+            },
+            "SKP": {
+              "File": "NPR_07_2541__SKP__VegetationElements__Perennials__Chamomile__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2541__PXY__VegetationElements__Perennials__Chamomile__Var-01__.webp",
+              "Present": true,
+              "Bytes": 7104
+            },
+            "RND": {
+              "File": "NPR_07_2541__RND__VegetationElements__Perennials__Chamomile__Var-01__.webp",
+              "Present": true,
+              "Bytes": 44942
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.0,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+              "Min": [
+                -0.361,
+                0.11,
+                -0.41
+              ],
+              "Max": [
+                0.221,
+                0.957,
+                0.407
+              ],
+              "Size": [
+                0.582,
+                0.847,
+                0.817
+              ],
+              "RadiusM": 0.657
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.75,
+              "HeightM": 0.95,
+              "Masses": 5
+            },
+            "Kind": "Chamomile",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Chamomile",
+              "Density": 1.1,
+              "SizeMm": [
+                0.8,
+                1.25
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+          },
+          "Catalogue": {
+            "Keywords": [
+              "chamomile",
+              "daisy",
+              "white flowers",
+              "border",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Chamaemelum nobile"
+          },
+          "Factory": {
+            "StageSeed": 522625814,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:01",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.352,
+              "Target": [
+                -0.07,
+                0.534,
+                -0.002
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_2551",
+          "Folder": "07__VegetationElements/NPR_07_2551__Perennials__Calendula__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_2551",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "255",
+            "Item": 1,
+            "Name": "Calendula",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Calendula__Var-01",
+            "DisplayName": "Calendula",
+            "Description": "Calendula: a bright mound of pot marigolds, orange flowers over light green."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_2551__DAT__VegetationElements__Perennials__Calendula__Var-01__.json",
+              "Present": true,
+              "Bytes": 5044
+            },
+            "MOD": {
+              "File": "NPR_07_2551__MOD__VegetationElements__Perennials__Calendula__Var-01__.glb",
+              "Present": true,
+              "Bytes": 30252
+            },
+            "SKP": {
+              "File": "NPR_07_2551__SKP__VegetationElements__Perennials__Calendula__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_2551__PXY__VegetationElements__Perennials__Calendula__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6902
+            },
+            "RND": {
+              "File": "NPR_07_2551__RND__VegetationElements__Perennials__Calendula__Var-01__.webp",
+              "Present": true,
+              "Bytes": 41810
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.95,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+              "Min": [
+                -0.282,
+                0.099,
+                -0.381
+              ],
+              "Max": [
+                0.426,
+                0.892,
+                0.38
+              ],
+              "Size": [
+                0.708,
+                0.793,
+                0.761
+              ],
+              "RadiusM": 0.653
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+              "WidthM": 0.75,
+              "HeightM": 0.9,
+              "Masses": 5
+            },
+            "Kind": "Calendula",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": {
+              "Pigment": "Calendula",
+              "Density": 0.75,
+              "SizeMm": [
+                0.7,
+                1.15
+              ]
+            }
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+          },
+          "Catalogue": {
+            "Keywords": [
+              "calendula",
+              "marigold",
+              "pot marigold",
+              "orange flowers",
+              "border",
+              "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Calendula officinalis"
+          },
+          "Factory": {
+            "StageSeed": 104698455,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:02",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.437,
+              "Target": [
+                0.072,
+                0.496,
+                -0.001
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_3001",
+          "Folder": "07__VegetationElements/NPR_07_3001__Grasses__OrnamentalGrass__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_3001",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Grasses",
+            "TypeBlock": "30",
+            "Family": "300",
+            "Item": 1,
+            "Name": "OrnamentalGrass",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Grasses__OrnamentalGrass__Var-01",
+            "DisplayName": "Ornamental grass",
+            "Description": "An ornamental grass: a low crown and tapering blades arching out and leaning with the wind."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_3001__DAT__VegetationElements__Grasses__OrnamentalGrass__Var-01__.json",
+              "Present": true,
+              "Bytes": 4704
+            },
+            "MOD": {
+              "File": "NPR_07_3001__MOD__VegetationElements__Grasses__OrnamentalGrass__Var-01__.glb",
+              "Present": true,
+              "Bytes": 24508
+            },
+            "SKP": {
+              "File": "NPR_07_3001__SKP__VegetationElements__Grasses__OrnamentalGrass__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_3001__PXY__VegetationElements__Grasses__OrnamentalGrass__Var-01__.webp",
+              "Present": true,
+              "Bytes": 4626
+            },
+            "RND": {
+              "File": "NPR_07_3001__RND__VegetationElements__Grasses__OrnamentalGrass__Var-01__.webp",
+              "Present": true,
+              "Bytes": 38996
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.8,
+            "NominalSpreadM": 1.1,
+            "Bounds": {
+              "Min": [
+                -0.304,
+                -0.06,
+                -0.299
+              ],
+              "Max": [
+                0.305,
+                0.489,
+                0.296
+              ],
+              "Size": [
+                0.608,
+                0.548,
+                0.594
+              ],
+              "RadiusM": 0.506
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Grass",
+            "Params": {},
+            "Kind": "Grass",
+            "Material": "Grass",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.55
+          },
+          "Catalogue": {
+            "Keywords": [
+              "grass",
+              "ornamental grass",
+              "blades",
+              "border",
+              "planter"
+            ],
+            "Season": "Summer"
+          },
+          "Factory": {
+            "StageSeed": 1161675676,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:48:42",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 1.993,
+              "Target": [
+                0.001,
+                0.215,
+                -0.002
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_07_3011",
+          "Folder": "07__VegetationElements/NPR_07_3011__Grasses__Reeds__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_07_3011",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Grasses",
+            "TypeBlock": "30",
+            "Family": "301",
+            "Item": 1,
+            "Name": "Reeds",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Grasses__Reeds__Var-01",
+            "DisplayName": "Reeds",
+            "Description": "Reeds at a margin: a narrow crown and upright blades - at the pond's edge."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_07_3011__DAT__VegetationElements__Grasses__Reeds__Var-01__.json",
+              "Present": true,
+              "Bytes": 4647
+            },
+            "MOD": {
+              "File": "NPR_07_3011__MOD__VegetationElements__Grasses__Reeds__Var-01__.glb",
+              "Present": true,
+              "Bytes": 24456
+            },
+            "SKP": {
+              "File": "NPR_07_3011__SKP__VegetationElements__Grasses__Reeds__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_07_3011__PXY__VegetationElements__Grasses__Reeds__Var-01__.webp",
+              "Present": true,
+              "Bytes": 5406
+            },
+            "RND": {
+              "File": "NPR_07_3011__RND__VegetationElements__Grasses__Reeds__Var-01__.webp",
+              "Present": true,
+              "Bytes": 33080
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.25,
+            "NominalSpreadM": 0.6,
+            "Bounds": {
+              "Min": [
+                -0.295,
+                -0.024,
+                -0.25
+              ],
+              "Max": [
+                0.298,
+                0.787,
+                0.266
+              ],
+              "Size": [
+                0.593,
+                0.811,
+                0.516
+              ],
+              "RadiusM": 0.565
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Reeds",
+            "Params": {},
+            "Kind": "Grass",
+            "Material": "Grass",
+            "Role": "Planting",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.3
+          },
+          "Catalogue": {
+            "Keywords": [
+              "reeds",
+              "rushes",
+              "marginal",
+              "pond",
+              "water",
+              "grass"
+            ],
+            "Season": "Summer",
+            "Botanical": "Phragmites"
+          },
+          "Factory": {
+            "StageSeed": 1546056413,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:03",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.153,
+              "Target": [
+                0.002,
+                0.382,
+                0.008
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_10_0001",
+          "Folder": "10__BoundaryElements/NPR_10_0001__Fences__PicketFencePanel__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_10_0001",
+            "Namespace": "NPR",
+            "Collection": "10",
+            "CollectionName": "BoundaryElements",
+            "Type": "Fences",
+            "TypeBlock": "00",
+            "Family": "000",
+            "Item": 1,
+            "Name": "PicketFencePanel",
+            "Variant": "Var-01",
+            "Stem": "BoundaryElements__Fences__PicketFencePanel__Var-01",
+            "DisplayName": "Picket fence, 2.4 m",
+            "Description": "A 2.4 m panel of white picket fence: posts and caps, two rails behind, pointed pickets in front - the front fence's."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_10_0001__DAT__BoundaryElements__Fences__PicketFencePanel__Var-01__.json",
+              "Present": true,
+              "Bytes": 4730
+            },
+            "MOD": {
+              "File": "NPR_10_0001__MOD__BoundaryElements__Fences__PicketFencePanel__Var-01__.glb",
+              "Present": true,
+              "Bytes": 25072
+            },
+            "SKP": {
+              "File": "NPR_10_0001__SKP__BoundaryElements__Fences__PicketFencePanel__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_10_0001__PXY__BoundaryElements__Fences__PicketFencePanel__Var-01__.webp",
+              "Present": true,
+              "Bytes": 12044
+            },
+            "RND": {
+              "File": "NPR_10_0001__RND__BoundaryElements__Fences__PicketFencePanel__Var-01__.webp",
+              "Present": true,
+              "Bytes": 28394
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.08,
+            "NominalSpreadM": 2.5,
+            "Bounds": {
+              "Min": [
+                -1.28,
+                0,
+                -0.09
+              ],
+              "Max": [
+                1.28,
+                1.08,
+                0.07
+              ],
+              "Size": [
+                2.56,
+                1.08,
+                0.16
+              ],
+              "RadiusM": 1.392
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "PicketFence",
+            "Params": {},
+            "Kind": null,
+            "Material": "WhitePaint",
+            "Role": "Context",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Camera",
+            "ScaleJitter": 0,
+            "NewShapeEachPlop": false,
+            "MinSpacingM": 1.25
+          },
+          "Catalogue": {
+            "Keywords": [
+              "fence",
+              "picket fence",
+              "white fence",
+              "boundary",
+              "panel",
+              "gate"
+            ],
+            "Season": "AllYear"
+          },
+          "Factory": {
+            "StageSeed": 1828345726,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:04",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 6.013,
+              "Target": [
+                0,
+                0.54,
+                -0.01
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_25_0001",
+          "Folder": "25__GardenFurniture/NPR_25_0001__Seating__GardenBench__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_25_0001",
+            "Namespace": "NPR",
+            "Collection": "25",
+            "CollectionName": "GardenFurniture",
+            "Type": "Seating",
+            "TypeBlock": "00",
+            "Family": "000",
+            "Item": 1,
+            "Name": "GardenBench",
+            "Variant": "Var-01",
+            "Stem": "GardenFurniture__Seating__GardenBench__Var-01",
+            "DisplayName": "Garden bench",
+            "Description": "A weathered timber garden bench: seat, back and four legs, turned to face the view when placed - the bench by the pond."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_25_0001__DAT__GardenFurniture__Seating__GardenBench__Var-01__.json",
+              "Present": true,
+              "Bytes": 4646
+            },
+            "MOD": {
+              "File": "NPR_25_0001__MOD__GardenFurniture__Seating__GardenBench__Var-01__.glb",
+              "Present": true,
+              "Bytes": 6600
+            },
+            "SKP": {
+              "File": "NPR_25_0001__SKP__GardenFurniture__Seating__GardenBench__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_25_0001__PXY__GardenFurniture__Seating__GardenBench__Var-01__.webp",
+              "Present": true,
+              "Bytes": 7734
+            },
+            "RND": {
+              "File": "NPR_25_0001__RND__GardenFurniture__Seating__GardenBench__Var-01__.webp",
+              "Present": true,
+              "Bytes": 38486
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.82,
+            "NominalSpreadM": 0.9,
+            "Bounds": {
+              "Min": [
+                -0.425,
+                0,
+                -0.21
+              ],
+              "Max": [
+                0.425,
+                0.82,
+                0.21
+              ],
+              "Size": [
+                0.85,
+                0.82,
+                0.42
+              ],
+              "RadiusM": 0.627
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Bench",
+            "Params": {},
+            "Kind": null,
+            "Material": "Timber",
+            "Role": "Furniture",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Camera",
+            "ScaleJitter": 0,
+            "NewShapeEachPlop": false,
+            "MinSpacingM": 0.45
+          },
+          "Catalogue": {
+            "Keywords": [
+              "bench",
+              "seat",
+              "garden bench",
+              "timber",
+              "furniture"
+            ],
+            "Season": "AllYear"
+          },
+          "Factory": {
+            "StageSeed": 232774736,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:05",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.253,
+              "Target": [
+                0,
+                0.41,
+                0
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        },
+        {
+          "AssetId": "NPR_25_1001",
+          "Folder": "25__GardenFurniture/NPR_25_1001__PlantersAndPots__TerracottaPlanter__Var-01__",
+          "Identity": {
+            "AssetId": "NPR_25_1001",
+            "Namespace": "NPR",
+            "Collection": "25",
+            "CollectionName": "GardenFurniture",
+            "Type": "PlantersAndPots",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 1,
+            "Name": "TerracottaPlanter",
+            "Variant": "Var-01",
+            "Stem": "GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01",
+            "DisplayName": "Terracotta planter",
+            "Description": "A flared terracotta planter of ornamental grass - the pair either side of the cottage step."
+          },
+          "Files": {
+            "DAT": {
+              "File": "NPR_25_1001__DAT__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.json",
+              "Present": true,
+              "Bytes": 4782
+            },
+            "MOD": {
+              "File": "NPR_25_1001__MOD__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.glb",
+              "Present": true,
+              "Bytes": 29972
+            },
+            "SKP": {
+              "File": "NPR_25_1001__SKP__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.skp",
+              "Present": false,
+              "Bytes": null
+            },
+            "PXY": {
+              "File": "NPR_25_1001__PXY__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.webp",
+              "Present": true,
+              "Bytes": 6204
+            },
+            "RND": {
+              "File": "NPR_25_1001__RND__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.webp",
+              "Present": true,
+              "Bytes": 34908
+            }
+          },
+          "Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.15,
+            "NominalSpreadM": 0.9,
+            "Bounds": {
+              "Min": [
+                -0.313,
+                0,
+                -0.317
+              ],
+              "Max": [
+                0.299,
+                0.956,
+                0.295
+              ],
+              "Size": [
+                0.613,
+                0.956,
+                0.612
+              ],
+              "RadiusM": 0.645
+            }
+          },
+          "Painterly": {
+            "Source": "Procedural",
+            "Generator": "Planter",
+            "Params": {},
+            "Kind": null,
+            "Material": "Terracotta",
+            "Role": "Furniture",
+            "Flowers": null
+          },
+          "Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.05,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.45
+          },
+          "Catalogue": {
+            "Keywords": [
+              "planter",
+              "pot",
+              "terracotta",
+              "grass",
+              "container",
+              "step"
+            ],
+            "Season": "Summer"
+          },
+          "Factory": {
+            "StageSeed": 895728437,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:06",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+              "Mode": "Perspective",
+              "Yaw": 28,
+              "Pitch": 9,
+              "Distance": 2.507,
+              "Target": [
+                -0.007,
+                0.478,
+                -0.011
+              ],
+              "FovY": 30,
+              "HalfHeight": 10,
+              "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+          }
+        }
+      ]
+    }
+  }
+}

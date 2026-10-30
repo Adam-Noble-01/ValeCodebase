@@ -1,0 +1,104 @@
+{
+    "PainterlyNPR__PassViewer__Config" : {
+        "PainterlyNPR__PassViewer__Config__Meta"  : {
+            "ConfigLabel"   : "PainterlyNPR - Buffer Views",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Every buffer the pass viewer can show. Id is the view shader's switch; every pass shows its first view as its thumbnail.",
+            "ReadBy"        : "02__Src__AppModules/81__Hud__PassViewer/PainterlyNPR__PassViewer__ViewList__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__PassViewer__Config__Views" : {
+            "Views" : {
+                "Final"        : {
+                    "Id"    : 0,
+                    "Label" : "Final composite"
+                },
+                "Albedo"       : {
+                    "Id"    : 1,
+                    "Label" : "Albedo - restrained source colour"
+                },
+                "Normals"      : {
+                    "Id"    : 2,
+                    "Label" : "View normals"
+                },
+                "WorldNormals" : {
+                    "Id"    : 21,
+                    "Label" : "World normals - the way each surface faces in the scene, whatever the camera: +x red, up green, +z (out of the cottage front) blue; their opposites go dark"
+                },
+                "Depth"        : {
+                    "Id"    : 3,
+                    "Label" : "Depth"
+                },
+                "ObjectId"     : {
+                    "Id"    : 4,
+                    "Label" : "Object ID"
+                },
+                "Material"     : {
+                    "Id"    : 5,
+                    "Label" : "Material class"
+                },
+                "Light"        : {
+                    "Id"    : 6,
+                    "Label" : "Light and shadow"
+                },
+                "Field"        : {
+                    "Id"    : 7,
+                    "Label" : "Art direction field - presence, points"
+                },
+                "Regions"      : {
+                    "Id"    : 8,
+                    "Label" : "Loosened wash masks (hatched: shadow glaze)"
+                },
+                "Distance"     : {
+                    "Id"    : 9,
+                    "Label" : "Distance to the nearest wash edge (1 mm bands)"
+                },
+                "Paper"        : {
+                    "Id"    : 10,
+                    "Label" : "Paper relief"
+                },
+                "Wash"         : {
+                    "Id"    : 11,
+                    "Label" : "Pigment washes, no ink"
+                },
+                "Ink"          : {
+                    "Id"    : 12,
+                    "Label" : "Ink layer on paper"
+                },
+                "Lines"        : {
+                    "Id"    : 13,
+                    "Label" : "Line candidates - ink primary, terracotta secondary, ochre tertiary, blue optional, green organic; grey hidden, magenta simplified away"
+                },
+                "Accents"      : {
+                    "Id"    : 14,
+                    "Label" : "Accent layer - picked bricks and tiles (brick red), flowers (rose, lavender, cream, calendula, chamomile, cornflower)"
+                },
+                "Indication"   : {
+                    "Id"    : 15,
+                    "Label" : "Material indication - every joint the pattern lays (grey), the ones drawn (brick red), lost to the paper (magenta)"
+                },
+                "LineField"    : {
+                    "Id"    : 16,
+                    "Label" : "Line field - heavier (ink) and lighter (white), break-up (terracotta), hatching (violet), detail kept (blue) or suppressed (magenta)"
+                },
+                "ShadowLines"  : {
+                    "Id"    : 17,
+                    "Label" : "Shadow lines - the marker strokes beside each reveal and glazing bar, on the side away from the sun"
+                },
+                "Clouds"       : {
+                    "Id"    : 18,
+                    "Label" : "Volumetric clouds - the cloud buffer of 63__Atmos__VolumetricClouds: sunlit white, shaded grey, clear sky blue"
+                },
+                "CloudMasses"  : {
+                    "Id"    : 20,
+                    "Label" : "Cloud masses - the cloud buffer simplified into the shapes the wash paints (a Kuwahara on the buffer, never the picture): sunlit white, shaded grey"
+                },
+                "Kuwahara"     : {
+                    "Id"    : 19,
+                    "Label" : "Kuwahara filter - the main watercolour settled by 57__Wash__KuwaharaFilter, before the embellishments (flowers, picked units, shadow lines) and the ink go over it"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "Name": "PainterlyNPR - Volumetric Clouds",
+    "Version": "1.0.0",
+    "Quality": {
+        "Scale": 0.5,
+        "Steps": 64,
+        "LightSteps": 6,
+        "ShapeSize": 64,
+        "DetailSize": 32,
+        "MaxMarchKm": 42,
+        "SoftenTexels": 1.6
+    },
+    "Planet": {
+        "RadiusKm": 6371
+    },
+    "PerspectiveSky": {
+        "Lift": 4.0
+    },
+    "ElevationSky": {
+        "EyeHeightM": 1.6,
+        "TopDeg": 12,
+        "Lift": 1.6
+    },
+    "Ranges": {
+        "Coverage":    { "Min": 0,    "Max": 1,    "Step": 0.01 },
+        "BaseKm":      { "Min": 0.4,  "Max": 6,    "Step": 0.05 },
+        "ThicknessKm": { "Min": 0.1,  "Max": 4,    "Step": 0.05 },
+        "ScaleKm":     { "Min": 0.4,  "Max": 8,    "Step": 0.05 },
+        "Density":     { "Min": 0.1,  "Max": 3,    "Step": 0.01 },
+        "Erosion":     { "Min": 0,    "Max": 1,    "Step": 0.01 },
+        "DriftKm":     { "Min": -40,  "Max": 40,   "Step": 0.1 },
+        "WindDeg":     { "Min": 0,    "Max": 360,  "Step": 1 }
+    },
+    "DefaultPreset": "FairWeather",
+    "Presets": {
+        "Clear": {
+            "Label": "Clear sky",
+            "Coverage": 0, "BaseKm": 1.0, "ThicknessKm": 0.9, "ScaleKm": 2.0, "Density": 1.0, "Erosion": 0.55, "WindDeg": 60, "DriftKm": 0,
+            "Profile": [0.06, 0.35, 1.0, 0.5]
+        },
+        "FairWeather": {
+            "Label": "Fair-weather cumulus",
+            "Coverage": 0.45, "BaseKm": 1.0, "ThicknessKm": 0.9, "ScaleKm": 2.0, "Density": 1.0, "Erosion": 0.55, "WindDeg": 60, "DriftKm": 0,
+            "Profile": [0.06, 0.35, 1.0, 0.5]
+        },
+        "Cumulus": {
+            "Label": "Building cumulus",
+            "Coverage": 0.4, "BaseKm": 1.2, "ThicknessKm": 2.0, "ScaleKm": 3.2, "Density": 1.1, "Erosion": 0.45, "WindDeg": 60, "DriftKm": 0,
+            "Profile": [0.05, 0.45, 1.0, 0.7]
+        },
+        "Stratocumulus": {
+            "Label": "Stratocumulus",
+            "Coverage": 0.62, "BaseKm": 0.9, "ThicknessKm": 0.55, "ScaleKm": 2.6, "Density": 0.85, "Erosion": 0.35, "WindDeg": 60, "DriftKm": 0,
+            "Profile": [0.18, 0.4, 1.0, 0.2]
+        },
+        "HighPuffs": {
+            "Label": "High puffs (altocumulus)",
+            "Coverage": 0.5, "BaseKm": 3.6, "ThicknessKm": 0.4, "ScaleKm": 1.0, "Density": 0.65, "Erosion": 0.7, "WindDeg": 60, "DriftKm": 0,
+            "Profile": [0.2, 0.3, 1.0, 0.0]
+        }
+    }
+}

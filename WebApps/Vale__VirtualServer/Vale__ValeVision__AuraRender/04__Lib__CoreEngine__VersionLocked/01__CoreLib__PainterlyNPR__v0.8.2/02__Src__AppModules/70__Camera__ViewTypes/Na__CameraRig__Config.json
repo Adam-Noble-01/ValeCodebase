@@ -1,0 +1,78 @@
+{
+    "PainterlyNPR__CameraRig__Config" : {
+        "PainterlyNPR__CameraRig__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - Camera Presets",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Three perspectives and two elevations, and how far the zoom goes.",
+            "ReadBy"        : "02__Src__AppModules/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Presets__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__CameraRig__Config__Cameras" : {
+            "Note"    : "The elevations are orthographic with a half-height of 10 m: 20 m on the 200 mm sheet, so 1:100 exactly. Ceiling is the view profile's limit on the Drawing Discipline: a measured elevation may be drawn with a natural pen, never a loose one. Zoom is how far in and out the wheel goes.",
+            "Presets" : {
+                "ThreeQuarter"      : {
+                    "Label"      : "Three-quarter",
+                    "Mode"       : "Perspective",
+                    "Yaw"        : 26,
+                    "Pitch"      : 9,
+                    "Distance"   : 40,
+                    "Target"     : [0.4, 2.9, 2.8],
+                    "FovY"       : 30,
+                    "HalfHeight" : 10,
+                    "Ceiling"    : 1
+                },
+                "GardenCorner"      : {
+                    "Label"      : "Garden corner",
+                    "Mode"       : "Perspective",
+                    "Yaw"        : -34,
+                    "Pitch"      : 12,
+                    "Distance"   : 37,
+                    "Target"     : [-0.6, 2.7, 2.4],
+                    "FovY"       : 30,
+                    "HalfHeight" : 10,
+                    "Ceiling"    : 1
+                },
+                "DownThePath"       : {
+                    "Label"      : "Down the path",
+                    "Mode"       : "Perspective",
+                    "Yaw"        : 4,
+                    "Pitch"      : 5.5,
+                    "Distance"   : 31,
+                    "Target"     : [0, 2.7, 3.6],
+                    "FovY"       : 32,
+                    "HalfHeight" : 10,
+                    "Ceiling"    : 1
+                },
+                "MeasuredElevation" : {
+                    "Label"      : "Measured elevation · 1:100",
+                    "Mode"       : "Ortho",
+                    "Yaw"        : 0,
+                    "Pitch"      : 0,
+                    "Distance"   : 60,
+                    "Target"     : [0, 4.6, 0],
+                    "FovY"       : 30,
+                    "HalfHeight" : 10,
+                    "Ceiling"    : 0.33
+                },
+                "ConceptElevation"  : {
+                    "Label"      : "Concept elevation",
+                    "Mode"       : "Ortho",
+                    "Yaw"        : 0,
+                    "Pitch"      : 0,
+                    "Distance"   : 60,
+                    "Target"     : [0, 4.6, 0],
+                    "FovY"       : 30,
+                    "HalfHeight" : 10,
+                    "Ceiling"    : 1
+                }
+            },
+            "Zoom"    : {
+                "MinDistance"   : 8,
+                "MaxDistance"   : 90,
+                "MinHalfHeight" : 3,
+                "MaxHalfHeight" : 24
+            }
+        }
+    }
+}

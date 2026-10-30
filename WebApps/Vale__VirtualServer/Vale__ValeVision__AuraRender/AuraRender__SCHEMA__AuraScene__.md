@@ -68,12 +68,15 @@ ValeProjects__<year>\<id>\
 
 | Folder | Lane (from its name) | Written by | Read by the page through |
 |---|---|---|---|
-| `Content__AuraScene__ModelFiles` | Heavy content | The AURA API's import, on the server | nginx, behind the library gate (to add) |
-| `Content__AuraScene__AssetFiles` | Heavy content | The AURA API, when a drawing set is saved with an asset not stored yet | nginx, behind the library gate (to add) |
+| `Content__AuraScene__ModelFiles` | Heavy content | The AURA API's import, on the server | nginx, behind the library gate |
+| `Content__AuraScene__AssetFiles` | Heavy content | The AURA API, when a drawing set is saved with an asset not stored yet | nginx, behind the library gate |
 | `UserData__AuraScene` | User data: collected, never pushed | The AURA API: the import, a re-import, an asset stored (with `_rev`) | The API only (nginx denies `UserData__*`) |
 
 - The lanes come from the names (the sync map's LanePatterns), all the way down. Both content folders are written on
-  the server, so they join `ServerMadeContent` as Theia's videos did: every Collect brings them to the PC.
+  the server, so they are in the sync map's `ServerMadeContent` (since 30-Oct-2026), as Theia's videos are: every
+  Collect brings the server's copies to the PC, and a forced push never overwrites them. One gap: a file a re-import
+  drops on the server comes back from the PC's copy on the next push (the Server Manager pushes any PC-only content);
+  AURA reads only the files its scene lists, so it sits unused until the PC's copy is deleted.
 - Git already ignores every library `Content__*` and `UserData__*` folder; the schema project's `UserData__` examples
   stay tracked.
 - An example or mock-up for a project is built in that project's own folder, in this style (Adam, 30-Oct-2026).
@@ -233,9 +236,9 @@ origin.
   drawing set is saved with an asset the project has not stored yet, the API copies its MOD and DAT into
   `Content__AuraScene__AssetFiles` and adds its `AuraScene__AssetFiles` record.
 - **The Materials tab** (AURA 0.4.0): writes `Settings.Materials`, unchanged; `#Id` means a scene object.
-- **The engine:** PainterlyNPR builds its scene in code today (the demo cottage). Building one from GLBs is new engine
-  work, and it belongs in PainterlyNPR (`10__Import__ScenePackage`, whose README already names GLB geometry), synced
-  into AURA as a new pinned version: nothing in AURA edits the engine.
+- **The engine:** PainterlyNPR builds its scene from these GLBs since v0.8.7 (`10__Import__ScenePackage`'s Glb
+  module, handed the scene by Build's `SetBase`); a project with no whitecard still draws the demo cottage. The work
+  lives in PainterlyNPR and reaches AURA as a pinned version: nothing in AURA edits the engine.
 
 ---
 
@@ -258,18 +261,18 @@ origin.
 - **AURA** (`10__System__EngineHost/Na__EngineHost__Scene__.js`, called by AuraApp before anything is drawn): reads the
   scene, makes it the first time a project with a whitecard opens, fetches its files and hands the engine its base; a
   note offers **Update the scene** when ValeVision 3D's whitecard is newer.
+- **The sync map:** `Content__AuraScene__ModelFiles` and `Content__AuraScene__AssetFiles` in `ServerMadeContent`, so
+  every Collect brings the server's copies to the PC (see The Project Folder).
 
 ## To Build Next
 
 1. **Storing an asset** when a drawing set is saved with one the project has not stored (its MOD and DAT into
    `Content__AuraScene__AssetFiles`); the pin carries the library's `.json` and `.webp` but no `.glb`, so the 26 MOD
    `.glb` files (3.0 MB) are pinned first.
-2. **The sync map:** `Content__AuraScene__ModelFiles` and `Content__AuraScene__AssetFiles` into `ServerMadeContent`, so
-   every Collect brings the server's copies to the PC.
-3. **The library gate, AURA's own:** live since 30-Oct-2026 16:18 UTC through the `valevision` route (signed-in staff,
+2. **The library gate, AURA's own:** live since 30-Oct-2026 16:18 UTC through the `valevision` route (signed-in staff,
    nginx `607291531112`). Once AURA's API answers `library-access` (Managers and App Admins, project switched on), the
    three folders move to the `aura` route.
-4. **Saving the scene from the page** (`PUT api/projects/<id>/scene`), once the page edits it (the model placement, an
+3. **Saving the scene from the page** (`PUT api/projects/<id>/scene`), once the page edits it (the model placement, an
    object's class).
 
 ---

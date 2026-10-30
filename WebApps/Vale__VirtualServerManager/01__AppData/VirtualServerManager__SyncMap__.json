@@ -92,7 +92,9 @@
         ]
     },
     "ServerMadeContent": [
-        "ValeVision__TheiaVideo"
+        "ValeVision__TheiaVideo",
+        "Content__AuraScene__ModelFiles",
+        "Content__AuraScene__AssetFiles"
     ],
     "Mappings": [
         {

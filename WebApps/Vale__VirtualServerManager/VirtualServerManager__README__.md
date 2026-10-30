@@ -79,7 +79,8 @@ way down.
 | **Project data** | **both ways** | **Newer wins either way.** Push sends the PC's newer copy; Collect brings the server's. Never deleted | The project library's default: `ProjectData__<code>__<Name>__.json`, written by both the PC tools and the apps |
 
 **Content made on the server** (`ServerMadeContent` in the sync map, folder names; since 0.8.0
-`ValeVision__TheiaVideo`): ValeVision Theia writes its videos and posters into `Content__` folders on
+`ValeVision__TheiaVideo`, and since 30-Oct-2026 AURA's `Content__AuraScene__ModelFiles` and
+`Content__AuraScene__AssetFiles`, which its API writes): ValeVision Theia writes its videos and posters into `Content__` folders on
 the server, so the PC never has them first. Content under such a folder stays in the heavy-content
 lane (a newer PC copy still pushes), but a server-only or server-newer file is **collected by every
 Collect**, with no *Collect with content* tick. It shows as ↓ "made on the server: collect" on the

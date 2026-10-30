@@ -1,5 +1,59 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.4, 30-Oct-2026: AURA Draws the Project's Own Model (the Whitecard From ValeVision 3D)
+
+**Asked by Adam:** "We need to update Aura so it can now load the Whitecard model from ValeVision or (SketchUp
+Eventually) ... This first method of creating an aura file should copy all GLB files accross and make them avaiblible
+to Auras tools", then, when the scene file was codified but AURA still drew the demo cottage: "You didnt finish the task
+FFS STOP GIVING UP".
+
+**Built:**
+- **The engine draws a GLB model** (PainterlyNPR v0.8.7, a915620, pinned here as `01__CoreLib__PainterlyNPR__v0.8.7`, the
+  import map moved to it; nothing copied into AURA): `10__Import__ScenePackage`'s new Glb module reads GLB files and
+  builds them in the cottage's place (`SetBase`), objects in the scene file's Id order with their category, material
+  class and role; the pen's hard edges from each mesh file's linework twin (SketchUp's own edges, node for node), smooth
+  silhouette edges from the mesh; the sun's square and the wash's footprint from the buildings; the lawn just under the
+  site's own ground. Placed assets and given materials (0.4.0's drawer) build on top of it, and every rebuild keeps it.
+  The demo cottage is byte for byte what v0.8.5 drew.
+- **The API** (`Server__Api/Api__ValeVision__AuraRender/AuraRender__Api__Scene__.py` 1.0.0, in `wsgi.py`):
+  `GET api/projects/<id>/scene` (the scene and its _rev, where its model files are served, and whether ValeVision 3D
+  holds a whitecard, and a newer one); `POST api/projects/<id>/scene/import` (method one: every GLB of
+  `ValeVision3D/Content__3dModel__GlbFiles`, checked against `valeVision_ModelUrls`, copied byte for byte into
+  `Content__AuraScene__ModelFiles` with each copy's SHA-256 checked; a re-import zips the replaced files into
+  `00__Archive`, reads the zip back and only then deletes the older zip, keeps every object's Id and what the scene said
+  of it, marks a gone node missing, and keeps the model placement). One import a project at a time across workers (a
+  library lock); the write is the library writer's, with its _rev check and revisions. The import rules are config:
+  `AuraConfig__SceneImport__Rules`, `__ComponentRules`, `__SkipNodes`.
+- **AURA opens the project's model** (`10__System__EngineHost/Na__EngineHost__Scene__.js` 1.0.0, called by AuraApp
+  after the engine boots and before the 3D Environment and the sheets mount, so nothing is drawn twice): it reads the
+  scene; **the first time a project with a whitecard opens with no scene, the API makes it** (the first method of making
+  an aura file, no button); it fetches the model files from the library (behind the gate: signed-in staff), reads them
+  with the engine's reader and hands the engine its base, the loader counting the megabytes. When ValeVision 3D's
+  whitecard is newer, a note offers **Update the scene** (a re-import, then the page opens again). With no whitecard, an
+  API from before the scene routes or an engine from before the seam, the demo cottage is drawn and a note says why;
+  the build module is read through its namespace and the Glb module imported only when needed, so an older pin still
+  loads.
+- **The worker's cache version** 2026-10-30-11 (an engine sync). `AuraConfig__App__Version` 0.5.4.
+
+**Checked here (no browser):** the engine in Node with its own modules and Thrower's real GLBs and scene file: 17 objects
+with the scene's Ids, 17,314 triangles, 19,414 hard edges from SketchUp's linework and 7,046 smooth ones, built in under
+0.1 s; the cottage byte for byte as the v0.8.5 pin; PainterlyNPR's module test (117 modules, 686 imports). The API with
+Flask's test client in a sandbox copy of Thrower: the first import gives exactly the PC-built scene (Ids and hashes),
+valid against the 1.0.0 contract; after a changed whitecard the scene reports Newer; the re-import keeps every surviving
+Id, marks the gone node missing and appends the new one; the third import leaves one zip; unknown projects 404. Every
+changed module parses; the new module's imports resolve against the v0.8.7 pin.
+
+**Not checked:** a browser (Adam tests): the loader's counts, the first live picture of Thrower, its elevations and roof
+plan, the note for a newer whitecard.
+
+**Not yet:** storing a placed asset's MOD and DAT in `Content__AuraScene__AssetFiles` on a drawing set's save (the pin
+has no `.glb` yet); AURA's own `library-access` (its folders are gated through ValeVision 3D's meanwhile); the sync map's
+`ServerMadeContent` for the two scene content folders; method two (SketchUp's Painterly Scene Package); brick
+indication and window shadow lines on a GLB model (a GLB carries no surfaces).
+
+**Live:** needs `server-api` (the scene API, then a restart of `vale@ValeVision__AuraRender`) and `aura` (this
+version, with the v0.8.7 pin). Thrower's scene is made on the server the first time it opens.
+
 ## Version 0.5.3, 30-Oct-2026: Leaders Leave Beside the First Line
 
 **Asked by Adam** (a screenshot, the leader meeting the left side of the words at their first line ringed): "Ensure

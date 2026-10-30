@@ -63,6 +63,7 @@
     import { Na__Api__Get } from '../03__AppUtils/Na__AppUtils__ApiClient__.js';
     import { Na__Dom__El, Na__Dom__Icon, Na__Dom__Clear } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__EngineHost__Boot, Na__EngineHost__OnChange, Na__EngineHost__Settings, Na__EngineHost__Version } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__SceneNotes, Na__EngineHost__SceneOpen } from '../10__System__EngineHost/Na__EngineHost__Scene__.js';
     import { Na__Environment3d__Mount, Na__Environment3d__Show } from '../11__System__Environment3d/Na__Environment3d__Stage__.js';
     import { Na__Tabs__Mount, Na__Tabs__Open, Na__Tabs__Render, Na__Tabs__FromAddress } from '../20__System__DrawingSheets/Na__DrawingSheets__Tabs__.js';
     import { Na__Workspace__Mount, Na__Workspace__Show } from '../20__System__DrawingSheets/Na__DrawingSheets__Workspace__.js';
@@ -251,6 +252,9 @@
             Na__AppState__Touch('engine');
         });
 
+        Na__Aura__Loader.say('Loading the AURA scene...');
+        const scene = await Na__EngineHost__SceneOpen(projectId, (text) => Na__Aura__Loader.say(text));   // <-- The project's own model in the cottage's place, before anything is drawn (0.5.4)
+
         Na__Environment3d__Mount(document.getElementById('auraEnvironment'), canvas);
         Na__Workspace__Mount(document.getElementById('auraSheets'), () => Na__Tabs__Render());
         Na__Persistence__Start(Na__Aura__SaveState);
@@ -261,6 +265,7 @@
         Na__Tabs__Mount(document.getElementById('auraTabs'), Na__Aura__ShowTab);
         Na__Tabs__Open(Na__Tabs__FromAddress());
         Na__Aura__Loader.hide();
+        Na__EngineHost__SceneNotes(projectId, scene);                            // <-- A newer whitecard, or no scene: a note once the app is up
     }
     // ------------------------------------------------------------
 

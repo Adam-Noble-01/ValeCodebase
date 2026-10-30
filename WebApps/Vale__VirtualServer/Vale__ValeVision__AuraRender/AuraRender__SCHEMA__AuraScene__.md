@@ -6,8 +6,8 @@
   `UserData__AuraScene\PROJECTNUMBER__PROJECTNAME__AuraScene__.json.example`.
 - **The first scene:** Thrower's (`63403__Thrower\ValeVision__AuraRender\`), built 30-Oct-2026 (import 1) and valid
   against the contract; on the PC, not yet on the server (the last section).
-- **Not built yet:** nothing in AURA reads or writes a scene: the API, the engine's GLB scene and the page come next
-  (the last sections).
+- **Built (AURA 0.5.4):** the API makes and reads a project's scene, and AURA draws the project's own model from it (the
+  "Built" section near the end); what is still to come is listed after it.
 
 **Asked by Adam:** "update Aura so it can now load the Whitecard model from ValeVision or (SketchUp Eventually) ...
 This first method of creating an aura file should copy all GLB files accross and make them avaiblible to Auras tools,
@@ -248,20 +248,29 @@ origin.
 - Thrower's scene at 1.0.0, valid against the contract.
 - This doc, AURA's README and DEVLOG, and the skills that describe the library and the wrapper.
 
+## Built (AURA 0.5.4, 30-Oct-2026)
+
+- **The API** (`Server__Api/Api__ValeVision__AuraRender/AuraRender__Api__Scene__.py`): `GET api/projects/<id>/scene`
+  (the scene, its _rev, where its model files are served, and whether ValeVision 3D's whitecard is there and newer) and
+  `POST api/projects/<id>/scene/import` (method one, as "Making a Scene" and "Updating From a Newer Whitecard" above,
+  with the archive's read-back failsafe); the import rules in AURA's config (`AuraConfig__SceneImport__*`).
+- **The engine** (PainterlyNPR v0.8.7, a915620, pinned): `10__Import__ScenePackage`'s Glb module and Build's `SetBase`.
+- **AURA** (`10__System__EngineHost/Na__EngineHost__Scene__.js`, called by AuraApp before anything is drawn): reads the
+  scene, makes it the first time a project with a whitecard opens, fetches its files and hands the engine its base; a
+  note offers **Update the scene** when ValeVision 3D's whitecard is newer.
+
 ## To Build Next
 
-1. **AURA's API:** read and save the scene (`GET` and `PUT api/projects/<id>/scene`, `_rev` checked as the drawing set
-   is, validated against the contract), the import and the re-import with its archive (`POST api/projects/<id>/scene/import`),
-   and storing an asset when a drawing set is saved.
-2. **The sync map:** `Content__AuraScene__ModelFiles` and `Content__AuraScene__AssetFiles` into `ServerMadeContent`.
+1. **Storing an asset** when a drawing set is saved with one the project has not stored (its MOD and DAT into
+   `Content__AuraScene__AssetFiles`); the pin carries the library's `.json` and `.webp` but no `.glb`, so the 26 MOD
+   `.glb` files (3.0 MB) are pinned first.
+2. **The sync map:** `Content__AuraScene__ModelFiles` and `Content__AuraScene__AssetFiles` into `ServerMadeContent`, so
+   every Collect brings the server's copies to the PC.
 3. **The library gate, AURA's own:** live since 30-Oct-2026 16:18 UTC through the `valevision` route (signed-in staff,
    nginx `607291531112`). Once AURA's API answers `library-access` (Managers and App Admins, project switched on), the
    three folders move to the `aura` route.
-4. **The pin:** the engine pin carries the library's `.json` and `.webp` but no `.glb`. The server can store an asset
-   only if the 26 MOD `.glb` files (3.0 MB) are pinned too.
-5. **The engine:** the GLB scene import in PainterlyNPR (instancing the shared meshes), then a sync into AURA, and the
-   host loading the scene.
-6. **Thrower's scene file on the server,** once the API exists (its GLBs are there, gated: the last section).
+4. **Saving the scene from the page** (`PUT api/projects/<id>/scene`), once the page edits it (the model placement, an
+   object's class).
 
 ---
 

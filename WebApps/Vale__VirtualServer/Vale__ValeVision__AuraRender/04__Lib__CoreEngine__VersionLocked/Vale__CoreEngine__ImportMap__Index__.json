@@ -2,14 +2,15 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "30-Oct-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.5/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.7/02__Src__AppModules/"
     },
-    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.5 at aea59fd (v0.8.0 to v0.8.5 committed: the four technical pens, Adam's paper, the Assets drawer seams, the A3 sheet, the folding panel and Page whiteness, with its PainterlyNPR__Paper__Tone), copied from the commit (its lock says WorkingTreeClean true). AURA 0.4.6.",
+    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.7 at a915620 (v0.8.5 with the v0.8.3 follow-up and v0.8.7's GLB scenes: 10__Import__ScenePackage Glb, Build's SetBase, the shadow square from the scene), copied from the commit (its lock says WorkingTreeClean true). AURA 0.5.4: a project's own model through Na__EngineHost__Scene__.",
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Panel__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Assets__.js",
-        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Dump__.js"
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Dump__.js",
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Scene__.js"
     ],
     "AuraRender__CoreEngine__ImportMap__RuntimeNote" : "The pin also holds what the engine reads from outside its modules (12__Data__AssetLibrary, 07__Data__MaterialRecipes, 03__Style__AppStylesheets): the engine finds them from its own files, and the host links its stylesheets from the folder above this prefix."
 }

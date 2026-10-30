@@ -1,0 +1,38 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - SCENE EDITING
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__SceneEditing__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - SceneEditing
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The selection's outline over the sheet, and the sheet's cursor
+ *              while a material's brush is up
+ * CREATED    : 30-Oct-2026 (v0.7.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css.
+ * - The outline is a canvas in the sheet's own pixels, stretched over the
+ *   drawing as the drop marker is; it never takes the pointer.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * SHEET | The Outline, the Brush's Cursor
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__SceneEdit__Highlight {
+        position                           :  absolute;
+        inset                              :  0;
+        width                              :  100%;
+        height                             :  100%;
+        pointer-events                     :  none;
+        image-rendering                    :  auto;
+    }
+
+    .PainterlyNPR--paintingMaterial .PainterlyNPR__Sheet {
+        cursor                             :  cell;                          /* <-- The brush is up: a click gives its class */
+    }
+
+/* #endregion ------------------------------------------------------------------- */

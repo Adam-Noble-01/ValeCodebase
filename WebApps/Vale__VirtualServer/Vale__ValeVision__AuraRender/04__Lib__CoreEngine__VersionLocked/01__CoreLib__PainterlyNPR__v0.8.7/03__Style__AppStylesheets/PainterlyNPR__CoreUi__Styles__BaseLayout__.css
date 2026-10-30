@@ -1,0 +1,244 @@
+/* =============================================================================
+ * PAINTERLYNPR - CORE UI | STYLES - BASE AND LAYOUT
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__CoreUi__Styles__BaseLayout__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : CoreUi - Styles - BaseLayout
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The document, main (with its meta strip) and graph, and the desk with the sheet lifted off it
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: BASE, LAYOUT, STAGE.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * BASE | Reset and Document
+ * ----------------------------------------------------------------------------- */
+
+    *,
+    *::before,
+    *::after {
+        box-sizing                         :  border-box;
+    }
+
+    html,
+    body {
+        margin                             :  0;
+        height                             :  100%;
+        background-color                   :  var(--PainterlyNPR_Desk);
+        color                              :  var(--PainterlyNPR_Ink);
+        font-family                        :  var(--PainterlyNPR_FontStack);
+        font-size                          :  var(--PainterlyNPR_FontSize);
+        line-height                        :  1.45;
+        -webkit-font-smoothing             :  antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font                               :  inherit;
+        color                              :  inherit;
+    }
+
+    [hidden] {
+        display                            :  none !important;               /* <-- A display rule on a class must never outrank hidden */
+    }
+
+    :focus-visible {
+        outline                            :  2px solid var(--PainterlyNPR_Slate);
+        outline-offset                     :  2px;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Main, Meta, Graph
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | The Full-Window Grid */
+    /* ------------------------------------------------------------ */
+    /* One column held at the window's width: the graph strip scrolls inside it,
+       rather than its dozen nodes widening the page. */
+    .PainterlyNPR {
+        display                            :  grid;
+        grid-template-columns              :  minmax(0, 1fr);
+        grid-template-rows                 :  minmax(0, 1fr) auto;
+        height                             :  100vh;
+        overflow                           :  hidden;
+    }
+
+    /* No title bar: the stage spans both rows, so the sheet has the window's
+       full height, and the meta strip sits over the panel in its column. */
+    .PainterlyNPR__Main {
+        display                            :  grid;
+        grid-template-columns              :  minmax(0, 1fr) var(--PainterlyNPR_PanelWidth);
+        grid-template-rows                 :  auto minmax(0, 1fr);
+        column-gap                         :  var(--PainterlyNPR_Gutter);
+        row-gap                            :  8px;
+        padding                            :  10px var(--PainterlyNPR_Gutter) 0;
+        min-height                         :  0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Meta - version, sheet and seed over the panel */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Meta {
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  flex-end;
+        gap                                :  8px;
+        flex-wrap                          :  wrap;
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Meta {
+        display                            :  none;                          /* <-- The folded panel is a 34 px strip: unfold it for the seed */
+    }
+
+    .PainterlyNPR__Tag,
+    .PainterlyNPR__Seed {
+        display                            :  inline-flex;
+        align-items                        :  center;
+        gap                                :  6px;
+        padding                            :  4px 9px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  999px;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+        background                         :  rgba(250, 247, 240, 0.55);
+    }
+
+    .PainterlyNPR__Seed strong {
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-weight                        :  500;
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * STAGE | The Desk and the Sheet
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Stage {
+        grid-column                        :  1;
+        grid-row                           :  1 / -1;                        /* <-- Beside the meta strip and the panel both */
+        display                            :  flex;
+        flex-direction                     :  column;
+        min-width                          :  0;
+        min-height                         :  0;
+    }
+
+    /* The desk is a size container, so the sheet can take the largest 3:2 that fits.
+       Its one track is minmax(0, 1fr): an auto track would size itself to the
+       canvas's 2100 px intrinsic width and push the sheet off the window. */
+    .PainterlyNPR__Desk {
+        flex                               :  1 1 auto;
+        min-height                         :  0;
+        display                            :  grid;
+        grid-template-columns              :  minmax(0, 1fr);
+        grid-template-rows                 :  minmax(0, 1fr);
+        place-items                        :  center;
+        container-type                     :  size;
+        padding                            :  6px;
+    }
+
+    .PainterlyNPR__Sheet {
+        position                           :  relative;
+        width                              :  min(100cqw, calc(var(--PainterlyNPR_SheetAspect, 1.41414) * 100cqh));   /* <-- Boot sets the sheet's shape from the main config: A3, 420 / 297 */
+        aspect-ratio                       :  var(--PainterlyNPR_SheetAspect, 1.41414);
+        background                         :  var(--PainterlyNPR_Paper);
+        box-shadow                         :  var(--PainterlyNPR_SheetShadow);
+        cursor                             :  grab;
+        touch-action                       :  none;                        /* <-- Or the browser takes the drag for scrolling */
+        user-select                        :  none;
+    }
+
+    .PainterlyNPR__Sheet:active {
+        cursor                             :  grabbing;
+    }
+
+    .PainterlyNPR--placing .PainterlyNPR__Sheet {
+        cursor                             :  crosshair;
+    }
+
+    .PainterlyNPR__Sheet__Canvas {
+        display                            :  block;
+        width                              :  100%;
+        height                             :  100%;
+    }
+
+    /* The status line: what the engine did, and what lies under the pointer */
+    .PainterlyNPR__StatusBar {
+        display                            :  flex;
+        justify-content                    :  space-between;
+        gap                                :  var(--PainterlyNPR_Gutter);
+        padding                            :  6px 2px 8px;
+        min-height                         :  30px;
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+        color                              :  var(--PainterlyNPR_InkSoft);
+    }
+
+    .PainterlyNPR__Status {
+        min-width                          :  0;
+    }
+
+    .PainterlyNPR__Hover {
+        flex                               :  none;
+        max-width                          :  48%;
+        text-align                         :  right;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    /* Which buffer the sheet shows, when it is not the drawing */
+    .PainterlyNPR__ViewBadge {
+        position                           :  absolute;
+        top                                :  10px;
+        left                               :  10px;
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  8px;
+        max-width                          :  calc(100% - 20px);
+        padding                            :  5px 6px 5px 11px;
+        border-radius                      :  999px;
+        background                         :  rgba(43, 42, 40, 0.82);
+        color                              :  var(--PainterlyNPR_Cream);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__ViewBadge__Label {
+        opacity                            :  0.7;
+        text-transform                     :  uppercase;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        font-size                          :  10px;
+    }
+
+    .PainterlyNPR__ViewBadge strong {
+        font-weight                        :  600;
+        min-width                          :  0;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__ViewBadge .PainterlyNPR__Button {
+        flex                               :  none;
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+/* #endregion ------------------------------------------------------------------- */

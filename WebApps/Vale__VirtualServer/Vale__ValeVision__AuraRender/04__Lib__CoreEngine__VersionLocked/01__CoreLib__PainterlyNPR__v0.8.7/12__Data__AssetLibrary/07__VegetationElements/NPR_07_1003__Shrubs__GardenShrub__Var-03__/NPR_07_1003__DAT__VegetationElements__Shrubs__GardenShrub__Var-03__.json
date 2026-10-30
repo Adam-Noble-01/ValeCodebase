@@ -1,0 +1,140 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_1003",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Shrubs",
+            "TypeBlock": "10",
+            "Family": "100",
+            "Item": 3,
+            "Name": "GardenShrub",
+            "Variant": "Var-03",
+            "Stem": "VegetationElements__Shrubs__GardenShrub__Var-03",
+            "DisplayName": "Garden shrub, flowering",
+            "Description": "A low flowering shrub, flecked with cream flowers - the one by the front fence."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_1003__Shrubs__GardenShrub__Var-03__",
+            "DAT": {
+                "File": "NPR_07_1003__DAT__VegetationElements__Shrubs__GardenShrub__Var-03__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_1003__MOD__VegetationElements__Shrubs__GardenShrub__Var-03__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_1003__SKP__VegetationElements__Shrubs__GardenShrub__Var-03__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_1003__PXY__VegetationElements__Shrubs__GardenShrub__Var-03__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_1003__RND__VegetationElements__Shrubs__GardenShrub__Var-03__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.95,
+            "NominalSpreadM": 1.3,
+            "Bounds": {
+                "Min": [
+                    -0.6,
+                    -0.087,
+                    -0.744
+                ],
+                "Max": [
+                    0.532,
+                    0.895,
+                    0.69
+                ],
+                "Size": [
+                    1.132,
+                    0.982,
+                    1.434
+                ],
+                "RadiusM": 1.037
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 1.2,
+                "HeightM": 0.9,
+                "Masses": 7
+            },
+            "Kind": "Shrub",
+            "Material": "Foliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Cream",
+                "Density": 0.2,
+                "SizeMm": [
+                    0.6,
+                    1.0
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.65
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "shrub",
+                "bush",
+                "flowering",
+                "cream flowers",
+                "border"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 20605499,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:36:52",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.283,
+                "Target": [
+                    -0.034,
+                    0.404,
+                    -0.027
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

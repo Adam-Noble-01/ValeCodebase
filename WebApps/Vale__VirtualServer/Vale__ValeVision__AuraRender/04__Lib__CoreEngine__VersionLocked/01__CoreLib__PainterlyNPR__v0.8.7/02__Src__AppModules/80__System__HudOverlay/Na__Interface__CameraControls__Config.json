@@ -1,0 +1,16 @@
+{
+    "PainterlyNPR__InterfaceCamera__Config" : {
+        "PainterlyNPR__InterfaceCamera__Config__Meta"  : {
+            "ConfigLabel"   : "PainterlyNPR - The View Lock's Icons",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The padlock beside the zoom: plain when open, a muted red when locked.",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__CameraControls__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__InterfaceCamera__Config__Icons" : {
+            "Closed" : "<svg viewBox=\"0 0 16 18\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"8\" width=\"11\" height=\"8.5\" rx=\"1.6\" fill=\"currentColor\"/><path d=\"M5 8V5.6a3 3 0 0 1 6 0V8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg>",
+            "Open"   : "<svg viewBox=\"0 0 16 18\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"8\" width=\"11\" height=\"8.5\" rx=\"1.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M5 8V5.6a3 3 0 0 1 5.8-1\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>"
+        }
+    }
+}

@@ -3,7 +3,7 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.5.3",
+    "AuraConfig__App__Version"                          : "0.5.4",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked (its modules, and the libraries and stylesheets it reads) and reached only through 02__Src__AppModules/10__System__EngineHost. Nothing of it is copied into AURA: what AURA needs from it is a seam in PainterlyNPR, synced.",
 
@@ -172,6 +172,27 @@
     "AuraConfig__History__SettleMs"                     : 400,
     "AuraConfig__History__TypingSettleMs"               : 1200,
     "AuraConfig__History__SettleNote"                   : "An announced edit becomes a step once nothing more has changed for SettleMs and no pointer button is held, so a drag is one step; in a text box TypingSettleMs, or when the box is left, so a run of typing is one step.",
+    "AuraConfig__SceneImport__Rules"                    : [
+        { "Match": "OrbitHelperCube", "Use": "Ignore", "UseNote": "ValeVision 3D's orbit helper cube: never drawn" },
+        { "Kind": "Linework", "Use": "SourceLinework", "UseNote": "SketchUp's own edges for the mesh twin's objects: the engine's hard edges, node for node (PainterlyNPR 10__Import__ScenePackage, Glb)" },
+        { "Group": "LandscapeEnvironment", "Use": "Draw", "Role": "Ground", "Category": "Ground", "Material": "Lawn" },
+        { "Group": "MainBuildingModel", "VariantStarts": "ExistingRoofs", "Use": "Draw", "Role": "Architecture", "Category": "Roof", "Material": "ClayTile" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Existing", "Use": "Draw", "Role": "Architecture", "Category": "Wall", "Material": "Brick" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "VariantContains": "Roofs", "Use": "Draw", "Role": "Focal", "Category": "Roof", "Material": "Slate" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "VariantContains": "Windows", "Use": "Draw", "Role": "Focal", "Category": "Opening", "Material": "Glass" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "VariantContains": "Doors", "Use": "Draw", "Role": "Focal", "Category": "Opening", "Material": "Joinery" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "VariantContains": "Furniture", "Use": "Draw", "Role": "Focal", "Category": "Furniture", "Material": "Timber" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "VariantContains": "Walls", "Use": "Draw", "Role": "Focal", "Category": "Wall", "Material": "Brick" },
+        { "Group": "MainBuildingModel", "VariantStarts": "Proposed", "Use": "Draw", "Role": "Focal", "Category": "Wall", "Material": "Joinery" },
+        { "Group": "SceneEntourageSilhouette", "Use": "Draw", "Role": "Context", "Category": "Context", "Material": "Render" },
+        { "Use": "Draw", "Role": "Architecture", "Category": "Wall", "Material": "Render" }
+    ],
+    "AuraConfig__SceneImport__ComponentRules"           : [
+        { "Type": "Column", "Category": "Porch", "Material": "Timber", "Role": "Focal" }
+    ],
+    "AuraConfig__SceneImport__SkipNodes"                : "^90_\\d{4}__Note__",
+    "AuraConfig__SceneImport__Note"                     : "How AURA's import (the API: POST api/projects/<id>/scene/import) reads ValeVision 3D's whitecard, by file name (<project>__TrueVision__<Group>__<Variant>__<Kind>Model__.glb): the first rule whose every condition the file meets (Match: in its Id; Kind: Mesh or Linework; Group; VariantStarts; VariantContains) gives its Use (Draw, SourceLinework, Ignore) and its objects' starting Role, Category and material class; a component node's type word (<code>__Column__...) can override those; SkipNodes are TrueVision's drawing notes, never objects. The material is where an object starts: the drawing set's material assignments paint the rest. Provisional values (30-Oct-2026), Adam to set: AuraRender__SCHEMA__AuraScene__.md.",
+
     "AuraConfig__History__ChunkMinChars"                : 512,
     "AuraConfig__History__ChunkNote"                    : "Parts of a step this long or longer (as JSON) are stored once and shared by every step that holds them (03__AppUtils Snapshot Store): a handwritten note's pen paths are kept once, however many steps it is in."
 }

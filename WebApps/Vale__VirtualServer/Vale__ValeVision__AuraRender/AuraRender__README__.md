@@ -55,7 +55,7 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 | The API (Flask) | `Server__Api\Api__ValeVision__AuraRender\wsgi.py`, proxied at `/aura/api/` (systemd `vale@ValeVision__AuraRender`, port 8006) |
 | Config (read by the page through `api/config` and by the API) | `02__Src__AppModules/02__AppData/Na__AppConfig__AuraRender__.json` |
 | A project's drawing set | `Vale__Projects__MasterLibrary\ValeProjects__<year>\<id>\ValeVision__AuraRender\UserData__AuraDrawings\<id>__AuraDrawingSet__.json` (user data: the API only); schema: the `.example` in the schema project |
-| A project's scene (the "aura file": schema 1.0.0, codified 30-Oct-2026; nothing reads it yet) | `...\<id>\ValeVision__AuraRender\UserData__AuraScene\<id>__AuraScene__.json` (user data: the API only), its model files copied from ValeVision 3D's whitecard into `Content__AuraScene__ModelFiles` (a replaced set zipped in `00__Archive`, one zip kept) and the library assets stored in `Content__AuraScene__AssetFiles`; contract `05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json`, rules `AuraRender__SCHEMA__AuraScene__.md`, example in the schema project; the first scene is `63403__Thrower`'s (built 30-Oct-2026; its GLBs on the server, its scene file on the PC until the API exists). The scene's content folders are behind the library gate (signed-in staff, through the `valevision` route's `library-access` until AURA's API answers it) |
+| A project's scene (the "aura file": schema 1.0.0) and its own model (0.5.4) | `...\<id>\ValeVision__AuraRender\UserData__AuraScene\<id>__AuraScene__.json` (user data: the API only), its model files copied from ValeVision 3D's whitecard into `Content__AuraScene__ModelFiles` (a replaced set zipped in `00__Archive`, one zip kept) and the library assets stored in `Content__AuraScene__AssetFiles`; contract `05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json`, rules `AuraRender__SCHEMA__AuraScene__.md`, example in the schema project. Made and read by the API (`AuraRender__Api__Scene__.py`: `GET api/projects/<id>/scene`, `POST api/projects/<id>/scene/import`); loaded into the engine by `10__System__EngineHost/Na__EngineHost__Scene__.js` (PainterlyNPR's GLB scenes, v0.8.7). The content folders are behind the library gate (signed-in staff, through the `valevision` route's `library-access` until AURA's API answers it) |
 | The handwriting engine (WebAssembly, in a Web Worker) | `02__Src__AppModules/31__System__Handwriting/02__Engine__Wasm/` (its own README); built and checked by `60__Dev__WebBuildUtils/AuraRender__BuildUtil__Handwriting*`; the Python it came from is the reference in `01__Engine__PythonReference/` |
 | The handwriting model (15 MB, signed-in staff only) | `Server__Api\Api__ValeVision__AuraRender\Content__AuraHandwritingModel\` (the weights are git-ignored), sent by `api/handwriting/model` and `api/handwriting/weights/<sha256>` |
 
@@ -76,6 +76,11 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 
 ## Using It
 
+- **The project's own model** (0.5.4): AURA draws the project's whitecard, not the engine's demo cottage. The first time a
+  project opens, AURA copies ValeVision 3D's whitecard GLBs into the project's AURA folder (its scene, the "aura file")
+  and draws from that copy, so a later SketchUp sync never changes a finished drawing. When ValeVision 3D has a newer
+  whitecard, a note offers **Update the scene**: objects keep their Ids (and so their materials), the replaced files are
+  zipped. A project with no whitecard in ValeVision 3D still draws the cottage, and a note says so.
 - **3D Environment:** ValeVision 3D's orbit mode, without the helper cube (the engine's `74__Camera__Navigation`).
   Left drag orbits; right drag, or Ctrl or Shift and a left drag, pans; middle drag dollies; the wheel zooms (the
   camera moves; the page never magnifies). One finger orbits, two pinch and pan. W A S D and the arrows move the
@@ -171,11 +176,10 @@ menu). The dev server mounts AURA's API itself. The handwriting needs its model 
 
 ## Not Yet
 
-- A project's own AURA model. Its scene file and folders are codified (schema 1.0.0, `AuraRender__SCHEMA__AuraScene__.md`);
-  not built yet: the API's import from ValeVision 3D's whitecard (method one), reading and saving the scene, storing
-  placed assets, the engine's GLB scene and the page loading it. Method two, ValeVision Cloud Sync's AURA export tab (a
-  Painterly Scene Package into `Content__AuraScenePackages`), comes after. Until then every project draws the engine's
-  demo cottage.
+- For a project's own model (0.5.4 draws it): storing a placed asset's MOD and DAT in the scene's
+  `Content__AuraScene__AssetFiles` (the pin has no `.glb` yet); brick indication and window shadow lines on it (a GLB
+  carries no surfaces); method two, ValeVision Cloud Sync's AURA export tab (a Painterly Scene Package into
+  `Content__AuraScenePackages`).
 - Cross sections and floor plans (the roof plan is a plan from above).
 - PDF and print export of a sheet. Its pictures are already 300 dpi on the paper (`AuraConfig__Viewport__RenderDpi`, AURA 0.4.3).
 - Scaled views larger than the engine's A3 sheet (420 x 297 mm).

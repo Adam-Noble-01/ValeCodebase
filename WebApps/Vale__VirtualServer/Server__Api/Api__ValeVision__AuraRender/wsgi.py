@@ -63,6 +63,7 @@ from ValeShared__Accounts__ import Na__Accounts__Blueprint                      
 from ValeShared__Activity__ import Na__Activity__Blueprint                        # noqa: E402
 from AuraRender__Api__Drawings__ import aura_drawings_api                         # noqa: E402
 from AuraRender__Api__Handwriting__ import aura_handwriting_api                   # noqa: E402
+from AuraRender__Api__Scene__ import aura_scene_api                               # noqa: E402
 
 
 def create_app() -> Flask:
@@ -74,7 +75,7 @@ def create_app() -> Flask:
     app.config['VALE_ACTIVITY_APP'] = 'ValeVision AURA'                           # <-- Its name in the activity ledger
     app.register_blueprint(Na__Accounts__Blueprint, url_prefix='/api/accounts')
     app.register_blueprint(Na__Activity__Blueprint, url_prefix='/api/activity')
-    for bp in (aura_drawings_api, aura_handwriting_api):
+    for bp in (aura_drawings_api, aura_handwriting_api, aura_scene_api):
         app.register_blueprint(bp)
 
     @app.errorhandler(404)

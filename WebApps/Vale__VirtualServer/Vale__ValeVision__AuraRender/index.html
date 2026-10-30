@@ -49,7 +49,7 @@
     <script type="importmap">
     {
         "imports": {
-            "PainterlyNPR/": "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.6.0/02__Src__AppModules/"
+            "PainterlyNPR/": "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.5/02__Src__AppModules/"
         }
     }
     </script>
@@ -88,19 +88,21 @@
 
         <div class="aura-tabs" id="auraTabs" role="tablist" aria-label="3D Environment and drawing sheets" hidden></div>
 
-        <!-- THE 3D ENVIRONMENT | The engine's own canvas (300 x 200 mm at 5 px/mm) with its art direction points over it, its presets, and the resizable panel -->
+        <!-- THE 3D ENVIRONMENT | The engine's own canvas (its A3 sheet, 420 x 297 mm at 5 px/mm: the engine host sets the size from the engine) with its art direction points over it, its scene tabs, and the resizable panel;
+             the engine's own Assets drawer down its left edge (built into the aside by the engine host) -->
         <section class="aura-env" id="auraEnvironment" hidden>
             <div class="aura-toolbar" data-env-toolbar></div>
             <div class="aura-env__body">
+                <aside class="aura-env__assets" data-env-assets aria-label="Assets and materials: trees, plants and furniture to drag into the drawing, materials to give"></aside>
                 <div class="aura-env__stage">
                     <div class="aura-env__sheet" data-env-sheet>
-                        <canvas id="auraEngineCanvas" class="aura-env__canvas" width="1500" height="1000" aria-label="The scene, drawn in pen and wash: drag to orbit, scroll to move nearer or further"></canvas>
+                        <canvas id="auraEngineCanvas" class="aura-env__canvas" width="2100" height="1485" aria-label="The scene, drawn in pen and wash: drag to orbit, scroll to move nearer or further"></canvas>
                     </div>
                     <p class="aura-env__hint">Drag to orbit. Scroll, or press + and -, to move nearer or further. The drawing refines when the camera rests.</p>
                 </div>
                 <div class="aura-column aura-column--right">
                     <div class="aura-grip"></div>
-                    <aside class="aura-panel aura-env__panel" data-env-panel aria-label="Saved views, art direction points and parameters"></aside>
+                    <aside class="aura-panel aura-env__panel" data-env-panel aria-label="Art direction points and parameters"></aside>
                 </div>
             </div>
             <div class="aura-statusbar">

@@ -1,0 +1,343 @@
+/* =============================================================================
+ * PAINTERLYNPR - ART DIRECTION | STYLES - POINT NODE
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__ArtDirection__Styles__PointNode__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : ArtDirection - Styles - PointNode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Selecting and editing a point: the node's own sliders
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: ART DIRECTION.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * ART DIRECTION | Selecting and Editing a Point - the node's own sliders
+ * -----------------------------------------------------------------------------
+ * After DxO's Color Efex Pro: one point is edited at a time. Its ring, size dot
+ * and knob show, and its sliders hang beside it on the sheet; every other point
+ * is a numbered grip with a faint ring. In the panel, one compact row a point,
+ * and only the selected one open.
+ * ----------------------------------------------------------------------------- */
+
+    /* HANDLES | Numbered grips; the selected point's ring, size dot and knob */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Handle .PainterlyNPR__Handle__Ring {
+        opacity                            :  0.32;
+        transition                         :  opacity var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Handle--selected .PainterlyNPR__Handle__Ring,
+    .PainterlyNPR__Handle--hover .PainterlyNPR__Handle__Ring {
+        border-width                       :  2px;
+        opacity                            :  0.95;
+    }
+
+    .PainterlyNPR__Handle__Grip {
+        transition                         :  transform var(--PainterlyNPR_Transition), box-shadow var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Handle--selected .PainterlyNPR__Handle__Grip {
+        transform                          :  translate(-50%, -50%) scale(1.18);
+        background                         :  var(--PainterlyNPR_PointColour);
+        color                              :  var(--PainterlyNPR_Cream);
+        box-shadow                         :  0 0 0 3px rgba(250, 247, 240, 0.85), 0 3px 10px rgba(43, 42, 40, 0.35);
+    }
+
+    .PainterlyNPR__Handle--hover .PainterlyNPR__Handle__Grip {
+        box-shadow                         :  0 0 0 4px rgba(95, 122, 145, 0.35), 0 2px 6px rgba(43, 42, 40, 0.22);
+    }
+
+    .PainterlyNPR__Handle__Number {
+        position                           :  absolute;
+        right                              :  -7px;
+        bottom                             :  -6px;
+        min-width                          :  14px;
+        height                             :  14px;
+        padding                            :  0 3px;
+        border-radius                      :  7px;
+        background                         :  var(--PainterlyNPR_Ink);
+        color                              :  var(--PainterlyNPR_Cream);
+        font-family                        :  var(--PainterlyNPR_FontStack);
+        font-size                          :  9.5px;
+        font-weight                        :  700;
+        line-height                        :  14px;
+        text-align                         :  center;
+    }
+
+    /* Switched off: kept on the sheet, plainly out of the drawing */
+    .PainterlyNPR__Handle--off .PainterlyNPR__Handle__Grip {
+        border-style                       :  dashed;
+        opacity                            :  0.55;
+    }
+
+    .PainterlyNPR__Handle--off .PainterlyNPR__Handle__Ring {
+        opacity                            :  0.15;
+    }
+
+    .PainterlyNPR__Handle__Size {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        width                              :  12px;
+        height                             :  12px;
+        margin                             :  -6px 0 0 -6px;
+        padding                            :  0;
+        border                             :  2px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  3px;
+        background                         :  var(--PainterlyNPR_Cream);
+        cursor                             :  ns-resize;
+        pointer-events                     :  auto;
+        box-shadow                         :  0 1px 4px rgba(43, 42, 40, 0.25);
+    }
+
+    /* Only the point being edited carries its size dot and direction knob */
+    .PainterlyNPR__Handle:not(.PainterlyNPR__Handle--selected) .PainterlyNPR__Handle__Size,
+    .PainterlyNPR__Handle:not(.PainterlyNPR__Handle--selected) .PainterlyNPR__Handle__Knob {
+        display                            :  none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NODE | The selected point's sliders, beside it on the sheet */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Node {
+        --PainterlyNPR_PointColour         :  var(--PainterlyNPR_Slate);
+        position                           :  absolute;
+        z-index                            :  3;
+        width                              :  208px;
+        padding                            :  6px 8px 5px;
+        border                             :  1px solid rgba(43, 42, 40, 0.18);
+        border-top                         :  3px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  rgba(250, 247, 240, 0.94);
+        box-shadow                         :  0 6px 18px rgba(43, 42, 40, 0.22);
+        backdrop-filter                    :  blur(3px);
+        color                              :  var(--PainterlyNPR_Ink);
+        font-size                          :  11px;
+        pointer-events                     :  auto;
+        cursor                             :  default;
+        user-select                        :  none;
+    }
+
+    .PainterlyNPR__Node[data-type="Fade"]        { --PainterlyNPR_PointColour: var(--PainterlyNPR_Terracotta); }
+    .PainterlyNPR__Node[data-type="LineControl"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_Ochre); }
+    .PainterlyNPR__Node[data-type="Indication"]  { --PainterlyNPR_PointColour: var(--PainterlyNPR_Brick); }
+    .PainterlyNPR__Node[data-type="Hatch"]       { --PainterlyNPR_PointColour: #7A5FA3; }
+    .PainterlyNPR__Node[data-type="Suppress"]    { --PainterlyNPR_PointColour: var(--PainterlyNPR_InkFaint); }
+    .PainterlyNPR__Node[data-type="Discipline"]  { --PainterlyNPR_PointColour: #8C6A3C; }
+    .PainterlyNPR__Node[data-type="RunOut"]      { --PainterlyNPR_PointColour: #3E7470; }
+
+    .PainterlyNPR__Node__Head,
+    .PainterlyNPR__Node__Bar {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  5px;
+    }
+
+    .PainterlyNPR__Node__Bar {
+        margin                             :  3px 0;
+        padding-bottom                     :  4px;
+        border-bottom                      :  1px solid var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__Node__Badge,
+    .PainterlyNPR__PointCard__Number {
+        min-width                          :  16px;
+        height                             :  16px;
+        padding                            :  0 4px;
+        border-radius                      :  8px;
+        background                         :  var(--PainterlyNPR_Ink);
+        color                              :  var(--PainterlyNPR_Cream);
+        font-size                          :  10px;
+        font-weight                        :  700;
+        line-height                        :  16px;
+        text-align                         :  center;
+    }
+
+    .PainterlyNPR__Node__Glyph {
+        color                              :  var(--PainterlyNPR_PointColour);
+        font-size                          :  13px;
+    }
+
+    .PainterlyNPR__Node__Title {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        overflow                           :  hidden;
+        font-size                          :  11.5px;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__Node__Chip {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        padding                            :  2px 7px;
+        overflow                           :  hidden;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  10px;
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  10.5px;
+        text-align                         :  left;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__Node__Chip::before {
+        content                            :  "on ";
+        color                              :  var(--PainterlyNPR_InkFaint);
+    }
+
+    .PainterlyNPR__Node__Chip:hover {
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__Node__Icon {
+        flex                               :  0 0 auto;
+        width                              :  20px;
+        height                             :  20px;
+        padding                            :  0;
+        border                             :  0;
+        border-radius                      :  50%;
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  13px;
+        line-height                        :  1;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__Node__Icon:hover {
+        background                         :  rgba(43, 42, 40, 0.08);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__Node__Icon--off {
+        color                              :  var(--PainterlyNPR_Terracotta);
+    }
+
+    .PainterlyNPR__Node__Row {
+        display                            :  grid;
+        grid-template-columns              :  56px minmax(0, 1fr) 54px;
+        align-items                        :  center;
+        gap                                :  5px;
+        margin                             :  1px 0;
+    }
+
+    .PainterlyNPR__Node__Label {
+        overflow                           :  hidden;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  10.5px;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__Node__Row output {
+        overflow                           :  hidden;
+        color                              :  var(--PainterlyNPR_Ink);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  9.5px;
+        text-align                         :  right;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__Node input[type="range"] {
+        height                             :  16px;
+    }
+
+    .PainterlyNPR__Node input[type="range"]::-webkit-slider-runnable-track {
+        height                             :  2px;
+    }
+
+    .PainterlyNPR__Node input[type="range"]::-webkit-slider-thumb {
+        width                              :  11px;
+        height                             :  11px;
+        margin-top                         :  -4.5px;
+        background                         :  var(--PainterlyNPR_PointColour);
+        box-shadow                         :  0 0 0 1px var(--PainterlyNPR_PointColour);
+    }
+
+    .PainterlyNPR__Node input[type="range"]::-moz-range-thumb {
+        width                              :  9px;
+        height                             :  9px;
+        background                         :  var(--PainterlyNPR_PointColour);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* POINT ROWS | One compact row a point; the selected one open */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__PointList {
+        gap                                :  4px;
+    }
+
+    .PainterlyNPR__PointList__Count {
+        margin                             :  0 0 2px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+    }
+
+    .PainterlyNPR__PointCard {
+        min-width                          :  0;                           /* <-- A grid item: or a long object name widens the panel */
+        padding                            :  4px 6px 4px 8px;
+        scroll-margin                      :  12px;
+        transition                         :  border-color var(--PainterlyNPR_Transition), box-shadow var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__PointCard__Head {
+        align-items                        :  center;
+        margin-bottom                      :  0;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__PointCard__Head > strong {
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__PointCard:not(.PainterlyNPR__PointCard--selected):hover {
+        border-color                       :  var(--PainterlyNPR_InkGhost);
+        background                         :  #FFFFFF;
+    }
+
+    .PainterlyNPR__PointCard--selected {
+        padding                            :  6px 8px 6px 10px;
+        border-color                       :  var(--PainterlyNPR_PointColour);
+        box-shadow                         :  0 0 0 1px var(--PainterlyNPR_PointColour), 0 4px 12px rgba(43, 42, 40, 0.10);
+    }
+
+    .PainterlyNPR__PointCard--selected .PainterlyNPR__PointCard__Number {
+        background                         :  var(--PainterlyNPR_PointColour);
+    }
+
+    .PainterlyNPR__PointCard__Body {
+        margin-top                         :  4px;
+        padding-top                        :  2px;
+        border-top                         :  1px solid var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__PointCard--off {
+        opacity                            :  0.6;
+    }
+
+    .PainterlyNPR__PointCard--off .PainterlyNPR__PointCard__Toggle {
+        color                              :  var(--PainterlyNPR_Terracotta);
+    }
+
+    .PainterlyNPR__PointCard .PainterlyNPR__IconButton {
+        flex                               :  0 0 auto;
+        width                              :  22px;
+        height                             :  22px;
+        font-size                          :  14px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

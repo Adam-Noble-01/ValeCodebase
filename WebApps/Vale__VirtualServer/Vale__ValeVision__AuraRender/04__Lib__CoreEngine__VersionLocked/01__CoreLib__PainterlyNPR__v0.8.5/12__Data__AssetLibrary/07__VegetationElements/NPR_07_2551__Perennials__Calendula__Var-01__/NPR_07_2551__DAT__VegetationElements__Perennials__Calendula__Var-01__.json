@@ -1,0 +1,142 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "30-Oct-2026",
+            "Modified": "30-Oct-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Seeded from the PainterlyNPR demo cottage's garden (v0.6.0): the generator and parameters the garden is built with",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2551",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Perennials",
+            "TypeBlock": "25",
+            "Family": "255",
+            "Item": 1,
+            "Name": "Calendula",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Perennials__Calendula__Var-01",
+            "DisplayName": "Calendula",
+            "Description": "Calendula: a bright mound of pot marigolds, orange flowers over light green."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2551__Perennials__Calendula__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2551__DAT__VegetationElements__Perennials__Calendula__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2551__MOD__VegetationElements__Perennials__Calendula__Var-01__.glb",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "SKP": {
+                "File": "NPR_07_2551__SKP__VegetationElements__Perennials__Calendula__Var-01__.skp",
+                "Status": "Pending",
+                "Note": "Written by the SketchUp catalogue and authoring tool (next phase)"
+            },
+            "PXY": {
+                "File": "NPR_07_2551__PXY__VegetationElements__Perennials__Calendula__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            },
+            "RND": {
+                "File": "NPR_07_2551__RND__VegetationElements__Perennials__Calendula__Var-01__.webp",
+                "Status": "Present",
+                "Note": "Written by the asset factory (the Assets drawer: Pictures)"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.95,
+            "NominalSpreadM": 0.8,
+            "Bounds": {
+                "Min": [
+                    -0.282,
+                    0.099,
+                    -0.381
+                ],
+                "Max": [
+                    0.426,
+                    0.892,
+                    0.38
+                ],
+                "Size": [
+                    0.708,
+                    0.793,
+                    0.761
+                ],
+                "RadiusM": 0.653
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "Mound",
+            "Params": {
+                "WidthM": 0.75,
+                "HeightM": 0.9,
+                "Masses": 5
+            },
+            "Kind": "Calendula",
+            "Material": "TreeFoliage",
+            "Role": "Planting",
+            "Flowers": {
+                "Pigment": "Calendula",
+                "Density": 0.75,
+                "SizeMm": [
+                    0.7,
+                    1.15
+                ]
+            }
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "Facing": "Random",
+            "ScaleJitter": 0.08,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.4
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "calendula",
+                "marigold",
+                "pot marigold",
+                "orange flowers",
+                "border",
+                "cottage garden"
+            ],
+            "Season": "Summer",
+            "Botanical": "Calendula officinalis"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 104698455,
+            "Status": "Rendered",
+            "RenderedOn": "2026-10-30T12:37:02",
+            "EngineVersion": "0.6.0",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.437,
+                "Target": [
+                    0.072,
+                    0.496,
+                    -0.001
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

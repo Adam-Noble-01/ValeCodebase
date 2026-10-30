@@ -35,6 +35,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.3.0 (AURA 0.5.0)
+// - "Add a view" lists the drawing set's scenes first (a viewport shows a
+//   scene, SketchUp to LayOut), then the new ones it can make.
+//
+// 30-Oct-2026 - Version 1.2.1 (AURA 0.3.3)
+// - The sheet is the pictures' paper: Show hands the Surface the drawing set's
+//   paper (the engine's bare paper), and again after the engine's settings
+//   change while a sheet is on view.
+//
 // 30-Oct-2026 - Version 1.2.0 (AURA 0.3.0)
 // - The Layout Editor's two panels (Adam: "I want the same two panel layout
 //   with dropdown sections etc and 2x resizable panels"): the sheet's sections
@@ -62,8 +71,9 @@
     import { Na__Dom__El, Na__Dom__IconButton, Na__Dom__Clear, Na__Dom__Field, Na__Dom__Select } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__SheetScale, Na__Format__Date } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__Panels__Section, Na__Panels__Resizable } from '../03__AppUtils/Na__AppUtils__Panels__.js';
-    import { Na__EngineHost__Presets } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__Surface__Mount, Na__Surface__Render, Na__Surface__On, Na__Surface__RedrawLayer } from './Na__DrawingSheets__Surface__.js';
+    import { Na__EngineHost__Presets, Na__EngineHost__OnChange } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EnginePanel__Paper } from '../10__System__EngineHost/Na__EngineHost__Panel__.js';
+    import { Na__Surface__Mount, Na__Surface__Render, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__SetPaper } from './Na__DrawingSheets__Surface__.js';
     import { Na__SheetNav__ZoomBy, Na__SheetNav__Fit, Na__SheetNav__FitOnce } from './Na__DrawingSheets__Navigation__.js';
     import { Na__SheetPc__Attach } from './Na__DrawingSheets__Controls__Pc__.js';
     import { Na__SheetTouch__Attach } from './Na__DrawingSheets__Controls__TouchScreen__.js';
@@ -71,7 +81,7 @@
     import { Na__ViewportEditor__Mount, Na__ViewportEditor__Add, Na__ViewportEditor__Remove, Na__ViewportEditor__Panel } from '../21__System__Viewports/Na__Viewports__Editor__.js';
     import { Na__RenderQueue__Clear, Na__RenderQueue__OnStatus } from '../21__System__Viewports/Na__Viewports__RenderQueue__.js';
     import { Na__ViewportPoints__Mount, Na__ViewportPoints__Panel, Na__ViewportPoints__SetOpen } from '../21__System__Viewports/Na__Viewports__ArtDirection__.js';
-    import { Na__Annotations__Mount, Na__Annotations__OnPaper, Na__Annotations__Panel, Na__Annotations__Remove } from '../30__System__Annotations/Na__Annotations__Layer__.js';
+    import { Na__Annotations__Mount, Na__Annotations__OnPaper, Na__Annotations__Panel, Na__Annotations__Remove, Na__Annotations__RemoveBend } from '../30__System__Annotations/Na__Annotations__Layer__.js';
     import { Na__DrawingSet__Viewport, Na__DrawingSet__Annotation } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
 
 // endregion -------------------------------------------------------------------
@@ -88,7 +98,8 @@
         status  : null,
         tools   : null,
         addView : null,
-        onSheetChanged : null                    // <-- The tabs redraw a renamed sheet
+        onSheetChanged : null,                   // <-- The tabs redraw a renamed sheet
+        paperTimer : 0                           // <-- A settings burst settling before the paper is made again
     };
 
 // endregion -------------------------------------------------------------------
@@ -98,17 +109,22 @@
 // REGION | The Toolbar
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | The "Add a view" Choices, Rebuilt as Saved Views Come and Go
+    // HELPER FUNCTION | The "Add a view" Choices, Rebuilt as Scenes Come and Go
+    // ------------------------------------------------------------
+    // The drawing set's scenes first (SketchUp to LayOut: a viewport shows a
+    // scene), then a new one: an elevation, the roof plan, a preset or the 3D
+    // Environment's view now (an elevation or a preset already a scene is that
+    // scene, not a copy).
     // ------------------------------------------------------------
     function Na__Workspace__AddViewOptions() {
         const doc = Na__AppState__Data.doc;
         const options = [{ value: '', label: 'Add a view...' }];
-        Na__AppConfig__Get('Viewport__Elevations', []).forEach((e) => options.push({ value: `Elevation:${e.Key}`, label: `${e.Label}, to scale` }));
-        options.push({ value: 'Plan:RoofPlan', label: 'Roof Plan, to scale' });
+        ((doc && doc.AuraDrawingSet__SavedViews) || []).forEach((v) => options.push({ value: `Scene:${v.View__Id}`, label: `Scene: ${v.View__Name}` }));
+        Na__AppConfig__Get('Viewport__Elevations', []).forEach((e) => options.push({ value: `Elevation:${e.Key}`, label: `New: ${e.Label}, to scale` }));
+        options.push({ value: 'Plan:RoofPlan', label: 'New: Roof Plan, to scale' });
         Na__EngineHost__Presets(Na__AppConfig__Get('Engine__CameraPresets')).filter((p) => p.Mode !== 'Ortho')
-            .forEach((p) => options.push({ value: `Preset:${p.Key}`, label: `3D: ${p.Label}` }));
-        options.push({ value: 'Live:', label: '3D: the 3D Environment\'s view now' });
-        ((doc && doc.AuraDrawingSet__SavedViews) || []).forEach((v) => options.push({ value: `Saved:${v.View__Id}`, label: `3D: ${v.View__Name}` }));
+            .forEach((p) => options.push({ value: `Preset:${p.Key}`, label: `New 3D: ${p.Label}` }));
+        options.push({ value: 'Live:', label: 'New 3D: the 3D Environment\'s view now' });
         return options;
     }
 
@@ -122,7 +138,7 @@
             if (kind === 'Elevation') Na__ViewportEditor__Add({ kind: 'Elevation', side: key });
             else if (kind === 'Plan') Na__ViewportEditor__Add({ kind: 'Plan' });
             else if (kind === 'Preset') Na__ViewportEditor__Add({ kind: 'Perspective', preset: key });
-            else if (kind === 'Saved') Na__ViewportEditor__Add({ kind: 'Perspective', savedViewId: key });
+            else if (kind === 'Scene') Na__ViewportEditor__Add({ sceneId: key });
             else if (kind === 'Live') Na__ViewportEditor__Add({ kind: 'Perspective', live: true });
             Na__Workspace__RefreshAddView();
             Na__Workspace__RenderPanel();
@@ -339,7 +355,10 @@
         const sel = Na__AppState__Data.selection;
         if ((e.key === 'Delete' || e.key === 'Backspace') && sheet && sel) {
             if (sel.kind === 'viewport') Na__ViewportEditor__Remove(Na__DrawingSet__Viewport(sheet, sel.id));
-            else Na__Annotations__Remove(Na__DrawingSet__Annotation(sheet, sel.id));
+            else {
+                const annotation = Na__DrawingSet__Annotation(sheet, sel.id);
+                if (!Na__Annotations__RemoveBend(annotation)) Na__Annotations__Remove(annotation);   // <-- A selected bend point goes first, the note only when none is
+            }
             e.preventDefault();
         } else if (e.key === 'Escape') {
             Na__AppState__Select(null);
@@ -399,6 +418,11 @@
         Na__AppState__On('changed', (detail) => { if (detail && detail.reason === 'views') Na__Workspace__RefreshAddView(); });
         document.addEventListener('keydown', Na__Workspace__OnKey);
         S.panel.addEventListener('aura-panel-refresh', () => { Na__Workspace__RefreshAddView(); Na__Workspace__RenderPanel(); });
+        Na__EngineHost__OnChange(() => {                                        // <-- The paper changed under a sheet on view (an undo, say): once a burst has settled
+            if (Na__AppState__Data.tab === 'environment') return;               // <-- The 3D tab's sliders: the sheet takes its paper when it is opened
+            clearTimeout(S.paperTimer);
+            S.paperTimer = setTimeout(() => Na__EnginePanel__Paper(Na__Surface__SetPaper), 150);
+        });
     }
     // ------------------------------------------------------------
 
@@ -409,6 +433,7 @@
         Na__RenderQueue__Clear();                                                // <-- Another sheet's pictures no longer wait
         Na__AppState__Select(null);
         Na__Surface__Render(sheet);
+        Na__EnginePanel__Paper(Na__Surface__SetPaper);                           // <-- The pictures' own paper (0.3.3): at once when known, else once its tile is made
         if (sheet) requestAnimationFrame(() => Na__SheetNav__FitOnce(sheet.Sheet__Id));   // <-- The desk has its size once shown
         Na__Workspace__RefreshAddView();
         Na__Workspace__RenderSheetPanel();

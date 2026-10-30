@@ -151,6 +151,10 @@
         stroke-linecap                     : round;
     }
 
+    .aura-segmented--justify .aura-segmented__item {
+        padding                            : 0 9px;                        /* <-- Four icons in the note panel's width */
+    }
+
     .aura-note__standin {
         opacity                            : 0.55;                         /* <-- Typed, pale: waiting for the engine to write it */
     }
@@ -178,6 +182,17 @@
     .aura-handle--ne, .aura-handle--sw     { cursor: nesw-resize; }
     .aura-handle--n,  .aura-handle--s      { cursor: ns-resize; }
     .aura-handle--e,  .aura-handle--w      { cursor: ew-resize; }
+    .aura-handle--bend                     { cursor: move; }
+    .aura-handle--from                     { cursor: move; }               /* <-- Where a leader leaves its words: slides round them */
+
+    .aura-handle--from.is-set {
+        fill                               : var(--Aura_Select);           /* <-- Set by hand (filled), not automatic */
+        fill-opacity                       : 0.35;
+    }
+
+    .aura-handle.is-active {
+        fill                               : var(--Aura_Select);           /* <-- The selected bend point: Delete takes it out */
+    }
 
 /* endregion ------------------------------------------------------------------- */
 

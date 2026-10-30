@@ -15,10 +15,17 @@
 //   takes its colour from the stylesheet (ValeVision Theia's builders).
 // - Na__Dom__Svg makes an SVG element with its attributes in one call: the
 //   drawing sheets are SVG in millimetres.
+// - PANEL ICONS are the picture icons beside the side panels' section titles
+//   (Saved views, the parameters' Paper and finish, Light...): 1024 SVGs in the
+//   house ink #172b3a, drawn in the vector-graphic-artist house style at this
+//   file's line weight (1.8 on 24), shown as <img> from 01__AppAssets__AuraRender.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.4.2)
+// - Na__Dom__PanelIcon: the panel sections' picture icons.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build, from ValeVision Theia's DOM builders.
 //
@@ -60,9 +67,19 @@
         down        : '<path d="M6 9.5l6 6 6-6"/>',
         up          : '<path d="M6 14.5l6-6 6 6"/>',
         lock        : '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/>',
-        brush       : '<path d="M14 4l6 6-8.5 8.5a3 3 0 0 1-2.1.9H5v-4.4a3 3 0 0 1 .9-2.1z"/><path d="M12 6l6 6"/>'
+        brush       : '<path d="M14 4l6 6-8.5 8.5a3 3 0 0 1-2.1.9H5v-4.4a3 3 0 0 1 .9-2.1z"/><path d="M12 6l6 6"/>',
+        alignLeft   : '<path d="M4 6h16M4 10h10M4 14h16M4 18h10"/>',                         // <-- A note's Justify (AURA 0.4.7)
+        alignCentre : '<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>',
+        alignRight  : '<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
+        alignBox    : '<path d="M4 6h16M4 10h16M4 14h16M4 18h10"/>'
     };
     const Na__Dom__SVG_NS = 'http://www.w3.org/2000/svg';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Panel Icons (Icon__PanelSections__<Name>__.svg, from the page)
+    // ------------------------------------------------------------
+    const Na__Dom__PANEL_ICONS = '01__AppAssets__AuraRender/UiIcons__MenuIcons__PanelSections/';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -99,6 +116,16 @@
         holder.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" `
                          + `stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${Na__Dom__ICONS[name] || ''}</svg>`;
         return holder;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Panel Section's Picture Icon as an <img> (name: SavedViews, Light...)
+    // ------------------------------------------------------------
+    function Na__Dom__PanelIcon(name, className) {
+        return Na__Dom__El('img', `aura-panel-icon${className ? ' ' + className : ''}`, null, {
+            src: `${Na__Dom__PANEL_ICONS}Icon__PanelSections__${name}__.svg`, alt: '', 'aria-hidden': 'true', draggable: 'false'
+        });
     }
     // ------------------------------------------------------------
 
@@ -176,6 +203,7 @@
         Na__Dom__SVG_NS,
         Na__Dom__El,
         Na__Dom__Icon,
+        Na__Dom__PanelIcon,
         Na__Dom__IconButton,
         Na__Dom__Clear,
         Na__Dom__Svg,

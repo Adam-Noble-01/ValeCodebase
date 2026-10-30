@@ -15,14 +15,22 @@
  * - THE ENGINE'S STYLESHEETS (65__ArtDirection__InfluencePoints: PointHandles,
  *   PointNode, PointGroups) are linked by the engine host from the pinned
  *   engine, after this file. They read the engine's palette variables, which
- *   live in PainterlyNPR's own app stylesheets (not in the pinned library):
- *   they are set here, from PainterlyNPR's Variables, value for value.
- * - The list's general classes (fields, hints, icon buttons, chips, the
+ *   the host links from the pin too (PainterlyNPR's own Variables, pinned
+ *   since AURA 0.4.0): no value of the engine's is set here, only where AURA
+ *   wants its own (the font).
+ * - The general classes (fields, hints, icon buttons, chips, buttons, the
  *   Advanced fold, typed readouts) are styled by the engine's panel stylesheet,
- *   which AURA does not take: they are given AURA's look here, inside the list.
+ *   which AURA does not take: they are given AURA's look here, inside the point
+ *   list and inside the engine's Assets drawer.
  * - The layer over a sheet's viewport is placed by Na__Viewports__ArtDirection__.
  *
  * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.1.0 (AURA 0.4.0)
+ * - The engine's palette is no longer copied here (Adam: "dont duplicate code
+ *   the npr repo remains definitive source"): the host links PainterlyNPR's
+ *   own Variables from the pin, and AURA overrides only the font. The general
+ *   classes' AURA look reaches the engine's Assets drawer as well.
+ *
  * 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
  * - Initial build.
  *
@@ -30,25 +38,14 @@
  */
 
 /* -----------------------------------------------------------------------------
- * REGION | The Engine's Palette (PainterlyNPR__CoreUi__Styles__Variables__.css)
+ * REGION | The Engine's Palette: PainterlyNPR's Own, Linked From the Pin; AURA's Font
  * ----------------------------------------------------------------------------- */
 
-    :root {
-        --PainterlyNPR_Cream               : #FAF7F0;
-        --PainterlyNPR_Ink                 : #2B2A28;
-        --PainterlyNPR_InkSoft             : #5A554E;
-        --PainterlyNPR_InkFaint            : #8C857A;
-        --PainterlyNPR_InkGhost            : #B9B1A4;
-        --PainterlyNPR_Rule                : rgba(43, 42, 40, 0.12);
-        --PainterlyNPR_Terracotta          : #BC6540;                     /* <-- Fade to paper */
-        --PainterlyNPR_Slate               : #5F7A91;                     /* <-- Focus, selection */
-        --PainterlyNPR_Ochre               : #B58A3A;                     /* <-- Line control */
-        --PainterlyNPR_Brick               : #9A4A35;                     /* <-- Material indication */
+    /* The engine's tokens (03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Variables__.css,
+       pinned) are linked by the engine host. Set on the page's body, this one wins over
+       their :root wherever the engine's parts sit in AURA, whichever stylesheet loads last. */
+    .aura {
         --PainterlyNPR_FontStack           : var(--Aura_Font);
-        --PainterlyNPR_FontMono            : 'Cascadia Mono', Consolas, 'SF Mono', ui-monospace, monospace;
-        --PainterlyNPR_LetterSpacingLabel  : 0.07em;
-        --PainterlyNPR_RadiusSmall         : 7px;
-        --PainterlyNPR_Transition          : 140ms ease;
     }
 
 /* endregion ------------------------------------------------------------------- */
@@ -251,14 +248,15 @@
         font-variant-numeric               : tabular-nums;
     }
 
-    .aura-points .PainterlyNPR__Hint {
+    .aura-points .PainterlyNPR__Hint,
+    .aura-env__assets .PainterlyNPR__Hint {
         margin                             : 0;
         font-size                          : var(--Aura_FontSize_Small);
         color                              : var(--Aura_TextSecondary);
         line-height                        : 1.45;
     }
 
-    :where(.aura-points) .PainterlyNPR__IconButton {
+    :where(.aura-points, .aura-env__assets) .PainterlyNPR__IconButton {
         flex                               : 0 0 auto;
         width                              : 26px;
         height                             : 26px;
@@ -272,18 +270,20 @@
         cursor                             : pointer;
     }
 
-    :where(.aura-points) .PainterlyNPR__IconButton:hover {
+    :where(.aura-points, .aura-env__assets) .PainterlyNPR__IconButton:hover {
         background                         : var(--Aura_SurfaceHover);
         color                              : var(--Aura_Text);
     }
 
-    .aura-points .PainterlyNPR__ChipRow {
+    .aura-points .PainterlyNPR__ChipRow,
+    .aura-env__assets .PainterlyNPR__ChipRow {
         display                            : flex;
         flex-wrap                          : wrap;
         gap                                : 6px;
     }
 
-    .aura-points .PainterlyNPR__Chip {
+    .aura-points .PainterlyNPR__Chip,
+    .aura-env__assets .PainterlyNPR__Chip {
         padding                            : 3px 10px;
         border                             : 1px solid var(--Aura_Border);
         border-radius                      : 999px;
@@ -294,7 +294,8 @@
         cursor                             : pointer;
     }
 
-    .aura-points .PainterlyNPR__Chip:hover {
+    .aura-points .PainterlyNPR__Chip:hover,
+    .aura-env__assets .PainterlyNPR__Chip:hover {
         background                         : var(--Aura_SurfaceHover);
     }
 
@@ -308,6 +309,80 @@
         display                            : flex;
         flex-direction                     : column;
         gap                                : 8px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Engine's Assets Drawer: Its General Controls in AURA's Look
+ * ----------------------------------------------------------------------------- */
+
+    /* The drawer itself (its tab, body, tabs, cards, ghost and drop marker) is the
+       engine's own stylesheet, linked from the pin; these are the classes the
+       engine's panel stylesheet would style, which AURA does not take. */
+
+    .aura-env__assets .PainterlyNPR__Button:not(.PainterlyNPR__Chip) {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        min-height                         : 28px;
+        padding                            : 0 10px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+        transition                         : background-color var(--Aura_Fast), border-color var(--Aura_Fast);
+    }
+
+    .aura-env__assets .PainterlyNPR__Button:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-env__assets .PainterlyNPR__Button--active,
+    .aura-env__assets .PainterlyNPR__Button--active:hover {
+        background                         : var(--Aura_Brand);
+        border-color                       : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+    .aura-env__assets .PainterlyNPR__Button:disabled {
+        opacity                            : 0.5;
+        cursor                             : default;
+    }
+
+    .aura-env__assets .PainterlyNPR__FoldButton {
+        margin-left                        : auto;
+        padding                            : 4px 8px;
+        border                             : none;
+        border-radius                      : 6px;
+        background                         : none;
+        color                              : var(--Aura_TextSecondary);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .aura-env__assets .PainterlyNPR__FoldButton:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-env__assets .PainterlyNPR__Group__Title {
+        margin                             : 0 0 6px;
+        font-size                          : 12px;
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-env__assets .PainterlyNPR__ButtonRow {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        margin-top                         : 6px;
     }
 
 /* endregion ------------------------------------------------------------------- */
@@ -344,34 +419,3 @@
 /* endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Saved Views With Their Points
- * ----------------------------------------------------------------------------- */
-
-    .aura-views__name {
-        display                            : flex;
-        align-items                        : baseline;
-        gap                                : 8px;
-    }
-
-    .aura-views__label {
-        flex                               : 1;
-        min-width                          : 0;
-        overflow                           : hidden;
-        text-overflow                      : ellipsis;
-        white-space                        : nowrap;
-    }
-
-    .aura-views__count {
-        flex-shrink                        : 0;
-        font-size                          : 12px;
-        color                              : var(--Aura_TextSecondary);
-    }
-
-    .aura-views__row.is-active .aura-views__name {
-        background                         : var(--Aura_ActiveBg);
-        box-shadow                         : inset 3px 0 0 var(--Aura_Brand);
-        font-weight                        : var(--Aura_FontSemiBold);
-    }
-
-/* endregion ------------------------------------------------------------------- */

@@ -18,8 +18,13 @@
  *   the selection's panel.
  * - A section's chevron points down while folded and up while open, as the
  *   parameter groups' do.
+ * - A section, and a parameters section, can carry a picture icon before its
+ *   title: 20 px, the chevron's size, so its line is the chevron's weight.
  *
  * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.1.0 (AURA 0.4.2)
+ * - The panel icons (.aura-panel-icon) beside section and parameter titles.
+ *
  * 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
  * - Initial build.
  *
@@ -164,6 +169,25 @@
 
     .aura-section:not(.is-folded) .aura-section__chevron {
         transform                          : rotate(180deg);
+    }
+
+    .aura-panel-icon {
+        display                            : block;
+        flex                               : 0 0 20px;
+        width                              : 20px;
+        height                             : 20px;
+        pointer-events                     : none;
+        user-select                        : none;
+    }
+
+    .aura-fold__icon {
+        margin-right                       : 10px;                         /* <-- The section heads' gap: the fold head spaces its parts apart */
+    }
+
+    .aura-fold__icon + .aura-fold__title {
+        flex                               : 1;
+        min-width                          : 0;
+        text-align                         : left;
     }
 
     .aura-section__body {

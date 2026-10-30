@@ -7,7 +7,7 @@
 // MODULE     : Drawing Set - Model
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : A project's AURA drawing set as one JSON document: the engine's
-//              settings, saved 3D views, and the sheets with their viewports and
+//              settings, its scenes, and the sheets with their viewports and
 //              annotations. New records, defaults, and a tidy-up on load
 // CREATED    : 30-Oct-2026
 //
@@ -23,16 +23,66 @@
 // - A NEW PROJECT starts with one A1 demo sheet: the four elevations at 1:50,
 //   the roof plan at 1:100 and the engine's three-quarter view, so the whole
 //   chain (engine, viewports, title block) shows at once.
-// - ART DIRECTION POINTS are kept a set a view, as PainterlyNPR makes them
-//   (its point objects, as plain data): View__Points on a saved view (shared
-//   by every sheet viewport that shows it), Viewport__Points on any other
-//   viewport, and AuraDrawingSet__Engine.WorkingPoints for the 3D
-//   Environment's view while it is not a saved one (inside Engine, beside the
-//   settings: the AURA API takes only the four root keys it knows).
+// - SCENES, SKETCHUP TO LAYOUT (Adam, 30-Oct-2026: "these scenes become
+//   viewports in the layout think SketchUp -> Layout logic"). A scene is what
+//   is looked at: its kind (Perspective, Elevation or Plan), an elevation's
+//   side, a 3D scene's camera (or the engine preset it starts from), a scaled
+//   scene's centre, and its Art Direction Points. They are the records of
+//   AuraDrawingSet__SavedViews (View__*: the AURA API takes only the four root
+//   keys it knows, so the key keeps its first name). Every viewport shows one
+//   scene (Viewport__SceneId), and every viewport showing it follows it.
+// - A VIEWPORT keeps what LayOut keeps: its frame, scale, pen profile, title,
+//   and a pan of its own (Viewport__PanM, metres from the scene's centre), so
+//   moving or resizing a frame never moves the scene in another viewport.
+//   Viewport__Kind is the scene's, kept on the viewport for the sheet's code.
+// - ART DIRECTION POINTS are a scene's (View__Points), as PainterlyNPR makes
+//   them (its point objects, as plain data), shared by every viewport showing
+//   it; AuraDrawingSet__Engine.WorkingPoints are the 3D Environment's while no
+//   scene is open (inside Engine, beside the settings).
+// - OLDER DOCUMENTS (saved views, viewports with a side, a centre, a camera
+//   source, points or 0.4.4's Viewport__View) are moved onto scenes when they
+//   load: each viewport gets the scene it was showing, an identical one
+//   shared, so every view there was is a scene tab.
+// - A CAMERA IN THE FILE is in three-stage keys with units (Camera__YawDeg,
+//   Camera__TargetM), as ValeVision 3D's saved scenes are; CameraToJson and
+//   CameraFromJson are the only crossing to the engine's own camera object. A
+//   saved view from before 0.4.4 kept the engine's object as it was:
+//   Normalise moves it across.
+// - THE ENGINE'S SHEET the points were placed on is kept with them
+//   (AuraDrawingSet__Engine.SheetMm). It became A3 at PainterlyNPR 0.8.3, so
+//   a set from another sheet, or naming none, has its points moved onto
+//   today's when it loads (FitToSheet, with the engine's own refit).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.4.0 (AURA 0.5.0)
+// - Scenes: Na__DrawingSet__NewScene, Na__DrawingSet__FindOrMakeScene,
+//   Na__DrawingSet__SceneName and Na__DrawingSet__Scene; a viewport is
+//   { SceneId, Kind, frame, scale, profile, title, PanM }. Normalise moves
+//   older viewports onto scenes; FitToSheet refits each scene's points by its
+//   kind. NewSavedView, SavedView and 0.4.4's NewViewportView are gone.
+//
+// 30-Oct-2026 - Version 1.3.1 (AURA 0.4.3, landed after 0.4.4)
+// - The engine's sheet is A3 (PainterlyNPR 0.8.3): AuraDrawingSet__Engine.
+//   SheetMm, and Na__DrawingSet__FitToSheet to move older points onto it.
+//
+// 30-Oct-2026 - Version 1.3.0 (AURA 0.4.4)
+// - Viewport__View on every viewport (NewViewport, and Normalise for older
+//   documents), and the camera's file form: Na__DrawingSet__NewViewportView,
+//   Na__DrawingSet__CameraToJson and Na__DrawingSet__CameraFromJson. Saved
+//   views keep their camera in the same form (NewSavedView, and Normalise
+//   moves an older one across through Na__DrawingSet__CameraJson).
+//
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.3.2)
+// - A note's pen and writing style: Annotation__PenKey (a STAEDTLER Mars matic
+//   700 nib, M018 0.18 mm unless chosen) and Annotation__Style (only the
+//   settings changed in its Advanced writing style; null is its hand's own).
+//   Normalise gives older notes both defaults.
+// - A note's letters (AURA 0.4.9): Annotation__Letters, 'Capitals' (drawn
+//   architect's capitals, the default, so older notes are lettered in them) or
+//   'Joined' (the model's joined-up hand).
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
 // - Art Direction Points: View__Points, Viewport__Points and
 //   AuraDrawingSet__Engine.WorkingPoints; NewSavedView takes the points,
@@ -99,30 +149,154 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | A New Viewport: { kind, frame, scale, side, preset, savedViewId }
+    // FUNCTION | A New Viewport: { kind, sceneId, frame, scale, profile, title, showTitle }
     // ------------------------------------------------------------
-    // Elevations and plans are scaled views: their frame is at most the engine's
-    // own sheet (300 x 200 mm), which the viewport module enforces. A perspective
-    // is a picture, scaled to its frame.
+    // kind is its scene's. Elevations and plans are scaled views: their frame
+    // is at most the engine's own sheet (A3 since PainterlyNPR 0.8.3), which
+    // the viewport module enforces. A perspective is a picture, scaled to its
+    // frame.
     // ------------------------------------------------------------
     function Na__DrawingSet__NewViewport(options) {
         const o = options || {};
         const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(o.kind) ? o.kind : 'Perspective';
         const frame = Object.assign({ X: 30, Y: 30 }, Na__AppConfig__Get('Viewport__DefaultFrameMm', { WidthMm: 180, HeightMm: 120 }), o.frame || {});
-        const defaultScale = kind === 'Plan' ? Na__AppConfig__Get('Viewport__DefaultPlanScale', 100) : Na__AppConfig__Get('Viewport__DefaultScale', 50);
         return {
             Viewport__Id               : Na__Format__Id('Viewport'),
-            Viewport__Kind             : kind,
+            Viewport__SceneId          : o.sceneId || null,                      // <-- The scene it shows (AuraDrawingSet__SavedViews)
+            Viewport__Kind             : kind,                                   // <-- Its scene's, kept here for the sheet's code
             Viewport__FrameMm          : { X: frame.X, Y: frame.Y, WidthMm: frame.WidthMm, HeightMm: frame.HeightMm },
-            Viewport__ScaleDenominator : kind === 'Perspective' ? null : Number(o.scale || defaultScale),
-            Viewport__Side             : kind === 'Elevation' ? (o.side || 'Front') : null,
+            Viewport__ScaleDenominator : kind === 'Perspective' ? null : Number(o.scale || Na__DrawingSet__DefaultScale(kind)),
             Viewport__PlanKind         : kind === 'Plan' ? 'RoofPlan' : null,
-            Viewport__CentreM          : null,                                   // <-- null: centred on the building; [x, y, z] once panned
-            Viewport__CameraSource     : kind === 'Perspective' ? (o.savedViewId ? { SavedViewId: o.savedViewId } : { Preset: o.preset || 'ThreeQuarter' }) : null,
+            Viewport__PanM             : null,                                   // <-- Its own pan, metres from the scene's centre; null: none
             Viewport__Profile          : kind === 'Perspective' ? 'Concept' : (o.profile || 'Measured'),
             Viewport__Title            : String(o.title || ''),
-            Viewport__ShowTitle        : o.showTitle !== false,
-            Viewport__Points           : Na__DrawingSet__CleanPoints(o.points)     // <-- Its own Art Direction Points (a saved view's viewport draws with the view's)
+            Viewport__ShowTitle        : o.showTitle !== false
+        };
+    }
+
+    function Na__DrawingSet__DefaultScale(kind) {
+        return kind === 'Plan' ? Na__AppConfig__Get('Viewport__DefaultPlanScale', 100) : Na__AppConfig__Get('Viewport__DefaultScale', 50);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A New Scene: { name, kind, side, camera, preset, centre, points }
+    // ------------------------------------------------------------
+    // camera: the engine's object or the file's form. A 3D scene with no camera
+    // starts from an engine preset (View__Preset, ThreeQuarter unless named),
+    // read from the engine when it is drawn, never copied here. A scaled
+    // scene's centre is null until it is moved: centred on the building.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__NewScene(options) {
+        const o = options || {};
+        const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(o.kind) ? o.kind : 'Perspective';
+        const camera = kind === 'Perspective' ? Na__DrawingSet__CameraJson(o.camera) : null;
+        return {
+            View__Id      : Na__Format__Id('Scene'),
+            View__Name    : String(o.name || 'Scene').slice(0, 60),
+            View__Kind    : kind,
+            View__Side    : kind === 'Elevation' ? String(o.side || 'Front') : null,
+            View__Camera  : camera,                                              // <-- A 3D scene's camera, in the file's form
+            View__Preset  : kind === 'Perspective' && !camera ? String(o.preset || 'ThreeQuarter') : null,
+            View__CentreM : kind !== 'Perspective' ? Na__DrawingSet__Point3(o.centre) : null,
+            View__Points  : Na__DrawingSet__CleanPoints(o.points)
+        };
+    }
+
+    // [x, y, z] in metres, or null
+    function Na__DrawingSet__Point3(value) {
+        return Array.isArray(value) && value.length === 3 && value.every((v) => Number.isFinite(Number(v))) ? value.map(Number) : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Name No Scene Has Yet: base, else "base (2)", "base (3)"...
+    // ------------------------------------------------------------
+    function Na__DrawingSet__SceneName(doc, base, except) {
+        const taken = new Set((doc && doc.AuraDrawingSet__SavedViews || []).filter((v) => v !== except).map((v) => String(v.View__Name).toLowerCase()));
+        const clean = String(base || 'Scene').trim().slice(0, 54) || 'Scene';
+        if (!taken.has(clean.toLowerCase())) return clean;
+        for (let n = 2; ; n++) if (!taken.has(`${clean} (${n})`.toLowerCase())) return `${clean} (${n})`;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Scene for a View: one just like it, else a new one added to the document
+    // ------------------------------------------------------------
+    // Just like it: the same kind, side, centre, preset and camera, and no
+    // points of its own to keep apart. How the demo sheet, an older document's
+    // viewports and a new viewport from the sheet's "Add a view" find theirs.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__FindOrMakeScene(doc, options) {
+        const made = Na__DrawingSet__NewScene(options);
+        const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+        const found = made.View__Points.length ? null : (doc.AuraDrawingSet__SavedViews || []).find((v) =>
+            v.View__Kind === made.View__Kind && v.View__Side === made.View__Side && v.View__Preset === made.View__Preset
+            && same(v.View__CentreM, made.View__CentreM) && same(v.View__Camera, made.View__Camera));
+        if (found) return found;
+        made.View__Name = Na__DrawingSet__SceneName(doc, made.View__Name);
+        doc.AuraDrawingSet__SavedViews = doc.AuraDrawingSet__SavedViews || [];
+        doc.AuraDrawingSet__SavedViews.push(made);
+        return made;
+    }
+
+    // A view's natural name, for a scene made from an older viewport
+    function Na__DrawingSet__NaturalName(kind, side) {
+        if (kind === 'Plan') return 'Roof Plan';
+        if (kind === 'Elevation') {
+            const e = Na__AppConfig__Get('Viewport__Elevations', []).find((x) => x.Key === side);
+            return e ? e.Label : 'Elevation';
+        }
+        return '3D View';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Engine's Camera to Its File Form, and Back (null when it cannot be read)
+    // ------------------------------------------------------------
+    // The engine's { Mode, Yaw, Pitch, Distance, Target, FovY, HalfHeight,
+    // Ceiling } in degrees and metres; Ceiling is the Drawing Discipline's cap
+    // (1 none). Rounded to a micrometre and a millionth of a degree, so the
+    // file reads plainly and the camera comes back as it went.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__CameraToJson(camera) {
+        if (!camera || typeof camera !== 'object') return null;
+        const r = (x) => Math.round((Number(x) || 0) * 1e6) / 1e6;
+        const t = Array.isArray(camera.Target) ? camera.Target : [0, 0, 0];
+        return {
+            Camera__Mode        : camera.Mode === 'Ortho' ? 'Ortho' : 'Perspective',
+            Camera__TargetM     : [r(t[0]), r(t[1]), r(t[2])],
+            Camera__YawDeg      : r(camera.Yaw),
+            Camera__PitchDeg    : r(camera.Pitch),
+            Camera__DistanceM   : r(camera.Distance),
+            Camera__FovYDeg     : r(camera.FovY),
+            Camera__HalfHeightM : r(camera.HalfHeight),
+            Camera__Ceiling     : r(Number.isFinite(Number(camera.Ceiling)) ? camera.Ceiling : 1)
+        };
+    }
+
+    // Either form to the file's (a saved view from before 0.4.4 kept the engine's object), else null
+    function Na__DrawingSet__CameraJson(camera) {
+        if (Na__DrawingSet__CameraFromJson(camera)) return JSON.parse(JSON.stringify(camera));
+        const raw = camera && typeof camera === 'object' && Array.isArray(camera.Target) && camera.Target.length === 3 && Number.isFinite(Number(camera.Yaw));
+        return raw ? Na__DrawingSet__CameraToJson(camera) : null;
+    }
+
+    function Na__DrawingSet__CameraFromJson(json) {
+        if (!json || typeof json !== 'object') return null;
+        const t = json.Camera__TargetM;
+        const n = (x) => Number.isFinite(Number(x));
+        if (!Array.isArray(t) || t.length !== 3 || !t.every(n)) return null;
+        if (!['Camera__YawDeg', 'Camera__PitchDeg', 'Camera__DistanceM', 'Camera__FovYDeg'].every((k) => n(json[k]))) return null;
+        return {
+            Mode       : json.Camera__Mode === 'Ortho' ? 'Ortho' : 'Perspective',
+            Yaw        : Number(json.Camera__YawDeg),
+            Pitch      : Number(json.Camera__PitchDeg),
+            Distance   : Number(json.Camera__DistanceM),
+            Target     : t.map(Number),
+            FovY       : Number(json.Camera__FovYDeg),
+            HalfHeight : n(json.Camera__HalfHeightM) ? Number(json.Camera__HalfHeightM) : 10,
+            Ceiling    : n(json.Camera__Ceiling) ? Number(json.Camera__Ceiling) : 1
         };
     }
     // ------------------------------------------------------------
@@ -141,24 +315,17 @@
             Annotation__AtMm     : { X: at.X, Y: at.Y },
             Annotation__WidthMm  : Number(o.width || Na__AppConfig__Get('Annotation__DefaultWidthMm', 70)),
             Annotation__TipMm    : kind === 'Leader' ? Object.assign({ X: at.X - 25, Y: at.Y + 25 }, o.tip || {}) : null,
+            Annotation__BendsMm  : [],                                           // <-- A leader's bend points ({ X, Y } mm, words to tip): its spline passes through them
+            Annotation__LeaderFrom : null,                                       // <-- Where a leader leaves its words: { Side: Bottom | Top | Left | Right, At: 0 to 1 }; null: automatic
+            Annotation__Align    : 'Left',                                       // <-- The words set Left, Centre, Right or Box (justified), on the sheet
             Annotation__SizeMm   : Number(o.size || Na__AppConfig__Get('Annotation__DefaultSizeMm', 4.5)),
             Annotation__InkKey   : o.ink || Na__AppConfig__Get('Annotation__DefaultInk', 'Forest'),
             Annotation__HandKey  : o.hand || Na__AppConfig__Get('Handwriting__DefaultHand', 'Steady'),
+            Annotation__Letters  : o.letters || Na__AppConfig__Get('Handwriting__DefaultLetters', 'Capitals'),   // <-- Drawn architect's capitals or the model's joined-up hand; a note from before 0.4.9 takes the default
+            Annotation__PenKey   : o.pen || Na__AppConfig__Get('Handwriting__DefaultPen', 'M018'),   // <-- The nib, applied on the sheet (AuraConfig__Handwriting__Pens)
+            Annotation__Style    : null,                                         // <-- The settings changed in its Advanced writing style; null: its hand's own
             Annotation__Seed     : Number.isFinite(o.seed) ? o.seed : Na__Format__Seed(),
             Annotation__Written  : null                                          // <-- The engine's strokes once written: { Key, Paths, HeightMm, InkWidthMm, Lines, Warnings }
-        };
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | A Saved 3D View: a name, the engine's camera and its Art Direction Points
-    // ------------------------------------------------------------
-    function Na__DrawingSet__NewSavedView(name, camera, points) {
-        return {
-            View__Id     : Na__Format__Id('View'),
-            View__Name   : String(name || 'Saved view').slice(0, 60),
-            View__Camera : JSON.parse(JSON.stringify(camera)),
-            View__Points : Na__DrawingSet__CleanPoints(points)
         };
     }
     // ------------------------------------------------------------
@@ -206,19 +373,19 @@
                 UpdatedIso    : now,
                 CreatedBy     : user ? user.code : ''
             },
-            AuraDrawingSet__Engine     : { Settings: null, WorkingPoints: [] },  // <-- Settings null: the engine's own starting state. WorkingPoints: the 3D Environment's while its view is not a saved one
-            AuraDrawingSet__SavedViews : [],
+            AuraDrawingSet__Engine     : { Settings: null, WorkingPoints: [] },  // <-- Settings null: the engine's own starting state. WorkingPoints: the 3D Environment's while no scene is open
+            AuraDrawingSet__SavedViews : [],                                     // <-- The scenes
             AuraDrawingSet__Sheets     : []
         };
-        doc.AuraDrawingSet__Sheets.push(Na__DrawingSet__DemoSheet(project, user));
+        doc.AuraDrawingSet__Sheets.push(Na__DrawingSet__DemoSheet(project, user, doc));
         return doc;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The A1 Demo Sheet: four elevations, the roof plan and a view
+    // HELPER FUNCTION | The A1 Demo Sheet: four elevations, the roof plan and a view, each its own scene
     // ------------------------------------------------------------
-    function Na__DrawingSet__DemoSheet(project, user) {
+    function Na__DrawingSet__DemoSheet(project, user, doc) {
         const p = project || {};
         const sheet = Na__DrawingSet__NewSheet({
             name        : 'Elevations, roof plan and view',
@@ -232,7 +399,10 @@
                 DrawingNo : `${p.code ? p.code + '-' : ''}AURA-01`
             }
         });
-        const add = (o) => sheet.Sheet__Viewports.push(Na__DrawingSet__NewViewport(o));
+        const add = (o) => {
+            const scene = Na__DrawingSet__FindOrMakeScene(doc, Object.assign({ name: o.title }, o));
+            sheet.Sheet__Viewports.push(Na__DrawingSet__NewViewport(Object.assign({ sceneId: scene.View__Id }, o)));
+        };
         add({ kind: 'Elevation', side: 'Front', scale: 50,  frame: { X: 30,  Y: 30,  WidthMm: 250, HeightMm: 200 }, title: 'Front Elevation' });
         add({ kind: 'Elevation', side: 'Right', scale: 50,  frame: { X: 300, Y: 30,  WidthMm: 200, HeightMm: 200 }, title: 'Right Side Elevation' });
         add({ kind: 'Plan',                     scale: 100, frame: { X: 520, Y: 30,  WidthMm: 230, HeightMm: 200 }, title: 'Roof Plan' });
@@ -256,8 +426,14 @@
         const d = (doc && typeof doc === 'object') ? doc : {};
         d.AuraDrawingSet__Meta = Object.assign({ SchemaVersion: Na__DrawingSet__SCHEMA_VERSION, ProjectId: project ? project.id : '' }, d.AuraDrawingSet__Meta || {});
         d.AuraDrawingSet__Engine = Object.assign({ Settings: null }, d.AuraDrawingSet__Engine || {});
-        d.AuraDrawingSet__SavedViews = Array.isArray(d.AuraDrawingSet__SavedViews) ? d.AuraDrawingSet__SavedViews.filter((v) => v && v.View__Id && v.View__Camera) : [];
-        d.AuraDrawingSet__SavedViews.forEach((v) => { v.View__Points = Na__DrawingSet__CleanPoints(v.View__Points); });
+        d.AuraDrawingSet__SavedViews = (Array.isArray(d.AuraDrawingSet__SavedViews) ? d.AuraDrawingSet__SavedViews : [])
+            .filter((v) => v && v.View__Id)
+            .map((v) => {
+                const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(v.View__Kind) ? v.View__Kind : 'Perspective';   // <-- A saved view from before scenes was 3D
+                const scene = Na__DrawingSet__NewScene({ name: v.View__Name, kind, side: v.View__Side, camera: v.View__Camera, preset: v.View__Preset, centre: v.View__CentreM, points: v.View__Points });
+                scene.View__Id = v.View__Id;
+                return Object.assign(v, scene);                                  // <-- The engine's camera object from before 0.4.4 moves across with it
+            });
         d.AuraDrawingSet__Engine.WorkingPoints = Na__DrawingSet__CleanPoints(d.AuraDrawingSet__Engine.WorkingPoints);
         const sizes = Na__AppConfig__Get('Sheet__PaperSizes', {});
         const minFrame = Na__AppConfig__Get('Viewport__MinFrameMm', 20);
@@ -278,8 +454,15 @@
                         WidthMm  : Math.max(minFrame, Number(f.WidthMm) || minFrame),
                         HeightMm : Math.max(minFrame, Number(f.HeightMm) || minFrame)
                     };
-                    if (v.Viewport__Kind !== 'Perspective') v.Viewport__ScaleDenominator = Na__Format__Clamp(Number(v.Viewport__ScaleDenominator) || 50, 1, 5000);
-                    v.Viewport__Points = Na__DrawingSet__CleanPoints(v.Viewport__Points);
+                    const scene = Na__DrawingSet__SceneForViewport(d, v);
+                    v.Viewport__SceneId = scene.View__Id;
+                    if (v.Viewport__Kind !== scene.View__Kind) v.Viewport__ScaleDenominator = null;   // <-- Its scene's kind is its kind; a new kind starts at its default scale
+                    v.Viewport__Kind = scene.View__Kind;
+                    v.Viewport__ScaleDenominator = v.Viewport__Kind === 'Perspective' ? null
+                        : Na__Format__Clamp(Number(v.Viewport__ScaleDenominator) || Na__DrawingSet__DefaultScale(v.Viewport__Kind), 1, 5000);
+                    v.Viewport__PlanKind = v.Viewport__Kind === 'Plan' ? (v.Viewport__PlanKind || 'RoofPlan') : null;
+                    v.Viewport__PanM = Na__DrawingSet__Point3(v.Viewport__PanM);
+                    ['Viewport__Side', 'Viewport__CentreM', 'Viewport__CameraSource', 'Viewport__Points', 'Viewport__View'].forEach((k) => { delete v[k]; });   // <-- Now the scene's
                     return v;
                 });
             sheet.Sheet__Annotations = (Array.isArray(s.Sheet__Annotations) ? s.Sheet__Annotations : [])
@@ -291,6 +474,60 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | The Scene a Loaded Viewport Shows: its own, else the one its older keys described
+    // ------------------------------------------------------------
+    // Before scenes a viewport kept its view: an elevation its side and centre,
+    // a 3D viewport a saved view or a preset (0.4.4: its own camera), and any
+    // viewport not showing a saved view its own points. Each becomes a scene,
+    // an identical one shared.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__SceneForViewport(doc, v) {
+        const linked = Na__DrawingSet__Scene(doc, v.Viewport__SceneId);
+        if (linked) return linked;
+        const source = v.Viewport__CameraSource || {};
+        const own = v.Viewport__View ? Na__DrawingSet__CameraJson(v.Viewport__View.View__Camera) : null;
+        const saved = v.Viewport__Kind === 'Perspective' && !own ? Na__DrawingSet__Scene(doc, source.SavedViewId) : null;
+        if (saved) return saved;
+        return Na__DrawingSet__FindOrMakeScene(doc, {
+            name   : v.Viewport__Title || Na__DrawingSet__NaturalName(v.Viewport__Kind, v.Viewport__Side),
+            kind   : v.Viewport__Kind,
+            side   : v.Viewport__Side,
+            centre : v.Viewport__CentreM,
+            camera : own,
+            preset : source.Preset,
+            points : v.Viewport__Points
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Points Placed on Another Engine Sheet, Moved Onto Today's (on load, and on a new set)
+    // ------------------------------------------------------------
+    // sheetMm: the engine's ({ WidthMm, HeightMm }, Na__EngineHost__SheetMm);
+    // refit: the engine's own (Na__EngineHost__RefitPoints), so nothing of it is
+    // copied here. A set that names no sheet was placed on the one before A3.
+    // 3D scenes and the 3D Environment's points grow with the picture; an elevation or the roof plan is true scale, so its points keep
+    // their millimetres and only follow the sheet's centre. The set then names
+    // the sheet, so it happens once (when the set is next saved).
+    // ------------------------------------------------------------
+    function Na__DrawingSet__FitToSheet(doc, sheetMm, refit) {
+        const engine = doc && doc.AuraDrawingSet__Engine;
+        if (!engine || !sheetMm || typeof refit !== 'function') return doc;
+        const now = [Number(sheetMm.WidthMm), Number(sheetMm.HeightMm)];
+        const was = engine.SheetMm;
+        const from = was && Number(was.WidthMm) > 0 && Number(was.HeightMm) > 0 ? [Number(was.WidthMm), Number(was.HeightMm)] : null;   // <-- null: placed before A3
+        if (!from || from[0] !== now[0] || from[1] !== now[1]) {
+            (doc.AuraDrawingSet__SavedViews || []).forEach((v) => {                // <-- After Normalise: an older viewport's points are its scene's by now
+                v.View__Points = Na__DrawingSet__CleanPoints(refit(v.View__Points, from, v.View__Kind === 'Elevation' || v.View__Kind === 'Plan'));
+            });
+            engine.WorkingPoints = Na__DrawingSet__CleanPoints(refit(engine.WorkingPoints, from, false));
+        }
+        engine.SheetMm = { WidthMm: now[0], HeightMm: now[1] };
+        return doc;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -298,7 +535,7 @@
 // REGION | Finding Records
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Find a Sheet, a Viewport, an Annotation or a Saved View by Id
+    // FUNCTION | Find a Sheet, a Viewport, an Annotation or a Scene by Id
     // ------------------------------------------------------------
     function Na__DrawingSet__Sheet(doc, id) {
         return (doc && doc.AuraDrawingSet__Sheets || []).find((s) => s.Sheet__Id === id) || null;
@@ -312,8 +549,8 @@
         return (sheet && sheet.Sheet__Annotations || []).find((a) => a.Annotation__Id === id) || null;
     }
 
-    function Na__DrawingSet__SavedView(doc, id) {
-        return (doc && doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Id === id) || null;
+    function Na__DrawingSet__Scene(doc, id) {
+        return id ? (doc && doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Id === id) || null : null;
     }
     // ------------------------------------------------------------
 
@@ -332,15 +569,22 @@
         Na__DrawingSet__NewSheet,
         Na__DrawingSet__NewViewport,
         Na__DrawingSet__NewAnnotation,
-        Na__DrawingSet__NewSavedView,
+        Na__DrawingSet__NewScene,
+        Na__DrawingSet__FindOrMakeScene,
+        Na__DrawingSet__SceneName,
+        Na__DrawingSet__DefaultScale,
+        Na__DrawingSet__CameraToJson,
+        Na__DrawingSet__CameraFromJson,
+        Na__DrawingSet__CameraJson,
         Na__DrawingSet__CleanPoints,
         Na__DrawingSet__WorkingPoints,
         Na__DrawingSet__SetWorkingPoints,
         Na__DrawingSet__Normalise,
+        Na__DrawingSet__FitToSheet,
         Na__DrawingSet__Sheet,
         Na__DrawingSet__Viewport,
         Na__DrawingSet__Annotation,
-        Na__DrawingSet__SavedView
+        Na__DrawingSet__Scene
     };
 
 // endregion -------------------------------------------------------------------

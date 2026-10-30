@@ -15,9 +15,13 @@
 // - THE ENGINE IS NOT AURA'S CODE. It is a pinned copy of PainterlyNPR's
 //   02__Src__AppModules (04__Lib__CoreEngine__VersionLocked, reached through the
 //   import map's "PainterlyNPR/" prefix in index.html). Nothing in AURA edits
-//   it: a change goes into PainterlyNPR, then a sync brings the new version.
-//   Only this module and Na__EngineHost__Dump__ (everything it holds, read
-//   only, for the parameter dump) import from it.
+//   it, and nothing of it is copied into AURA (Adam, 30-Oct-2026: "dont
+//   duplicate code the npr repo remains definitive source"): a change goes
+//   into PainterlyNPR, then a sync brings the new version. Only this folder
+//   imports from it: this module, Na__EngineHost__Panel__ (the engine's panel
+//   config, its menus and paper), Na__EngineHost__Assets__ (its Assets
+//   drawer, placed assets and given materials) and Na__EngineHost__Dump__
+//   (everything it holds, read only, for the parameter dump).
 // - BOOT is PainterlyNPR's own AppCore Init (region Boot) without its panel,
 //   graph strip and header: the same context options, programs, vertex arrays,
 //   targets and first request. When the engine's Init changes, this boot is
@@ -37,17 +41,34 @@
 //   engine (Borrow, Release).
 // - STILLS (Na__EngineHost__RenderStill) are PainterlyNPR's PNG export, kept in
 //   memory: the camera swapped in, the whole graph run at a scale, the
-//   compositor read back, everything put back. The engine's sheet is 300 x 200
-//   mm and every pen width is millimetres on it, so an orthographic still with
-//   a half-height of (200 mm x scale / 2000) metres is a true-scale drawing
-//   whose pen widths are true on the paper (the engine's own 1:100 elevation
-//   is a 10 m half-height).
+//   compositor read back, everything put back. The engine's sheet is A3, 420
+//   x 297 mm since PainterlyNPR 0.8.3 (read here from the engine, never set:
+//   SheetMm), and every pen width is millimetres on it, so an orthographic
+//   still with a half-height of (sheet height x scale / 2000) metres is a
+//   true-scale drawing whose pen widths are true on the paper (1:50 on A3 is a
+//   7.425 m half-height, the engine's own measured elevation).
+// - POINTS FROM ANOTHER SHEET (RefitPoints): a drawing set placed its points
+//   on the sheet the engine had then; the engine's own RefitPoints moves them
+//   to stand over the same part of the drawing on today's.
 // - ONE ENGINE A PAGE: its state, GPU and camera are module singletons, so the
 //   3D Environment and every viewport share it, one render at a time.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.6.0 (AURA 0.4.3)
+// - The engine's sheet is A3 (PainterlyNPR 0.8.3; Adam: the line work must
+//   look as it would printed at scale): Na__EngineHost__RefitPoints hands the
+//   engine's RefitPoints to the drawing set, through the module's namespace so
+//   a pin from before the seam still loads (and leaves points as they are).
+//
+// 30-Oct-2026 - Version 1.5.0 (AURA 0.4.0)
+// - The folder is the door: Na__EngineHost__Assets__ mounts the engine's own
+//   Assets drawer, and Na__EngineHost__Panel__ reads its panel config.
+// - Settings keeps Assets and Materials (when there are any) and
+//   ApplySettings puts them back whole, the scene rebuilt by the engine
+//   (Na__EngineHost__Assets__); Notify is exported for the folder's modules.
+//
 // 30-Oct-2026 - Version 1.4.0 (AURA 0.3.0)
 // - Art Direction Points (region of that name): the engine's own point
 //   editor (65__ArtDirection__InfluencePoints: its handles, rings and node of
@@ -139,6 +160,7 @@
         PainterlyNPR__ArtDirection__INDICATED_MATERIALS  as  INDICATED_MATERIALS,
         PainterlyNPR__ArtDirection__POINT_TYPES          as  POINT_TYPES
     } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Points__.mjs';
+    import * as PainterlyNPR__Points from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Points__.mjs';   // <-- RefitPoints (0.8.3 on) by name at call time: a missing named import would stop the whole page on an older pin
     import {
         PainterlyNPR__Interface__DuplicatePoint,
         PainterlyNPR__Interface__PointById,
@@ -170,6 +192,7 @@
     import ControlsConfig from 'PainterlyNPR/80__System__HudOverlay/Na__Interface__Controls__Config.json' with { type: 'json' };
     import { PainterlyNPR__PassViewer__FS_VIEW as FS_VIEW } from 'PainterlyNPR/81__Hud__PassViewer/PainterlyNPR__PassViewer__Shader__.mjs';
     import { Na__Format__ParseReadout } from '../03__AppUtils/Na__AppUtils__Format__.js';
+    import { Na__EngineHost__AssetsSettings, Na__EngineHost__AssetsFromSettings } from './Na__EngineHost__Assets__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -343,6 +366,23 @@
 
     function Na__EngineHost__SheetMm() {
         return { WidthMm: SHEET_WIDTH_MM, HeightMm: SHEET_HEIGHT_MM, PxPerMm: BASE_PX_PER_MM };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Points Placed on Another Sheet, Moved Onto the Engine's (copies)
+    // ------------------------------------------------------------
+    // fromSheetMm: [width, height] of the sheet they were placed on; null for
+    // the engine's previous sheet (everything before A3). trueScale: a view
+    // whose half-height comes from the sheet and a scale (an elevation, the
+    // roof plan), so the world keeps its millimetres and only the centre moves;
+    // otherwise the picture, and the points with it, grow with the sheet. An
+    // engine without the seam leaves them as they are.
+    // ------------------------------------------------------------
+    function Na__EngineHost__RefitPoints(points, fromSheetMm, trueScale) {
+        const refit = PainterlyNPR__Points.PainterlyNPR__ArtDirection__RefitPoints;
+        if (typeof refit === 'function') return refit(points, fromSheetMm, !!trueScale);
+        return JSON.parse(JSON.stringify(Array.isArray(points) ? points : []));
     }
 
     function Na__EngineHost__SceneCounts() {
@@ -560,6 +600,7 @@
     function Na__EngineHost__Settings() {
         const out = {};
         Na__EngineHost__SETTING_KEYS.forEach((k) => { if (State[k] !== undefined) out[k] = JSON.parse(JSON.stringify(State[k])); });
+        Na__EngineHost__AssetsSettings(out);                                     // <-- The placed assets and given materials, when there are any (Na__EngineHost__Assets__)
         return out;
     }
 
@@ -575,6 +616,8 @@
                 State[k] = settings[k];
             }
         });
+        if (settings.Paper && settings.Paper.Whiteness === undefined && typeof State.Paper.Whiteness === 'number') State.Paper.Whiteness = 0;   // <-- A set saved before Page whiteness (engine v0.8.5) is on its sheet's own tone
+        Na__EngineHost__AssetsFromSettings(settings);                             // <-- Whole, a missing one meaning none; the scene rebuilt when they changed
         PainterlyNPR__RenderGraph__Bump(...Na__EngineHost__ALL_INPUTS);
         if (!quiet) {
             PainterlyNPR__RenderGraph__Request('Refine');
@@ -1019,6 +1062,7 @@
         Na__EngineHost__Boot,
         Na__EngineHost__Version,
         Na__EngineHost__SheetMm,
+        Na__EngineHost__RefitPoints,
         Na__EngineHost__SceneCounts,
         Na__EngineHost__BuildingBounds,
         Na__EngineHost__Ready,
@@ -1042,6 +1086,7 @@
         Na__EngineHost__Settings,
         Na__EngineHost__ApplySettings,
         Na__EngineHost__OnChange,
+        Na__EngineHost__Notify,
         Na__EngineHost__PointTypes,
         Na__EngineHost__MaxPoints,
         Na__EngineHost__Points,

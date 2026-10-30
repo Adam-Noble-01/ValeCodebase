@@ -1,5 +1,192 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.3, 30-Oct-2026: Leaders Leave Beside the First Line
+
+**Asked by Adam** (a screenshot, the leader meeting the left side of the words at their first line ringed): "Ensure
+the leaders when created attach to this kind of position of the text box currently they awkwardly attach to the tops
+of the boxes which looks shit ensuring flipping right / left jusiticfcation switches the leader side in realtion to
+its host box".
+
+**Built:**
+- **Where a leader leaves** (`Na__Handwriting__PenLeaders__.js` 1.4.0, `Na__Annotations__Layer__.js`): unless dragged
+  or picked, a leader now leaves the words' side, level with the middle of the first line. That is half a capital
+  down for architect's capitals, or the small letters' middle in a joined-up hand. Before, it left the top or bottom
+  of the box.
+- **The side follows the justification:** words set Left lead from the left, Right from the right. Centre and Box
+  lead from the side nearer what the leader points at.
+- A place dragged or picked in the panel still wins. The panel's automatic choice now reads "Beside the first line".
+- Existing leaders with no place set move to the new start when the sheet next draws.
+
+**Checked:** both files parse, the import check is clean, and the start points were checked for each justification
+and tip (a picked place still wins, and a call without the note behaves as before).
+
+## Version 0.5.2, 30-Oct-2026: Parameters Above the Art Direction Points
+
+**Asked by Adam** (a screenshot of the 3D Environment's panel): "Flip the order of these".
+
+**Built:** the panel's two sections swap: **Parameters** first, then **Art direction points**
+(`Na__Environment3d__Stage__.js` 2.0.1). Each still folds and is remembered as before; nothing else moves.
+
+**Checked:** the module parses. Not run in a browser here: Adam tests it.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.5.1, 30-Oct-2026: Selecting Only While the Assets Drawer Is Out
+
+**Asked by Adam:** "In both apps make it so as you can only select items when the assets menu is open, i keep
+annopyingly selecting and highliting things so i need to way to gate it".
+
+**Built** (`10__System__EngineHost/Na__EngineHost__Assets__.js` 1.1.0):
+- With the Assets drawer folded away, a click on the 3D Environment's drawing selects nothing and paints nothing
+  (`AssetsTap` asks `Na__EngineHost__AssetsOpen` first). Orbit, pan, zoom and the art direction points are untouched.
+- Folding the drawer away does what leaving the tab does: the selection goes, the brush is put down and a placement is
+  cancelled, so nothing stays outlined (`WatchDrawer`, watching the root's `PainterlyNPR--assetsOpen`).
+- **PainterlyNPR v0.8.6** (uncommitted) has the same gate as engine seams, `PainterlyNPR__SceneEdit__Editing` and
+  `PainterlyNPR__SceneEdit__WatchLibrary`, used by its own app. AURA's pin is v0.8.5, without them, so the host keeps
+  its two small helpers until the next sync, then takes the engine's.
+
+**Checked:** the module parses.
+
+**Not yet:** not run in a browser here: Adam tests it.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.5.0, 30-Oct-2026: Scenes, SketchUp to LayOut
+
+**Asked by Adam** (a screenshot with the Saved views section ringed, and an arrow from its icon to the strip): "Removed
+the saved views menu section its useless and dosnt work trace the code clean up / 2. move Saved Views Logo to the views
+tags and at the end of that list add a +Add Scene, right clicking the tabs should allow for renaming of scenes, these
+scenes becoime viewports in the layout think SketchUp -> Layout logic". **His calls:** "Scenes SketchUp Style populate
+all like now by default. when in the elevations its locks the camera to those orientations, i will get anothe ragent to
+build a elevations camera tool as we need to be able to adjust elevation cut position etc"; an updated scene's
+viewports all follow; right-click offers Rename, Update from camera, Duplicate, Delete; Set and Reload go.
+
+**Built:**
+- **Scene tabs** in the 3D Environment's toolbar (`Na__Environment3d__Stage__.js` 2.0.0): the Saved views icon, a tab
+  a scene, then **+ Add Scene**, scrolling sideways when there are more than fit.
+  - **A click opens a scene**: its camera and its art direction points. The tab stays lit while the camera moves, as a
+    SketchUp scene tab does, and point edits save into the scene.
+  - **An elevation or the roof plan** opens square and to scale (at the scale of the first viewport showing it), and
+    holds its orientation while open: pan and zoom, never orbit. R brings it back. The engine's navigation can only
+    hold the camera still, not its orientation, so a move that turns it is squared again in the same frame; a seam in
+    PainterlyNPR's navigation, and the elevation camera tool (the cut position), are to come.
+  - **+ Add Scene** keeps the camera and the points as "Scene N" (while an elevation is open, a copy of it centred where
+    it is now, so it stays to scale).
+  - **Right-click a tab:** Rename (typed in the tab; Enter or leaving keeps it, Escape does not; a name in use gets a
+    number), Update from camera (SketchUp's Update Scene: a 3D scene takes the camera, a scaled one where it is
+    centred; every viewport showing it follows; another scene than the open one asks first and keeps its own points),
+    Duplicate, Delete (with the viewports showing it, after naming them; undo brings both back).
+  - **The engine's presets** stay as the picker after the tabs; picking one lets the open scene go.
+- **The Saved views section is gone** from the panel, with its list, form, `SaveView` and `RenderViews`, 0.4.4's
+  viewport strip, Set and Reload, and their styles (`.aura-views__*` in two stylesheets, `.aura-vpstrip*`). The panel is
+  Art direction points and Parameters.
+- **On a sheet** (`Na__Viewports__Editor__.js` 2.0.0, `Na__DrawingSheets__Workspace__.js` 1.3.0): "Add a view" lists
+  the scenes first, then new ones (an elevation, the roof plan, a preset, the 3D Environment's view now; one already a
+  scene is that scene). A viewport's panel has a **Scene** picker in place of Side and View, says how many other
+  viewports show it, and keeps its own scale, pen, frame and title. Alt-drag and a frame resize pan that viewport only.
+
+**The data** (`Na__DrawingSet__Model__.js` 1.4.0, `Na__Viewports__Views__.js` 2.0.0):
+- **A scene** is a record of `AuraDrawingSet__SavedViews` (the API takes only its four root keys, so the key keeps its
+  name): `View__Id`, `View__Name`, `View__Kind` (Perspective, Elevation, Plan), `View__Side`, `View__Camera` (a 3D
+  scene's, in 0.4.4's three-stage form), `View__Preset` (a 3D scene that starts from an engine preset, read from the
+  engine, never copied), `View__CentreM` (a scaled scene's; null is centred on the building) and `View__Points`.
+- **A viewport** is `Viewport__SceneId`, `Viewport__Kind` (its scene's, kept for the sheet's code), frame, scale, plan
+  kind, profile, title, and `Viewport__PanM` (its own pan, metres from the scene's centre).
+- **Older documents move across on load:** each viewport gets the scene it was showing (an elevation's side and centre,
+  a saved view, a preset, 0.4.4's own camera), an identical one shared, its points with it; the old keys
+  (`Viewport__Side`, `CentreM`, `CameraSource`, `Points`, `View`) go. So "populate all like now": every view there was
+  is a tab. A second load changes nothing. `FitToSheet` (A3) refits each scene's points by its kind, after the move.
+- **Agreed:** the A3 session (FitToSheet runs after Normalise, scaled scenes refit true scale), the whitecard session (a
+  scene's camera is in AURA's world metres, after the AURA scene file's model placement, which nothing reads yet).
+
+**Checked:** every module in the 3D Environment, viewports, drawing set and sheets parses; every relative named import
+in AURA resolves (0 problems); in Node, a new drawing set makes six scenes for its six viewports, and an older set (two
+sheets, elevations with and without a centre and points, a saved view, a preset, a 0.4.4 own camera) moves onto five
+scenes, the two Front Elevations sharing one, and normalises again unchanged.
+
+**Not yet:**
+- Not run in a browser here: Adam tests it.
+- Not to be pushed with nothing else: an older AURA cannot read a drawing set this version has saved (the handwriting
+  session, pushing 0.4.9, was asked to wait for Adam's word).
+- The orientation hold is AURA's; an engine seam would be cleaner. The elevation camera tool is another job (Adam).
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.9, 30-Oct-2026: Architect's Capitals, Even Joined-Up Lines, and Box Handles
+
+**Asked by Adam:**
+- With two screenshots of garbled capital notes and a scan of a hand-lettered note: "Investigate why the model is
+  failing off like this? on multiline text, do we need to tell it to break lines properly? the writing needs to be like
+  image 03, all caps (but can do regular) but neat".
+- "Also the careful and quick hand presets do not work, they fail to generate only the first does".
+- With a screenshot, the note box's left side ringed: "Add a handle here so you can drag to set the text box size,
+  remove the box size from the menu its simply not intuitive".
+
+**His calls:**
+- Architect's capitals by default.
+- Old notes redrawn in capitals.
+- Titles in capitals.
+- One letter size on every joined-up line.
+- A joined-up note shown line by line, with a line the model can't write lettered in capitals.
+
+**What was wrong:**
+- **Capitals, not line breaks.** The Graves model learned from ordinary handwriting (IAM-OnDB), where capitals mostly
+  start sentences. Given a line of them it loses its place: TTTT, AMD for AND, PRINTIMG, letters dropped. The notes
+  already wrap by words (each line one phrase, at most 42 characters), and the failures are inside the lines.
+- **Measured:** two notes in capitals and in ordinary case, with all three hands and two copies each. Capitals failed
+  outright 4 times in 12 and came out garbled the other 8. Ordinary case wrote all 12 legibly.
+- **Careful and Quick were not broken.** In capitals any hand fails at random: Steady failed one of the test notes too,
+  and got through on Adam's note by the luck of its seed.
+- **A real layout flaw:** each phrase was scaled to its own ink height, so a line with a g, a y or a slip came out
+  smaller. Over 148 phrases, lines without descenders were drawn 45% larger.
+
+**Built:**
+- **Architect's capitals** (`02__Engine__Wasm/Na__HandwritingEngine__Capitals__.js` 1.0.0, new). Single-stroke
+  capitals, figures and symbols (A to Z, 0 to 9, punctuation, ± × ° Ø ² ³ & # % @), each a few pen strokes, spaced by
+  their sides.
+  - Every letter is drawn with a seeded hand's variation: height, width, lean and drop; corners off true; stroke ends
+    carried over a joint or short; a slight bow; a fine tremor.
+  - The note's hand sets how much: Careful neatest, Quick liveliest.
+  - Lower case is lettered in capitals. A capital stands 0.7 of the letter height, so a note keeps its size.
+  - It needs no model, so it is drawn on the page at once (a few milliseconds a note). It never fails and never
+    misspells.
+- **Letters per note** (`Annotation__Letters`; the panel's Letters, after Hand): Architect's capitals (the default)
+  or Joined-up handwriting. Notes from before take the default, so they are redrawn in capitals; switching one back
+  writes its joined-up copy again from its seed.
+- **The joined-up hand, steadier:**
+  - **One letter size on every line** (`Na__HandwritingEngine__Neural__.js` 1.2.0): the model's own scale (470 units
+    to a letter height) with the densest band of ink at one height.
+  - **A run typed in capitals** (NG, LED) is drawn in capitals at once.
+  - **A phrase the model cannot write** after its tries is lettered in capitals with a warning; a note never fails as
+    a whole now.
+  - **Numbers and symbols** stand as tall as a capital on the baseline (they were a whole letter height tall, so
+    "1 : 50" towered over its words).
+  - **One gap where runs meet** (NG31 tight, a typed space one word gap; the studio's lead space now 0).
+  - **Line by line:** the worker posts each line's ink as it is written, and the sheet draws it with the typed rest
+    beneath.
+- **Titles in capitals:** the title block's entries and every viewport's title (`Na__Handwriting__Lettering__.js`
+  1.1.0) are drawn at once. They never wait, stall or show typed.
+- **Each ink path carries its line** (`L`) and, in capitals, its word in the line (`U`), for UI HELPER's Justify.
+- **The box's two sides** (`Na__Annotations__Layer__.js` 1.5.0): a selected note has a handle on each side; drag
+  either to size the box its words wrap to. The panel's Width (mm) is gone.
+- **The old stroke capitals go** (`TechStrokes` 1.2.0); the capitals engine draws them now.
+
+**AURA 0.3.4 (live 30-Oct-2026 15:05:49, logged here):** handwriting in the title block and viewport titles
+(Adam: "Use handwriting in the titleblock and viewports not text"), through the model, kept on each device and
+typed until written. Its short entries often stalled (a four-letter word stalled in up to 75% of tries), which is a
+further reason the titles are capitals now.
+
+**Checked:**
+- Every changed module parses. The import check finds no problem in these files (its 8 are in another session's 3D
+  Environment work in progress).
+- Six notes ran through the real layout: three in capitals (a few milliseconds each) and three joined-up (partial ink
+  arrives line by line). Every path carries L, and capitals carry U.
+- The title block proof letters every entry, including the address and "1:50, 1:100 AT A1".
+- Looked at: the glyph sheet at 9 mm, words at 30 px/mm, and the scanned note's words in each hand.
+
+**Not yet:** the joined-up hand can still misform a letter that the check cannot see ("te#" for "text"). Capitals are
+the answer for drawings that will be issued.
+
 ## Version 0.4.8, 30-Oct-2026: A Parameter Dump for Developers
 
 **Asked by Adam** (a screenshot of the avatar menu, an arrow under "Save the drawing set now"): "For developers in here
@@ -45,6 +232,524 @@ debugging / handover to coding agents"
   byte for byte the PC's). The API reads the config fresh, so no restart.
 
 (Committed at Adam's word: "Commit it". The code and its records only: the versions round it were not done yet.)
+
+## Version 0.4.7, 30-Oct-2026: Where a Leader Leaves Its Words, and Justified Notes
+
+**Asked by Adam** (a screenshot of a leader note: where the leader meets the words circled, with arrows to the left and
+to the right under the note): "Add controls to move the point where it hits the textr box / add jusfity text left,
+right, centre and box"
+
+**Built:**
+- **Where a leader leaves** (`Na__Handwriting__PenLeaders__.js` 1.3.0, `Na__Annotations__Layer__.js` 1.4.0).
+  - A selected leader shows a small square where it meets the words. Drag it and it slides round the words' box to
+    the nearest side: under, over, or either end. The leader always leaves that side square to it.
+  - The note panel's **Leader leaves** picks a place instead: Automatically (as before, toward the tip), under, over
+    or beside the words. A dragged place shows as "Where dragged", and its square fills in.
+  - The place is stored as a side and a share along it (`Annotation__LeaderFrom { Side, At }`), so it stays in the
+    same place on the box when the words change.
+- **Justify** (new `Na__Annotations__Justify__.js` 1.0.0).
+  - Four buttons in the note panel: Set left, Centred, Set right, and Box (justified).
+  - They are set on the sheet from the ink already written, so they are instant and the hand-written copy stays the
+    same copy.
+  - Centre and right move each line within the note's own inked width.
+  - Box widens every line but the last to the widest, sharing the extra between its word spaces. A short line (a
+    paragraph's end) is left as it is.
+  - Lines come from each ink path's line number when the engine gives one; the handwriting session is adding it.
+    Otherwise every path is measured from its own path text and the lines are split at the widest vertical gaps.
+  - Words are the gaps clearly wider than a pen lift.
+  - A note not yet written shows its typed stand-in centred or right too.
+  - Four new icons (`Na__AppUtils__Dom__.js`).
+- **The data** (`Na__DrawingSet__Model__.js`): `Annotation__LeaderFrom` (null: automatic) and `Annotation__Align`
+  ('Left'). Older notes load as before, and the undo list says "Move where a leader leaves" and "Justify a note".
+- **Checked in node:**
+  - synthetic three-line ink: centred, right and box offsets as expected, the last line left alone;
+  - the drag snaps to the nearest side.
+- Not run in the browser.
+
+**Not yet:** box justify on joined-up writing depends on the gaps between its words. Where the model writes words
+close together, a line may stay as written.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.6, 30-Oct-2026: Page Whiteness, Ready for the Next Engine Sync
+
+**Asked by Adam:** "Add a new sheet parameter - page whiteness alows for tuning the page to be whiter"
+
+**Built:**
+- **In PainterlyNPR (v0.8.5), not here.** Page whiteness is an engine control (Paper and finish, under Sheet,
+  0 to 100%, default 0%): it lifts the paper's tone toward white, the washes with it, the ink untouched. AURA builds its
+  parameters from the engine's panel config, so the slider appears in AURA by itself once the pin carries v0.8.5.
+  Nothing of it is copied here.
+- **The sheets' paper** (`Na__EngineHost__Panel__.js`): the bare paper tile is made again when Page whiteness moves
+  (it is in the tile's key), and the sheets' flat tone is the engine's `PainterlyNPR__Paper__Tone()` when the pin has
+  it, so a sheet and its pictures stay one piece of paper. On the current pin (v0.8.2) nothing changes.
+- **Saved views** (`Na__EngineHost__PainterlyNpr__.js`, ApplySettings): a view saved before Page whiteness opens at 0%,
+  its own sheet's tone, instead of keeping whatever the slider last read.
+
+**Not yet:**
+- Not tested in the browser (Adam tests). Production needs a push.
+
+**Synced** (Adam: "Commit and sync"): PainterlyNPR v0.8.5 committed as aea59fd (with v0.8.4's folding panel) and
+copied from the commit into `01__CoreLib__PainterlyNPR__v0.8.5`; index.html's import map and its record point at it,
+and `--check` says the copy is untouched and the same as the repo. Init did not change since v0.8.3, so the engine
+host needed nothing new. The v0.8.3 folder stays until Adam has checked v0.8.5.
+
+(AURA's own files uncommitted, waiting on Adam.)
+
+## Version 0.4.5, 30-Oct-2026: Spline Leaders You Bend by Hand
+
+**Asked by Adam** (two screenshots: a hand-drawn sheet's leaders, long and smooth, curving under their notes; and
+AURA's, a straight, wobbly line): "Image 01 shows the leaders how we need / image 02 shows our crappy leaders / Add
+natural feeling spline, each time you click and drag a point it smoothly iterpolits it / and the you can edit the
+spline after if needed / holding control and clicking the spline should insert new points / control shift click or
+select delet delete poihs / Aim: create beautiful leaders"
+
+**Built:**
+- **The curve** (`Na__Handwriting__PenLeaders__.js` 1.2.0). A leader now leaves straight down (or up) from under its
+  words, near the side it is heading for, and swoops to its tip. Like image 01, it arrives a little off the straight
+  line, and the note's seed decides which way and how far. It leaves from the note's side only when the tip is beside
+  the words.
+- **Bend points.** With bend points, the leader is a centripetal Catmull-Rom spline through every one. It passes
+  through each point exactly and never loops or overshoots when points bunch up. It still leaves its words along the
+  same downward line.
+- **The line.**
+  - One smooth path at the nib's width, in place of the studio's many short wobbly strokes. A hand's slow, faint tremor
+    of 0.05 mm (`Na__PenLeaders__TREMOR_MM`) fades out at both ends.
+  - The variable pen keeps a pressure swell along it.
+  - The arrowhead is laid along the curve's arrival over its last 2 mm.
+- **Editing** (`Na__Annotations__Layer__.js` 1.3.0):
+  - A selected leader shows its bend points as small handles. Drag one and the leader follows smoothly as you drag.
+  - Ctrl + click the leader to add a point there, in its place along the curve; it is picked up so the same drag
+    places it.
+  - Ctrl + Shift + click a point to take it out, or click it (it fills in) and press Delete. Delete takes the note only
+    when no point is selected.
+  - The note panel says how, and gains Straighten once a leader has points.
+  - The hit line follows the curve.
+  - Cmd works for Ctrl on a Mac.
+- **The data** (`Na__DrawingSet__Model__.js`): `Annotation__BendsMm`, an array of `{ X, Y }` mm on the sheet from the
+  words to the tip. Older notes load with none, and the undo list says "Bend a leader" (`Na__DrawingSet__History__.js`).
+
+**Not yet:** not tested in the browser (Adam tests). The bend points stay on the sheet when the note is moved, as the
+tip does. Production needs a push.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.4, 30-Oct-2026: The Strip Is the Drawing's Viewports, Each With Its Own View
+
+**Asked by Adam** (with a screenshot of the 3D Environment's toolbar, the five camera presets ringed): "Ensure these
+reflect the drawing viewports, clicking them should open the viewport in the viewer 3d page and allow you to view, set,
+load, reload the views that go on to become the the viewports, this data will have have to be jsonified per viewport in
+my style, see the ValeVision 3D Drawing layout editor and speak with the other agent currently working on building out
+the structure schema for per project file saving." **His calls:** every viewport of every sheet in the strip, the
+engine presets gone from it; Set changes that viewport only; an elevation or the roof plan takes only its centre; the
+data stays in the drawing set.
+
+**Built:**
+- **The viewport strip** (`Na__Environment3d__Stage__.js` 1.5.0) replaces the camera presets: each sheet's name, then
+  its viewports as chips ("Front Elevation 1:50", "View From the Garden"). It scrolls sideways when there are more than
+  fit, and it redraws when a viewport is added, retitled or removed, or after an undo.
+- **A click opens the viewport here**: its camera (a scaled view square to the building and to scale) and its art
+  direction points, which the Art direction points section now edits (`Na__Environment3d__ArtDirection__.js` 1.1.0, a
+  viewport owner beside the saved view). Its chip stays lit while you look round.
+- **Set** (lit once the camera is off the viewport's view) writes the view back:
+  - A 3D viewport takes the camera as its own. One that showed a saved view takes a copy of that view's points in the
+    same step, so it draws as it did and stands alone from then on.
+  - An elevation or the roof plan takes only where the camera is centred (`Viewport__CentreM`, as the sheet's Alt-drag
+    pan does); its side and scale stay, and the live camera goes back square and to scale.
+- **Reload** puts the camera back as the viewport has it. Saved views stay in the panel, as views to load and then Set
+  into a viewport.
+- **The engine's camera presets** are a "Presets" picker after Reload (Adam, on the first hand-over: "Fix these"):
+  starting points, not the strip. Pick one and the live camera goes there; a viewport open in the strip stays open, so a
+  preset can be Set into it. R still resets the camera.
+- **The sheet's View picker** (`Na__Viewports__Editor__.js` 1.3.0) shows "Its own view" for a viewport set this way;
+  picking a preset or a saved view there lets its own camera go.
+
+**The data, per viewport** (`Na__DrawingSet__Model__.js` 1.3.0, `Na__Viewports__Views__.js` 1.2.0). Every viewport
+carries one block, in three-stage keys with their units, after ValeVision 3D's saved camera scenes
+(`PresentationMode__Scene__CameraPosition`) and the Layout Editor's viewport records:
+
+```json
+"Viewport__View": {
+    "View__Camera": {
+        "Camera__Mode": "Perspective", "Camera__TargetM": [1.5, 3.25, -2.125], "Camera__YawDeg": 37.123457,
+        "Camera__PitchDeg": 12.5, "Camera__DistanceM": 23.456789, "Camera__FovYDeg": 32,
+        "Camera__HalfHeightM": 10, "Camera__Ceiling": 1
+    },
+    "View__SetIso": "2026-10-30T15:42:10.000Z",
+    "View__SetBy": "USR00000001"
+}
+```
+
+- `View__Camera` is null until a 3D viewport is set: the viewport then follows `Viewport__CameraSource` (a preset or a
+  saved view), as before. An elevation's or the roof plan's is always null: their view is their side, scale and
+  `Viewport__CentreM`, so nothing stored can take them off true scale.
+- `Na__DrawingSet__CameraToJson` and `CameraFromJson` are the only crossing between the file and the engine's camera
+  object. **Saved views use the same form** (Adam: "Fix these"): `NewSavedView` writes it, every reader goes through
+  `CameraFromJson`, and Normalise moves a saved view from before 0.4.4 (the engine's `{ Mode, Yaw, ... }`) across
+  through `Na__DrawingSet__CameraJson`, so the file has one camera shape. Normalise gives older documents the block, so nothing needs migrating. The block sits inside
+  `AuraDrawingSet__Sheets`: no new root key, no API change.
+- **Agreed with the Project AURA structure session:** inside the drawing set, no new file. They are making no change to
+  the root keys, Normalise or the API. The points are copied when a viewport leaves its saved view, and scaled views
+  take the centre only. The signatures of `Na__Views__Camera`, `PointsOwner`, `Points` and `SetPoints` (the sheet's
+  point editor and the render queue call them) are unchanged.
+
+**Checked:** every changed module parses (node --check); every relative named import across the app resolves (a
+scan: 0 problems); the camera's file form round-trips in Node (within a micrometre, inside Set's 1e-4 tolerance), and
+an unreadable block is dropped to null; Normalise moves an old-form saved view across, keeps a new-form one as it is,
+and drops one whose camera cannot be read (as before, when it had none).
+
+**Not yet:**
+- Not run in a browser here: Adam tests it.
+- Push this with nothing older left open: AURA 0.4.3 or earlier, opening a drawing set this version saved, would read
+  its saved views' new camera form as a broken camera.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.3, 30-Oct-2026: The Engine's Sheet Is A3, and Sheet Pictures at 300 dpi
+
+**Asked by Adam:** "ensure in both Aura and the NPR Viewer the page for the 3D Viewer represents an A3 Peiece of paper
+sizes and proportions, this is key so they linework represents how it would actrually look printed at scale". Asked
+four questions first, he chose A3 landscape; the same cameras, so the drawing grows on the bigger page; saved points
+moved with the picture; and "Documents should be 300 dpi on both". The engine's half is PainterlyNPR v0.8.3, in its
+own DEVLOG. (It landed after 0.4.4, which took the next number while this was in flight.)
+
+**Built:**
+- **The sheet is the engine's.** AURA reads it from the engine (`Na__EngineHost__SheetMm`) everywhere. So the 3D
+  Environment's canvas, its fitted shape, the scaled viewports' true scale (sheet height x scale / 2000 m: 1:50 on A3
+  is a 7.425 m half-height) and the largest scaled frame all become A3 at the next sync, with no number of it written
+  here. `index.html`'s canvas attributes (2100 x 1485) and the stage's placeholder size are only first paint; the host
+  sets the size from the engine.
+- **Sheet pictures at 300 dpi** (`Na__Viewports__RenderQueue__.js` 1.2.0): stills are drawn at
+  `AuraConfig__Viewport__RenderDpi` (300) on the paper, in place of the engine's 5 px/mm screen size
+  (`Viewport__RenderScale` is gone). The engine's A3 sheet at 300 dpi is 4961 x 3508 px. A GPU that cannot hold it
+  draws that picture at screen size instead, and says so in the console.
+- **Points from the old sheet** (`Na__DrawingSet__Model__.js` 1.3.1, `Na__DrawingSet__Persistence__.js` 1.2.0): a
+  drawing set keeps the engine sheet its points were placed on, as `AuraDrawingSet__Engine.SheetMm` (inside Engine,
+  the API takes only its four root keys). When a set loads, or is new, `Na__DrawingSet__FitToSheet` moves points from
+  another sheet onto today's with the engine's own `RefitPoints`. A set that names no sheet was placed before A3.
+  Saved views, the 3D Environment's points and 3D viewports grow with the picture (x 1.485 about the centre). An
+  elevation's or the roof plan's points keep their millimetres and follow the centre, because those views are true
+  scale.
+- **The seam** (`Na__EngineHost__PainterlyNpr__.js` 1.6.0): `Na__EngineHost__RefitPoints` reaches the engine's
+  RefitPoints through the module's namespace. The v0.8.2 pin, which has no such export, still loads, and the points
+  stay as they are.
+- **The engine is synced: PainterlyNPR v0.8.3 at c1917f0** (Adam: "Yes, commit v0.8.3", then "Sync now"), in
+  `04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.3/`, copied from the commit. It brings v0.8.0's
+  four technical pens and v0.8.1's paper as well as the A3 sheet. `c1917f0` is the pen session's follow-up, which takes
+  an uncommitted Page whiteness item back out of the panel config. index.html's import map and its record point at
+  it, and the worker's `AURA_VERSION` is 2026-10-30-9. The engine's Init changed only by v0.8.3's two lines for its
+  own page (the sheet's shape and tag), which AURA's host does not need: its stage fits the canvas. All 78 names AURA
+  imports from the engine are exported by the new pin. The v0.8.2 folder stays until Adam has checked this one.
+- The wording that said 300 x 200 now names the engine's sheet: the viewport editor's hint (read from the engine), the
+  config's ScaledFrameNote, the notes in the host, the model, the views and the stage, and the README.
+
+**Not yet:**
+- **The cost of 300 dpi.** Each sheet picture is about 5.6 times the pixels it was, needs about 2 GB of GPU memory and
+  takes several times longer, so a sheet of six views fills in slowly. Lower `AuraConfig__Viewport__RenderDpi` if
+  that is too slow. A lost WebGL context cannot be caught: only a refused size falls back.
+- Not tested in the browser (Adam tests). Production needs a push: the next push sends the new pin and every
+  session's open AURA work with it.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.2, 30-Oct-2026: Icons on the Panel's Sections
+
+**Asked by Adam:** "Load your graphic designer skill and create icons for this app" (a screenshot of the 3D
+Environment's panel: Saved views, Art direction points, Parameters; Paper and finish, Light, Pen, Wash, Sky), then
+"add them to THE LIVE APP and push the vale server ... and add the gaphics tro the graphic designer skill lib".
+
+**Built:**
+- **Eight line icons**, `01__AppAssets__AuraRender/UiIcons__MenuIcons__PanelSections/Icon__PanelSections__<Name>__.svg`
+  (1024 artboard, house ink #172b3a, round caps; 336 to 1,040 bytes): Saved views (a view of a house with a bookmark),
+  Art direction points (a pin in its ring of reach), Parameters (three sliders), Paper and finish (a sheet with its
+  corner curling), Light (the sun), Pen (a drawing nib), Wash (a round brush laying a wash), Sky (a cloud).
+- **Their weight is the app's own glyphs'**: 76.8 per 1024 = `Na__Dom__Icon`'s 1.8 on 24, so at 20 px each draws the
+  chevron's 1.5 px line. The Gold Standards' 60 was tried first and looked spindly beside the 16 px semibold titles.
+- **Wiring:** `Na__Dom__PanelIcon` (`03__AppUtils/Na__AppUtils__Dom__.js` 1.1.0) makes the `<img>`; a section takes
+  `spec.icon` (`Na__AppUtils__Panels__.js` 1.2.0; the Stage's three sections, 1.4.1); a parameters section takes its
+  icon from its key in the engine's panel (`Na__Environment3d__Parameters__.js` 2.2.0: Paper, Light, Pen, Wash, Sky,
+  and "More from the engine" the sliders), the groups inside none; 20 px, the title still left-aligned
+  (`Na__CoreUi__Styles__Panels__.css` 1.1.0).
+- **The skill's copies:** the 20-Series folder `2026-10-30__AuraRender__PanelSections`, the specs and generator in
+  `01__ProductionFiles` (vector-graphic-artist).
+
+**Checked:** lint clean (bar the deliberate weight note), every gap at least 0.94 of a stroke, browser against resvg
+0.996 or better; the real panel modules, stylesheets and the pinned engine's panel config in a harness page: all eight
+load, the five parameter sections get the right icons, the groups inside none, no errors. Not yet seen in the signed-in
+app on the server.
+
+## AURA Scene Schema 1.0.0, 30-Oct-2026: The Scene File and Its Folders (No App Version: Nothing Reads It Yet)
+
+**Asked by Adam:** "update Aura so it can now load the Whitecard model from ValeVision or (SketchUp Eventually) ...
+create a per project subfolder in the established style ... This first method of creating an aura file should copy all
+GLB files accross and make them avaiblible to Auras tools ... Create a schema for the file structure required because we
+will have to store the main asset glb files but user added glb files such as tree and scene dfressing from our library
+... build out a example ... for me to inspect first ... once im happy we will codify into a final schema and then build
+out the Thrower project". **His calls:** library assets, "save a copy but instance it where possible"; the example "in
+the espablished style" in the project's own folder (the first one was built in a staging folder and moved); a re-import
+"zipped and archived, keep the last save, deleted each subiquent zip once one is backed up as a failsage"; then "Yes,
+codify it".
+
+**Codified:**
+- **The scene** (the "aura file"): one per project, `<project>/ValeVision__AuraRender/UserData__AuraScene/<id>__AuraScene__.json`
+  (user data, the API only): the source and every import, one model placement into the engine's world (+Y up, front
+  +Z), the model files (`ModelFile__*`: part, kind, use, role, size, SHA-256), the engine objects made from them
+  (`Object__*`: Id from 1 and never reused, file and node, mesh, SketchUp persistent id, category, material, role) and
+  the library assets stored (`AssetFile__*`). Placed assets and given materials stay the drawing set's (0.4.0); a
+  material's `#Id` is the scene's `Object__Id`.
+- **Its folders:** `Content__AuraScene__ModelFiles` (byte-for-byte copies of ValeVision 3D's whitecard GLBs, names
+  unchanged; `00__Archive` keeps one zip, the last replaced set, the older one deleted only once the new zip checks
+  out) and `Content__AuraScene__AssetFiles` (each library asset's MOD `.glb` and DAT `.json` once, library names; every
+  placement an instance of it, the geometry shared where the asset keeps one shape).
+- **The contract:** `05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json` (JSON Schema 2020-12, in
+  PainterlyNPR's form) and its README; the rules and the import: `AuraRender__SCHEMA__AuraScene__.md` at the root.
+- **The schema project** (`12345__ExampleProject__Schema/ValeVision__AuraRender/`): the two content folders with
+  placeholders and the archive zip's name, `UserData__AuraScene/PROJECTNUMBER__PROJECTNAME__AuraScene__.json.example`
+  (abridged from Thrower), and the package example's note (method two).
+- **Thrower** (`63403__Thrower/ValeVision__AuraRender/`): the first scene, 7 model files, 17 objects (the 14 columns 5
+  instanced shapes); first built as an example for Adam to inspect (dummy GLBs, 4 example stored assets), then for real
+  (below). Adam's drawing set there untouched (its hash the same before and after).
+
+**Checked:** the contract is valid draft 2020-12; Thrower's scene and the schema project's example are valid against it;
+every GLB well formed; the example edit's placements and materials valid against PainterlyNPR's AssetPlacement and
+MaterialAssignment 1.0.0.
+
+**Thrower built for real** (the same day, Adam: "Yes, build Thrower"), on the PC, before AURA's API import exists: the 7
+whitecard GLBs copied byte for byte over the dummies (2,307,120 bytes, each SHA-256 equal to its source; the copies
+dated today, so newer than any dummy that may have reached the server), the example's 4 asset copies and 2 placeholders
+taken out (nothing is placed in Thrower's drawing set), and the scene written as import 1 (rev 1, valid against 1.0.0):
+7 model files, 17 objects, no stored assets. The drawing set's hash the same before and after. A scoped compare
+(`projects --scope ValeProjects__2026/63403__Thrower`): the 7 GLBs to push (2.31 MB, nothing else); the example's 8
+asset files already on the server (a push in the hour before had carried them up), waiting for `engine delete` at
+Adam's word; the scene file PC only. `seed` has no scope (it would upload every PC-only user-data file in the library),
+so the scene file waits for AURA's API. The live drawing set on the server is Adam's rev 120 (rev 55 here).
+
+**On the server** (Adam: "Yes, push and delete", then "Applied, push now"): the library gate did not cover AURA's
+folders, so the push waited. The routes file's `valevision` list gained AURA's three scene content folders
+(ValeVision 3D's `library-access` answers for them: signed-in staff; AURA's own route cannot until its API answers
+`library-access`), tested, and applied at 16:18:29 UTC (nginx `607291531112`; run here once `nginx-status` showed
+Adam's apply had not reached the server). Thrower's 7 GLBs had already gone up at 16:08:43 in another session's
+`projects` push, so they were reachable without sign-in for ten minutes; nginx's access log shows no request for them
+in that window. They now answer 401 signed out, as their ValeVision 3D originals do. The example's 8 asset files,
+pushed at 15:57:36 the same way, were deleted (16:08:40 and 16:20:23, backed up; the first delete call passed paths
+with a stray `\r` and the engine refused all but one).
+
+**Not yet:** the API (read, save, import, re-import, storing an asset, its own `library-access`), the sync map's
+`ServerMadeContent`, pinning the library's MOD `.glb` files, the engine's GLB scene and the page.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.1, 30-Oct-2026: Parameter Sections Fold Like an Accordion
+
+**Asked by Adam:** "The UI in Aura sucks the sections do not close in the menus (fold) keep them all folded and then
+when a user unfolds the section they want in the parametyers the other paraemer sections foilds otherwise the menu
+becomes hard to use".
+
+**Then, on seeing the first pass:** "complete bullshit you didnt fix it": only the top-level sections had been changed; the
+groups inside them (Wash, Windows, Kuwahara...) still opened at first and stayed open together.
+
+**Built:**
+- **Every fold in the Parameters panel starts folded, at every level**, on every load, and **opening one folds its open
+  siblings**: one section open, and inside it one group open (`11__System__Environment3d/Na__Environment3d__Parameters__.js`
+  2.1.1, `Na__Parameters__Fold`). Nothing about the folds is remembered any more (the `ValeVisionAura__ParameterFolds`
+  store is no longer read). The info button still opens a closed fold, folding its siblings.
+- **The side panels' sections do the same** (`03__AppUtils/Na__AppUtils__Panels__.js` 1.1.0): Saved views, Art direction
+  points and Parameters in the 3D Environment, and the sheets' Sheet, Title block, Revisions, Viewport, Art direction
+  points and Note, all folded at first; opening one folds the others through their own `SetOpen`, so the art direction
+  points still hear that their section closed.
+- The same behaviour is in PainterlyNPR's own panel (its v0.8.4, `80__System__HudOverlay` Panel and Wire). AURA's
+  panel is built by AURA from the engine's config, so this needs no new pin.
+
+**Not yet:** the writing style's folds (`31__System__Handwriting/Na__Handwriting__Style__.js`) are unchanged.
+Not run in the browser here: Adam tests it. On app.valegardenhouses.com it arrives only with a push.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.4.0, 30-Oct-2026: The Engine's Assets and Materials Drawer, and No Copies of the Engine
+
+**Asked by Adam:** "add the materials and assets loader from npr renderer to aura / dont duplicate code the npr repo
+remains definitive source / ensure your skills reflect this, no duplicating code".
+
+**Built:**
+- **The Assets drawer in the 3D Environment** is PainterlyNPR's own (`82__Hud__AssetCatalogue`, both tabs), mounted
+  from the pinned engine by a new host module, `10__System__EngineHost/Na__EngineHost__Assets__.js`: a slim tab down
+  the stage's left edge, pulled out to the engine's drawer width (the stage refits the drawing in what is left).
+  - **Objects:** the asset library's 26 assets, searched and filtered, with Rendered or Proxy pictures. Drag a card onto
+    the drawing, or click it and then the drawing. The placed list turns, moves and takes out each one.
+  - **Materials:** the material classes as swatches. Click one and each click on the drawing gives it to the object
+    under the pointer, or one face of it (Give to Face; Shift flips it), or drag a swatch onto the drawing. The given
+    list selects or takes off each one.
+  - A click on the drawing selects what is there (a placed asset whole, or an object), outlined over the drawing.
+    Leaving the tab puts the brush down, lets a carried card go and clears the selection.
+- **Kept with the drawing set and undone with it:** placed assets and given materials are engine settings (`Assets`,
+  `Materials`, written only when there are any). Each change is saved, takes a step in 0.3.1's history and redraws the
+  sheets' stills. An undo, or opening the set, puts them back whole and the engine rebuilds the scene (host 1.5.0).
+- **Nothing of the engine's is copied into AURA any more:**
+  - The sync (`AuraRender__BuildUtil__SyncCoreEngine__.py` 1.1.0) pins what the engine reads from outside its
+    modules: the asset and material libraries (their .json and .webp only, never .skp or .glb) and its stylesheets,
+    beside `02__Src__AppModules` as in PainterlyNPR. It copies HEAD's commit with git archive (the repository's own
+    bytes), so other sessions' open work no longer blocks a sync; `--allow-dirty` still copies the working tree.
+  - The engine's palette, copied value for value into `Na__UiFeature__Styles__ArtDirection__.css` in 0.3.0, is gone:
+    the host links PainterlyNPR's own Variables from the pin, and AURA overrides only the font. AURA's look for the
+    engine's general classes (buttons, chips, hints) now reaches the drawer too: a skin, not a copy.
+  - The engine host's header: the folder is the door. This module, `Na__EngineHost__Panel__` (0.3.3) and
+    `Na__EngineHost__Assets__` import from the engine; nothing else in AURA does.
+- **What the engine gained for it (PainterlyNPR v0.8.2):** its two libraries read from its own files, so from the pin;
+  `BuildAssetDrawer({ Factory: false })` (the factory stays in PainterlyNPR, and its pictures come with the pin); the
+  drawer's open state on `Ui.Root`; `OnAssetsChanged`.
+- **The engine is PainterlyNPR v0.8.2 at 69b2e36** (committed at Adam's word: "Yes, commit v0.8.2"), synced from the
+  commit into `04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.2` (376 files: 237 modules, 80 asset
+  library, 55 material library, 4 stylesheets; `WorkingTreeClean: true`; `--check` clean). Its Init is the one the
+  host was read against. `index.html` and the import map record point at it; `AURA_VERSION` is `2026-10-30-6`. All
+  78 named imports and both namespace imports from `PainterlyNPR/` in the host folder resolve in it. The working-tree
+  test pin it was built on (`v0.7.4`) was deleted, never pushed; v0.6.0 is kept until Adam has checked this one.
+- v0.8.0 (the pens) and v0.8.1 (0.3.3's engine seams) were uncommitted at this sync, so they were not in this pin:
+  0.3.3's parameters fell back where a v0.8.1 seam was missing (its own design). v0.8.1 was then committed (70e63eb,
+  at Adam's word) and the same 0.8.2 folder re-synced from it (`WorkingTreeClean: true`, Init unchanged, every host
+  import resolves, the v0.8.1 seams in); `AURA_VERSION` is `2026-10-30-7`. Live at 15:14:03 UTC (the Server Manager
+  app's aura push; a compare after it: 652 code files unchanged). v0.8.0 is still uncommitted.
+
+**Live:** 15:05:49 UTC (stamp 20261030-150549), with 0.3.3 and 0.3.4, pushed from the Server Manager app on Adam's
+"When it's clear" (+314 ~16 -0: nothing deleted, the test pin never on the server); no API change, no restart. A
+compare after it: 652 code files unchanged; /aura/ serves the v0.8.2 import map and worker `2026-10-30-6`.
+
+**Not yet:**
+- Not run in a browser here: Adam tests it, live.
+- The engine's right-click menu (move, turn, swap, copy, a material from the menu) cancels the browser's menu on the
+  whole page, so it waits for an engine seam that keeps it to the 3D Environment.
+- The assets stand in the engine's demo scene (the cottage); a project's own model is still to come.
+- Still repeated from the engine: the host's Boot (PainterlyNPR's planned `07__System__LibraryHost` retires it) and
+  `Na__Format__ParseReadout` (the engine's controls have their own Parse since v0.5.2).
+
+## Version 0.3.3, 30-Oct-2026: Every Engine Parameter, the Paper Defaults, and Sheets on the Pictures' Paper
+
+**Asked by Adam** (with a sheet whose white paper showed every picture's cream rectangle, and the 3D Environment's
+Paper and finish: Cartridge, grain 150%, dry ink 5%, painted area 62%, edge irregularity 64%): "read your NPR skill then
+update AURA / The 2d page paper should reflect the paper used in the parameters make image 02 the defaults, should dry
+ink be in that section? we need the other parameters from the NPR Engine Aura is missing loads ensure all parameters
+are availible from npr in aura / update the npr viewwer to make make those paper defaults the same too". Through the
+coordinating session (0.4.0), the rule for it: "dont duplicate code the npr repo remains definitive source".
+
+**Built:**
+- **Every parameter, laid out by the engine's own panel** (`11 Parameters` 2.0.0, and a new part of the engine host,
+  `10__System__EngineHost/Na__EngineHost__Panel__.js`):
+  - AURA builds its Parameters from PainterlyNPR's `Na__Interface__Panel__Config.json`: its sections, groups and folds
+    (nested, as PainterlyNPR v0.7.2 nests them), labels, sliders, menus, presets and hints.
+  - That is all 88 of the engine's controls where AURA showed 19. The menus are Sheet, Ink family, Cloud type, Outline
+    hand and Leaf marks. There are six pen presets and four vegetation presets, and each group's hints sit behind an
+    info button.
+  - AURA leaves out only the sections it has its own of (`AuraConfig__Engine__OwnSections`: Camera, ArtDirection,
+    Export). `Engine__ParameterGroups`, `Engine__LabelOverrides` and `Engine__Discipline` are gone, so every label is
+    the engine's: "Grain relief" where AURA said "Paper grain".
+  - A slider, menu or preset moves the engine through its own functions (SetControl, SetChoice, ApplyPenPreset,
+    ApplyVegPreset), so the pen preset is marked Custom exactly where PainterlyNPR marks it.
+  - Any engine control the panel does not place lands in a last fold, "More from the engine".
+- **Dry ink belongs to the pen**, which answers Adam's question. It is what a dry pen does on the paper's tooth: the
+  line skips the valleys. Every pen preset sets it, and PainterlyNPR's own panel has it under Pen, 4 · The mark.
+  AURA now shows it there too; it is stored with the paper only because it reads the grain.
+- **The defaults are the engine's** (PainterlyNPR v0.8.1's starting state, not a copy in AURA): Cartridge, grain relief
+  150%, dry ink 5%, painted area 62% and edge irregularity 64%. The Fineliner preset (the starting one) carries the 5%
+  dry ink too, so the drawing still starts as that preset. A new drawing set starts with these defaults from a pin that
+  has v0.8.1; a saved set keeps its own.
+- **The sheets are the pictures' paper** (`20 Surface` 1.2.0, `Workspace` 1.2.1):
+  - The paper is the engine's own bare paper (PainterlyNPR v0.8.1, `BarePaper`): the paper and compositor programs over
+    an empty wash, so it has the same tone and grain as the pictures, at the engine's millimetres.
+  - It comes as a 153.6 mm tile whose last 9.6 mm is crossfaded into its first, so it repeats with no seam. It is laid
+    as an SVG pattern from the sheet's corner, and made again when the paper, seed or grain relief changes.
+  - The title column stands on a ground of the same paper, drawn in the sheet's millimetres so the grain runs on.
+    Vale's title artwork is multiplied onto it (TitleBlock), and a viewport's "something to press" rect is clear
+    (Editor).
+
+**Checks:**
+- AURA's module check: 41 modules, 482 imports, no problems, on the 0.7.4 test pin and again on the v0.8.2 pin from
+  69b2e36.
+- PainterlyNPR's Test__AppModules: 116 modules, 684 imports, OK.
+
+**Not yet:**
+- Not run in the browser here: Adam tests it locally.
+- **Live with v0.8.1 since 15:14:03 UTC.**
+  - PainterlyNPR v0.8.1 is committed (70e63eb, at Adam's word: "Yes, commit v0.8.1"). AURA is re-synced from it into
+    the same 0.8.2 folder, clean, with `AURA_VERSION` at `2026-10-30-7`; the module check is still clean (41 modules,
+    482 imports).
+  - The Server Manager app pushed the lane twice. At 15:05:49 UTC (stamp 20261030-150549) 0.3.3 went live on the
+    69b2e36 pin, where it ran its fallback: presets and some menus greyed, flat paper on sheets, the old defaults. At
+    15:14:03 UTC the 70e63eb pin and the new worker followed, so the presets, every menu, the paper's grain on sheets
+    and Adam's paper defaults are live.
+  - On a pin without v0.8.1 the fallback would return; nothing in AURA needs changing either way.
+- A 3D view's picture is scaled to cover its frame, so its grain is a little larger than the sheet's. True-scale views
+  match it exactly.
+- PainterlyNPR's asset factory renders in the starting style, so pictures it renders from now on are on cartridge. The 26
+  it has were made on cold-pressed.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.3.2, 30-Oct-2026: Real Pens and the Advanced Writing Style
+
+**Asked by Adam:** "Add more parameters in an advanced writing style dropdown exposing all of the possible paramers
+for the writing model. Create a new pen size mertric calculated from the paper size so we can figure out ACTUAL real
+pen sizes as the artists use a 0.18mm fineline as stated in the guidance to simulate the STAEDTLER Mars matic 700
+technical drawing pen. 0.18mm pen accurately". **His calls:** leaders "Constant, like the pen"; the style "Per note";
+old notes "Rewrite with 0.18 mm". The engine's own pen calibration (his brief: four calibrated technical pens in
+PainterlyNPR's linework) went to its own session, "PainterlyNPR physical technical pen calibration" (PainterlyNPR
+v0.8.0); this entry is AURA's notes and leaders only.
+
+**Built:**
+- **The pens** (`AuraConfig__Handwriting__Pens`): STAEDTLER Mars matic 700 M013, M018, M025 and M035 at 0.13, 0.18,
+  0.25 and 0.35 mm, from PainterlyNPR's pen guidance (`08__Data__StrokeLibrary/PainterlyNPR__PenPresets__PointWeights__.md`)
+  and with the same keys and fields as the engine session's `Na__TechnicalPens__Config.json` (agreed with it by
+  message), so notes and linework are one pen set. A note's pen is `Annotation__PenKey`, M018 (0.18 mm, the lettering
+  tier) unless chosen. **A technical pen:** every stroke of a note and its leader is the nib's own width (the guidance:
+  pressure-variable width is a labelled non-technical mode).
+- **The pen is applied on the sheet.** The engine now writes widths relative to the nib (1 is the nib; the ink is
+  `Relative`), and the sheet multiplies by the note's pen in millimetres, so a new pen redraws at once, without
+  writing the note again; the ink's key covers the style but not the pen (so undo's ink cache still fits).
+- **The metric** (the panel, under Pen): the sheet is drawn in paper millimetres, so the pen's width is its printed
+  width at 100% on the sheet's own paper. The panel says that, what the line measures if the sheet is printed on a
+  smaller paper (0.18 mm on an A1 sheet: 0.13 on A2, 0.09 on A3, 0.064 on A4), and its width on screen at the zoom
+  now (0.58 px at zoom 1: under a pixel, so it looks paler than it prints). Read again whenever the pointer comes
+  over it, so it follows the zoom.
+- **The Advanced writing style** (a fold in the note's panel, `31__System__Handwriting/Na__Handwriting__Style__.js`,
+  its 25 controls in `AuraConfig__Handwriting__StyleGroups`): the model's hand (neatness, tries, retry neatness,
+  lowest neatness, letter check, steps a character, fewest and most steps), lines and words (line spacing, longest
+  and shortest phrase, wrap, word gap, space width, space before, margin), hand movement (variation, slant spread,
+  baseline wave, wave frequency, straighten tilt), pen and numbers (technical or variable width, weight swing, draw
+  numbers exactly, copy number). Sliders with typable readouts, each with a hover hint. A setting is the note's own
+  (`Annotation__Style`, only what differs), else its hand's (a hand may now set any of them), else the studio's
+  value; **Back to the hand** or a new hand clears the note's own. A note is written again when a slider is let go,
+  not while it moves, and the panel never rebuilds under a held slider.
+- **The engine** (Layout and Neural 1.1.0): every constant of the studio's layout and neural pen became a setting
+  with hard limits (`Na__Layout__STYLE`), defaulting to the studio's value; the retry warning said "calmer" where a
+  retry writes looser (the neatness is lowered) and now says so.
+- **Leaders** (1.1.0): the note's nib, constant, with the studio's bow, drift and arrowhead unchanged (the random
+  draws keep their order, so a leader keeps its shape when the pen changes); the variable pen keeps the swell.
+- **Old notes** (Adam's call): their key changed, so each is written once more as its sheet opens, at 0.18 mm, with
+  the same words and copy number. `Na__DrawingSet__Model__` 1.2.0 gives older notes the two new fields.
+- `AuraConfig__Annotation__PenWidthMm` (0.3) and `AuraConfig__Handwriting__LineSpacing` are gone: the pen and line
+  spacing are each note's now.
+
+**Checked here (no browser):** the style module, the client's ink key and the engine together in Node, against the
+app's own config: defaults reproduce the earlier ink exactly (the same paths at the same size); a new pen keeps the
+key and a style change changes it; own settings store only what differs, drop when set back, clamp to range; all
+eleven parameters tried move the ink as they should (line spacing, word gap, margin, slant, wave and its frequency,
+variation, neatness, tilt, exact numbers, phrase length); the technical pen gives every stroke exactly the nib, the
+variable one swings 0.97 to 1.03 times it; the same note writes the same ink again. A proof sheet at 12 px/mm (0.18
+mm notes, a 0.35 mm note, a variable pen, a leader) looked at: an even fine line, a clearly bolder 0.35 mm, the
+leader one width with its bow and arrowhead. All modules parse; every named import resolves.
+
+**Not checked:** the panel in a browser (Adam tests): the Pen field and its metric, the fold, typing a value, a
+note rewritten as a slider is let go, old notes rewriting at 0.18 mm, undo over a pen or style change.
+
+**Not yet:** 3D viewports print the engine's pens off their true width (a still scaled to its frame). The engine
+session will take a host's own pixels per mm for a frame; AURA's render queue passes it once that engine is synced.
+
+**Live (Adam: "PUSH ALL READY FFS STOP ASKING ME SO MUCH TO PUISH JUST DO IT!"):** already on the server when the
+push was due. `engine compare` of every mapping at 14:38 UTC found all lanes in step (`aura` 338 code files
+unchanged), so 0.3.1 and 0.3.2 had gone up in a push that is not in this PC's `sessions.log` (another machine).
+Through Cloudflare: the nine handwriting, annotation, drawing-set, history and config files byte-identical to this
+PC, the live config at 0.3.2, `/aura/` 200, `api/health` 200, `api/handwriting/model` 401 signed out. No API file
+changed after the 13:18 restart, so none was needed.
+
+(Uncommitted, waiting on Adam.)
 
 ## Version 0.3.1, 30-Oct-2026: Undo and Redo
 
@@ -162,6 +867,13 @@ stylesheets in AURA, placing and anchoring on the sheet, the previews, the grips
 3D Environment has no points of its own (they belong to the unsaved view until it is saved). App__Version is left to
 the last of the 0.3.x jobs to land (the coordinating session's rule). (Uncommitted, waiting on Adam.)
 
+**Live (Adam: "Tested, push it"):** `push aura` at 14:01:45 UTC (stamp `20261030-140145`): the two new stylesheets
+added and 9 files replaced, nothing deleted. Part of 0.3.0 was already on the server: another session's `aura` push at
+about 13:36 UTC had sent index.html, the Stage, the panels helper and early drafts of the rest mid-build, so the live
+page may have been inconsistent until 14:01. No API change, so no restart. Through Cloudflare: `/aura/`, both new
+stylesheets, the viewport points module, the engine's point stylesheet and `api/health` 200; compare after: 334
+unchanged.
+
 ## Version 0.2.2, 30-Oct-2026: Rendered or Proxy, and a Guard on Refresh
 
 **Asked by Adam:** "Add toggle to aura for proxy view / rendered view ... To both apps add the hotkey shift + R ... add
@@ -207,7 +919,7 @@ Python path "Retire it".
   its end-of-words test) in AssemblyScript, built into two WebAssembly modules of 13 KB: SIMD, and scalar for a
   browser without SIMD. Both sum every output in the same order with their own maths compiled in, so a note's
   words, settings and seed write the same strokes on every device. The studio's `neural_strokes`, `validate` and
-  `render` (four tries with a calmer pen, the coverage check, levelling, wrapping, protected numbers, slant, baseline,
+  `render` (four tries with a looser pen, the coverage check, levelling, wrapping, protected numbers, slant, baseline,
   pen weight, Catmull-Rom curves) ported line by line to JavaScript, all run in a Web Worker so the sheet stays live.
 - **The model**: the Epoch 46 checkpoint's own 32-bit weights (15 MB) laid out for the network by
   `60__Dev__WebBuildUtils/AuraRender__BuildUtil__HandwritingWeights__.py` into

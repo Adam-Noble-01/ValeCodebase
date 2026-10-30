@@ -13,21 +13,43 @@
 //
 // DESCRIPTION:
 // - A SCALED VIEW (elevation, roof plan) shows the engine's still at its true
-//   300 x 200 mm, centred in the frame; the frame crops it. Resizing a frame
+//   size (its A3 sheet since PainterlyNPR 0.8.3), centred in the frame; the frame crops it. Resizing a frame
 //   crops more or less of the same drawing, which stays put on the sheet (its
 //   centre in the world follows the frame's centre). Alt + drag inside it pans
-//   the view. Its frame can be no larger than the engine's sheet.
+//   the view. Its frame can be no larger than the engine's sheet. Both pans
+//   are the viewport's own (Viewport__PanM): its scene stays where it is.
 // - A 3D VIEW is a picture: it fills its frame, cropped to the frame's shape.
 // - Drag a viewport to move it; drag a handle to resize it; Delete removes it.
 // - The pictures come from the render queue; until one arrives its frame shows
 //   "Drawing in pen and wash".
-// - ART DIRECTION POINTS: a viewport made from the 3D Environment's view saves
-//   that view with its points; the point editor over a viewport's picture
+// - SCENES (SketchUp to LayOut, AURA 0.5.0): every viewport shows a scene,
+//   picked in its panel (Scene) or made as it is added. The scene is what is
+//   looked at, with its points; the viewport keeps its frame, scale, pen and
+//   title. A viewport made from the 3D Environment's view makes a new scene
+//   of the camera and its points. The point editor over a viewport's picture
 //   (Na__Viewports__ArtDirection__) follows the frame as it moves and resizes.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.0.0 (AURA 0.5.0)
+// - Scenes: Add finds or makes the viewport's scene; the panel's Scene picker
+//   replaces the Side and View pickers (and 0.4.4's "Its own view"); Centre
+//   lets the viewport's own pan go; Alt-drag and a resize pan the viewport
+//   (Na__Views__Pan with the document).
+//
+// 30-Oct-2026 - Version 1.3.1 (AURA 0.4.3, landed after 0.4.4)
+// - The scaled view's hint names the engine's own sheet (A3), read from it.
+//
+// 30-Oct-2026 - Version 1.3.0 (AURA 0.4.4)
+// - A 3D viewport set from the 3D Environment shows "Its own view" in the View
+//   picker; picking a preset or a saved view there lets its own camera go.
+//
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.3.4)
+// - The titles are handwritten (31__System__Handwriting/Na__Handwriting__
+//   Lettering__: the lettering hand, the heavier pen), typed until written;
+//   Adam: "Use handwriting in the titleblock and viewports not text".
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
 // - The panel is the right panel's Viewport section (its title is the
 //   section's); the 3D Environment's view is saved with its points; the
@@ -47,13 +69,17 @@
     import { Na__AppState__Data, Na__AppState__Select, Na__AppState__Touch, Na__AppState__On } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Dom__El, Na__Dom__Svg, Na__Dom__Field, Na__Dom__Select, Na__Dom__IconButton } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__Clamp, Na__Format__Round } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__EngineHost__Presets, Na__EngineHost__Camera, Na__EngineHost__EnvironmentPoints } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__Presets, Na__EngineHost__Camera, Na__EngineHost__EnvironmentPoints, Na__EngineHost__SheetMm } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__Paper__Solve, Na__Paper__ClampFrame } from '../20__System__DrawingSheets/Na__DrawingSheets__Paper__.js';
     import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
-    import { Na__DrawingSet__NewViewport, Na__DrawingSet__NewSavedView, Na__DrawingSet__Viewport } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
-    import { Na__Views__IsScaled, Na__Views__Title, Na__Views__ScaleLabel, Na__Views__MaxScaledFrame, Na__Views__Pan } from './Na__Viewports__Views__.js';
+    import {
+        Na__DrawingSet__NewViewport, Na__DrawingSet__NewScene, Na__DrawingSet__FindOrMakeScene, Na__DrawingSet__SceneName,
+        Na__DrawingSet__DefaultScale, Na__DrawingSet__Viewport
+    } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
+    import { Na__Views__IsScaled, Na__Views__Title, Na__Views__ScaleLabel, Na__Views__MaxScaledFrame, Na__Views__Pan, Na__Views__Scene, Na__Views__ScenesUsing } from './Na__Viewports__Views__.js';
     import { Na__RenderQueue__Picture, Na__RenderQueue__Request } from './Na__Viewports__RenderQueue__.js';
     import { Na__ViewportPoints__Place } from './Na__Viewports__ArtDirection__.js';
+    import { Na__Lettering__Draw, Na__Lettering__Size } from '../31__System__Handwriting/Na__Handwriting__Lettering__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -90,7 +116,7 @@
         const clip = Na__Dom__Svg('clipPath', { id: `aura-clip-${id}` }, defs);
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm }, clip);
         const inner = Na__Dom__Svg('g', { 'clip-path': `url(#aura-clip-${id})`, class: 'aura-vp__inner' }, g);
-        Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, fill: '#ffffff' }, inner);   // <-- Something to press while it draws
+        Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, fill: 'transparent' }, inner);   // <-- Something to press while it draws (clear: the sheet's paper shows through)
 
         const picture = Na__RenderQueue__Picture(viewport, doc);
         if (picture) {
@@ -122,17 +148,32 @@
         }
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, class: 'aura-vp__frame' }, g);
 
-        if (viewport.Viewport__ShowTitle !== false) {
+        if (viewport.Viewport__ShowTitle !== false) {                           // <-- Written by hand (the lettering), typed until written (AURA 0.3.4)
             const size = Na__AppConfig__Get('Viewport__TitleSizeMm', 4);
-            const y = f.Y + f.HeightMm + Na__AppConfig__Get('Viewport__TitleGapMm', 3) + size;
-            const text = Na__Dom__Svg('text', { x: f.X, y, 'font-size': size, class: 'aura-vp__title' }, g);
-            const name = Na__Dom__Svg('tspan', { 'font-weight': 600 }, text);
-            name.textContent = Na__Views__Title(viewport, doc);
+            const gap = Na__AppConfig__Get('Viewport__TitleGapMm', 3);
+            const y = f.Y + f.HeightMm + gap + size;
+            const title = Na__Views__Title(viewport, doc);
             const scale = Na__Views__ScaleLabel(viewport);
-            if (scale) {
-                const s = Na__Dom__Svg('tspan', { dx: size * 0.8, 'font-weight': 400, class: 'aura-vp__scale' }, text);
-                s.textContent = scale;
-            }
+            const typed = () => {
+                const text = Na__Dom__Svg('text', { x: f.X, y, 'font-size': size, class: 'aura-vp__title' }, g);
+                const name = Na__Dom__Svg('tspan', { 'font-weight': 600 }, text);
+                name.textContent = title;
+                if (scale) {
+                    const s = Na__Dom__Svg('tspan', { dx: size * 0.8, 'font-weight': 400, class: 'aura-vp__scale' }, text);
+                    s.textContent = scale;
+                }
+            };
+            Na__Lettering__Draw(g, {
+                Text     : [title, scale].filter(Boolean).join(' '),
+                X        : f.X,
+                Y        : f.Y + f.HeightMm + gap,
+                WidthMm  : Math.max(f.WidthMm, 80),                             // <-- A title may run past a narrow frame, as the typed one did
+                SizeMm   : Na__Lettering__Size(size),
+                OneLine  : true,
+                PenKey   : Na__AppConfig__Get('Handwriting__Lettering', {}).EmphasisPen,   // <-- The heavier pen: the typed title was bold
+                Colour   : '#111111',
+                Channel  : 'viewports'
+            }, typed, () => { if (Na__AppState__Data.tab !== 'environment') Na__Surface__RedrawLayer('viewports'); });
         }
         return g;
     }
@@ -204,7 +245,7 @@
                 },
                 end(p) {
                     if (!moved) return;
-                    Na__Views__Pan(viewport, p.X - start.X, p.Y - start.Y);
+                    Na__Views__Pan(viewport, p.X - start.X, p.Y - start.Y, Na__AppState__Data.doc);
                     Na__AppState__Touch('viewport', sheet.Sheet__Id);
                     Na__Surface__RedrawLayer('viewports');
                 }
@@ -259,7 +300,7 @@
                 const f = viewport.Viewport__FrameMm, s = start.frame;
                 if (Na__Views__IsScaled(viewport)) {
                     const dcx = (f.X + f.WidthMm / 2) - (s.X + s.WidthMm / 2), dcy = (f.Y + f.HeightMm / 2) - (s.Y + s.HeightMm / 2);
-                    if (dcx || dcy) Na__Views__Pan(viewport, -dcx, -dcy);            // <-- The frame's centre moved: the world under it follows, so the drawing stays put
+                    if (dcx || dcy) Na__Views__Pan(viewport, -dcx, -dcy, Na__AppState__Data.doc);   // <-- The frame's centre moved: the world under it follows, so the drawing stays put
                 }
                 Na__AppState__Touch('viewport', sheet.Sheet__Id);
                 Na__Surface__RedrawLayer('viewports');
@@ -278,19 +319,18 @@
 
     // FUNCTION | Add a Viewport to the Open Sheet, in the Middle of Its Drawing Space
     // ------------------------------------------------------------
-    // kind: 'Elevation' (side), 'Plan' or 'Perspective' (preset, savedViewId, or
-    // live: true to save the 3D Environment's camera as a view and show it).
+    // sceneId: show that scene. Else a scene is found or made: kind 'Elevation'
+    // (side), 'Plan' or 'Perspective' (preset, or live: true for a new scene of
+    // the 3D Environment's camera and points).
     // ------------------------------------------------------------
     function Na__ViewportEditor__Add(options) {
         const sheet = Na__ViewportEditor__Sheet();
         const doc = Na__AppState__Data.doc;
         if (!sheet || !doc) return null;
         const o = Object.assign({}, options);
-        if (o.kind === 'Perspective' && o.live) {
-            const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera, Na__EngineHost__EnvironmentPoints());
-            doc.AuraDrawingSet__SavedViews.push(view);
-            o.savedViewId = view.View__Id;
-        }
+        const scene = Na__ViewportEditor__SceneFor(doc, o);
+        o.sceneId = scene.View__Id;
+        o.kind = scene.View__Kind;
         const solve = Na__Paper__Solve(sheet);
         const scaled = o.kind === 'Elevation' || o.kind === 'Plan';
         const space = { W: solve.Border.W - (solve.Title.Portrait ? 0 : solve.Title.Rect.W), H: solve.Border.H - (solve.Title.Portrait ? solve.Title.Rect.H : 0) };
@@ -304,6 +344,42 @@
         Na__Surface__RedrawLayer('viewports');
         Na__Surface__RedrawOverlay();
         return viewport;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Scene a New Viewport Shows: the one named, a new one of the live camera, or one found or made
+    // ------------------------------------------------------------
+    function Na__ViewportEditor__SceneFor(doc, o) {
+        const named = (doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Id === o.sceneId);
+        if (named) return named;
+        if (o.live) {
+            const scene = Na__DrawingSet__NewScene({ name: Na__DrawingSet__SceneName(doc, 'Scene'), kind: 'Perspective', camera: Na__EngineHost__Camera().Camera, points: Na__EngineHost__EnvironmentPoints() });
+            doc.AuraDrawingSet__SavedViews.push(scene);
+            Na__AppState__Touch('views');
+            return scene;
+        }
+        const preset = Na__EngineHost__Presets([o.preset || 'ThreeQuarter'])[0];
+        const name = o.kind === 'Elevation' ? (Na__AppConfig__Get('Viewport__Elevations', []).find((e) => e.Key === o.side) || {}).Label
+                   : o.kind === 'Plan' ? 'Roof Plan' : (preset ? preset.Label : '3D View');
+        const scene = Na__DrawingSet__FindOrMakeScene(doc, { name: name || 'Scene', kind: o.kind, side: o.side, preset: o.preset });
+        Na__AppState__Touch('views');
+        return scene;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Point a Viewport at Another Scene (a new kind starts at its default scale and pen)
+    // ------------------------------------------------------------
+    function Na__ViewportEditor__ShowScene(viewport, scene) {
+        if (viewport.Viewport__Kind !== scene.View__Kind) {
+            viewport.Viewport__Kind = scene.View__Kind;
+            viewport.Viewport__ScaleDenominator = scene.View__Kind === 'Perspective' ? null : Na__DrawingSet__DefaultScale(scene.View__Kind);
+            viewport.Viewport__PlanKind = scene.View__Kind === 'Plan' ? 'RoofPlan' : null;
+            viewport.Viewport__Profile = scene.View__Kind === 'Perspective' ? 'Concept' : 'Measured';
+        }
+        viewport.Viewport__SceneId = scene.View__Id;
+        viewport.Viewport__PanM = null;
     }
     // ------------------------------------------------------------
 
@@ -355,12 +431,31 @@
         showRow.appendChild(Na__Dom__El('span', null, 'Show the title and scale under the view'));
         container.appendChild(showRow);
 
-        if (viewport.Viewport__Kind === 'Elevation') {
-            const sides = Na__AppConfig__Get('Viewport__Elevations', []).map((e) => ({ value: e.Key, label: e.Label }));
-            const side = Na__Dom__Select(sides, viewport.Viewport__Side);
-            side.addEventListener('change', () => { viewport.Viewport__Side = side.value; viewport.Viewport__CentreM = null; changed(true); });
-            container.appendChild(Na__Dom__Field('Side', side));
-        }
+        // The scene it shows: any of the drawing set's, or a new one of the 3D Environment's view
+        const scenes = (doc.AuraDrawingSet__SavedViews || []).map((v) => ({ value: v.View__Id, label: `${v.View__Name}${Na__Views__IsScaled(v) ? ' (to scale)' : ' (3D)'}` }));
+        const current = Na__Views__Scene(viewport, doc);
+        if (!current) scenes.unshift({ value: '', label: 'Its scene is gone: pick one' });
+        const pick = Na__Dom__Select(scenes, current ? current.View__Id : '');
+        pick.addEventListener('change', () => {
+            const scene = (doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Id === pick.value);
+            if (!scene) return;
+            Na__ViewportEditor__ShowScene(viewport, scene);
+            changed(true);
+            container.dispatchEvent(new CustomEvent('aura-panel-refresh', { bubbles: true }));
+        });
+        container.appendChild(Na__Dom__Field('Scene', pick));
+        const others = current ? Na__Views__ScenesUsing(doc, current.View__Id).length - 1 : 0;
+        container.appendChild(Na__Dom__El('p', 'aura-panel__hint', others > 0
+            ? `${others} other viewport${others === 1 ? ' shows' : 's show'} this scene. Change it in the 3D Environment (right-click its tab) and they all follow.`
+            : 'Open its tab in the 3D Environment to change the scene; right-click the tab to update it from the camera.'));
+        const live = Na__Dom__IconButton('camera', 'aura-button', 'New scene from the 3D Environment', 'Make a scene of the 3D Environment\'s camera and points as they are now, and show it here');
+        live.addEventListener('click', () => {
+            Na__ViewportEditor__ShowScene(viewport, Na__ViewportEditor__SceneFor(doc, { live: true }));
+            changed(true);
+            container.dispatchEvent(new CustomEvent('aura-panel-refresh', { bubbles: true }));
+        });
+        container.appendChild(live);
+
         if (Na__Views__IsScaled(viewport)) {
             const scales = Na__AppConfig__Get('Viewport__Scales', [50, 100]).map((d) => ({ value: d, label: `1:${d}` }));
             const scale = Na__Dom__Select(scales, viewport.Viewport__ScaleDenominator);
@@ -369,31 +464,11 @@
             const profile = Na__Dom__Select([{ value: 'Measured', label: 'Measured (a natural pen at most)' }, { value: 'Concept', label: 'Concept (the full discipline)' }], viewport.Viewport__Profile);
             profile.addEventListener('change', () => { viewport.Viewport__Profile = profile.value; changed(true); });
             container.appendChild(Na__Dom__Field('Pen', profile));
-            const centre = Na__Dom__IconButton('fit', 'aura-button', 'Centre on the building', 'Put the building back in the middle of the frame');
-            centre.addEventListener('click', () => { viewport.Viewport__CentreM = null; changed(true); });
+            const centre = Na__Dom__IconButton('fit', 'aura-button', 'Back to the scene\'s centre', 'Let this viewport\'s own pan go: the scene\'s centre in the middle of the frame');
+            centre.addEventListener('click', () => { viewport.Viewport__PanM = null; changed(true); });
             container.appendChild(centre);
-            container.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Alt and drag inside the frame to pan the drawing. A scaled view is at most 300 x 200 mm: the engine draws one sheet that size, its pen widths true on the paper.'));
-        } else {
-            const views = Na__EngineHost__Presets(Na__AppConfig__Get('Engine__CameraPresets')).filter((p) => p.Mode !== 'Ortho').map((p) => ({ value: `preset:${p.Key}`, label: p.Label }))
-                .concat((doc.AuraDrawingSet__SavedViews || []).map((v) => ({ value: `view:${v.View__Id}`, label: `Saved: ${v.View__Name}` })));
-            const source = viewport.Viewport__CameraSource || {};
-            const current = source.SavedViewId ? `view:${source.SavedViewId}` : `preset:${source.Preset || 'ThreeQuarter'}`;
-            const pick = Na__Dom__Select(views, current);
-            pick.addEventListener('change', () => {
-                const [type, key] = pick.value.split(':');
-                viewport.Viewport__CameraSource = type === 'view' ? { SavedViewId: key } : { Preset: key };
-                changed(true);
-            });
-            container.appendChild(Na__Dom__Field('View', pick));
-            const live = Na__Dom__IconButton('camera', 'aura-button', 'Use the 3D Environment\'s view', 'Save the camera as it is in the 3D Environment and show it here');
-            live.addEventListener('click', () => {
-                const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera, Na__EngineHost__EnvironmentPoints());
-                doc.AuraDrawingSet__SavedViews.push(view);
-                viewport.Viewport__CameraSource = { SavedViewId: view.View__Id };
-                changed(true);
-                container.dispatchEvent(new CustomEvent('aura-panel-refresh', { bubbles: true }));
-            });
-            container.appendChild(live);
+            const sheet = Na__EngineHost__SheetMm();
+            container.appendChild(Na__Dom__El('p', 'aura-panel__hint', `Alt and drag inside the frame to pan this viewport only. A scaled view is at most ${sheet.WidthMm} x ${sheet.HeightMm} mm: the engine draws one sheet that size, its pen widths true on the paper.`));
         }
 
         const size = Na__Dom__El('div', 'aura-field-pair');

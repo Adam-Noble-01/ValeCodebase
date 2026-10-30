@@ -7,13 +7,13 @@
 // MODULE     : 3D Environment - Stage
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : The 3D Environment tab: the engine's live drawing of the scene,
-//              orbited and zoomed by hand, its camera presets, saved views for the
-//              sheets' 3D viewports, a new seed, and the parameters beside it
+//              orbited and zoomed by hand, the drawing set's scenes as tabs, a
+//              new seed, and the parameters beside it
 // CREATED    : 30-Oct-2026
 //
 // DESCRIPTION:
-// - THE DRAWING IS THE ENGINE'S OWN CANVAS (300 x 200 mm at 5 px/mm), shown
-//   whole in the stage at its 3:2 shape. While the camera moves the engine shows
+// - THE DRAWING IS THE ENGINE'S OWN CANVAS (its A3 sheet, 420 x 297 mm at 5
+//   px/mm, since PainterlyNPR 0.8.3), shown whole in the stage at its own shape. While the camera moves the engine shows
 //   its navigation preview; when it rests it refines into pen and wash.
 // - NAVIGATION IS THE ENGINE'S (PainterlyNPR 74__Camera__Navigation, through
 //   the engine host): ValeVision 3D's orbit mode without its helper cube. Left
@@ -21,21 +21,72 @@
 //   the wheel zooms; one finger orbits, two pinch and pan; W A S D, the arrows,
 //   Q and E move the camera, R resets it, + - 0 zoom. Its keys live only while
 //   this tab is open. Zoom moves the camera, never a magnified page (Adam).
+// - SCENE TABS, SKETCHUP TO LAYOUT (Adam, 30-Oct-2026: "move Saved Views Logo
+//   to the views tags and at the end of that list add a +Add Scene, right
+//   clicking the tabs should allow for renaming of scenes, these scenes becoime
+//   viewports in the layout think SketchUp -> Layout logic"). The toolbar's
+//   tabs are the drawing set's scenes, after the Saved views icon; a viewport
+//   on a sheet shows one, and every viewport of a scene follows it.
+//   - A click opens a scene: its camera and its art direction points. It stays
+//     lit while the camera moves, as a SketchUp scene tab does.
+//   - An elevation or the roof plan opens square and to scale, and its
+//     orientation is held while it is open: pan and zoom, never orbit (Adam:
+//     "when in the elevations its locks the camera to those orientations").
+//     R brings it back. An elevation camera tool (the cut position) is another
+//     job (Adam).
+//   - + Add Scene keeps the camera and the points as a new scene (a scaled
+//     scene's copy, centred where it is now, while one is open).
+//   - A right-click: Rename, Update from camera (a 3D scene takes the camera
+//     whole, a scaled one where it is centred; every viewport follows),
+//     Duplicate, Delete (and the viewports showing it, after asking).
+// - THE ENGINE'S CAMERA PRESETS are a picker after the tabs: starting points.
+//   Picking one leaves the open scene (no tab lit).
 // - RENDERED OR PROXY: the toolbar's switch (and Shift + R) keeps the live view
 //   a quick proxy preview to work in, or lets it refine into pen and wash when
 //   the camera rests - the engine's own work mode. Remembered per viewer. The
 //   sheets' pictures are always rendered.
-// - SAVED VIEWS are named copies of the live camera and its Art Direction
-//   Points, kept in the drawing set; a 3D viewport on a sheet shows one (or one
-//   of the engine's presets). Picking one loads both; saving under a name in
-//   use replaces that view.
-// - THE PANEL folds by section (Saved views, Art direction points, Parameters),
-//   each remembered in this browser, and its left edge drags it wider or
-//   narrower (Na__AppUtils__Panels__, after ValeVision 3D's Layout Editor).
+// - THE PANEL folds by section (Parameters, then Art direction points), each
+//   remembered in this browser, and its left edge drags it wider or narrower
+//   (Na__AppUtils__Panels__, after ValeVision 3D's Layout Editor).
+// - THE ASSETS DRAWER down the stage's left edge is PainterlyNPR's own
+//   (Na__EngineHost__Assets__): trees, plants and furniture dragged onto the
+//   drawing, materials given to an object or a face. A click on the drawing is
+//   the engine's too: it paints with the brush, or selects what is there.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.0.1 (AURA 0.5.2)
+// - The panel's sections flipped: Parameters first, then Art direction points
+//   (Adam: "Flip the order of these").
+//
+// 30-Oct-2026 - Version 2.0.0 (AURA 0.5.0)
+// - Scene tabs: the Saved views section went from the panel (Adam: "its
+//   useless and dosnt work"); its icon leads the tabs, + Add Scene ends them,
+//   and a right-click renames, updates, duplicates or deletes one. A scaled
+//   scene holds its orientation (HoldOrientation). 0.4.4's viewport strip,
+//   Set and Reload, and the saved views list and form, are gone.
+//
+// 30-Oct-2026 - Version 1.5.1 (AURA 0.4.3, landed after 0.4.4)
+// - Notes only: the canvas is the engine's A3 sheet, fitted at its own shape.
+//
+// 30-Oct-2026 - Version 1.5.0 (AURA 0.4.4)
+// - The viewport strip, Set and Reload in the toolbar in place of the camera
+//   presets (Na__Environment3d__RenderStrip, OpenViewport, SetViewport,
+//   ReloadViewport); the preset marker became MarkCamera. The presets stay as
+//   a picker after Reload (WirePresets). A saved view's camera goes through
+//   the drawing set's file form (CameraToJson and CameraFromJson).
+//
+// 30-Oct-2026 - Version 1.4.1 (AURA 0.4.2)
+// - The panel's three sections carry their icons (Saved views, Art direction
+//   points, Parameters).
+//
+// 30-Oct-2026 - Version 1.4.0 (AURA 0.4.0)
+// - The engine's Assets drawer in its own column left of the stage (Adam: "add
+//   the materials and assets loader from npr renderer to aura"); the
+//   navigation's tap goes to the engine as well, and leaving the tab puts its
+//   brush down and lets its selection go.
+//
 // 30-Oct-2026 - Version 1.3.0 (AURA 0.3.0)
 // - The panel's three folding sections and its resize grip; Art direction
 //   points (Na__Environment3d__ArtDirection__) over the drawing, the canvas in
@@ -64,20 +115,25 @@
 
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__AppState__Data, Na__AppState__Touch, Na__AppState__On } from '../01__AppCore/Na__AppCore__AppState__.js';
-    import { Na__Dom__El, Na__Dom__Icon, Na__Dom__IconButton, Na__Dom__Clear } from '../03__AppUtils/Na__AppUtils__Dom__.js';
+    import { Na__Dom__El, Na__Dom__IconButton, Na__Dom__PanelIcon, Na__Dom__Clear, Na__Dom__Select } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Toast__Show } from '../03__AppUtils/Na__AppUtils__Toast__.js';
     import { Na__Panels__Section, Na__Panels__Resizable } from '../03__AppUtils/Na__AppUtils__Panels__.js';
     import {
         Na__EngineHost__Presets, Na__EngineHost__ApplyPreset, Na__EngineHost__SetCamera, Na__EngineHost__Camera,
         Na__EngineHost__AttachNavigation, Na__EngineHost__NewSeed, Na__EngineHost__Redraw, Na__EngineHost__SceneCounts,
-        Na__EngineHost__WorkMode, Na__EngineHost__SetWorkMode, Na__EngineHost__Points, Na__EngineHost__RefreshPoints
+        Na__EngineHost__WorkMode, Na__EngineHost__SetWorkMode, Na__EngineHost__Points, Na__EngineHost__RefreshPoints,
+        Na__EngineHost__Borrowed
     } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__DrawingSet__NewSavedView, Na__DrawingSet__CleanPoints } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
+    import { Na__EngineHost__AttachAssets, Na__EngineHost__AssetsTap, Na__EngineHost__AssetsAway } from '../10__System__EngineHost/Na__EngineHost__Assets__.js';
+    import { Na__DrawingSet__NewScene, Na__DrawingSet__SceneName, Na__DrawingSet__Scene } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
+    import {
+        Na__Views__IsScaled, Na__Views__SceneCamera, Na__Views__SceneLock, Na__Views__UpdateScene, Na__Views__ScenesUsing
+    } from '../21__System__Viewports/Na__Viewports__Views__.js';
     import { Na__Parameters__Build, Na__Parameters__Sync } from './Na__Environment3d__Parameters__.js';
     import {
-        Na__ArtDirection3d__Mount, Na__ArtDirection3d__Show, Na__ArtDirection3d__SetOpen, Na__ArtDirection3d__UseView,
-        Na__ArtDirection3d__LeaveView, Na__ArtDirection3d__FollowCamera, Na__ArtDirection3d__Owner, Na__ArtDirection3d__Adopt,
-        Na__ArtDirection3d__Keep, Na__ArtDirection3d__OnTap
+        Na__ArtDirection3d__Mount, Na__ArtDirection3d__Show, Na__ArtDirection3d__SetOpen, Na__ArtDirection3d__UseScene,
+        Na__ArtDirection3d__LeaveScene, Na__ArtDirection3d__Owner, Na__ArtDirection3d__Adopt, Na__ArtDirection3d__Keep,
+        Na__ArtDirection3d__OnTap
     } from './Na__Environment3d__ArtDirection__.js';
 
 // endregion -------------------------------------------------------------------
@@ -90,8 +146,11 @@
     const Na__Environment3d__State = {
         root       : null,
         canvas     : null,
-        presetBar  : null,
-        viewsList  : null,
+        presetBar  : null,                       // <-- The toolbar
+        tabs       : null,                       // <-- The scene tabs in it
+        tabsKey    : '',                         // <-- The tabs as last drawn: redrawn only when a scene comes, goes or is renamed
+        renaming   : false,                      // <-- A tab's name is being typed: the tabs wait
+        menu       : null,                       // <-- The right-click menu, while it is open
         stage      : null,                       // <-- The room the drawing is fitted into
         navigation : null                        // <-- The engine's navigation on the canvas: { Detach, Home }
     };
@@ -108,30 +167,322 @@
     // Its keys act only while this tab is open: a sheet tab's V, N and L, and
     // its arrows, are the sheet's. A press takes the keyboard from a panel
     // control, so W A S D move the camera rather than type into the last box.
+    // R brings an open scene back, as the engine's R brings its preset back.
     // ------------------------------------------------------------
     function Na__Environment3d__WireCanvas(canvas) {
         canvas.addEventListener('pointerdown', () => canvas.focus({ preventScroll: true }), true);
         Na__Environment3d__State.navigation = Na__EngineHost__AttachNavigation(canvas, {
             Active  : () => Na__AppState__Data.tab === 'environment',
-            OnMove  : () => Na__Environment3d__MarkPreset(),
-            OnReset : () => Na__Environment3d__MarkPreset(),
-            OnTap   : () => Na__ArtDirection3d__OnTap()                          // <-- A click on bare drawing lets the point being edited go
+            OnMove  : () => Na__Environment3d__HoldOrientation(),
+            OnReset : () => {
+                const scene = Na__Environment3d__OpenScene();
+                if (scene) Na__EngineHost__SetCamera(Na__Views__SceneCamera(scene, Na__AppState__Data.doc), 'Custom');
+            },
+            OnTap   : (e) => {
+                Na__ArtDirection3d__OnTap();                                     // <-- A click on bare drawing lets the point being edited go
+                Na__EngineHost__AssetsTap(e);                                    // <-- And is the engine's: paint with the brush up, else select what is there
+            }
         });
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Light the Preset the Camera Is On (none once it has moved)
+    // HELPER FUNCTION | An Open Elevation or Roof Plan Keeps Its Orientation (pan and zoom only)
     // ------------------------------------------------------------
-    // Every camera move passes here, so it is also where a saved view being
-    // edited is left once the camera moves off it (its points come along).
+    // The engine's navigation can hold the camera still, not its orientation
+    // alone, so a move that turned the camera is put square again at once (the
+    // same frame: only the square view is drawn). A seam in PainterlyNPR's
+    // navigation would do it there; the elevation camera tool is to come.
     // ------------------------------------------------------------
-    function Na__Environment3d__MarkPreset() {
-        Na__ArtDirection3d__FollowCamera();
-        const bar = Na__Environment3d__State.presetBar;
-        if (!bar) return;
-        const current = Na__EngineHost__Camera().Preset;
-        bar.querySelectorAll('[data-preset]').forEach((b) => b.classList.toggle('is-active', b.dataset.preset === current));
+    function Na__Environment3d__HoldOrientation() {
+        const lock = Na__Views__SceneLock(Na__Environment3d__OpenScene());
+        if (!lock || Na__EngineHost__Borrowed()) return;
+        const camera = Na__EngineHost__Camera().Camera;
+        const near = (a, b) => Math.abs((Number(a) || 0) - b) < 1e-6;
+        if (camera.Mode === 'Ortho' && near(camera.Yaw, lock.Yaw) && near(camera.Pitch, lock.Pitch)) return;
+        Na__EngineHost__SetCamera(Object.assign({}, camera, { Mode: 'Ortho', Yaw: lock.Yaw, Pitch: lock.Pitch }), 'Custom');
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Scene Tabs
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Scene Open Here (its points are being edited), if Any
+    // ------------------------------------------------------------
+    function Na__Environment3d__OpenScene() {
+        return Na__DrawingSet__Scene(Na__AppState__Data.doc, Na__ArtDirection3d__Owner());
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw the Tabs: the Saved views icon, a tab a scene, + Add Scene (only when they changed)
+    // ------------------------------------------------------------
+    function Na__Environment3d__RenderTabs() {
+        const S = Na__Environment3d__State;
+        const doc = Na__AppState__Data.doc;
+        if (!S.tabs || !doc || S.renaming) return;
+        const scenes = doc.AuraDrawingSet__SavedViews || [];
+        const key = JSON.stringify(scenes.map((v) => [v.View__Id, v.View__Name, v.View__Kind]));
+        if (key !== S.tabsKey) {
+            S.tabsKey = key;
+            Na__Dom__Clear(S.tabs);
+            S.tabs.appendChild(Na__Dom__PanelIcon('SavedViews', 'aura-scenes__icon'));
+            const list = Na__Dom__El('div', 'aura-segmented aura-scenes__list');
+            scenes.forEach((scene) => {
+                const kind = scene.View__Kind === 'Elevation' ? 'an elevation, to scale' : scene.View__Kind === 'Plan' ? 'the roof plan, to scale' : 'a 3D view';
+                const tab = Na__Dom__El('button', 'aura-segmented__item aura-scenes__tab', scene.View__Name, {
+                    type: 'button', 'aria-pressed': 'false', dataset: { scene: scene.View__Id },
+                    title: `${scene.View__Name}: ${kind}. Right-click to rename, update, duplicate or delete it`
+                });
+                tab.addEventListener('click', () => Na__Environment3d__OpenSceneTab(scene.View__Id));
+                tab.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    Na__Environment3d__ShowMenu(scene.View__Id, tab, e.clientX, e.clientY);
+                });
+                list.appendChild(tab);
+            });
+            S.tabs.appendChild(list);
+            const add = Na__Dom__IconButton('plus', 'aura-button aura-scenes__add', 'Add Scene', 'Keep the camera and its art direction points as a new scene, for a viewport on a sheet');
+            add.addEventListener('click', () => Na__Environment3d__AddScene());
+            S.tabs.appendChild(add);
+        }
+        Na__Environment3d__MarkScene();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Light the Open Scene's Tab
+    // ------------------------------------------------------------
+    function Na__Environment3d__MarkScene() {
+        const S = Na__Environment3d__State;
+        if (!S.tabs) return;
+        const open = Na__ArtDirection3d__Owner();
+        S.tabs.querySelectorAll('[data-scene]').forEach((b) => {
+            const on = b.dataset.scene === open;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-pressed', String(on));
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open a Scene: its camera and its points
+    // ------------------------------------------------------------
+    function Na__Environment3d__OpenSceneTab(sceneId) {
+        const doc = Na__AppState__Data.doc;
+        const scene = Na__DrawingSet__Scene(doc, sceneId);
+        if (!scene) return;
+        Na__ArtDirection3d__UseScene(scene);
+        Na__EngineHost__SetCamera(Na__Views__SceneCamera(scene, doc), 'Custom');
+        Na__Environment3d__MarkScene();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | + Add Scene: the camera and points now, as a new scene
+    // ------------------------------------------------------------
+    // While an elevation or the roof plan is open the new scene is one too
+    // (the same side, centred where the camera looks now), so it stays square
+    // and to scale; otherwise it is a 3D scene of the camera. It is the open
+    // scene from then on.
+    // ------------------------------------------------------------
+    function Na__Environment3d__AddScene() {
+        const doc = Na__AppState__Data.doc;
+        if (!doc) return null;
+        Na__ArtDirection3d__Keep();
+        const open = Na__Environment3d__OpenScene();
+        const camera = Na__EngineHost__Camera().Camera;
+        const name = Na__DrawingSet__SceneName(doc, `Scene ${(doc.AuraDrawingSet__SavedViews || []).length + 1}`);
+        const scene = Na__Views__IsScaled(open)
+            ? Na__DrawingSet__NewScene({ name, kind: open.View__Kind, side: open.View__Side, centre: camera.Target, points: Na__EngineHost__Points() })
+            : Na__DrawingSet__NewScene({ name, kind: 'Perspective', camera, points: Na__EngineHost__Points() });
+        doc.AuraDrawingSet__SavedViews.push(scene);
+        Na__ArtDirection3d__Adopt(scene);
+        Na__AppState__Touch('views');
+        Na__Environment3d__RenderTabs();
+        Na__Toast__Show(`Added "${scene.View__Name}". Right-click its tab to rename it; put it on a sheet from "Add a view".`);
+        return scene;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | The Right-Click Menu: Rename, Update From Camera, Duplicate, Delete
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Show the Menu for a Scene at the Pointer
+    // ------------------------------------------------------------
+    function Na__Environment3d__ShowMenu(sceneId, tab, x, y) {
+        const S = Na__Environment3d__State;
+        Na__Environment3d__CloseMenu();
+        const menu = Na__Dom__El('div', 'aura-scenes__menu', null, { role: 'menu' });
+        [['Rename', () => Na__Environment3d__RenameScene(sceneId, tab)],
+         ['Update from camera', () => Na__Environment3d__UpdateScene(sceneId)],
+         ['Duplicate', () => Na__Environment3d__DuplicateScene(sceneId)],
+         ['Delete', () => Na__Environment3d__DeleteScene(sceneId)]].forEach(([label, act]) => {
+            const item = Na__Dom__El('button', `aura-scenes__item${label === 'Delete' ? ' aura-scenes__item--danger' : ''}`, label, { type: 'button', role: 'menuitem' });
+            item.addEventListener('click', () => { Na__Environment3d__CloseMenu(); act(); });
+            menu.appendChild(item);
+        });
+        document.body.appendChild(menu);
+        const r = menu.getBoundingClientRect();
+        menu.style.left = `${Math.max(8, Math.min(x, window.innerWidth - r.width - 8))}px`;   // <-- Kept on screen
+        menu.style.top = `${Math.max(8, Math.min(y, window.innerHeight - r.height - 8))}px`;
+        S.menu = menu;
+        menu.querySelector('button').focus();
+    }
+
+    function Na__Environment3d__CloseMenu() {
+        const S = Na__Environment3d__State;
+        if (S.menu) S.menu.remove();
+        S.menu = null;
+    }
+
+    // Any press outside it, Escape, a scroll or a resize closes it
+    function Na__Environment3d__WireMenu() {
+        const S = Na__Environment3d__State;
+        document.addEventListener('pointerdown', (e) => { if (S.menu && !S.menu.contains(e.target)) Na__Environment3d__CloseMenu(); }, true);
+        document.addEventListener('keydown', (e) => { if (S.menu && e.key === 'Escape') { e.preventDefault(); Na__Environment3d__CloseMenu(); } }, true);
+        window.addEventListener('resize', () => Na__Environment3d__CloseMenu());
+        window.addEventListener('scroll', () => Na__Environment3d__CloseMenu(), true);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Rename a Scene in Its Tab: Enter or leaving the box keeps it, Escape does not
+    // ------------------------------------------------------------
+    function Na__Environment3d__RenameScene(sceneId, tab) {
+        const S = Na__Environment3d__State;
+        const doc = Na__AppState__Data.doc;
+        const scene = Na__DrawingSet__Scene(doc, sceneId);
+        if (!scene || !tab || !tab.isConnected) return;
+        const input = Na__Dom__El('input', 'aura-input aura-scenes__rename', null, { type: 'text', maxlength: 60, 'aria-label': `New name for ${scene.View__Name}` });
+        input.value = scene.View__Name;
+        input.style.width = `${Math.max(120, tab.offsetWidth)}px`;
+        S.renaming = true;
+        tab.replaceWith(input);
+        input.focus();
+        input.select();
+        let done = false;
+        const finish = (keep) => {
+            if (done) return;
+            done = true;
+            S.renaming = false;
+            const clean = input.value.trim();
+            if (keep && clean && clean !== scene.View__Name) {
+                scene.View__Name = Na__DrawingSet__SceneName(doc, clean, scene);    // <-- A name another scene has gets a number
+                Na__AppState__Touch('views');
+            }
+            S.tabsKey = '';                                                      // <-- Drawn again, the box gone
+            Na__Environment3d__RenderTabs();
+        };
+        input.addEventListener('keydown', (e) => {
+            e.stopPropagation();                                                 // <-- Typing is not the camera's
+            if (e.key === 'Enter') { e.preventDefault(); finish(true); }
+            else if (e.key === 'Escape') { e.preventDefault(); finish(false); }
+        });
+        input.addEventListener('blur', () => finish(true));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Update a Scene From the Camera (SketchUp's Update Scene): every viewport of it follows
+    // ------------------------------------------------------------
+    // The open scene takes the camera and the points as they are; another takes
+    // the camera only (its own points stay), after asking, and is opened. A
+    // scaled scene takes where the camera is centred, its side kept.
+    // ------------------------------------------------------------
+    function Na__Environment3d__UpdateScene(sceneId) {
+        const doc = Na__AppState__Data.doc;
+        const scene = Na__DrawingSet__Scene(doc, sceneId);
+        if (!scene) return;
+        Na__ArtDirection3d__Keep();
+        const open = Na__ArtDirection3d__Owner() === sceneId;
+        const used = Na__Views__ScenesUsing(doc, sceneId).length;
+        if (!open && !window.confirm(`Update "${scene.View__Name}" from the camera as it is now?${used ? ` ${used === 1 ? 'The viewport' : `All ${used} viewports`} showing it follow${used === 1 ? 's' : ''}.` : ''}`)) return;
+        Na__Views__UpdateScene(scene, Na__EngineHost__Camera().Camera, open ? Na__EngineHost__Points() : scene.View__Points);
+        if (open) Na__ArtDirection3d__Adopt(scene);
+        else Na__ArtDirection3d__UseScene(scene);
+        if (Na__Views__IsScaled(scene)) Na__EngineHost__SetCamera(Na__Views__SceneCamera(scene, doc), 'Custom');   // <-- Square and to scale, as it now is
+        Na__AppState__Touch('views');
+        Na__Environment3d__MarkScene();
+        Na__Toast__Show(`Updated "${scene.View__Name}"${used ? `: ${used === 1 ? 'its viewport follows' : `its ${used} viewports follow`}` : ''}.`);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Duplicate a Scene, Next to It, Under the Next Free Name
+    // ------------------------------------------------------------
+    function Na__Environment3d__DuplicateScene(sceneId) {
+        const doc = Na__AppState__Data.doc;
+        const scene = Na__DrawingSet__Scene(doc, sceneId);
+        if (!scene) return;
+        Na__ArtDirection3d__Keep();
+        const copy = Na__DrawingSet__NewScene({
+            name: Na__DrawingSet__SceneName(doc, scene.View__Name), kind: scene.View__Kind, side: scene.View__Side, camera: scene.View__Camera,
+            preset: scene.View__Preset, centre: scene.View__CentreM, points: scene.View__Points
+        });
+        const list = doc.AuraDrawingSet__SavedViews;
+        list.splice(list.indexOf(scene) + 1, 0, copy);
+        Na__AppState__Touch('views');
+        Na__Environment3d__RenderTabs();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Delete a Scene, and the Viewports Showing It, After Asking (undo brings both back)
+    // ------------------------------------------------------------
+    function Na__Environment3d__DeleteScene(sceneId) {
+        const doc = Na__AppState__Data.doc;
+        const scene = Na__DrawingSet__Scene(doc, sceneId);
+        if (!scene) return;
+        const used = Na__Views__ScenesUsing(doc, sceneId);
+        if (used.length) {
+            const sheets = [...new Set(used.map((u) => u.Sheet.Sheet__Name))].join(', ');
+            if (!window.confirm(`"${scene.View__Name}" is shown in ${used.length} viewport${used.length === 1 ? '' : 's'} (${sheets}). Delete the scene and ${used.length === 1 ? 'that viewport' : 'those viewports'}? Undo brings them back.`)) return;
+        }
+        if (Na__ArtDirection3d__Owner() === sceneId) Na__ArtDirection3d__LeaveScene();   // <-- Its points stay on the drawing, now the working set's
+        used.forEach((u) => { u.Sheet.Sheet__Viewports = u.Sheet.Sheet__Viewports.filter((v) => v !== u.Viewport); });
+        doc.AuraDrawingSet__SavedViews = (doc.AuraDrawingSet__SavedViews || []).filter((v) => v !== scene);
+        [...new Set(used.map((u) => u.Sheet.Sheet__Id))].forEach((id) => Na__AppState__Touch('viewport', id));
+        Na__AppState__Touch('views');
+        Na__Environment3d__RenderTabs();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Camera Presets
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Engine's Camera Presets, in One Picker After the Tabs
+    // ------------------------------------------------------------
+    // Starting points: pick one and the live camera goes there, the open scene
+    // let go (its tab unlit), so Add Scene can keep it. The picker reads
+    // "Presets" again after each pick, so the same one can be picked twice.
+    // ------------------------------------------------------------
+    function Na__Environment3d__WirePresets(bar) {
+        const options = [{ value: '', label: 'Presets' }].concat(Na__EngineHost__Presets(Na__AppConfig__Get('Engine__CameraPresets'))
+            .map((p) => ({ value: p.Key, label: `${p.Label}${p.Mode === 'Ortho' ? ' (orthographic)' : ''}` })));
+        const pick = Na__Dom__Select(options, '', 'aura-select aura-env__presets');
+        pick.title = 'Move the camera to one of the engine\'s presets (R puts it back to the start)';
+        pick.setAttribute('aria-label', 'Camera presets');
+        pick.addEventListener('change', () => {
+            if (!pick.value) return;
+            Na__ArtDirection3d__UseScene(null);                                  // <-- Off any scene: the working points
+            Na__EngineHost__ApplyPreset(pick.value);
+            pick.value = '';
+            Na__Environment3d__MarkScene();
+        });
+        bar.appendChild(pick);
     }
     // ------------------------------------------------------------
 
@@ -198,93 +549,10 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Saved Views
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Draw the Saved Views List (the one whose points are being edited is lit)
-    // ------------------------------------------------------------
-    function Na__Environment3d__RenderViews() {
-        const list = Na__Environment3d__State.viewsList;
-        const doc = Na__AppState__Data.doc;
-        if (!list || !doc) return;
-        Na__Dom__Clear(list);
-        const views = doc.AuraDrawingSet__SavedViews || [];
-        if (!views.length) {
-            list.appendChild(Na__Dom__El('p', 'aura-views__empty', 'No saved views yet. Frame the drawing, then save it here for a 3D viewport on a sheet. Its art direction points are saved with it.'));
-            return;
-        }
-        const editing = Na__ArtDirection3d__Owner();
-        views.forEach((view) => {
-            const on = view.View__Id === editing;
-            const count = (view.View__Points || []).length;
-            const row = Na__Dom__El('div', `aura-views__row${on ? ' is-active' : ''}`);
-            const show = Na__Dom__El('button', 'aura-views__name', null, { type: 'button', 'aria-pressed': String(on),
-                                                                           title: on ? 'Its points are the ones being edited' : 'Show this view, with its art direction points' });
-            show.appendChild(Na__Dom__El('span', 'aura-views__label', view.View__Name));
-            if (count) show.appendChild(Na__Dom__El('span', 'aura-views__count', `${count} point${count === 1 ? '' : 's'}`));
-            show.addEventListener('click', () => {
-                Na__EngineHost__SetCamera(view.View__Camera, 'Custom');
-                Na__ArtDirection3d__UseView(view);
-                Na__Environment3d__MarkPreset();
-                Na__Environment3d__RenderViews();
-            });
-            const remove = Na__Dom__IconButton('trash', 'aura-icon-button aura-icon-button--quiet', null, `Delete "${view.View__Name}"`);
-            remove.addEventListener('click', () => {
-                const used = (doc.AuraDrawingSet__Sheets || []).some((s) => s.Sheet__Viewports.some((v) => v.Viewport__CameraSource && v.Viewport__CameraSource.SavedViewId === view.View__Id));
-                if (used && !window.confirm(`"${view.View__Name}" is shown on a sheet. Delete it anyway? That viewport falls back to the three-quarter view.`)) return;
-                if (on) Na__ArtDirection3d__LeaveView();                         // <-- Its points stay on the drawing, now the unsaved view's
-                doc.AuraDrawingSet__SavedViews = (doc.AuraDrawingSet__SavedViews || []).filter((v) => v !== view);
-                Na__AppState__Touch('views');
-                Na__Environment3d__RenderViews();
-            });
-            row.appendChild(show);
-            row.appendChild(remove);
-            list.appendChild(row);
-        });
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Save the Live Camera and Its Points as a Named View
-    // ------------------------------------------------------------
-    // A name already in use (any case) replaces that view, camera and points,
-    // after asking: its id stays, so every sheet showing it follows. Either
-    // way the saved view is then the one being edited.
-    // ------------------------------------------------------------
-    function Na__Environment3d__SaveView(name) {
-        const doc = Na__AppState__Data.doc;
-        if (!doc) return null;
-        Na__ArtDirection3d__Keep();
-        const clean = String(name || '').trim() || `View ${(doc.AuraDrawingSet__SavedViews || []).length + 1}`;
-        const camera = Na__EngineHost__Camera().Camera;
-        const points = Na__EngineHost__Points();
-        const same = (doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Name.toLowerCase() === clean.toLowerCase());
-        let view = null;
-        if (same) {
-            if (!window.confirm(`Replace "${same.View__Name}" with the camera and points as they are now? Every sheet showing it follows.`)) return null;
-            same.View__Camera = JSON.parse(JSON.stringify(camera));
-            same.View__Points = Na__DrawingSet__CleanPoints(points);
-            view = same;
-        } else {
-            view = Na__DrawingSet__NewSavedView(clean, camera, points);
-            doc.AuraDrawingSet__SavedViews.push(view);
-        }
-        Na__ArtDirection3d__Adopt(view);
-        Na__AppState__Touch('views');
-        Na__Environment3d__RenderViews();
-        Na__Toast__Show(same ? `Replaced "${view.View__Name}": its camera and points are as they are now.` : `Saved "${clean}". Add it to a sheet as a 3D viewport.`);
-        return view;
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | Mount and Show
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Fit the Engine's Sheet Whole in the Stage, at Its 3:2 Shape
+    // HELPER FUNCTION | Fit the Engine's Sheet Whole in the Stage, at Its Own Shape (A3)
     // ------------------------------------------------------------
     // Sized in pixels from the stage's room (a ResizeObserver), so a narrow or
     // short window letterboxes the drawing instead of stretching it. The point
@@ -298,7 +566,7 @@
         const w = stage.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
         const h = stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
         if (w <= 0 || h <= 0) return;
-        const aspect = S.canvas.width / S.canvas.height || 1.5;
+        const aspect = S.canvas.width / S.canvas.height || Math.SQRT2;   // <-- The canvas's own (the engine's sheet); A3 is about root two until it is sized
         const width = Math.floor(Math.min(w, h * aspect));
         S.canvas.style.width = `${width}px`;
         S.canvas.style.height = `${Math.floor(width / aspect)}px`;
@@ -335,50 +603,38 @@
         canvas.tabIndex = 0;
         const sheetWrap = Na__Environment3d__SheetWrap(canvas);
         S.stage = sheetWrap.parentElement;
+        Na__EngineHost__AttachAssets(root, root.querySelector('[data-env-assets]'), sheetWrap);   // <-- First: it links the engine's tokens, which the point editor reads too
+        Na__AppState__On('tab', (tab) => { if (tab !== 'environment') Na__EngineHost__AssetsAway(); });
         Na__Environment3d__WireCanvas(canvas);
         if (window.ResizeObserver && S.stage) new ResizeObserver(() => Na__Environment3d__Fit()).observe(S.stage);
 
-        // Toolbar: the presets, a new seed, then Rendered or Proxy
+        // Toolbar: the scene tabs (the Saved views icon, a tab a scene, + Add Scene), the presets, a new seed, then Rendered or Proxy
         const bar = root.querySelector('[data-env-toolbar]');
         S.presetBar = bar;
         Na__Dom__Clear(bar);
-        const presets = Na__Dom__El('div', 'aura-segmented', null, { role: 'group', 'aria-label': 'Camera presets' });
-        Na__EngineHost__Presets(Na__AppConfig__Get('Engine__CameraPresets')).forEach((p) => {
-            const b = Na__Dom__El('button', 'aura-segmented__item', p.Label, { type: 'button', dataset: { preset: p.Key }, title: p.Mode === 'Ortho' ? 'An orthographic elevation' : 'A perspective view' });
-            b.addEventListener('click', () => { Na__EngineHost__ApplyPreset(p.Key); Na__Environment3d__MarkPreset(); });
-            presets.appendChild(b);
-        });
-        bar.appendChild(presets);
+        S.tabs = Na__Dom__El('div', 'aura-scenes', null, { role: 'group', 'aria-label': 'Scenes: each one a viewport on a sheet' });
+        bar.appendChild(S.tabs);
+        Na__Environment3d__WireMenu();
+        Na__Environment3d__WirePresets(bar);
         const seed = Na__Dom__IconButton('dice', 'aura-button', 'New seed', 'Every stroke, wash and grain is seeded: a new seed is a new hand, the same building');
         seed.addEventListener('click', () => { Na__EngineHost__NewSeed(); Na__Parameters__Sync(); });
         bar.appendChild(seed);
         Na__Environment3d__WireWorkMode(bar);
 
-        // Side panel: three folding sections - saved views, their art direction
-        // points, the parameters - and a grip on its left edge to resize it
+        // Side panel: two folding sections - the parameters, then the art
+        // direction points (Adam: "Flip the order of these") - and a grip on
+        // its left edge to resize it
         const panel = root.querySelector('[data-env-panel]');
         Na__Dom__Clear(panel);
         Na__Environment3d__WirePanelGrip(root, panel);
 
-        const views = Na__Panels__Section(panel, { id: 'env-views', title: 'Saved views' });
-        const form = Na__Dom__El('form', 'aura-views__form');
-        const input = Na__Dom__El('input', 'aura-input', null, { type: 'text', placeholder: 'Name this view', maxlength: 60, 'aria-label': 'Name for the saved view' });
-        const add = Na__Dom__IconButton('camera', 'aura-button aura-button--primary', 'Save view', 'Save the camera and its art direction points as they are now (a name in use replaces that view)');
-        add.type = 'submit';
-        form.appendChild(input);
-        form.appendChild(add);
-        form.addEventListener('submit', (e) => { e.preventDefault(); Na__Environment3d__SaveView(input.value); input.value = ''; });
-        views.body.appendChild(form);
-        S.viewsList = Na__Dom__El('div', 'aura-views__list');
-        views.body.appendChild(S.viewsList);
-
-        const points = Na__Panels__Section(panel, { id: 'env-points', title: 'Art direction points', onToggle: (open) => Na__ArtDirection3d__SetOpen(open) });
-        Na__ArtDirection3d__Mount(points, sheetWrap, canvas, () => Na__Environment3d__RenderViews());
-
-        const params = Na__Panels__Section(panel, { id: 'env-params', title: 'Parameters' });
+        const params = Na__Panels__Section(panel, { id: 'env-params', title: 'Parameters', icon: 'Parameters' });
         const holder = Na__Dom__El('div', 'aura-params');
         params.body.appendChild(holder);
         Na__Parameters__Build(holder);
+
+        const points = Na__Panels__Section(panel, { id: 'env-points', title: 'Art direction points', icon: 'ArtDirectionPoints', onToggle: (open) => Na__ArtDirection3d__SetOpen(open) });
+        Na__ArtDirection3d__Mount(points, sheetWrap, canvas, () => Na__Environment3d__MarkScene());
 
         // The scene line under the stage
         const scene = root.querySelector('[data-env-scene]');
@@ -388,9 +644,10 @@
             scene.title = Na__AppConfig__Get('Scene__DemoNote', '');
         }
 
-        Na__Environment3d__RenderViews();
-        Na__Environment3d__MarkPreset();
-        Na__AppState__On('saved', () => Na__Environment3d__RenderViews());
+        Na__Environment3d__RenderTabs();
+        Na__AppState__On('saved', () => Na__Environment3d__RenderTabs());
+        Na__AppState__On('changed', () => Na__Environment3d__RenderTabs());      // <-- A scene added, renamed or removed (here or from a sheet)
+        Na__AppState__On('restored', () => Na__Environment3d__RenderTabs());     // <-- An undo or redo
     }
     // ------------------------------------------------------------
 
@@ -426,8 +683,7 @@
         requestAnimationFrame(() => Na__Environment3d__Fit());                  // <-- The stage has its size once shown
         Na__EngineHost__Redraw();
         Na__Parameters__Sync();
-        Na__Environment3d__MarkPreset();
-        Na__Environment3d__RenderViews();
+        Na__Environment3d__RenderTabs();
     }
     // ------------------------------------------------------------
 
@@ -441,8 +697,8 @@
     export {
         Na__Environment3d__Mount,
         Na__Environment3d__Show,
-        Na__Environment3d__SaveView,
-        Na__Environment3d__RenderViews
+        Na__Environment3d__AddScene,
+        Na__Environment3d__RenderTabs
     };
 
 // endregion -------------------------------------------------------------------

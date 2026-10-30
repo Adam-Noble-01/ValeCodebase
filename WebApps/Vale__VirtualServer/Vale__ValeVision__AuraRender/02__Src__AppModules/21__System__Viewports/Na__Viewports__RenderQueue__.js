@@ -22,10 +22,19 @@
 //   viewport has it). Meanwhile the edited viewport shows a PREVIEW: the live
 //   engine's drawing of it (SetPreview), until its still is drawn again.
 // - Pictures are WebP in memory (object URLs), about forty kept.
+// - PICTURES ARE 300 DPI ON THE PAPER (Adam: "Documents should be 300 dpi"):
+//   the engine draws its whole sheet at AuraConfig__Viewport__RenderDpi, so a
+//   printed sheet's pens and grain are as sharp as its title block. A GPU that
+//   cannot hold the sheet at that size draws it at screen size instead and
+//   says so in the console: a viewport is never left empty.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.4.3)
+// - Stills at 300 dpi on the paper (Viewport__RenderDpi), not the engine's
+//   screen density; the screen size if the GPU cannot.
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
 // - The view's points are in the key and go to the still (Na__Views__Points);
 //   a viewport can show a preview while its points are edited (SetPreview).
@@ -42,7 +51,7 @@
 
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__EngineHost__RenderStill, Na__EngineHost__Settings, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__RenderStill, Na__EngineHost__Settings, Na__EngineHost__SheetMm, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__Views__Camera, Na__Views__Points } from './Na__Viewports__Views__.js';
 
 // endregion -------------------------------------------------------------------
@@ -76,12 +85,24 @@
     function Na__RenderQueue__Key(viewport, doc) {
         const camera = Na__Views__Camera(viewport, doc);
         const points = Na__Views__Points(viewport, doc).map((p) => { const copy = Object.assign({}, p); delete copy.Id; return copy; });   // <-- Ids only tell points apart
+        const scale = Na__RenderQueue__Scale();
         return {
             camera,
             points,
-            scale : Na__AppConfig__Get('Viewport__RenderScale', 1),
-            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: Na__AppConfig__Get('Viewport__RenderScale', 1) })
+            scale,
+            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: scale })
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Stills' Scale: the paper's dpi over the engine's screen density
+    // ------------------------------------------------------------
+    // 300 dpi is 11.81 px/mm; the engine draws at 5 px/mm on screen, so 2.36.
+    // ------------------------------------------------------------
+    function Na__RenderQueue__Scale() {
+        const dpi = Number(Na__AppConfig__Get('Viewport__RenderDpi', 300)) || 300;
+        return dpi / 25.4 / (Na__EngineHost__SheetMm().PxPerMm || 5);
     }
     // ------------------------------------------------------------
 
@@ -191,7 +212,14 @@
                 S.current = job.key;
                 let picture = null, failure = null;
                 try {
-                    const still = Na__EngineHost__RenderStill({ camera: job.camera, scale: job.scale, points: job.points });
+                    let still;
+                    try {
+                        still = Na__EngineHost__RenderStill({ camera: job.camera, scale: job.scale, points: job.points });
+                    } catch (error) {
+                        if (job.scale === 1) throw error;
+                        console.warn('[AURA RenderQueue] The sheet at print resolution is past this GPU: drawn at screen size instead.', error);
+                        still = Na__EngineHost__RenderStill({ camera: job.camera, scale: 1, points: job.points });   // <-- The screen's 5 px/mm: the same drawing, less sharp in print
+                    }
                     const blob = await new Promise((resolve) => still.canvas.toBlob(resolve, 'image/webp', 0.92));
                     if (!blob) throw new Error('The picture could not be encoded.');
                     picture = { url: URL.createObjectURL(blob), widthPx: still.widthPx, heightPx: still.heightPx, ms: still.ms };

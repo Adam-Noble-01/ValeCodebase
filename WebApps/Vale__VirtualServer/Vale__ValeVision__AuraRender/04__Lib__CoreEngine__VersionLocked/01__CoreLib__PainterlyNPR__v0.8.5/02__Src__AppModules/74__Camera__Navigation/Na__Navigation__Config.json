@@ -1,0 +1,103 @@
+{
+    "PainterlyNPR__Navigation__Config" : {
+        "PainterlyNPR__Navigation__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Navigation Mappings",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Which mouse button, wheel, finger and key moves the 3D camera, and how far. The mappings are ValeVision 3D's orbit mode (three.js OrbitControls as ValeVision configures it, with its wheel zoom, keyboard moves and floor guard) without the orbit helper cube: free navigation. Every binding is data, so a mapping is changed here and no handler code moves.",
+            "ReadBy"        : "02__Src__AppModules/74__Camera__Navigation/PainterlyNPR__Navigation__Mappings__.mjs",
+            "Source"        : "ValeVision 3D v2.76 (10__NavigationAndCameras: Na__DefaultNavmode__MouseControls 1.2.1, Na__DefaultNavmode__IpadControls 1.0.0, Na__Navmode__OrbitControls__Damping; 02__AppData/Na__Hotkeys__3dModelTab__.json; three.js r184 OrbitControls), read 30-Oct-2026 for v0.5.4"
+        },
+
+        "PainterlyNPR__Navigation__Config__Pointer"  : {
+            "DragSlopPx"    : 3,
+            "DragSlopPxNote": "A press must travel this far before it moves the camera, so a click (which lets a selected point go) never nudges the view. OrbitControls has none; PainterlyNPR's sheet always had 3 px.",
+            "Bindings"      : [
+                { "Id": "Pan__ModifiedLeftDrag",    "Button": "Left",   "Modifiers": ["Ctrl", "Shift", "Meta"], "ModifierMatch": "AnyOf", "Action": "Pan",   "Enabled": true, "Label": "Pan (Ctrl, Shift or Cmd + left drag)" },
+                { "Id": "Orbit__LeftDrag",          "Button": "Left",   "Modifiers": [],                        "ModifierMatch": "Any",   "Action": "Orbit", "Enabled": true, "Label": "Orbit (left drag)" },
+                { "Id": "Orbit__ModifiedRightDrag", "Button": "Right",  "Modifiers": ["Ctrl", "Shift", "Meta"], "ModifierMatch": "AnyOf", "Action": "Orbit", "Enabled": true, "Label": "Orbit (Ctrl, Shift or Cmd + right drag)" },
+                { "Id": "Pan__RightDrag",           "Button": "Right",  "Modifiers": [],                        "ModifierMatch": "Any",   "Action": "Pan",   "Enabled": true, "Label": "Pan (right drag)" },
+                { "Id": "Dolly__MiddleDrag",        "Button": "Middle", "Modifiers": [],                        "ModifierMatch": "Any",   "Action": "Dolly", "Enabled": true, "Label": "Dolly (middle drag: up nearer, down further)" }
+            ],
+            "BindingsNote"  : "OrbitControls' own mouse map: LEFT rotates, RIGHT pans, MIDDLE dollies, and Ctrl, Shift or Cmd swaps a left or right drag between rotate and pan. Tested in list order, the first enabled match wins, so the modified binding sits above the plain one. Buttons: Left, Middle, Right (a pen's tip is Left). ModifierMatch: Exact (the held set of Ctrl, Shift, Alt and Meta is exactly the list), AnyOf (any one of the list is held), Any (modifiers ignored). Actions: Orbit, Pan, Dolly. ValeVision's desktop build switches OrbitControls' zoom off for its own wheel, which also leaves its middle button idle; here the middle drag dollies, as OrbitControls means it to."
+        },
+
+        "PainterlyNPR__Navigation__Config__Speeds"   : {
+            "RotateSpeed"       : 1.0,
+            "RotateSpeedNote"   : "OrbitControls' rotateSpeed: at 1, a drag the height of the drawing turns the camera a full 360 degrees round its target (and tilts it the same rate). The old sheet orbit was 0.25 degrees a pixel whatever the window.",
+            "PanSpeed"          : 1.0,
+            "PanSpeedNote"      : "OrbitControls' screen-space pan: at 1, whatever lies at the target's depth stays under the pointer or the fingers. An elevation pans by its scale the same way.",
+            "DollyPer100Px"     : 0.95,
+            "DollyPer100PxNote" : "OrbitControls' dolly at zoomSpeed 1: every 100 px of middle drag multiplies the distance (an elevation's half-height) by 0.95, nearer dragging up, further dragging down."
+        },
+
+        "PainterlyNPR__Navigation__Config__Wheel"    : {
+            "ZoomRate"              : 0.0012,
+            "ZoomRateNote"          : "The engine's own wheel zoom (PainterlyNPR__CameraRig__Zoom): the distance, or an elevation's half-height, is multiplied by e^(delta x 0.0012), so one notch of an ordinary wheel (100 px) is about 13 percent. ValeVision's fixed 250 mm step suits its garden rooms; this scene is framed from 40 m, so the step stays proportional.",
+            "StepClamp"             : 300,
+            "StepClampNote"         : "One wheel event moves at most this many pixels' worth (the engine's clamp), however a mouse driver reports it.",
+            "LineDeltaPx"           : 16,
+            "PageDeltaPx"           : 100,
+            "LineDeltaPxNote"       : "A wheel that reports lines (deltaMode 1) or pages (deltaMode 2) is turned into pixels as ValeVision does: 16 a line, 100 a page.",
+            "PinchMultiplier"       : 6,
+            "PinchMultiplierNote"   : "A trackpad pinch arrives as a small wheel with Ctrl held: multiplied so a pinch zooms at a finger's pace (the sheet's old rule).",
+            "AccelerateAfterTicks"  : 3,
+            "AcceleratePerTick"     : 1.05,
+            "TickResetMs"           : 250,
+            "AccelerateNote"        : "ValeVision's wheel acceleration: wheel events closer together than TickResetMs are one spin; after the third, each step grows by 1.05 times the one before, so a long spin covers ground quickly and a single notch stays fine."
+        },
+
+        "PainterlyNPR__Navigation__Config__Touch"    : {
+            "OneFinger"         : "Orbit",
+            "TwoFingers"        : "DollyPan",
+            "TouchNote"         : "ValeVision's iPad map (OrbitControls touches ONE: ROTATE, TWO: DOLLY_PAN): one finger orbits, two fingers pinch nearer or further and drag to pan. OneFinger may be Orbit or Pan; TwoFingers DollyPan, Dolly or Pan. Lifting one of two fingers ends the pinch and starts no orbit until every finger is up.",
+            "TapSlopPx"         : 6,
+            "TapSlopPxNote"     : "A finger that lifts within this many pixels of where it landed is a tap (it lets a selected point go), never an orbit."
+        },
+
+        "PainterlyNPR__Navigation__Config__Keys"     : {
+            "MoveStepM"         : 0.05,
+            "ElevationStepM"    : 0.05,
+            "MoveStepMNote"     : "ValeVision's keyboard move: 50 mm a frame while a key is held (about 3 m a second), for fine-tuning a view. Without Shift the camera moves and keeps looking at its target, so W walks it in towards the target and A and D swing it round; the distance stays within the camera's zoom range.",
+            "FineModifier"      : "Alt",
+            "FineScale"         : 0.2,
+            "FineNote"          : "Hold Alt for extra-fine steps: a fifth of the speed.",
+            "RigModifier"       : "Shift",
+            "RigNote"           : "Hold Shift to dolly the rig: the target moves with the camera, so the framing holds and the view slides.",
+            "ZoomKeyStep"       : 180,
+            "ZoomKeyStepNote"   : "One press of + or -: the engine's zoom step (about a quarter nearer or further).",
+            "Bindings"          : [
+                { "Id": "Move__Forward", "Keys": ["w", "ArrowUp"],    "Action": "MoveForward", "Held": true,  "Description": "Move the camera forwards (horizontally)" },
+                { "Id": "Move__Back",    "Keys": ["s", "ArrowDown"],  "Action": "MoveBack",    "Held": true,  "Description": "Move the camera backwards" },
+                { "Id": "Move__Left",    "Keys": ["a", "ArrowLeft"],  "Action": "MoveLeft",    "Held": true,  "Description": "Move the camera to the left" },
+                { "Id": "Move__Right",   "Keys": ["d", "ArrowRight"], "Action": "MoveRight",   "Held": true,  "Description": "Move the camera to the right" },
+                { "Id": "Move__Down",    "Keys": ["q"],               "Action": "MoveDown",    "Held": true,  "Description": "Move the camera straight down" },
+                { "Id": "Move__Up",      "Keys": ["e"],               "Action": "MoveUp",      "Held": true,  "Description": "Move the camera straight up" },
+                { "Id": "View__Reset",   "Keys": ["r"],               "Action": "ResetView",   "Held": false, "NoShift": true, "Description": "Reset the camera to the view it started from (the last camera preset)" },
+                { "Id": "Zoom__In",      "Keys": ["+", "="],          "Action": "ZoomIn",      "Held": false, "Description": "Zoom in" },
+                { "Id": "Zoom__Out",     "Keys": ["-", "_"],          "Action": "ZoomOut",     "Held": false, "Description": "Zoom out" },
+                { "Id": "Zoom__Reset",   "Keys": ["0"],               "Action": "ResetZoom",   "Held": false, "Description": "Reset the zoom to the preset's framing, keeping the angle" }
+            ],
+            "BindingsNote"      : "ValeVision's 3D Model tab keys (W A S D, the arrows, Q and E, R), with PainterlyNPR's zoom keys (+, -, 0). Letters match either case, so Shift + W is still W - except a binding with NoShift, which Shift held passes over: Shift + R is the work mode's switch (Proxy / Rendered, v0.7.1), never a reset. Held keys move every frame they are down; the others act once a press. Nothing acts while Ctrl or Cmd is held (Ctrl + D duplicates a point), the one-press keys not with Alt either, and no key acts while a field, a list or a slider has the keyboard, so a focused slider keeps its arrows."
+        },
+
+        "PainterlyNPR__Navigation__Config__Limits"   : {
+            "PitchMinDeg"       : -89.9,
+            "PitchMaxDeg"       : 89.9,
+            "PitchNote"         : "OrbitControls' polar range is the whole half-turn (minPolarAngle 0, maxPolarAngle pi), so ValeVision tilts from looking straight up to straight down. 89.9, as AURA's roof plan uses, keeps the look-at's up vector off the view axis.",
+            "MinEyeHeightM"     : 0,
+            "MinEyeHeightMNote" : "ValeVision's floor guard (OrbitMinCameraYMm 0): the camera never goes below the ground (the lawn is at 0 m). The tilt is held up instead, so the camera keeps its distance.",
+            "DistanceNote"      : "How near and how far the camera goes is the camera rig's own Zoom range (70__Camera__ViewTypes/Na__CameraRig__Config.json): 8 to 90 m, an elevation's half-height 3 to 24 m."
+        },
+
+        "PainterlyNPR__Navigation__Config__Damping"  : {
+            "MouseEnabled"      : false,
+            "MouseFactor"       : 0.08,
+            "TouchEnabled"      : true,
+            "TouchFactor"       : 0.08,
+            "DampingNote"       : "ValeVision's Navmode__Damping: off for the mouse, on for fingers. Damped, each frame applies this share of the orbit and pan still owed and keeps the rest, so the camera eases to a stop after the finger lifts (the same total move). Zoom is never damped.",
+            "StopBelowDeg"      : 0.0005,
+            "StopBelowM"        : 0.000005,
+            "StopNote"          : "The easing ends once what is owed falls below these: then the drawing refines."
+        }
+    }
+}

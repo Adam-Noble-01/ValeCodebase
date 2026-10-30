@@ -12,9 +12,9 @@
 // CREATED    : 30-Oct-2026
 //
 // DESCRIPTION:
-// - WHOSE POINTS: a 3D viewport of a saved view edits that view's own points,
-//   the set the 3D Environment edits too (one set a view, Adam, 30-Oct-2026);
-//   an elevation, the roof plan or a preset view edits its own.
+// - WHOSE POINTS: a viewport edits its scene's points, the set the 3D
+//   Environment edits too and every viewport of that scene draws with (one
+//   set a view, Adam, 30-Oct-2026; scenes since AURA 0.5.0).
 // - THE ENGINE IS LENT TO THE VIEWPORT while its Art direction points section
 //   is open (Na__EngineHost__Borrow): the live drawing becomes that
 //   viewport's, the engine's handles, rings and node of sliders lie over its
@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.0.1 (AURA 0.5.0)
+// - Words only: the points are the viewport's scene's.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
 // - Initial build.
 //
@@ -354,8 +357,8 @@
         S.section = section;
         const owner = Na__Views__PointsOwner(viewport, doc);
         body.appendChild(Na__Dom__El('p', 'aura-points__owner', owner.View
-            ? `The points of the saved view "${owner.View.View__Name}": the 3D Environment edits the same set, and every sheet showing it draws with them.`
-            : 'This viewport\'s own points.'));
+            ? `The points of the scene "${owner.View.View__Name}": the 3D Environment edits the same set, and every viewport showing it draws with them.`
+            : 'This viewport\'s scene is gone: pick one in its panel before adding points.'));
 
         const types = Na__Dom__El('div', 'aura-points__types', null, { role: 'group', 'aria-label': 'Add an art direction point' });
         S.typeButtons = Na__EngineHost__PointTypes().map((t) => {

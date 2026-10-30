@@ -12,8 +12,10 @@
 //
 // DESCRIPTION:
 // - A SECTION is a header (its title, a little count, a chevron) over a body.
-//   A click on the header folds it or opens it; the state is kept in this
-//   browser per section id, so a panel opens as it was left.
+//   A click on the header folds it or opens it. Every section starts folded
+//   and a panel's sections are an accordion: opening one folds its open
+//   siblings (Adam, 30-Oct-2026: "keep them all folded ... the other
+//   sections fold otherwise the menu becomes hard to use").
 // - A GRIP on a panel's inner edge drags the panel wider or narrower (the
 //   Layout Editor's 6 px grip: the pointer captured, nothing on the page
 //   selected while it drags). The width is a CSS custom property on the tab
@@ -25,6 +27,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.4.2)
+// - A section can carry a picture icon before its title (spec.icon).
+//
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.4.1)
+// - Sections start folded and fold their siblings when opened; their folds are
+//   no longer remembered.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
 // - Initial build: the 3D Environment's panel and the sheets' two panels.
 //
@@ -35,7 +44,7 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    import { Na__Dom__El, Na__Dom__Icon } from './Na__AppUtils__Dom__.js';
+    import { Na__Dom__El, Na__Dom__Icon, Na__Dom__PanelIcon } from './Na__AppUtils__Dom__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -78,15 +87,20 @@
 
     // FUNCTION | A Folding Section: { root, head, body, meta, IsOpen(), SetOpen(open) }
     // ------------------------------------------------------------
-    // spec: { id, title, open (true unless false: the first time only), className,
-    // onToggle(open) }. The body is built by the caller; meta is a little count
-    // or status beside the title ("3 points").
+    // spec: { id, title, icon, className, onToggle(open) }. The body is built by
+    // the caller; meta is a little count or status beside the title ("3 points");
+    // icon names a panel icon (Na__Dom__PanelIcon) drawn before the title.
+    // Opening a section folds its open siblings through their own SetOpen, so
+    // each one's onToggle hears it.
     // ------------------------------------------------------------
+    const Na__Panels__Sections = new WeakMap();                                  // <-- Section root -> its api, for the accordion
+
     function Na__Panels__Section(parent, spec) {
-        const open = Na__Panels__Recall(`fold-${spec.id}`, spec.open === false ? '0' : '1') === '1';
+        const open = false;
         const bodyId = `aura-section-${spec.id}`;
         const root = Na__Dom__El('section', `aura-section${spec.className ? ' ' + spec.className : ''}${open ? '' : ' is-folded'}`, null, { dataset: { section: spec.id } });
         const head = Na__Dom__El('button', 'aura-section__head', null, { type: 'button', 'aria-expanded': String(open), 'aria-controls': bodyId });
+        if (spec.icon) head.appendChild(Na__Dom__PanelIcon(spec.icon, 'aura-section__icon'));
         head.appendChild(Na__Dom__El('span', 'aura-section__title', spec.title));
         const meta = Na__Dom__El('span', 'aura-section__meta');
         head.appendChild(meta);
@@ -102,12 +116,18 @@
             SetOpen: (next) => {
                 const now = !!next;
                 if (api.IsOpen() === now) return;
+                if (now && root.parentElement) {
+                    Array.from(root.parentElement.children).forEach((other) => {
+                        const sibling = other !== root ? Na__Panels__Sections.get(other) : null;
+                        if (sibling && sibling.IsOpen()) sibling.SetOpen(false);
+                    });
+                }
                 root.classList.toggle('is-folded', !now);
                 head.setAttribute('aria-expanded', String(now));
-                Na__Panels__Remember(`fold-${spec.id}`, now ? '1' : '0');
                 if (typeof spec.onToggle === 'function') spec.onToggle(now);
             }
         };
+        Na__Panels__Sections.set(root, api);
         head.addEventListener('click', () => api.SetOpen(!api.IsOpen()));
         return api;
     }

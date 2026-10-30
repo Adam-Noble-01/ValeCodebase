@@ -109,6 +109,9 @@
         detail  : (was, now) => {
             if (was.Annotation__Text !== now.Annotation__Text) return 'Change a note\'s words';
             if (JSON.stringify(was.Annotation__TipMm) !== JSON.stringify(now.Annotation__TipMm)) return 'Move a leader\'s arrow';
+            if (JSON.stringify(was.Annotation__BendsMm || []) !== JSON.stringify(now.Annotation__BendsMm || [])) return 'Bend a leader';
+            if (JSON.stringify(was.Annotation__LeaderFrom || null) !== JSON.stringify(now.Annotation__LeaderFrom || null)) return 'Move where a leader leaves';
+            if ((was.Annotation__Align || 'Left') !== (now.Annotation__Align || 'Left')) return 'Justify a note';
             if (JSON.stringify(was.Annotation__AtMm) !== JSON.stringify(now.Annotation__AtMm)) return 'Move a note';
             return 'Change a note';
         }

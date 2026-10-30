@@ -3,9 +3,9 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.3.1",
+    "AuraConfig__App__Version"                          : "0.5.3",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
-    "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked and reached only through 02__Src__AppModules/10__System__EngineHost.",
+    "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked (its modules, and the libraries and stylesheets it reads) and reached only through 02__Src__AppModules/10__System__EngineHost. Nothing of it is copied into AURA: what AURA needs from it is a seam in PainterlyNPR, synced.",
 
     "AuraConfig__Access__MinimumLevel"                  : "Management",
     "AuraConfig__Access__MinimumLevelNote"              : "Managers and App Admins only while AURA is new (Adam, 30-Oct-2026): Employees, Affiliates and clients are refused by the page and by every API route, and the Gallery hides the link from them.",
@@ -60,9 +60,9 @@
     "AuraConfig__Viewport__DefaultPlanScale"            : 100,
     "AuraConfig__Viewport__DefaultFrameMm"              : { "WidthMm": 180, "HeightMm": 120 },
     "AuraConfig__Viewport__MinFrameMm"                  : 20,
-    "AuraConfig__Viewport__ScaledFrameNote"             : "A scaled view (an elevation or a plan) is one engine frame: the engine draws on a 300 x 200 mm sheet, so a scaled viewport is at most that size and its pen widths are true millimetres on the paper. A perspective is a picture, scaled to its frame.",
-    "AuraConfig__Viewport__RenderScale"                 : 1,
-    "AuraConfig__Viewport__RenderScaleNote"             : "The engine's pixels per millimetre multiplier for viewport pictures: 1 is 5 px/mm (the engine's screen size), 2 is 10 px/mm for print. Pen widths and grain are millimetres, so 2 is the same drawing, sharper, and about four times slower.",
+    "AuraConfig__Viewport__ScaledFrameNote"             : "A scaled view (an elevation or a plan) is one engine frame: the engine draws on its own sheet (A3, 420 x 297 mm since PainterlyNPR 0.8.3, read from the engine), so a scaled viewport is at most that size and its pen widths are true millimetres on the paper. A perspective is a picture, scaled to its frame.",
+    "AuraConfig__Viewport__RenderDpi"                   : 300,
+    "AuraConfig__Viewport__RenderDpiNote"               : "Viewport pictures are drawn at this many dots per inch on the paper (Adam: \"Documents should be 300 dpi\"): the engine's whole A3 sheet at 300 dpi is 4961 x 3508 px, about 5.6 times the pixels of its 5 px/mm screen size and about 2 GB of GPU memory. Pen widths and grain are millimetres, so it is the same drawing, sharper. A GPU that cannot hold it draws the picture at screen size instead (the console says so).",
     "AuraConfig__Viewport__TitleSizeMm"                 : 4,
     "AuraConfig__Viewport__TitleGapMm"                  : 3,
     "AuraConfig__Viewport__OrthoDistanceM"              : 60,
@@ -79,18 +79,8 @@
     "AuraConfig__Viewport__ElevationsNote"              : "Yaw is the engine's: 0 looks at the front (+Z) face, 90 at the right (+X) face as seen from the front.",
 
     "AuraConfig__Engine__CameraPresets"                 : ["ThreeQuarter", "GardenCorner", "DownThePath", "MeasuredElevation", "ConceptElevation"],
-    "AuraConfig__Engine__ParameterGroups"               : [
-        { "Key": "Paper",       "Label": "Paper and finish",  "Controls": ["Emboss", "InkDry", "Vignette", "Roughness"], "Selects": ["PaperPreset"] },
-        { "Key": "Light",       "Label": "Light",             "Controls": ["SunAzimuth", "SunAltitude"] },
-        { "Key": "Pen",         "Label": "Pen",               "Controls": ["Discipline", "LineWeight", "Indication"], "Selects": ["InkFamily"] },
-        { "Key": "Wash",        "Label": "Wash",              "Controls": ["WashStrength", "Granulation", "Pooling", "CoffeeRings", "Bleed", "Shadow", "ShadowLines"] },
-        { "Key": "Sky",         "Label": "Sky",               "Controls": ["Sky", "Clouds", "CloudCoverage"] }
-    ],
-    "AuraConfig__Engine__ParameterGroupsNote"           : "Each control is the engine's own (80__System__HudOverlay/Na__Interface__Controls__Config.json): its label, range, the state it sets, what it re-renders and its readout. AURA only chooses which to show, here.",
-    "AuraConfig__Engine__LabelOverrides"                : { "Indication": "Material indication", "WashStrength": "Wash strength", "Emboss": "Paper grain" },
-    "AuraConfig__Engine__LabelOverridesNote"            : "Where an engine label leans on its own panel's heading (its \"Amount\" sits under \"Indication\"), AURA's groups say it in full.",
-    "AuraConfig__Engine__Discipline"                    : { "Label": "Drawing discipline", "Min": 0, "Max": 1, "Step": 0.01 },
-    "AuraConfig__Engine__DisciplineNote"                : "The engine's discipline slider has its range in its own panel, not in its controls config: Technical 0, Natural Pen 0.33, Architectural Sketch 0.66, Expressive Concept 1.",
+    "AuraConfig__Engine__OwnSections"                   : ["Camera", "ArtDirection", "Export"],
+    "AuraConfig__Engine__OwnSectionsNote"               : "The 3D Environment's parameters are PainterlyNPR's own panel (80__System__HudOverlay/Na__Interface__Panel__Config.json, read through 10__System__EngineHost): every section, group, fold, slider, menu, preset and hint, in the engine's order and words. AURA leaves out only the sections it has its own of: Camera (its saved views), ArtDirection (its Art direction points section) and Export (its drawing sheets). Since AURA 0.3.3 (Adam: \"ensure all parameters are availible from npr in aura\", \"dont duplicate code the npr repo remains definitive source\").",
 
     "AuraConfig__Annotation__DefaultSizeMm"             : 4.5,
     "AuraConfig__Annotation__Sizes"                     : [3, 3.5, 4.5, 6, 8],
@@ -104,16 +94,70 @@
     ],
     "AuraConfig__Annotation__InksNote"                  : "The Vale Handwriting Studio's own ink presets (Forest is its default), and Vale navy.",
     "AuraConfig__Annotation__DefaultInk"                : "Forest",
-    "AuraConfig__Annotation__PenWidthMm"                : 0.3,
+
+    "AuraConfig__Handwriting__Pens"                     : [
+        { "Key": "M013", "Tier": 0, "Name": "Base lines",       "Label": "0.13 mm", "Pen": "STAEDTLER Mars matic 700 M013", "WidthMm": 0.13, "Use": "All visible linework, materials, hatching and fine detail" },
+        { "Key": "M018", "Tier": 1, "Name": "Minor features",   "Label": "0.18 mm", "Pen": "STAEDTLER Mars matic 700 M018", "WidthMm": 0.18, "Use": "Windows, doors, fences, joinery, glazing and lettering" },
+        { "Key": "M025", "Tier": 2, "Name": "Structural lines", "Label": "0.25 mm", "Pen": "STAEDTLER Mars matic 700 M025", "WidthMm": 0.25, "Use": "Walls, roofs, structural boundaries and significant features" },
+        { "Key": "M035", "Tier": 3, "Name": "Profile lines",    "Label": "0.35 mm", "Pen": "STAEDTLER Mars matic 700 M035", "WidthMm": 0.35, "Use": "Dominant silhouettes, building outlines and key profiles" }
+    ],
+    "AuraConfig__Handwriting__PensNote"                 : "The four calibrated technical pens of PainterlyNPR's pen guidance (08__Data__StrokeLibrary/PainterlyNPR__PenPresets__PointWeights__.md), with the same keys and fields as the engine's 32__Line__ClassAndPriority/Na__TechnicalPens__Config.json, so notes and linework use one pen set. Widths are absolute: millimetres on the printed sheet. The sheet is drawn in paper millimetres, so a note's pen is its true width when the sheet prints at 100% on its own paper; printed on a smaller paper it shrinks with it (the panel says how far). Adam, 30-Oct-2026: \"the artists use a 0.18mm fineline ... STAEDTLER Mars matic 700\".",
+    "AuraConfig__Handwriting__DefaultPen"               : "M018",
+    "AuraConfig__Handwriting__DefaultPenNote"           : "Lettering is the 0.18 mm tier (the guidance). The pen is applied on the sheet, like the ink's colour, so a new pen redraws a note at once, without writing it again; its leader takes the same pen.",
+    "AuraConfig__Handwriting__Lettering"                : { "Hand": "Careful", "Pen": "M018", "EmphasisPen": "M025", "Colour": "#111111", "SizeFactor": 1.15, "Style": { "Tries": 8 }, "Letters": "Capitals", "CapitalsSizeFactor": 1.1 },
+    "AuraConfig__Handwriting__LetteringNote"            : "The sheet's own words written by hand (Adam, 30-Oct-2026: \"Use handwriting in the titleblock and viewports not text\"): the title block's entries (its labels and Vale's artwork stay printed) and every viewport's title. Hand: one of the hands above (the careful hand, for clear titles). Pen: the lettering pen; EmphasisPen where the typed block was bold (the title and the drawing number). SizeFactor: the handwriting's letter height over the typed size it replaces (a handwritten phrase's height runs from its tallest letter to its lowest, a typed size from its em). Style: any writing style key, as a note's own. Written once on each device and kept there (31__System__Handwriting/Na__Handwriting__Lettering__.js); typed until written.",
 
     "AuraConfig__Handwriting__Hands"                    : [
         { "Key": "Steady",  "Label": "Steady hand",  "Neatness": 1.1, "Variation": 0.3 },
         { "Key": "Careful", "Label": "Careful hand", "Neatness": 1.6, "Variation": 0.15 },
         { "Key": "Quick",   "Label": "Quick hand",   "Neatness": 0.75, "Variation": 0.55 }
     ],
-    "AuraConfig__Handwriting__HandsNote"                : "Neatness is the model's bias (the studio calls it pen confidence, 0.2 to 2.5); Variation varies slant, baseline and pen weight (0 to 1). The model has no style index: a note's own seed makes it a different hand-written copy.",
+    "AuraConfig__Handwriting__HandsNote"                : "Neatness is the model's bias (the studio calls it pen confidence, 0.2 to 2.5); Variation varies slant, baseline and pen weight (0 to 1). A hand may set any writing style key below (its Key and a value): the rest keep their defaults. The model has no style index: a note's own seed makes it a different hand-written copy.",
     "AuraConfig__Handwriting__DefaultHand"              : "Steady",
-    "AuraConfig__Handwriting__LineSpacing"              : 1.35,
+    "AuraConfig__Handwriting__DefaultLetters"           : "Capitals",
+    "AuraConfig__Handwriting__Letters"                  : [
+        { "Key": "Capitals", "Label": "Architect's capitals" },
+        { "Key": "Joined",   "Label": "Joined-up handwriting" }
+    ],
+    "AuraConfig__Handwriting__LettersNote"              : "A note's letters (Annotation__Letters, else DefaultLetters). Capitals: drawn single-stroke architect's capitals, lettered at once on the page with no model (Adam, 30-Oct-2026: \"the writing needs to be like image 03, all caps (but can do regular) but neat\"); a capital stands 0.7 of the letter height. Joined: the Graves model's joined-up hand, which cannot write capitals. The lettering (title block and viewport titles) takes its own Letters, and CapitalsSizeFactor for its letter height over the typed size.",
+    "AuraConfig__Handwriting__StyleGroups"              : [
+        { "Key": "Model", "Label": "The model's hand", "Controls": [
+            { "Key": "Neatness",      "Label": "Neatness",            "Min": 0.2,  "Max": 2.5,  "Step": 0.05, "Default": 1.1,  "Digits": 2, "Hint": "The model's bias: higher writes neater, more predictable letters; lower, looser and more varied ones. The hand's own value until changed here." },
+            { "Key": "Tries",         "Label": "Tries",               "Min": 1,    "Max": 8,    "Step": 1,    "Default": 4,    "Digits": 0, "Hint": "How many times a phrase is written again when the pen stalls or skips a letter." },
+            { "Key": "RetryNeatness", "Label": "Retry neatness",      "Min": 0.5,  "Max": 1,    "Step": 0.01, "Default": 0.78, "Digits": 2, "Prefix": "x ", "Hint": "Each retry writes with the neatness times this, so a stalled pen is shaken loose. 1 retries with the same neatness." },
+            { "Key": "MinNeatness",   "Label": "Lowest neatness",     "Min": 0.05, "Max": 1,    "Step": 0.05, "Default": 0.2,  "Digits": 2, "Hint": "Retries never write below this neatness." },
+            { "Key": "LetterCheck",   "Label": "Letter check",        "Min": 0,    "Max": 6,    "Step": 1,    "Default": 2,    "Digits": 0, "Unit": " steps", "Hint": "Pen steps each letter and digit must hold the model's attention, or the phrase is tried again (a skipped letter). Not a spelling check; 0 turns it off." },
+            { "Key": "StepsPerChar",  "Label": "Steps a character",   "Min": 40,   "Max": 250,  "Step": 5,    "Default": 110,  "Digits": 0, "Hint": "Pen steps allowed for each character before a phrase counts as stalled." },
+            { "Key": "MinSteps",      "Label": "Fewest steps",        "Min": 200,  "Max": 3000, "Step": 50,   "Default": 1200, "Digits": 0, "Hint": "Pen steps allowed even for a short phrase." },
+            { "Key": "MaxSteps",      "Label": "Most steps",          "Min": 500,  "Max": 6500, "Step": 100,  "Default": 6500, "Digits": 0, "Hint": "The most pen steps any phrase may take (the engine's own limit is 6500)." }
+        ] },
+        { "Key": "Lines", "Label": "Lines and words", "Controls": [
+            { "Key": "LineSpacing",   "Label": "Line spacing",        "Min": 1.05, "Max": 3,    "Step": 0.05, "Default": 1.35, "Digits": 2, "Prefix": "x ", "Hint": "Letter heights from one line to the next." },
+            { "Key": "PhraseMax",     "Label": "Longest phrase",      "Min": 10,   "Max": 60,   "Step": 1,    "Default": 42,   "Digits": 0, "Unit": " chars", "Hint": "The most characters the pen writes in one go; a longer line is split between words. The model tires on long phrases (the studio's 42)." },
+            { "Key": "PhraseMin",     "Label": "Shortest phrase",     "Min": 2,    "Max": 20,   "Step": 1,    "Default": 6,    "Digits": 0, "Unit": " chars", "Hint": "The fewest characters a line is wrapped to, even in a narrow note." },
+            { "Key": "Wrap",          "Label": "Wrap",                "Min": 1,    "Max": 3,    "Step": 0.05, "Default": 1.8,  "Digits": 2, "Hint": "Characters to one letter height across the note, for the first wrap by words; the written ink is then fitted to the width." },
+            { "Key": "WordGap",       "Label": "Word gap",            "Min": 0.1,  "Max": 1.2,  "Step": 0.01, "Default": 0.45, "Digits": 2, "Unit": " x height", "Hint": "A space between words in capitals, and between words and numbers in a joined-up note, in letter heights." },
+            { "Key": "SpaceWidth",    "Label": "Space width",         "Min": 0.1,  "Max": 1.2,  "Step": 0.01, "Default": 0.55, "Digits": 2, "Unit": " x height", "Hint": "Each further space where several are typed together, in letter heights." },
+            { "Key": "LeadSpace",     "Label": "Space before",        "Min": 0,    "Max": 1,    "Step": 0.01, "Default": 0,     "Digits": 2, "Unit": " x height", "Hint": "Extra space before words that follow a number in a joined-up note, in letter heights." },
+            { "Key": "MarginMm",      "Label": "Margin",              "Min": 0,    "Max": 6,    "Step": 0.1,  "Default": 1.5,  "Digits": 1, "Unit": " mm", "Hint": "Paper left round the words inside the note." }
+        ] },
+        { "Key": "Movement", "Label": "Hand movement", "Controls": [
+            { "Key": "Variation",     "Label": "Variation",           "Min": 0,    "Max": 1,    "Step": 0.01, "Default": 0.3,  "Digits": 2, "Hint": "The overall amount of slant, baseline wave and (with a variable pen) weight swing. The hand's own value until changed here." },
+            { "Key": "Slant",         "Label": "Slant spread",        "Min": 0,    "Max": 0.1,  "Step": 0.002,"Default": 0.026,"Digits": 3, "Hint": "How far each phrase's slant varies, times the variation." },
+            { "Key": "Wave",          "Label": "Baseline wave",       "Min": 0,    "Max": 0.1,  "Step": 0.002,"Default": 0.022,"Digits": 3, "Hint": "How far the baseline rises and falls, in letter heights, times the variation." },
+            { "Key": "WaveFrequency", "Label": "Wave frequency",      "Min": 0.1,  "Max": 2,    "Step": 0.05, "Default": 0.6,  "Digits": 2, "Hint": "How quickly the baseline wave rises and falls along a line." },
+            { "Key": "Tilt",          "Label": "Straighten tilt",     "Min": 0,    "Max": 0.5,  "Step": 0.01, "Default": 0.18, "Digits": 2, "Hint": "The most overall tilt taken out of each phrase; 0 keeps the model's own." }
+        ] },
+        { "Key": "Pen", "Label": "Pen and numbers", "Controls": [
+            { "Key": "PenMode",       "Label": "Pen width",           "Kind": "Choice", "Default": "Technical",
+              "Options": [ { "Value": "Technical", "Label": "Technical: one width" }, { "Value": "Variable", "Label": "Variable (not technical)" } ],
+              "Hint": "A Mars matic draws one width, as the pen guidance asks. Variable swings each stroke's weight round the nib, as the studio did: a non-technical look. The leader follows the same pen." },
+            { "Key": "WeightSwing",   "Label": "Weight swing",        "Min": 0,    "Max": 0.5,  "Step": 0.01, "Default": 0.1,  "Digits": 2, "Hint": "Variable pen only: how far a stroke's weight swings, times the variation." },
+            { "Key": "ProtectNumbers","Label": "Draw numbers exactly","Kind": "Toggle", "Default": true, "Hint": "Numbers, units and drawing symbols drawn with explicit strokes, so a dimension is exactly what was typed. Off, the model writes the digits itself." },
+            { "Key": "Seed",          "Label": "Copy number",         "Kind": "Seed", "Hint": "The note's seed: the same words, settings and number always write the same strokes. Write a new copy picks another." }
+        ] }
+    ],
+    "AuraConfig__Handwriting__StyleGroupsNote"          : "The Advanced writing style in a note's panel: every setting of the writing model and the studio's layout, a note at a time (Adam, 30-Oct-2026: \"exposing all of the possible paramers for the writing model\"; per note, starting from its hand). Default is the studio's own value; the hand's value wins where it has one; a note keeps only what was changed in it (Annotation__Style), and choosing a hand clears that. The engine clamps every value to its own hard limits (02__Engine__Wasm/Na__HandwritingEngine__Layout__.js, Na__Layout__STYLE).",
     "AuraConfig__Handwriting__MaxChars"                 : 600,
     "AuraConfig__Handwriting__WhereItRuns"              : "In the browser, on the user's own machine, never on the server (Adam, 30-Oct-2026: the server is resource constrained; \"Refactor the Handwriting tool from python to WASM\"): the studio's Graves model in WebAssembly (31__System__Handwriting/02__Engine__Wasm), in a Web Worker. The AURA API only hands over its model (api/handwriting/model and api/handwriting/weights/<sha256>, Managers and App Admins only), which the worker keeps on the device after the first note. A note shows a typed stand-in only until it is written, or where the engine cannot run.",
     "AuraConfig__Handwriting__ModelNote"                : "The Vale Handwriting Studio's checkpoint (X-rayLaser/pytorch-handwriting-synthesis-toolkit at 899e9432, Epoch_46), its 32-bit weights as they are (15 MB; Adam, 30-Oct-2026: \"32-bit, 15 MB\"). Trained on IAM-OnDB, an evaluation asset: served to signed-in staff only, never committed. Rebuilt by 60__Dev__WebBuildUtils/AuraRender__BuildUtil__HandwritingWeights__.py into Server__Api/Api__ValeVision__AuraRender/Content__AuraHandwritingModel.",

@@ -25,6 +25,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.4.3)
+// - A loaded or new set is fitted to the engine's sheet (A3 since
+//   PainterlyNPR 0.8.3): Na__DrawingSet__FitToSheet with the engine's refit.
+//
 // 30-Oct-2026 - Version 1.1.0
 // - A project switched off for AURA while open stops saving, as a 409 does,
 //   instead of failing again on every edit.
@@ -43,7 +47,8 @@
     import { Na__AppState__Data, Na__AppState__On, Na__AppState__Emit } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Api__Get, Na__Api__Put } from '../03__AppUtils/Na__AppUtils__ApiClient__.js';
     import { Na__Toast__Show } from '../03__AppUtils/Na__AppUtils__Toast__.js';
-    import { Na__DrawingSet__New, Na__DrawingSet__Normalise } from './Na__DrawingSet__Model__.js';
+    import { Na__DrawingSet__New, Na__DrawingSet__Normalise, Na__DrawingSet__FitToSheet } from './Na__DrawingSet__Model__.js';
+    import { Na__EngineHost__RefitPoints, Na__EngineHost__SheetMm } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -79,6 +84,7 @@
             d.doc = Na__DrawingSet__New(project, user);
             d.rev = 0;
         }
+        Na__DrawingSet__FitToSheet(d.doc, Na__EngineHost__SheetMm(), Na__EngineHost__RefitPoints);   // <-- Points placed on another engine sheet (before A3) moved onto today's; a new set names the sheet
         d.dirty = false;
         Na__Persistence__State.conflict = false;
         Na__Persistence__Say(answer.drawings ? 'Saved' : 'New drawing set', 'saved');

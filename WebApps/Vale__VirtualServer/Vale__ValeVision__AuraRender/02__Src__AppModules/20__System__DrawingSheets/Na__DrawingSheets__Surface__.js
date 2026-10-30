@@ -15,9 +15,14 @@
 // DESCRIPTION:
 // - ONE SVG, viewBox in paper millimetres, shown at 3.2 px/mm times the zoom
 //   (the Layout Editor's screen scale) inside a scrolling desk.
+// - THE PAPER IS THE PICTURES' PAPER: the engine's own bare paper (its tone and
+//   grain, Paper and finish) as a tile repeating from the sheet's corner, so the
+//   pictures sit on one sheet (Na__Surface__SetPaper; its flat tone until the
+//   tile is made, or on an engine without bare paper).
 // - LAYERS, bottom to top: paper and border, viewports, annotations, the title
-//   column, and the overlay (selection handles). A module adds its layer with
-//   Na__Surface__AddLayer and is asked to draw it on every Na__Surface__Render.
+//   column (on its own ground of the same paper), and the overlay (selection
+//   handles). A module adds its layer with Na__Surface__AddLayer and is asked
+//   to draw it on every Na__Surface__Render.
 // - THE POINTER: whatever is pressed carries data-hit ("viewport",
 //   "annotation", "handle") and an id; the owner registered with Na__Surface__On
 //   answers with a drag ({ move(mm, e), end(mm, e) }) or nothing. A press on
@@ -30,6 +35,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.3.3)
+// - The paper is the engine's (SetPaper): the drawing set's paper tone and
+//   grain as an SVG pattern, on the sheet and as a ground under the title
+//   column, in place of white.
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.1.3)
 // - Zoom, fit, the middle-button and Space pans and the wheel moved out to the
 //   Layout Editor's navigation (Na__DrawingSheets__Navigation__ and its two
@@ -60,6 +70,7 @@
 // -----------------------------------------------------------------------------
 
     const Na__Surface__PX_PER_MM = 3.2;                                         // <-- On screen at zoom 1 (ValeVision 3D's Layout Editor)
+    const Na__Surface__PAPER_ID  = 'aura-sheet-paper';                          // <-- The paper's repeating tile, an SVG pattern
 
     const Na__Surface__State = {
         desk       : null,                       // <-- The scrolling host
@@ -67,6 +78,9 @@
         sheet      : null,
         solve      : null,
         zoom       : 1,
+        paper      : { Tone: '#ffffff', Tile: null },   // <-- The drawing set's paper: its tone, and a tile of its grain ({ Url, WidthMm, HeightMm })
+        defs       : null,
+        paperFills : [],                         // <-- The rects that are the paper: the sheet, and the ground under the title column
         layers     : [],                         // <-- [{ name, draw(group, sheet, solve), group }]
         overlays   : [],                         // <-- draw(group, sheet, solve): selection handles, on top of everything
         overlay    : null,
@@ -99,6 +113,59 @@
     // ------------------------------------------------------------
     function Na__Surface__PxPerMm() {
         return Na__Surface__PX_PER_MM * Na__Surface__State.zoom;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | The Paper
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Paper's Fill: its grain as a repeating tile, else its flat tone
+    // ------------------------------------------------------------
+    function Na__Surface__PaperFill() {
+        const paper = Na__Surface__State.paper;
+        return paper.Tile ? `url(#${Na__Surface__PAPER_ID})` : paper.Tone;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Tile as an SVG Pattern, in the Sheet's Millimetres
+    // ------------------------------------------------------------
+    // userSpaceOnUse from the sheet's corner: every rect that is the paper shares
+    // one grain, so the column's ground runs on from the sheet's.
+    // ------------------------------------------------------------
+    function Na__Surface__DrawPaperTile() {
+        const S = Na__Surface__State;
+        if (!S.defs) return;
+        Na__Dom__Clear(S.defs);
+        const tile = S.paper.Tile;
+        if (!tile) return;
+        const pattern = Na__Dom__Svg('pattern', { id: Na__Surface__PAPER_ID, patternUnits: 'userSpaceOnUse', x: 0, y: 0, width: tile.WidthMm, height: tile.HeightMm }, S.defs);
+        const image = Na__Dom__Svg('image', { x: 0, y: 0, width: tile.WidthMm, height: tile.HeightMm, preserveAspectRatio: 'none' }, pattern);
+        image.setAttribute('href', tile.Url);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put the Drawing Set's Paper on the Sheet: { Tone, Tile }
+    // ------------------------------------------------------------
+    // The paper the pictures are painted on (the engine's Paper and finish), so
+    // the sheet and its pictures are one piece of paper (Adam, 30-Oct-2026:
+    // "The 2d page paper should reflect the paper used in the parameters").
+    // Tile: the engine's bare paper ({ Url, WidthMm, HeightMm }), or null for the
+    // flat tone. Changes the sheet on view in place.
+    // ------------------------------------------------------------
+    function Na__Surface__SetPaper(look) {
+        const S = Na__Surface__State;
+        if (!look) return;
+        S.paper = { Tone: look.Tone || '#ffffff', Tile: look.Tile || null };
+        if (S.svg) S.svg.style.background = S.paper.Tone;                     // <-- Under the paper while it loads
+        Na__Surface__DrawPaperTile();
+        const fill = Na__Surface__PaperFill();
+        S.paperFills.forEach((rect) => rect.setAttribute('fill', fill));
     }
     // ------------------------------------------------------------
 
@@ -141,6 +208,7 @@
         if (!S.svg) return;
         S.sheet = sheet || null;
         Na__Dom__Clear(S.svg);
+        S.paperFills = [];
         if (!sheet) return;
         const solve = Na__Paper__Solve(sheet);
         S.solve = solve;
@@ -149,8 +217,10 @@
         Na__Surface__ApplyZoom();
 
         // Paper and border
+        S.defs = Na__Dom__Svg('defs', {}, S.svg);
+        Na__Surface__DrawPaperTile();
         const paper = Na__Dom__Svg('g', { class: 'aura-sheet__paper' }, S.svg);
-        Na__Dom__Svg('rect', { x: 0, y: 0, width: w, height: h, fill: '#ffffff', 'data-hit': 'paper' }, paper);
+        S.paperFills.push(Na__Dom__Svg('rect', { x: 0, y: 0, width: w, height: h, fill: Na__Surface__PaperFill(), 'data-hit': 'paper' }, paper));
         Na__Dom__Svg('rect', { x: solve.Border.X, y: solve.Border.Y, width: solve.Border.W, height: solve.Border.H,
                                fill: 'none', stroke: '#111111', 'stroke-width': Na__AppConfig__Get('Sheet__LineWidthMm', 0.25), 'pointer-events': 'none' }, paper);
 
@@ -160,6 +230,8 @@
             try { layer.draw(layer.group, sheet, solve); } catch (error) { console.error(`[AURA Surface] The ${layer.name} layer failed:`, error); }
         });
         const title = Na__Dom__Svg('g', { class: 'aura-sheet__title', 'pointer-events': 'none' }, S.svg);
+        const column = solve.Title && solve.Title.Rect;
+        if (column) S.paperFills.push(Na__Dom__Svg('rect', { x: column.X, y: column.Y, width: column.W, height: column.H, fill: Na__Surface__PaperFill() }, title));   // <-- The column stands on the paper, its grain running on from the sheet's, over anything under it
         Na__TitleBlock__Draw(title, sheet, solve);
         S.overlay = Na__Dom__Svg('g', { class: 'aura-sheet__layer aura-sheet__layer--overlay' }, S.svg);
         Na__Surface__RedrawOverlay();
@@ -341,6 +413,7 @@
     export {
         Na__Surface__Mount,
         Na__Surface__Render,
+        Na__Surface__SetPaper,
         Na__Surface__RedrawLayer,
         Na__Surface__AddLayer,
         Na__Surface__Layer,

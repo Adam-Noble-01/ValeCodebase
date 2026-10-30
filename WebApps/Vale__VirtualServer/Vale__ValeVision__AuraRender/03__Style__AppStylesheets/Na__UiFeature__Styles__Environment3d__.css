@@ -7,7 +7,7 @@
  * MODULE     : 3D Environment Styles
  * AUTHOR     : Adam Noble - Noble Architecture
  * PURPOSE    : The stage the engine's drawing sits on, the parameters and the
- *              saved views beside it
+ *              scene tabs above it
  * CREATED    : 30-Oct-2026
  *
  * DESCRIPTION:
@@ -34,6 +34,19 @@
         display                            : flex;
     }
 
+    /* The engine's Assets drawer (PainterlyNPR 82, built into this aside by the engine host):
+       its own stylesheet draws it; AURA gives it a column, folded to its tab or out at its width */
+    .aura-env__body > .aura-env__assets {
+        flex                               : 0 0 calc(var(--PainterlyNPR_DrawerTab) + 12px);
+        margin                             : 0;
+        padding                            : 14px 0 14px 12px;
+        background                         : var(--Aura_Stage);
+    }
+
+    .aura-env.PainterlyNPR--assetsOpen .aura-env__body > .aura-env__assets {
+        flex-basis                         : calc(var(--PainterlyNPR_DrawerWidth) + 12px);   /* <-- The stage refits the drawing in what is left */
+    }
+
     .aura-env__stage {
         position                           : relative;
         flex                               : 1;
@@ -49,8 +62,8 @@
     .aura-env__canvas {
         display                            : block;
         flex-shrink                        : 0;
-        width                              : 600px;                        /* <-- Until the stage measures itself: Na__Environment3d__Fit sets the 3:2 size */
-        height                             : 400px;
+        width                              : 600px;                        /* <-- Until the stage measures itself: Na__Environment3d__Fit sets the sheet's own shape (A3) */
+        height                             : 424px;
         background                         : #f4efe4;
         box-shadow                         : 0 10px 34px rgba(40, 32, 20, 0.22), 0 1px 3px rgba(40, 32, 20, 0.2);
         cursor                             : grab;
@@ -146,51 +159,228 @@
         grid-area                          : select;
     }
 
-    .aura-views__form {
-        display                            : flex;
-        gap                                : 8px;
+    .aura-param__select:disabled,
+    .aura-param-preset:disabled,
+    .aura-param-chip:disabled {
+        opacity                            : 0.5;
+        cursor                             : not-allowed;
     }
 
-    .aura-views__form .aura-input {
-        flex                               : 1;
-        min-width                          : 0;
-    }
-
-    .aura-views__list {
+    /* The engine's own panel, nested (AURA 0.3.3): a section's groups and folds
+       fold inside it, quieter than the section; a group's hints wait behind its
+       info button */
+    .aura-fold__bar {
         display                            : flex;
-        flex-direction                     : column;
+        align-items                        : center;
         gap                                : 2px;
     }
 
-    .aura-views__row {
-        display                            : flex;
-        align-items                        : center;
-        gap                                : 4px;
-    }
-
-    .aura-views__name {
+    .aura-fold__bar > .aura-fold__head {
         flex                               : 1;
         min-width                          : 0;
-        padding                            : 7px 10px;
+        width                              : auto;
+    }
+
+    .aura-fold__info {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        flex                               : 0 0 26px;
+        width                              : 26px;
+        height                             : 26px;
+        padding                            : 0;
         border                             : none;
         border-radius                      : var(--Aura_RadiusSmall);
-        background                         : var(--Aura_SurfaceMuted);
-        text-align                         : left;
+        background                         : none;
+        color                              : var(--Aura_TextFaint);
         cursor                             : pointer;
-        overflow                           : hidden;
-        text-overflow                      : ellipsis;
+    }
+
+    .aura-fold__info .aura-icon svg {
+        width                              : 16px;
+        height                             : 16px;
+    }
+
+    .aura-fold__info:hover,
+    .aura-fold__info[aria-expanded="true"] {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-fold__hints {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 6px;
+        padding                            : 8px 10px;
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-fold__hints[hidden] {
+        display                            : none;
+    }
+
+    .aura-fold__hint {
+        margin                             : 0;
+        font-size                          : 12px;
+        line-height                        : 1.45;
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-fold--sub {
+        border-bottom                      : none;
+        border-top                         : 1px solid var(--Aura_Border);
+    }
+
+    .aura-fold--sub > .aura-fold__bar > .aura-fold__head {
+        padding                            : 8px 0;
+        font-size                          : 13px;
+        font-weight                        : var(--Aura_FontMedium, 500);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-fold--sub.is-open > .aura-fold__bar > .aura-fold__head {
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-fold--sub > .aura-fold__body {
+        padding                            : 2px 0 12px;
+    }
+
+    .aura-fold__body > .aura-fold--sub:first-child,
+    .aura-fold__body > .aura-fold__hints + .aura-fold--sub {
+        border-top                         : none;
+    }
+
+    .aura-param-presets {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(92px, 1fr));
+        gap                                : 6px;
+    }
+
+    .aura-param-preset,
+    .aura-param-chip {
+        min-width                          : 0;
+        padding                            : 6px 8px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .aura-param-preset:hover:not(:disabled),
+    .aura-param-chip:hover:not(:disabled) {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-param-preset.is-active {
+        background                         : var(--Aura_Brand);
+        border-color                       : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+    .aura-param-chips {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+    }
+
+    .aura-param-chip {
+        border-radius                      : 999px;
+        padding                            : 4px 12px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Scene Tabs (AURA 0.5.0)
+ * -----------------------------------------------------------------------------
+ * The Saved views icon, a tab a scene, + Add Scene along the toolbar; the tabs
+ * scroll sideways when there are more than fit, and the Presets picker, New
+ * seed and Rendered or Proxy stay in view after them. A right-click opens the
+ * scene's menu (Rename, Update from camera, Duplicate, Delete).
+ * ----------------------------------------------------------------------------- */
+
+    .aura-scenes {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        flex                               : 1 1 0;
+        min-width                          : 200px;                             /* <-- Never squeezed away: it scrolls instead */
+        overflow-x                         : auto;
+        overscroll-behavior-x              : contain;
+        scrollbar-width                    : thin;
+        padding-bottom                     : 2px;                               /* <-- Room for a thin scroll bar under the tabs */
+    }
+
+    .aura-scenes__icon {
+        flex                               : 0 0 20px;
+    }
+
+    .aura-scenes__list {
+        flex                               : none;
+    }
+
+    .aura-scenes__list:empty {
+        display                            : none;
+    }
+
+    .aura-scenes__tab {
         white-space                        : nowrap;
     }
 
-    .aura-views__name:hover {
-        background                         : var(--Aura_ActiveBg);
+    .aura-scenes__add {
+        flex                               : none;
+        white-space                        : nowrap;
     }
 
-    .aura-views__empty {
-        margin                             : 0;
-        font-size                          : var(--Aura_FontSize_Small);
-        color                              : var(--Aura_TextSecondary);
-        line-height                        : 1.45;
+    .aura-scenes__rename {
+        flex                               : none;
+        min-height                         : 34px;
+    }
+
+    .aura-scenes__menu {
+        position                           : fixed;
+        z-index                            : 1000;
+        display                            : flex;
+        flex-direction                     : column;
+        min-width                          : 180px;
+        padding                            : 4px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        box-shadow                         : 0 8px 24px rgba(23, 43, 58, 0.18);
+    }
+
+    .aura-scenes__item {
+        padding                            : 7px 12px;
+        border                             : none;
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : transparent;
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .aura-scenes__item:hover,
+    .aura-scenes__item:focus-visible {
+        background                         : var(--Aura_SurfaceHover);
+        outline                            : none;
+    }
+
+    .aura-scenes__item--danger {
+        color                              : var(--Aura_Danger, #a33a2b);
+    }
+
+    .aura-env .aura-env__presets {
+        width                              : auto;
+        flex                               : none;
+        min-height                         : 34px;                              /* <-- As tall as the buttons beside it */
     }
 
 /* endregion ------------------------------------------------------------------- */

@@ -1,0 +1,94 @@
+{
+    "PainterlyNPR__AssetLibrary__Register" : {
+        "PainterlyNPR__AssetLibrary__Register__Meta" : {
+            "RegisterLabel"   : "PainterlyNPR - The Asset Library's Register",
+            "RegisterVersion" : "1.0.0",
+            "RegisterNote"    : "The single source of truth for the asset library's numbering: the namespace, the collections (the NN in NPR_NN_NNNN), each collection's types and the blocks of numbers they own, and the five files every asset carries. The build utility, the local server, the app and the SketchUp catalogue tool all read it; nothing else decides a number.",
+            "Schema"          : "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetLibraryRegister__1.0.0__.json",
+            "Created"         : "30-Oct-2026",
+            "Modified"        : "30-Oct-2026",
+            "Author"          : "Adam Noble - Noble Architecture"
+        },
+
+        "PainterlyNPR__AssetLibrary__Register__Numbering" : {
+            "Namespace"          : "NPR",
+            "NamespaceNote"      : "Every asset Id starts NPR_: the asset namespacer, so an Id is unique beside the component library's own codes",
+            "IdPattern"          : "^NPR_(0[5-9]|[1-7][0-9]|80)_[0-9]{2}[0-9][1-9]$",
+            "IdPatternNote"      : "NPR_CC_TTFI. CC the collection, 05 to 80. TT the type's block (00-99), F the family (0-9), I the item (1-9). An I of 0 is a family's base and is never an asset, as codes ending in 0 are kept for folder bases in the component library",
+            "CollectionRange"    : [5, 80],
+            "CollectionRangeNote": "Adam, 30-Oct-2026: \"we will have 99 series so space them out from 05 - 80 and have before 05 and after 80 reserved\"",
+            "Reserved"           : [[1, 4], [81, 99]],
+            "ReservedNote"       : "Never allocated: kept for what the library has not met yet",
+            "Spacing"            : "07 for vegetation (Adam's example, NPR_07_0021), every other collection on a five, so each can grow into the numbers after it",
+            "TypeBlockSize"      : 100,
+            "TypeBlockSizeNote"  : "Each type owns a block of 100 numbers (07_00xx trees, 07_05xx conifers); types sit five blocks apart, so a type that outgrows its block takes the next free one",
+            "FamilySize"         : 10,
+            "FamilySizeNote"     : "Related assets (an oak's ages, a box ball's sizes, a lavender's habits) share a ten: 07_002x is the oak family, 07_0021 its first item. A family holds nine assets"
+        },
+
+        "PainterlyNPR__AssetLibrary__Register__Naming" : {
+            "AssetFolder"     : "{AssetId}__{Type}__{Name}__{Variant}__",
+            "AssetFolderNote" : "Inside its collection's folder. The collection is the folder above, so it is not repeated: paths stay short enough for SketchUp, which cannot open a path over 259 characters",
+            "AssetFile"       : "{AssetId}__{Slot}__{Collection}__{Type}__{Name}__{Variant}__.{Ext}",
+            "AssetFileNote"   : "Adam's form, 30-Oct-2026: NPR_07_0021__DAT__VegetationElements__Trees__MatureOak__Var-01__.json",
+            "Segment"         : "^[A-Z][A-Za-z0-9]*(-[A-Za-z0-9]+)*$",
+            "SegmentNote"     : "A segment is PascalCase; a hyphen joins words inside one (Var-01). Segments are joined by a double underscore",
+            "Variant"         : "^Var-[0-9]{2}$",
+            "VariantNote"     : "Every asset carries a Var, even the first: a later variation (another age, another habit) is Var-02 in the same family",
+            "MaxRelativePath" : 170,
+            "MaxRelativePathNote" : "Characters from the library folder to the longest file. The repo sits 84 characters deep on the Vale PC, and SketchUp's Ruby cannot open a path over 259"
+        },
+
+        "PainterlyNPR__AssetLibrary__Register__Slots" : {
+            "Note"  : "The five files of an asset, by the slot code in their names. Order is the order a catalogue lists them",
+            "Slots" : [
+                { "Slot": "DAT", "Ext": "json", "Label": "Data",           "Required": true,  "WrittenBy": "Hand, the SketchUp catalogue tool; the factory adds Geometry and Factory", "Note": "The asset's record in the three-stage key form: identity, files, geometry, how PainterlyNPR builds it, how it is placed, its catalogue entry and its last render" },
+                { "Slot": "MOD", "Ext": "glb",  "Label": "three.js model",  "Required": false, "WrittenBy": "The factory (88__Export__AssetFactory)", "Note": "The base GLB proxy with its material applied, for the three.js apps: metres, +Y up, its origin at the base centre on the ground" },
+                { "Slot": "SKP", "Ext": "skp",  "Label": "SketchUp model",  "Required": false, "WrittenBy": "The SketchUp catalogue and authoring tool (next phase)", "Note": "The same base proxy as a SketchUp component, named like the file" },
+                { "Slot": "PXY", "Ext": "webp", "Label": "Proxy preview",   "Required": false, "WrittenBy": "The factory", "Note": "The proxy rendered in the catalogue environment: the preview for the SketchUp and three.js apps" },
+                { "Slot": "RND", "Ext": "webp", "Label": "Rendered preview","Required": false, "WrittenBy": "The factory", "Note": "The asset as it is typically drawn: the standard pen and wash, in the catalogue environment" }
+            ]
+        },
+
+        "PainterlyNPR__AssetLibrary__Register__Collections" : {
+            "Note"        : "Code, folder, the Name used in file names, the Label a catalogue shows, and the types with their blocks. A collection with no assets yet keeps its folder (a .gitkeep) so the structure is there to grow into",
+            "Collections" : [
+                { "Code": "05", "Name": "GroundAndTerrain",   "Label": "Ground and terrain",   "Folder": "05__GroundAndTerrain",   "Note": "What the ground does under the planting: mounds, beds, meadow and rock",
+                  "Types": [ { "Type": "Mounds", "Block": "00" }, { "Type": "Beds", "Block": "05" }, { "Type": "Surfaces", "Block": "10" }, { "Type": "Rocks", "Block": "15" } ] },
+                { "Code": "07", "Name": "VegetationElements", "Label": "Vegetation",           "Folder": "07__VegetationElements", "Note": "Plants, drawn by the organic grammars as masses, never by their mesh edges (manifest section 07)",
+                  "Types": [ { "Type": "Trees", "Block": "00" }, { "Type": "Conifers", "Block": "05" }, { "Type": "Shrubs", "Block": "10" }, { "Type": "Hedges", "Block": "15" }, { "Type": "Topiary", "Block": "20" },
+                             { "Type": "Perennials", "Block": "25" }, { "Type": "Grasses", "Block": "30" }, { "Type": "Climbers", "Block": "35" }, { "Type": "Ferns", "Block": "40" }, { "Type": "GroundCover", "Block": "45" }, { "Type": "Aquatic", "Block": "50" } ] },
+                { "Code": "10", "Name": "BoundaryElements",   "Label": "Boundaries",           "Folder": "10__BoundaryElements",   "Note": "Fences, gates, walls and railings",
+                  "Types": [ { "Type": "Fences", "Block": "00" }, { "Type": "Gates", "Block": "05" }, { "Type": "Walls", "Block": "10" }, { "Type": "Railings", "Block": "15" } ] },
+                { "Code": "15", "Name": "HardLandscaping",    "Label": "Hard landscaping",     "Folder": "15__HardLandscaping",    "Note": "Paths, paving, steps, edging and kerbs",
+                  "Types": [ { "Type": "Paths", "Block": "00" }, { "Type": "Paving", "Block": "05" }, { "Type": "Steps", "Block": "10" }, { "Type": "Edging", "Block": "15" }, { "Type": "Kerbs", "Block": "20" }, { "Type": "Driveways", "Block": "25" } ] },
+                { "Code": "20", "Name": "WaterFeatures",      "Label": "Water features",       "Folder": "20__WaterFeatures",      "Note": "Ponds, fountains, bird baths and rills",
+                  "Types": [ { "Type": "Ponds", "Block": "00" }, { "Type": "Fountains", "Block": "05" }, { "Type": "BirdBaths", "Block": "10" }, { "Type": "Rills", "Block": "15" } ] },
+                { "Code": "25", "Name": "GardenFurniture",    "Label": "Garden furniture",     "Folder": "25__GardenFurniture",    "Note": "Seating, tables, planters and pots",
+                  "Types": [ { "Type": "Seating", "Block": "00" }, { "Type": "Tables", "Block": "05" }, { "Type": "PlantersAndPots", "Block": "10" }, { "Type": "Accessories", "Block": "15" } ] },
+                { "Code": "30", "Name": "GardenStructures",   "Label": "Garden structures",    "Folder": "30__GardenStructures",   "Note": "Pergolas, arbours, arches, sheds, summerhouses and greenhouses",
+                  "Types": [ { "Type": "Pergolas", "Block": "00" }, { "Type": "Arbours", "Block": "05" }, { "Type": "Arches", "Block": "10" }, { "Type": "Sheds", "Block": "15" }, { "Type": "Summerhouses", "Block": "20" }, { "Type": "Greenhouses", "Block": "25" } ] },
+                { "Code": "35", "Name": "Glasshouses",        "Label": "Glasshouses and orangeries", "Folder": "35__Glasshouses", "Note": "Orangeries, glasshouses, roof lanterns and conservatories (Vale's products among them)",
+                  "Types": [ { "Type": "Orangeries", "Block": "00" }, { "Type": "Glasshouses", "Block": "05" }, { "Type": "RoofLanterns", "Block": "10" }, { "Type": "Conservatories", "Block": "15" } ] },
+                { "Code": "40", "Name": "BuildingElements",   "Label": "Building elements",    "Folder": "40__BuildingElements",   "Note": "Porches, doors, windows, chimneys, dormers and rainwater goods",
+                  "Types": [ { "Type": "Porches", "Block": "00" }, { "Type": "Doors", "Block": "05" }, { "Type": "Windows", "Block": "10" }, { "Type": "Chimneys", "Block": "15" }, { "Type": "Dormers", "Block": "20" }, { "Type": "RainwaterGoods", "Block": "25" } ] },
+                { "Code": "45", "Name": "Lighting",           "Label": "Lighting",             "Folder": "45__Lighting",           "Note": "Wall lights, post lights, bollards and street lamps",
+                  "Types": [ { "Type": "WallLights", "Block": "00" }, { "Type": "PostLights", "Block": "05" }, { "Type": "BollardLights", "Block": "10" }, { "Type": "StreetLamps", "Block": "15" } ] },
+                { "Code": "50", "Name": "StreetFurniture",    "Label": "Street furniture",     "Folder": "50__StreetFurniture",    "Note": "Post boxes, bins, signs, bollards and public benches",
+                  "Types": [ { "Type": "PostBoxes", "Block": "00" }, { "Type": "Bins", "Block": "05" }, { "Type": "Signs", "Block": "10" }, { "Type": "Bollards", "Block": "15" }, { "Type": "Benches", "Block": "20" } ] },
+                { "Code": "55", "Name": "Vehicles",           "Label": "Vehicles",             "Folder": "55__Vehicles",           "Note": "Cars, vans, bicycles and garden machinery",
+                  "Types": [ { "Type": "Cars", "Block": "00" }, { "Type": "Vans", "Block": "05" }, { "Type": "Bicycles", "Block": "10" }, { "Type": "GardenMachinery", "Block": "15" } ] },
+                { "Code": "60", "Name": "People",             "Label": "People",               "Folder": "60__People",             "Note": "Figures for scale and life; 60 is the SketchUp tags' entourage number too",
+                  "Types": [ { "Type": "Adults", "Block": "00" }, { "Type": "Children", "Block": "05" }, { "Type": "Groups", "Block": "10" }, { "Type": "Silhouettes", "Block": "15" } ] },
+                { "Code": "65", "Name": "Animals",            "Label": "Animals",              "Folder": "65__Animals",            "Note": "Dogs, cats, birds, horses and livestock",
+                  "Types": [ { "Type": "Dogs", "Block": "00" }, { "Type": "Cats", "Block": "05" }, { "Type": "Birds", "Block": "10" }, { "Type": "Horses", "Block": "15" }, { "Type": "Livestock", "Block": "20" } ] },
+                { "Code": "70", "Name": "ContextMassing",     "Label": "Context and massing",  "Folder": "70__ContextMassing",     "Note": "Neighbouring buildings, tree belts, hedgerows and hills, drawn as context (role Context)",
+                  "Types": [ { "Type": "Buildings", "Block": "00" }, { "Type": "TreeBelts", "Block": "05" }, { "Type": "Hedgerows", "Block": "10" }, { "Type": "Hills", "Block": "15" } ] },
+                { "Code": "75", "Name": "Ornament",           "Label": "Sculpture and ornament","Folder": "75__Ornament",          "Note": "Urns, statues, sundials, obelisks and finials",
+                  "Types": [ { "Type": "Urns", "Block": "00" }, { "Type": "Statues", "Block": "05" }, { "Type": "Sundials", "Block": "10" }, { "Type": "Obelisks", "Block": "15" }, { "Type": "Finials", "Block": "20" } ] },
+                { "Code": "80", "Name": "Calibration",        "Label": "Calibration",          "Folder": "80__Calibration",        "Note": "The factory's own reference objects: shapes, scale figures and colour charts, for checking the catalogue environment",
+                  "Types": [ { "Type": "ReferenceShapes", "Block": "00" }, { "Type": "ScaleFigures", "Block": "05" }, { "Type": "ColourCharts", "Block": "10" } ] }
+            ]
+        }
+    }
+}

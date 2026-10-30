@@ -1,0 +1,24 @@
+{
+    "id"               : "PainterlyNPR",
+    "name"             : "PainterlyNPR - Pen and Wash Renderer",
+    "short_name"       : "PainterlyNPR",
+    "description"      : "A pen and wash renderer: semantic linework, material indication and layered watercolour washes, drawn from a scene package on a 300 x 200 mm sheet.",
+    "lang"             : "en-GB",
+    "dir"              : "ltr",
+    "start_url"        : "../../PainterlyNPR__App__.html",
+    "scope"            : "../../",
+    "display"          : "standalone",
+    "display_override" : ["standalone", "minimal-ui", "browser"],
+    "orientation"      : "any",
+    "launch_handler"   : { "client_mode": "navigate-existing" },
+    "background_color" : "#E7E1D6",
+    "theme_color"      : "#E7E1D6",
+    "categories"       : ["design", "graphics", "productivity"],
+    "icons"            : [
+        { "src": "../../01__AppAssets__PainterlyNPR/10__Icons__Pwa/Na__PainterlyNPRApp__Icon__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "../../01__AppAssets__PainterlyNPR/10__Icons__Pwa/Na__PainterlyNPRApp__Icon__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "../../01__AppAssets__PainterlyNPR/10__Icons__Pwa/Na__PainterlyNPRApp__IconMaskable__192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "../../01__AppAssets__PainterlyNPR/10__Icons__Pwa/Na__PainterlyNPRApp__IconMaskable__512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+        { "src": "../../01__AppAssets__PainterlyNPR/10__Icons__Pwa/Na__PainterlyNPRApp__Icon__.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    ]
+}

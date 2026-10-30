@@ -44,17 +44,27 @@
 // - ONLY WHILE THE DRAWER IS OUT (AURA 0.5.1, Adam: "In both apps make it so as
 //   you can only select items when the assets menu is open"): with it folded a
 //   click on the drawing selects and paints nothing, and folding it does what
-//   leaving the tab does. PainterlyNPR v0.8.8 has the same gate as seams
-//   (SceneEdit__Editing, SceneEdit__WatchLibrary); the pinned engine (v0.8.7) has not,
-//   so the host keeps it until the next sync, then takes the engine's.
-// - NOT YET: the engine's right-click menu (83's SceneEdit__Wire) cancels the
-//   browser's menu on the whole page, so it waits for an engine seam that keeps
-//   it to the 3D Environment. Assets are turned, moved and taken out from the
-//   drawer's list meanwhile.
+//   leaving the tab does. Since AURA 0.5.7 both are the engine's own seams
+//   (SceneEdit__Tap's gate, SceneEdit__WatchLibrary): the host's copies are gone.
+// - THE RIGHT-CLICK MENU AND THE MOVE TOOL (AURA 0.5.7, PainterlyNPR v0.8.10;
+//   Adam: "Update Aura so it has the same right click context menu and options",
+//   and "adding a new Move Tool you press m when an asset is selected"): the
+//   engine's own scene editing (83's SceneEdit__Wire), kept by its Scope to the
+//   drawing and the drawer, so the scene tabs' menu, the sheets' and the
+//   browser's own are untouched; its keys (Delete, Esc, Ctrl + D, M) only on
+//   the 3D Environment tab (Active); its menu's Undo and Redo are AURA's own
+//   history. A pin without the Scope seam is never wired: its menu would take
+//   the whole page's right click.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.5.7)
+// - The engine's right-click menu and its Move Tool in the 3D Environment
+//   (WireSceneEditing, on PainterlyNPR v0.8.10's SceneEdit__Wire options:
+//   Scope, Active, History). AssetsOpen and WatchDrawer retired for the
+//   engine's own gate and SceneEdit__WatchLibrary (in the pin since v0.8.8).
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.5.1)
 // - The drawing is selected and painted only while the drawer is out
 //   (AssetsOpen, AssetsTap); folding it lets the selection, the brush and a
@@ -82,7 +92,13 @@
     import { PainterlyNPR__AssetDrop__Clear } from 'PainterlyNPR/82__Hud__AssetCatalogue/PainterlyNPR__Interface__AssetDrop__.mjs';
     import { PainterlyNPR__Interface__SetMaterialBrush } from 'PainterlyNPR/82__Hud__AssetCatalogue/PainterlyNPR__Interface__MaterialTab__.mjs';
     import { PainterlyNPR__SceneEdit__Select } from 'PainterlyNPR/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Selection__.mjs';
-    import { PainterlyNPR__SceneEdit__Tap } from 'PainterlyNPR/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Actions__.mjs';
+    import {
+        PainterlyNPR__SceneEdit__Tap,
+        PainterlyNPR__SceneEdit__WatchLibrary
+    } from 'PainterlyNPR/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Actions__.mjs';
+    import * as Na__Engine__ContextMenu from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__ContextMenu__.mjs';   // <-- Through its namespace: a pin without the Scope seam still loads
+    import * as Na__Engine__SceneEditMenus from 'PainterlyNPR/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Menus__.mjs';
+    import { Na__AppState__Data } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__EngineHost__Notify } from './Na__EngineHost__PainterlyNpr__.js';
 
 // endregion -------------------------------------------------------------------
@@ -94,7 +110,9 @@
 
     const Na__EngineHostAssets__State = {
         mounted  : false,
-        applying : false                         // <-- Settings being put back: the engine's rebuild is not a new edit
+        applying : false,                        // <-- Settings being put back: the engine's rebuild is not a new edit
+        editing  : false,                        // <-- The engine's right-click menu, keys and Move Tool are wired
+        history  : null                          // <-- AURA's undo history module, for the menu's Undo and Redo
     };
 
     // MODULE CONSTANTS | What Is Placed in the Scene and Given to It: kept whole with the drawing set
@@ -110,6 +128,7 @@
     const Na__EngineHost__DRAWER_STYLES = [
         '03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Variables__.css',
         '02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__InfoBubbles__.css',
+        '02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Hud__Styles__ContextMenu__.css',   // <-- The right-click menu (AURA 0.5.7)
         '02__Src__AppModules/82__Hud__AssetCatalogue/PainterlyNPR__Hud__Styles__AssetDrawer__.css',
         '02__Src__AppModules/83__Hud__SceneEditing/PainterlyNPR__Hud__Styles__SceneEditing__.css'
     ];
@@ -166,34 +185,36 @@
         PainterlyNPR__Interface__OnAssetsChanged(() => {
             if (!S.applying) Na__EngineHost__Notify('assets');                   // <-- The drawing set saves it, and its history takes the step
         });
-        Na__EngineHost__WatchDrawer(root);
+        Na__EngineHost__WireSceneEditing(aside, sheet);
+        PainterlyNPR__SceneEdit__WatchLibrary();                                 // <-- Folding the drawer away lets go of everything (once a root: the wiring may have asked already)
         return true;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Is the Drawer Out? (the engine marks the root, 82's SetAssetDrawer)
+    // HELPER FUNCTION | The Engine's Right-Click Menu, Keys and Move Tool, Kept to the Drawing and the Drawer
     // ------------------------------------------------------------
-    function Na__EngineHost__AssetsOpen() {
-        return !!(Ui.Root && Ui.Root.classList.contains('PainterlyNPR--assetsOpen'));
-    }
+    // PainterlyNPR v0.8.10's SceneEdit__Wire options: Scope (the menu is the
+    // engine's over the drawing and the drawer only), Active (its keys act on
+    // the 3D Environment tab only) and History (its Undo and Redo are AURA's).
+    // AURA's history module is fetched once everything has loaded, so the host
+    // adds nothing to the order the app's modules load in.
     // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Folding the Drawer Away Lets Go of Everything, as Leaving the Tab Does
-    // ------------------------------------------------------------
-    // The pinned engine (v0.8.7) has no WatchLibrary yet (v0.8.8): at the next
-    // sync this gives way to PainterlyNPR__SceneEdit__WatchLibrary.
-    // ------------------------------------------------------------
-    function Na__EngineHost__WatchDrawer(root) {
-        if (typeof MutationObserver !== 'function') return;
-        let open = Na__EngineHost__AssetsOpen();
-        new MutationObserver(() => {
-            const now = Na__EngineHost__AssetsOpen();
-            if (now === open) return;
-            open = now;
-            if (!now) Na__EngineHost__AssetsAway();
-        }).observe(root, { attributes: true, attributeFilter: ['class'] });
+    function Na__EngineHost__WireSceneEditing(aside, sheet) {
+        const S = Na__EngineHostAssets__State;
+        if (S.editing || typeof Na__Engine__ContextMenu.PainterlyNPR__ContextMenu__InScope !== 'function') return false;   // <-- A pin before v0.8.10: its menu would cancel the whole page's right click
+        S.editing = true;
+        import('../40__Feature__DrawingSet/Na__DrawingSet__History__.js').then((m) => { S.history = m; }).catch((error) => console.error('[AURA] the history for the drawing\'s menu', error));
+        Na__Engine__SceneEditMenus.PainterlyNPR__SceneEdit__Wire({
+            Scope   : [sheet, aside].filter(Boolean),
+            Active  : () => Na__AppState__Data.tab === 'environment',
+            History : {
+                Label : (action) => (S.history ? S.history.Na__History__Label(action === 'Redo' ? 'redo' : 'undo') : null),
+                Undo  : () => { if (S.history) S.history.Na__History__Undo(); },
+                Redo  : () => { if (S.history) S.history.Na__History__Redo(); }
+            }
+        });
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -207,8 +228,8 @@
     // FUNCTION | A Click on the Drawing: the engine's own (paint with the brush, or select), only while the drawer is out
     // ------------------------------------------------------------
     function Na__EngineHost__AssetsTap(e) {
-        if (!Na__EngineHostAssets__State.mounted || !e || !Na__EngineHost__AssetsOpen()) return;   // <-- Folded away: a stray click selects nothing (AURA 0.5.1)
-        PainterlyNPR__SceneEdit__Tap(e);
+        if (!Na__EngineHostAssets__State.mounted || !e) return;
+        PainterlyNPR__SceneEdit__Tap(e);                                          // <-- Its own gate: folded away, a stray click selects nothing (AURA 0.5.1)
     }
     // ------------------------------------------------------------
 

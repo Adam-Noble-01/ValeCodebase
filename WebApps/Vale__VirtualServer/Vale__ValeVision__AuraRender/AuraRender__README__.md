@@ -102,6 +102,12 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   Shift flips it), or drag a swatch onto the drawing; Esc puts the brush down. A click on the drawing otherwise
   selects what is there, outlined. Both are saved with the drawing set, undone with Ctrl + Z, and drawn on every
   sheet's 3D views and elevations.
+- **Right-click and the Move Tool** (0.5.7, PainterlyNPR v0.8.10, the engine's own): right-click the drawing or the
+  drawer for the same menus as PainterlyNPR's app (an asset's Move, turn, size, copy, swap, materials and take out; an
+  object's or a face's material; the sky's selection, brush and library), each ending with Undo and Redo from AURA's
+  history. Delete, Esc, Ctrl + D and M are its keys on this tab. **M** moves the selected asset: it rides the ground
+  under the pointer with the insert's footprint marker; hold **Shift** for the gimbal (red, green, blue) to lift or
+  lower it; a click sets it down (10 mm steps, one undo step); Esc or M leaves it.
 - **Scenes** (0.5.0, SketchUp to LayOut): the 3D Environment's toolbar tabs, after the Saved views icon. A scene is
   what a viewport looks at (a 3D camera, or an elevation or the roof plan square and to scale) with its art direction
   points; every viewport on a sheet shows one, and all follow it. Click a tab to open it (an elevation keeps its

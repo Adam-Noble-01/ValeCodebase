@@ -1,5 +1,61 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.7, 30-Oct-2026: The Engine's Right-Click Menu and Move Tool in the 3D Environment
+
+**Asked by Adam:** "Update Aura so it has the same right click context menu and options / Update both aura and the NPR
+preview adding a new Move Tool you press m when an asset is selected and you can move it around show a gimbal for the
+move tool". **His calls:** a ghost while it moves, the drawing redrawn once it is set down; "Ground only, pressing shift
+allows for up and down movement, show only show the giumbal when shift is held otherwise show that same graphic and
+effect that appears on the insert"; a 10 mm step; "Commit NPR, sync AURA".
+
+**Built** (nothing of the engine copied into AURA; the work is PainterlyNPR v0.8.10, 0710926, pinned here as
+`01__CoreLib__PainterlyNPR__v0.8.10` and the import map moved to it):
+- **The right-click menu** over the 3D Environment's drawing and the Assets drawer is the engine's own, with the same
+  items as PainterlyNPR's app:
+  - **A placed asset:** Move (M), turn, size, grow a new shape, copy beside it, swap, its parts' and faces' materials,
+    take it out.
+  - **One of the model's objects:** its material or one face's.
+  - **The sky:** let the selection go, put the brush down, open or fold the library.
+  - **Cards and swatches** in the drawer get their own menus.
+  - **Every menu ends with Undo and Redo,** named for the step and taken from AURA's own history.
+- **The keys, on the 3D Environment tab only** (the engine's): Delete takes the selected asset out, Esc lets it go,
+  Ctrl + D copies it, M moves it.
+- **The menu is kept to those places** by the engine's new Scope, so the scene tabs' menu, the sheets' and the browser's
+  own (text fields) are as before. A pin without the seam is never wired, so an older pin can't take the whole page's
+  right click.
+- **The Move Tool:**
+  - **Start:** M with an asset selected and the drawer out (or the menu's Move, or a placed row's Move button).
+  - **Without Shift:** the asset rides the ground under the pointer, shown with the insert's own footprint and height
+    marker, a dashed trail back to where it stood and the distance beside it.
+  - **With Shift:** the gimbal shows at its foot (red, green, blue, as SketchUp's axes) and the pointer lifts or lowers
+    it. Shift with a press on the red or green arrow moves it along that arrow.
+  - **Setting it down:** a click, or a drag let go, sets it down: one change, one undo step in AURA's history, one save.
+    Enter sets it down too; Esc or M leaves it where it was.
+  - **While it is on,** right-drag still pans and the wheel still zooms.
+- **The host** (`Na__EngineHost__Assets__.js` 1.2.0): it wires the engine's `SceneEdit__Wire({ Scope, Active, History })`
+  with the stage's sheet and the drawer as the scope, the Environment tab as the keys' gate, and AURA's history,
+  fetched once everything has loaded so the app's module order is unchanged. It links the engine's ContextMenu
+  stylesheet. Its own copies of the library gate (`AssetsOpen`, `WatchDrawer`) are retired for the engine's
+  `SceneEdit__Tap` gate and `SceneEdit__WatchLibrary`, in the pin since v0.8.8.
+- The worker's cache version 2026-10-30-13 (an engine sync). `AuraConfig__App__Version` 0.5.7.
+
+**Checked here (no browser):**
+- The host parses, and every named import AURA takes from the engine resolves in the v0.8.10 pin, and in v0.8.9 for
+  the host.
+- The sync's `--check` finds the new copy untouched; its lock says WorkingTreeClean true at 0710926.
+- PainterlyNPR's module test passes (118 modules, 700 imports).
+- The Move Tool was driven in Node with the engine's camera: a 30 px carry moved the foot 29.9 px on screen with no
+  jump, on 10 mm steps; Shift lifted it with x and z kept; Esc left it untouched.
+
+**Not checked:** a browser (Adam tests): the menu over AURA's drawing and drawer, the gimbal, a move's undo in AURA's
+history, the save that follows it.
+
+**Not yet:** on a touch screen there is no Shift, so a finger carries over the ground only. The sync script's `--check`
+sorts version folders as text, so it calls v0.8.9 the newest copy and v0.8.10 "NEWER". It only reports wrongly; the
+copy is right.
+
+**Live:** needs `aura` (this version, with the v0.8.10 pin). No API change.
+
 ## Version 0.5.6, 30-Oct-2026: Cameras, the Lens and the Elevation Planes
 
 **Asked by Adam** (a screenshot of the 3D Environment's panel, the room under its sections ringed): "Read your NPR

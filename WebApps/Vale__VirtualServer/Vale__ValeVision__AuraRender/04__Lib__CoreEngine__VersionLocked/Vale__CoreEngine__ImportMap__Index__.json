@@ -2,9 +2,9 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "30-Oct-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.9/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.10/02__Src__AppModules/"
     },
-    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.9 at 0e79f92 (v0.8.7's GLB scenes, v0.8.8's scene editing only while the asset library is out, and v0.8.9's SetFrame: the vignette fitted to a viewport's frame), copied from the commit (its lock says WorkingTreeClean true). AURA 0.5.5: viewport pictures drawn at their frame's true size.",
+    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.10 at 0710926 (v0.8.7's GLB scenes, v0.8.8's scene editing only while the asset library is out, v0.8.9's SetFrame: the vignette fitted to a viewport's frame, and v0.8.10's Move Tool and the right-click menu a wrapper wires with a Scope), copied from the commit (its lock says WorkingTreeClean true). AURA 0.5.7: the engine's right-click menu and Move Tool in the 3D Environment.",
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Panel__.js",

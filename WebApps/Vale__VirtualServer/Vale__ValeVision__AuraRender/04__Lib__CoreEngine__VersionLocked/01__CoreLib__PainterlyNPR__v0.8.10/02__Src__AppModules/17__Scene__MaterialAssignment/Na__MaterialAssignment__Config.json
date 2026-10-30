@@ -1,0 +1,59 @@
+{
+    "PainterlyNPR__MaterialAssignment__Config" : {
+        "PainterlyNPR__MaterialAssignment__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Material Assignment",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How a material class given to an object or a face is carried through the drawing: which classes lay courses, what a face is, and the sample each class is drawn on for its swatch.",
+            "ReadBy"        : "02__Src__AppModules/17__Scene__MaterialAssignment/PainterlyNPR__MaterialAssignment__Apply__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.7.0"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Library" : {
+            "Note"            : "Where the Materials tab reads the material library, and where the factory writes its swatches",
+            "Root"            : "07__Data__MaterialRecipes/",
+            "RootNote"        : "From the engine's root (the folder holding 02__Src__AppModules), resolved from the engine's own files rather than the page (v0.8.2): a wrapper that pins the engine pins the register and swatches beside it in the same layout",
+            "RegisterFile"    : "PainterlyNPR__MaterialLibrary__Register__.json",
+            "Api"             : "/api/materials",
+            "ApiNote"         : "The local server's: POST /api/materials/<Key>/<RND|PXY> writes a swatch into the class's group folder",
+            "MaxAssignments"  : 400,
+            "MaxAssignmentsNote": "A drawing holds this many material assignments at most; giving a class again to what already has one replaces it rather than adding"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Rules" : {
+            "Note"            : "A material is a class (13__Scene__MaterialClasses): its wash, its albedo, its hatching - and, for a few, the courses material indication lays. Giving a class to an object or a face carries all of it: the wash and hatching follow at once (they read each pixel's class), and the courses follow by Patterns.",
+            "Excluded"        : ["Sky"],
+            "ExcludedNote"    : "The sky is not a surface: nothing is given it",
+            "Patterns"        : { "Brick": "Brick", "ClayTile": "Tile", "Slate": "Tile" },
+            "PatternsNote"    : "The classes that lay courses, and which. A surface given any other class keeps no courses; a face given one of these gets courses even if it had none",
+            "SoldierNeeds"    : "Brick",
+            "SoldierNeedsNote": "A soldier course over an opening stays only while its wall is brick",
+            "FlagNeeds"       : "Paving",
+            "FlagNeedsNote"   : "A flagstone path keeps its flags only while it is paving"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Faces" : {
+            "Note"        : "A face is what SketchUp would call one: the triangles of one object that lie in one plane and join edge to edge, found from the one picked. A plant's masses are smooth, so a face on a plant is the plant.",
+            "NormalDot"   : 0.999,
+            "NormalDotNote": "Two triangles face the same way when their normals agree this well (about 2.5 degrees)",
+            "PlaneM"      : 0.003,
+            "PlaneMNote"  : "And lie in one plane within this many metres",
+            "WeldM"       : 0.0005,
+            "WeldMNote"   : "Corners nearer than this are one corner when edges are matched",
+            "OffsetM"     : 0.002,
+            "OffsetMNote" : "A new face's courses sit this far proud of it, as every surface's do"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Samples" : {
+            "Note"        : "What each class is drawn on for its swatch in the catalogue environment: a block for what buildings are made of, a slab for what the ground is made of, a mound for planting, a log for bark.",
+            "Slab"        : ["Lawn", "Paving", "Footway", "Tarmac", "Kerb", "Water"],
+            "Mound"       : ["Foliage", "TreeFoliage", "Hedge", "Conifer", "Lavender", "Grass", "DistantTrees", "MidTrees"],
+            "Log"         : ["Bark"],
+            "BlockM"      : [1.8, 1.5, 1.2],
+            "BlockMNote"  : "Width, height and depth of the block: a stretch of wall's worth, its courses at true gauge",
+            "SlabM"       : [2.6, 0.06, 2.0],
+            "MoundM"      : [1.7, 1.3],
+            "LogM"        : [0.3, 1.4],
+            "LogMNote"    : "The log's radius and height: a short upright trunk"
+        }
+    }
+}

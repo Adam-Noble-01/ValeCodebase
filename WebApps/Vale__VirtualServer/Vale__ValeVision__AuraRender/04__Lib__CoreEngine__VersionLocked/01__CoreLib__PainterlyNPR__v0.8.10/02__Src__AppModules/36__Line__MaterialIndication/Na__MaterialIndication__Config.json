@@ -1,0 +1,53 @@
+{
+    "PainterlyNPR__MaterialIndication__Config" : {
+        "PainterlyNPR__MaterialIndication__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Material Indication Patterns",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The illustrator's selected surface cues: brick suggested by a few courses where the eye expects them, never every brick. Each pattern is measured in metres on the real surface.",
+            "ReadBy"        : "02__Src__AppModules/36__Line__MaterialIndication/PainterlyNPR__MaterialIndication__Patterns__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__MaterialIndication__Config__Patterns" : {
+            "Note"     : "Gauge and Length in metres (a brick course 75 mm, a plain tile's gauge 100 mm); Ink the mark's ink - every mark is drawn with the base pen, 0.13 mm (32__Line__ClassAndPriority/Na__TechnicalPens__Config.json; v0.8.0 took the patterns' own widths away); Perpend how often a joint between units is ticked; Pick how often a unit is picked out with a darker touch of wash; Floor a minimum importance.",
+            "Patterns" : {
+                "Brick"   : {
+                    "Gauge"   : 0.075,
+                    "Length"  : 0.225,
+                    "Bond"    : 0.5,
+                    "Ink"     : 0.74,
+                    "Perpend" : 0.75,
+                    "Pick"    : 0.1,
+                    "Floor"   : 0
+                },
+                "Tile"    : {
+                    "Gauge"   : 0.1,
+                    "Length"  : 0.165,
+                    "Bond"    : 0.5,
+                    "Ink"     : 0.68,
+                    "Perpend" : 0.5,
+                    "Pick"    : 0.08,
+                    "Floor"   : 0
+                },
+                "Soldier" : {
+                    "Gauge"   : 0.215,
+                    "Length"  : 0.075,
+                    "Bond"    : 0,
+                    "Ink"     : 0.82,
+                    "Perpend" : 1,
+                    "Pick"    : 0.2,
+                    "Floor"   : 1
+                },
+                "Flag"    : {
+                    "Gauge"   : 0,
+                    "Length"  : 0,
+                    "Bond"    : 0,
+                    "Ink"     : 0.7,
+                    "Perpend" : 0,
+                    "Pick"    : 0.14,
+                    "Floor"   : 0
+                }
+            }
+        }
+    }
+}

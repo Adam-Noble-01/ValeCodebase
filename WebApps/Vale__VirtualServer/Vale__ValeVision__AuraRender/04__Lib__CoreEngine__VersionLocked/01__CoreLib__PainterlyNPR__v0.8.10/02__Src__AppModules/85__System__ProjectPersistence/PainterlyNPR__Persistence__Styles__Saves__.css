@@ -1,0 +1,120 @@
+/* =============================================================================
+ * PAINTERLYNPR - SYSTEM | STYLES - SAVED SETTINGS
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Persistence__Styles__Saves__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : System - Styles - SavedSettings
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Named set-ups, in this browser and in the saves folder
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: SAVED SETTINGS.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * SAVED SETTINGS | Named Set-ups, in This Browser and in the Repo's Saves Folder
+ * ----------------------------------------------------------------------------- */
+
+    /* SAVE | The name box and its button */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__SaveRow {
+        display                            :  flex;
+        gap                                :  6px;
+    }
+
+    .PainterlyNPR__SaveRow__Name {
+        flex                               :  1;
+        min-width                          :  0;                           /* <-- A long name never widens the panel */
+        padding                            :  5px 8px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_Ink);
+        font                               :  inherit;
+    }
+
+    .PainterlyNPR__SaveRow .PainterlyNPR__Button {
+        flex                               :  none;
+    }
+
+    .PainterlyNPR__SaveStatus {
+        min-height                         :  1.4em;
+        margin                             :  6px 0 0;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LISTS | The folder's saves, then this browser's */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__SaveList__Title {
+        margin                             :  10px 0 4px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  10px;
+        font-weight                        :  600;
+        text-transform                     :  uppercase;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+    }
+
+    .PainterlyNPR__SaveList {
+        margin                             :  0;
+        padding                            :  0;
+        list-style                         :  none;
+    }
+
+    .PainterlyNPR__SaveList__Row {
+        display                            :  grid;
+        grid-template-columns              :  minmax(0, 1fr) auto auto auto;
+        align-items                        :  center;
+        gap                                :  6px;
+        padding                            :  3px 0;
+        border-top                         :  1px solid var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__SaveList__Name {
+        min-width                          :  0;
+        overflow                           :  hidden;
+        color                              :  var(--PainterlyNPR_Ink);
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__SaveList__When {
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__SaveList__Load {
+        padding                            :  2px 9px;
+    }
+
+    .PainterlyNPR__SaveList__Remove--armed {
+        width                              :  auto;
+        padding                            :  0 8px;
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  var(--PainterlyNPR_Brick);
+        color                              :  #FFFDF8;
+        font-size                          :  11px;
+    }
+
+    .PainterlyNPR__SaveList__Remove--armed:hover {
+        background                         :  var(--PainterlyNPR_Brick);
+        color                              :  #FFFDF8;
+    }
+
+    .PainterlyNPR__SaveList__Empty {
+        margin                             :  0;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

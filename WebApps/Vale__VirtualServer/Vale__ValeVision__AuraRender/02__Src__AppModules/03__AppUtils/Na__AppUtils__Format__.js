@@ -81,6 +81,45 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Typed Readout Back to a Value - an engine readout format run backwards
+    // ------------------------------------------------------------
+    // Mirrors PainterlyNPR's PainterlyNPR__Interface__ParseFrom (v0.5.2), which
+    // the pinned engine v0.5.0 does not have yet: the engine host prefers the
+    // engine's own (.Parse on a control's readout) once a sync brings it.
+    // "60%" or "60" is 0.6 on a per-cent slider; a readout's words ("off",
+    // "simplify 0.3") pick their place. NaN when nothing can be read.
+    function Na__Format__ParseReadout(format, text) {
+        const clean = (value) => String(value == null ? '' : value).toLowerCase().replace(/\u2212/g, '-').replace(/,/g, '.').replace(/\s+/g, ' ').trim();
+        const number = (t) => { const m = t.match(/[-+]?(?:\d+\.?\d*|\.\d+)/); return m ? parseFloat(m[0]) : NaN; };
+        const base = (f, t) => {
+            switch (f.Kind) {
+                case 'Round': return number(t) / (f.Scale === undefined ? 1 : f.Scale);
+                case 'Fixed': return number(t) - (f.Offset || 0);
+                case 'Steps': {
+                    for (let i = 0; i < f.Steps.length; i++) if (t === clean(f.Steps[i][1])) return i ? f.Steps[i - 1][0] : 0;
+                    if (t === clean(f.Else)) return f.Steps[f.Steps.length - 1][0];
+                    return number(t);
+                }
+                case 'Sided': {
+                    if (t === clean(f.Zero.Text)) return 0;
+                    const words = clean(`${f.Under.Prefix || ''} ${f.Under.Suffix || ''}`).replace(/[^a-z ]/g, '').trim();
+                    const n = number(t);
+                    if (n < 0) return -base(f.Under, String(-n));
+                    if (words && t.includes(words)) return -base(f.Under, t);
+                    return base(f.Above, t.replace(/^\+/, ''));
+                }
+                default: return number(t);
+            }
+        };
+        const t = clean(text);
+        if (!t || !format) return NaN;
+        if (format.Off && t === clean(format.Off.Text)) return 'Below' in format.Off ? 0 : format.Off.NotAbove;
+        if (format.From && t === clean(format.From.Text)) return format.From.AtLeast;
+        return base(format, t);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | A Stable Text Key for an Object (sorted keys), for caches
     // ------------------------------------------------------------
     function Na__Format__Key(value) {
@@ -105,7 +144,8 @@
         Na__Format__Clamp,
         Na__Format__Round,
         Na__Format__Seed,
-        Na__Format__Key
+        Na__Format__Key,
+        Na__Format__ParseReadout
     };
 
 // endregion -------------------------------------------------------------------

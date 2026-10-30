@@ -115,6 +115,7 @@
     import { PainterlyNPR__Interface__CONTROLS as CONTROLS } from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__Controls__.mjs';
     import ControlsConfig from 'PainterlyNPR/80__System__HudOverlay/Na__Interface__Controls__Config.json' with { type: 'json' };
     import { PainterlyNPR__PassViewer__FS_VIEW as FS_VIEW } from 'PainterlyNPR/81__Hud__PassViewer/PainterlyNPR__PassViewer__Shader__.mjs';
+    import { Na__Format__ParseReadout } from '../03__AppUtils/Na__AppUtils__Format__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -391,7 +392,8 @@
             Max     : o.Max !== undefined ? o.Max : raw.Max,
             Step    : o.Step !== undefined ? o.Step : raw.Step,
             Value   : PainterlyNPR__Interface__Get(spec.Path),
-            Readout : (v) => spec.Format(v)
+            Readout : (v) => spec.Format(v),
+            Parse   : (text) => (typeof spec.Format.Parse === 'function' ? spec.Format.Parse(text) : Na__Format__ParseReadout(raw.Format, text))   // <-- The engine's own once synced (v0.5.2+)
         };
     }
     // ------------------------------------------------------------

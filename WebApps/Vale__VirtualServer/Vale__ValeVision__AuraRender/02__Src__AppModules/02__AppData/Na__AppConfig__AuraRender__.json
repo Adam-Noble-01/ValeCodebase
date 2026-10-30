@@ -3,7 +3,7 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.1.0",
+    "AuraConfig__App__Version"                          : "0.1.1",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked and reached only through 02__Src__AppModules/10__System__EngineHost.",
 
@@ -75,11 +75,11 @@
 
     "AuraConfig__Engine__CameraPresets"                 : ["ThreeQuarter", "GardenCorner", "DownThePath", "MeasuredElevation", "ConceptElevation"],
     "AuraConfig__Engine__ParameterGroups"               : [
+        { "Key": "Paper",       "Label": "Paper and finish",  "Controls": ["Emboss", "InkDry", "Vignette", "Roughness"], "Selects": ["PaperPreset"] },
         { "Key": "Light",       "Label": "Light",             "Controls": ["SunAzimuth", "SunAltitude"] },
         { "Key": "Pen",         "Label": "Pen",               "Controls": ["Discipline", "LineWeight", "Indication"], "Selects": ["InkFamily"] },
         { "Key": "Wash",        "Label": "Wash",              "Controls": ["WashStrength", "Granulation", "Pooling", "CoffeeRings", "Bleed", "Shadow", "ShadowLines"] },
-        { "Key": "Sky",         "Label": "Sky",               "Controls": ["Sky", "Clouds", "CloudCoverage"] },
-        { "Key": "Paper",       "Label": "Paper and finish",  "Controls": ["Emboss", "InkDry", "Vignette", "Roughness"], "Selects": ["PaperPreset"] }
+        { "Key": "Sky",         "Label": "Sky",               "Controls": ["Sky", "Clouds", "CloudCoverage"] }
     ],
     "AuraConfig__Engine__ParameterGroupsNote"           : "Each control is the engine's own (80__System__HudOverlay/Na__Interface__Controls__Config.json): its label, range, the state it sets, what it re-renders and its readout. AURA only chooses which to show, here.",
     "AuraConfig__Engine__LabelOverrides"                : { "Indication": "Material indication", "WashStrength": "Wash strength", "Emboss": "Paper grain" },

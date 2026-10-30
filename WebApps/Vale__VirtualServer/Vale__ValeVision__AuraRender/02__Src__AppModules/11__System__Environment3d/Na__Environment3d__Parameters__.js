@@ -17,6 +17,9 @@
 //   (AuraConfig__Engine__ParameterGroups), so the two apps never drift.
 // - A slider moves the engine at once (the navigation preview for the sun,
 //   a refine for the rest); the drawing set saves the settings after a pause.
+// - Every readout can be typed into (click it, or Tab to it and press Enter):
+//   the value as the readout shows it ("60%", "1.2", "off"), read back by the
+//   engine host's Parse.
 // - Groups fold: a group's open or closed state is kept in this browser.
 //
 // -----------------------------------------------------------------------------
@@ -24,6 +27,9 @@
 // DEVELOPMENT LOG:
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
+// 30-Oct-2026 - Version 1.1.0
+// - Typable readouts (Na__Parameters__TypeIn); groups reordered in the config
+//   (paper and finish first, then light, pen, wash, sky).
 //
 // =============================================================================
 
@@ -88,16 +94,58 @@
         row.appendChild(Na__Dom__El('span', 'aura-param__label', control.Label));
         const input = Na__Dom__El('input', 'aura-param__range', null, { type: 'range', min: control.Min, max: control.Max, step: control.Step || 0.01 });
         input.value = control.Value;
-        const output = Na__Dom__El('output', 'aura-param__readout', control.Readout(control.Value));
+        const output = Na__Dom__El('output', 'aura-param__readout', control.Readout(control.Value), { tabindex: '0', title: 'Click to type a value' });
         input.addEventListener('input', () => {
             const value = parseFloat(input.value);
             Na__EngineHost__SetControl(key, value);
             output.textContent = control.Readout(value);
         });
+        output.addEventListener('click', (event) => { event.preventDefault(); Na__Parameters__TypeIn(input, output, control); });   // <-- preventDefault: the label would hand the click to the slider
+        output.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== 'F2') return;
+            event.preventDefault();
+            Na__Parameters__TypeIn(input, output, control);
+        });
         row.appendChild(input);
         row.appendChild(output);
         Na__Parameters__State.rows.push({ key, input, output, kind: 'range', readout: control.Readout });
         return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Type a Value Into a Slider's Readout
+    // ------------------------------------------------------------
+    // A text field stands in for the readout; Enter or leaving it sets the value,
+    // Escape puts the readout back. The value goes in through the slider (which
+    // clamps and snaps it to its own range and step) and its input event, so a
+    // typed value acts exactly as a drag to it would.
+    function Na__Parameters__TypeIn(input, output, control) {
+        if (output.hidden) return;
+        const field = Na__Dom__El('input', 'aura-param__typein', null, { type: 'text', 'aria-label': `Type a value for ${control.Label}` });
+        field.value = output.textContent;
+        let done = false;
+        const finish = (commit) => {
+            if (done) return;
+            done = true;
+            const value = commit ? control.Parse(field.value) : NaN;
+            field.remove();
+            output.hidden = false;
+            if (!Number.isFinite(value)) return;                               // <-- Nothing readable: the slider keeps its value
+            input.value = String(value);
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+        field.addEventListener('keydown', (event) => {
+            event.stopPropagation();                                           // <-- Typing never reaches the app's shortcuts
+            if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+            else if (event.key === 'Escape') { event.preventDefault(); finish(false); output.focus(); }
+        });
+        field.addEventListener('blur', () => finish(true));
+        field.addEventListener('click', (event) => event.preventDefault());
+        output.hidden = true;
+        output.after(field);
+        field.focus();
+        field.select();
     }
     // ------------------------------------------------------------
 

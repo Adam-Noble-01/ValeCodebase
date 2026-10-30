@@ -106,6 +106,31 @@
         font-variant-numeric               : tabular-nums;
     }
 
+    .aura-param__readout[tabindex] {
+        padding                            : 0 4px;
+        border-radius                      : 3px;
+        cursor                             : text;
+    }
+
+    .aura-param__readout[tabindex]:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-param__typein {
+        grid-area                          : readout;                       /* <-- The readout's own cell while typing */
+        width                              : 84px;
+        padding                            : 1px 6px;
+        border                             : 1px solid var(--Aura_Focus);
+        border-radius                      : 3px;
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 12px;
+        font-variant-numeric               : tabular-nums;
+        text-align                         : right;
+    }
+
     .aura-param__range {
         grid-area                          : range;
         width                              : 100%;

@@ -1,5 +1,24 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.1.1, 30-Oct-2026: Paper First, Typed Values
+
+**Asked by Adam:** "Next in both Aura and the NPR viewer move the paper and finish first 1. Paper & Finish 2. Lighting
+3. Pen 4. Wash 5. Sky ... Make all parameters on both apps typable too so you can type values or use sliders"
+
+**Built:**
+- **Group order** (`AuraConfig__Engine__ParameterGroups`): Paper and finish, Light, Pen, Wash, Sky. The first two open
+  by default for anyone with no folds remembered.
+- **Typed values** (`11__System__Environment3d/Na__Environment3d__Parameters__.js`, `Na__Parameters__TypeIn`): click a
+  readout (or Tab to it, Enter), type the value as it shows (`60%`, `1.2`, `off`), Enter; Escape puts it back. The value
+  goes in through the slider and its input event, so it acts exactly as a drag would.
+- **Reading a typed value:** the engine host's `Na__EngineHost__Control` gains `Parse`. It uses the engine's own
+  (`.Parse` on a readout, PainterlyNPR v0.5.2) when the pinned engine has it, and until then
+  `Na__Format__ParseReadout` (`03__AppUtils`), a mirror of PainterlyNPR's `ParseFrom`, read from the same format data.
+  Drop the mirror after the v0.5.2 sync.
+- The worker's version `2026-10-30-2`.
+
+**Not yet:** not checked in the browser here (Adam tests it); not pushed to the server.
+
 ## Version 0.1.0, 30-Oct-2026: The Foundations
 
 **Asked by Adam:** "We need to build out the structure in my style for a new Project AURA which is a wrapper using my

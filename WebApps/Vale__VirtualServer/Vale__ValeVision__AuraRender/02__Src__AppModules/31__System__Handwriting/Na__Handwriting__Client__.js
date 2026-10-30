@@ -28,10 +28,33 @@
 //   never needs a new copy; new words, size, width or hand do. The engine is
 //   deterministic: the same words, settings and seed write the same strokes on
 //   every device.
+// - THE PEN IS APPLIED ON THE SHEET TOO (2.1.0): the request carries the note's
+//   whole writing style (Na__Handwriting__Style__) and asks for widths
+//   relative to the nib, so the ink is Relative and the sheet multiplies it by
+//   the note's real pen. The key covers the style but not the pen or colour.
+// - TWO KINDS OF LETTERS (2.2.0): a note in architect's capitals (the default)
+//   is lettered here on the page, at once, with no model and no worker; a
+//   joined-up note goes to the engine as before, and its ink comes back line
+//   by line (Na__Handwriting__Queue's onPartial) as well as whole. The request
+//   carries its letters' revision, so better letters write old ink again.
+//   Each path keeps its line (L) and, for capitals, its word in the line (U),
+//   for justifying.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.2.0
+// - Architect's capitals on the page, joined-up ink line by line, each path's
+//   line and word (AURA 0.4.9).
+//
+// 30-Oct-2026 - Version 2.1.0
+// - The writing style and the real pen (AURA 0.3.2): the request is the
+//   note's words, size, width, copy number and its effective style, with
+//   widths 'nib'; the ink comes back Relative. The hands moved to
+//   Na__Handwriting__Style__ (Na__Handwriting__Hand is still exported here).
+//   A note written before 2.1.0 has a different key, so it is written once
+//   more, with the 0.18 mm technical pen (Adam's call).
+//
 // 30-Oct-2026 - Version 2.0.0
 // - The engine moves into the browser (AURA 0.2.1): Na__Handwriting__Status
 //   loads the WebAssembly engine in a worker, Na__Handwriting__Write asks it;
@@ -51,6 +74,8 @@
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Api__BASE, Na__Api__Get } from '../03__AppUtils/Na__AppUtils__ApiClient__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
+    import { Na__HandwritingStyle__Hand, Na__HandwritingStyle__Effective, Na__HandwritingStyle__Letters } from './Na__Handwriting__Style__.js';
+    import { Na__Layout__Validate, Na__Layout__Render, Na__Layout__REVISION } from './02__Engine__Wasm/Na__HandwritingEngine__Layout__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -71,7 +96,9 @@
         loaded   : null,                         // <-- Resolves the load in flight with the worker's answer
         nextId   : 0,
         waiting  : new Map(),                    // <-- Write id -> resolve
-        queue    : [],                           // <-- [{ annotation, callbacks }]
+        partials : new Map(),                    // <-- Write id -> told each joined-up line's ink so far
+        queue    : [],                           // <-- Notes: [{ annotation, callbacks }], always written first
+        later    : [],                           // <-- Lettering (title block, viewport titles): [{ id, request, callbacks }]
         running  : false
     };
 
@@ -82,12 +109,9 @@
 // REGION | Hands, Inks and Keys
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | A Hand ({ Key, Label, Neatness, Variation }) and an Ink's Colour
+    // FUNCTION | A Hand ({ Key, Label, Neatness, Variation, ... }: the style module's) and an Ink's Colour
     // ------------------------------------------------------------
-    function Na__Handwriting__Hand(key) {
-        const hands = Na__AppConfig__Get('Handwriting__Hands', []);
-        return hands.find((h) => h.Key === key) || hands[0] || { Key: 'Steady', Label: 'Steady hand', Neatness: 1.1, Variation: 0.3 };
-    }
+    const Na__Handwriting__Hand = Na__HandwritingStyle__Hand;
 
     function Na__Handwriting__Ink(key) {
         const inks = Na__AppConfig__Get('Annotation__Inks', []);
@@ -96,20 +120,24 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | What a Note's Ink Depends On (its colour is not one of them)
+    // FUNCTION | What a Note's Ink Depends On (not its colour, nor its pen: the sheet applies both)
     // ------------------------------------------------------------
     function Na__Handwriting__Request(annotation) {
-        const hand = Na__Handwriting__Hand(annotation.Annotation__HandKey);
+        const letters = Na__HandwritingStyle__Letters(annotation);
         return {
             text      : String(annotation.Annotation__Text || ''),
             size      : Number(annotation.Annotation__SizeMm) || 4.5,
             width     : Number(annotation.Annotation__WidthMm) || 70,
-            pen       : Na__AppConfig__Get('Annotation__PenWidthMm', 0.3),
-            neatness  : hand.Neatness,
-            variation : hand.Variation,
-            spacing   : Na__AppConfig__Get('Handwriting__LineSpacing', 1.35),
-            seed      : Number(annotation.Annotation__Seed) || 0
+            seed      : Number(annotation.Annotation__Seed) || 0,
+            style     : Object.assign(Na__HandwritingStyle__Effective(annotation), { Letters: letters }),
+            widths    : 'nib',                                                   // <-- Each path's width a fraction of the nib (1 = the nib)
+            revision  : Na__Layout__REVISION[letters]                            // <-- In the key: better letters write old ink again
         };
+    }
+
+    // Is this request lettered in capitals? (drawn here, no engine)
+    function Na__Handwriting__IsCapitals(request) {
+        return !!(request && request.style && request.style.Letters === 'Capitals');
     }
 
     function Na__Handwriting__KeyFor(annotation) {
@@ -149,9 +177,13 @@
             if (S.loaded) { S.loaded(message); S.loaded = null; }
         } else if (message.type === 'progress') {
             S.progress = String(message.message || '');
+        } else if (message.type === 'partial') {
+            const told = S.partials.get(message.id);
+            if (told) { try { told(message.ink || {}); } catch (error) { console.error(error); } }
         } else if (message.type === 'written') {
             const resolve = S.waiting.get(message.id);
             S.waiting.delete(message.id);
+            S.partials.delete(message.id);
             if (resolve) resolve(message);
         }
     }
@@ -230,20 +262,52 @@
 
     // FUNCTION | Write One Note Now: the ink, or a thrown error in the engine's words
     // ------------------------------------------------------------
-    async function Na__Handwriting__Write(annotation) {
+    function Na__Handwriting__Write(annotation, onPartial) {
+        return Na__Handwriting__WriteRequest(Na__Handwriting__Request(annotation), onPartial);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Write Any Request Now ({ text, size, width, seed, style, widths }): the ink, keyed by the request
+    // ------------------------------------------------------------
+    // onPartial(ink): a joined-up note's ink so far, as each line is written (capitals come whole, at once)
+    async function Na__Handwriting__WriteRequest(request, onPartial) {
+        if (Na__Handwriting__IsCapitals(request)) return Na__Handwriting__Letter(request);   // <-- Lettered here: no model, no worker
         const S = Na__Handwriting__State;
-        const request = Na__Handwriting__Request(annotation);
         const worker = Na__Handwriting__Worker();
         const id = ++S.nextId;
+        if (typeof onPartial === 'function') S.partials.set(id, (ink) => onPartial(Na__Handwriting__Shape(request, ink)));
         const reply = await new Promise((resolve) => {
             S.waiting.set(id, resolve);
             worker.postMessage({ type: 'write', id, request });
         });
         if (!reply.ok) throw new Error(reply.error || 'The handwriting engine could not write this note.');
-        const ink = reply.ink || {};
+        return Na__Handwriting__Shape(request, reply.ink || {});
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Letter a Capitals Request Now, on the Page: the ink (or a thrown error in the engine's words)
+    // ------------------------------------------------------------
+    function Na__Handwriting__Letter(request) {
+        return Na__Handwriting__Shape(request, Na__Layout__Render(Na__Layout__Validate(request, ''), null));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Engine's Ink as a Note Keeps It: { Key, Relative, Paths: [{ D, W, L, U }], HeightMm, ... }
+    // ------------------------------------------------------------
+    function Na__Handwriting__Shape(request, ink) {
+        const relative = !!ink.relative;                                         // <-- An engine from before 2.1.0 answers millimetres
         return {
             Key        : Na__Format__Key(request),
-            Paths      : Array.isArray(ink.paths) ? ink.paths.map((p) => ({ D: String(p.d || ''), W: Number(p.w) || request.pen })) : [],
+            Relative   : relative,                                               // <-- Each W a fraction of the note's pen, applied on the sheet
+            Paths      : Array.isArray(ink.paths) ? ink.paths.map((p) => {
+                const path = { D: String(p.d || ''), W: Number(p.w) || (relative ? 1 : 0.3) };
+                if (Number.isInteger(p.l)) path.L = p.l;                         // <-- Its line, from 0 (for justifying)
+                if (Number.isInteger(p.u)) path.U = p.u;                         // <-- Its word in the line (capitals)
+                return path;
+            }) : [],
             HeightMm   : Number(ink.height) || request.size * 1.5,
             InkWidthMm : Number(ink.inkWidth) || request.width,
             Lines      : Number(ink.lines) || 1,
@@ -259,11 +323,22 @@
     // One note at a time (the engine has one pen). A note queued again while it
     // waits is written once, with its latest words.
     // ------------------------------------------------------------
-    function Na__Handwriting__Queue(annotation, onDone) {
+    function Na__Handwriting__Queue(annotation, onDone, onPartial) {
         const S = Na__Handwriting__State;
         const waiting = S.queue.find((q) => q.annotation.Annotation__Id === annotation.Annotation__Id);
-        if (waiting) { waiting.annotation = annotation; if (onDone) waiting.callbacks.push(onDone); }
-        else S.queue.push({ annotation, callbacks: onDone ? [onDone] : [] });
+        if (waiting) { waiting.annotation = annotation; if (onDone) waiting.callbacks.push(onDone); if (onPartial) waiting.partial = onPartial; }
+        else S.queue.push({ annotation, callbacks: onDone ? [onDone] : [], partial: onPartial || null });
+        Na__Handwriting__Pump();
+    }
+
+    // Lettering waits behind every note (a note being typed is never kept
+    // waiting by a sheet's titles); the same id queued twice is written once.
+    // A failure because the engine could not run is marked error.engine.
+    function Na__Handwriting__QueueRequest(id, request, onDone) {
+        const S = Na__Handwriting__State;
+        const waiting = S.later.find((q) => q.id === id);
+        if (waiting) { waiting.request = request; if (onDone) waiting.callbacks.push(onDone); }
+        else S.later.push({ id, request, callbacks: onDone ? [onDone] : [] });
         Na__Handwriting__Pump();
     }
 
@@ -272,13 +347,14 @@
         if (S.running) return;
         S.running = true;
         try {
-            while (S.queue.length) {
-                const status = await Na__Handwriting__Status();                  // <-- Loads the engine for the first note; tries again after a failure
-                const job = S.queue.shift();
+            while (S.queue.length || S.later.length) {
+                const job = S.queue.length ? S.queue.shift() : S.later.shift();  // <-- Notes first
                 let ink = null, failure = null;
-                if (!status.available) failure = new Error(status.reason || 'The handwriting engine could not start.');
+                const capitals = Na__Handwriting__IsCapitals(job.annotation ? Na__Handwriting__Request(job.annotation) : job.request);
+                const status = capitals ? { available: true } : await Na__Handwriting__Status();   // <-- Loads the engine for the first joined-up note; capitals never need it
+                if (!status.available) failure = Object.assign(new Error(status.reason || 'The handwriting engine could not start.'), { engine: true });
                 else {
-                    try { ink = await Na__Handwriting__Write(job.annotation); }
+                    try { ink = job.annotation ? await Na__Handwriting__Write(job.annotation, job.partial) : await Na__Handwriting__WriteRequest(job.request); }   // <-- A note's latest words
                     catch (error) { failure = error; }
                 }
                 job.callbacks.forEach((fn) => { try { fn(ink, failure); } catch (error) { console.error(error); } });
@@ -299,13 +375,18 @@
     export {
         Na__Handwriting__Hand,
         Na__Handwriting__Ink,
+        Na__Handwriting__Request,
+        Na__Handwriting__IsCapitals,
+        Na__Handwriting__Letter,
         Na__Handwriting__KeyFor,
         Na__Handwriting__NeedsWriting,
         Na__Handwriting__Status,
         Na__Handwriting__Loading,
         Na__Handwriting__Progress,
         Na__Handwriting__Write,
-        Na__Handwriting__Queue
+        Na__Handwriting__WriteRequest,
+        Na__Handwriting__Queue,
+        Na__Handwriting__QueueRequest
     };
 
 // endregion -------------------------------------------------------------------

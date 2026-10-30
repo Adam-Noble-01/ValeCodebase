@@ -23,11 +23,22 @@
 //   too while the layout protects numbers, which AURA always does.
 // - ONE CHANGE FROM THE STUDIO: its m had three arches, so "2400 mm" read as
 //   "2400 mmm"; here it has two, and the usual advance.
+// - NUMBERS AND SYMBOLS ONLY (1.2.0): the plain stroke capitals added in 1.1.0
+//   for a lone capital the model could not write moved to the architect's
+//   capitals (Na__HandwritingEngine__Capitals__), which draw every run typed
+//   in capitals.
 // - Pure data and arithmetic: runs in the engine's worker and in Node.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0
+// - The stroke capitals go: the architect's capitals letter capitals now
+//   (AURA 0.4.9).
+//
+// 30-Oct-2026 - Version 1.1.0
+// - Stroke capitals for a lone capital the model cannot write (AURA 0.3.4).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Ported from the studio's engine.py (AURA 0.2.1).
 //

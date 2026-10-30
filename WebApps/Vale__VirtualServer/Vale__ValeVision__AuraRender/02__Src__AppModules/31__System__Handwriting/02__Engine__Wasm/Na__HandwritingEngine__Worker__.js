@@ -26,6 +26,7 @@
 // - MESSAGES:
 //     in  { type: 'load', manifest, weightsUrl }   -> { type: 'loaded', ok, engine | reason }
 //     in  { type: 'write', id, request }           -> { type: 'progress', id, message, fraction } ...
+//                                                     { type: 'partial', id, ink } as each line is done (1.1.0)
 //                                                     { type: 'written', id, ok, ink | error }
 //   request is the client's { text, size, width, pen, neatness, variation,
 //   spacing, seed }; ink is { paths: [{ d, w }], width, inkWidth, height,
@@ -34,6 +35,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0
+// - Each line's ink as it is written, a 'partial' message (AURA 0.4.9).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build (AURA 0.2.1): the handwriting moves from the PC's Python to
 //   WebAssembly in the browser.
@@ -225,7 +229,8 @@
                 if (!S.loading) throw new Error('The handwriting engine has not been loaded.');
                 await S.loading;
                 const options = Na__Layout__Validate(message.request, S.pen.Charset);
-                const ink = Na__Layout__Render(options, S.pen, (fraction, text) => Na__PenWorker__Post({ type: 'progress', id, message: text, fraction }));
+                const ink = Na__Layout__Render(options, S.pen, (fraction, text) => Na__PenWorker__Post({ type: 'progress', id, message: text, fraction }),
+                                               (so) => Na__PenWorker__Post({ type: 'partial', id, ink: so }));   // <-- Each line as it is written
                 Na__PenWorker__Post({ type: 'written', id, ok: true, ink });
             } catch (error) {
                 Na__PenWorker__Post({ type: 'written', id, ok: false, error: error.message || String(error) });

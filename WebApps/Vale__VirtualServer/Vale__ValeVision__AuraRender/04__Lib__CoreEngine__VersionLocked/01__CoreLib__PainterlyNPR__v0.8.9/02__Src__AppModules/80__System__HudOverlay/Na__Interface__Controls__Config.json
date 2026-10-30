@@ -1,0 +1,1262 @@
+{
+    "PainterlyNPR__InterfaceControls__Config" : {
+        "PainterlyNPR__InterfaceControls__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - The Range Controls",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Every range control: the state it sets (Path), the inputs it dirties (Bump), and how its readout writes the value (Format - see PainterlyNPR__Interface__FormatFrom).",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Controls__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__InterfaceControls__Config__Controls" : {
+            "Controls"       : {
+                "SunAzimuth"         : {
+                    "Label"  : "Direction",
+                    "Min"    : -180,
+                    "Max"    : 180,
+                    "Step"   : 1,
+                    "Path"   : ["Sun", "Azimuth"],
+                    "Bump"   : ["Sun"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Suffix" : "°"
+                    }
+                },
+                "SunAltitude"        : {
+                    "Label"  : "Height",
+                    "Min"    : 8,
+                    "Max"    : 70,
+                    "Step"   : 1,
+                    "Path"   : ["Sun", "Altitude"],
+                    "Bump"   : ["Sun"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Suffix" : "°"
+                    }
+                },
+                "Discipline"         : {
+                    "Path"   : ["Discipline"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind" : "Special",
+                        "Name" : "DisciplineName"
+                    }
+                },
+                "LineWeight"         : {
+                    "Label"  : "Line weight",
+                    "Min"    : 0.5,
+                    "Max"    : 1.8,
+                    "Step"   : 0.01,
+                    "Path"   : ["LineWeight"],
+                    "Bump"   : ["Lines"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    }
+                },
+                "WashStrength"       : {
+                    "Label"  : "Strength",
+                    "Min"    : 0,
+                    "Max"    : 1.6,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Strength"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Granulation"        : {
+                    "Label"  : "Granulation",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Granulation"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Pooling"            : {
+                    "Label"  : "Edge pooling",
+                    "Min"    : 0,
+                    "Max"    : 2.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Pooling"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CoffeeRings"        : {
+                    "Label"  : "Coffee rings",
+                    "Min"    : 0,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Coffee"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "off"
+                        }
+                    }
+                },
+                "Bleed"              : {
+                    "Label"  : "Past the lines",
+                    "Min"    : 0,
+                    "Max"    : 2.5,
+                    "Step"   : 0.05,
+                    "Path"   : ["Wash", "BleedMm"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Suffix" : " mm"
+                    }
+                },
+                "Wetness"            : {
+                    "Label"  : "Wet edges",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Wetness"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Withdraw"           : {
+                    "Label"  : "White slivers",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Withdraw"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Shadow"             : {
+                    "Label"  : "Shadow glaze",
+                    "Min"    : 0,
+                    "Max"    : 1.4,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "Shadow"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "ShadowLines"        : {
+                    "Label"  : "Shadow lines",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "ShadowLines"],
+                    "Bump"   : ["ShadowLines"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "ShadowLineWidth"    : {
+                    "Label"  : "Line width",
+                    "Min"    : 0.3,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "ShadowLineWidth"],
+                    "Bump"   : ["ShadowLines"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    }
+                },
+                "KuwaharaAmount"     : {
+                    "Label"  : "Amount",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Kuwahara", "Amount"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "KuwaharaSky"        : {
+                    "Label"  : "On the sky",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Kuwahara", "Sky"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "KuwaharaRadius"     : {
+                    "Label"  : "Radius",
+                    "Min"    : 0.2,
+                    "Max"    : 6,
+                    "Step"   : 0.05,
+                    "Path"   : ["Kuwahara", "RadiusMm"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : " mm"
+                    }
+                },
+                "KuwaharaSharpness"  : {
+                    "Label"  : "Sharpness",
+                    "Min"    : 1,
+                    "Max"    : 18,
+                    "Step"   : 0.5,
+                    "Path"   : ["Kuwahara", "Sharpness"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1
+                    }
+                },
+                "KuwaharaHardness"   : {
+                    "Label"  : "Hardness",
+                    "Min"    : 10,
+                    "Max"    : 2000,
+                    "Step"   : 5,
+                    "Path"   : ["Kuwahara", "Hardness"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 0
+                    }
+                },
+                "KuwaharaAnisotropy" : {
+                    "Label"  : "Anisotropy",
+                    "Min"    : 0,
+                    "Max"    : 4,
+                    "Step"   : 0.05,
+                    "Path"   : ["Kuwahara", "Anisotropy"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2
+                    }
+                },
+                "KuwaharaFlow"       : {
+                    "Label"  : "Flow smoothing",
+                    "Min"    : 0.05,
+                    "Max"    : 3,
+                    "Step"   : 0.05,
+                    "Path"   : ["Kuwahara", "FlowMm"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : " mm"
+                    }
+                },
+                "KuwaharaOverlap"    : {
+                    "Label"  : "Sector overlap",
+                    "Min"    : 0.05,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Kuwahara", "Overlap"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2
+                    }
+                },
+                "KuwaharaPasses"     : {
+                    "Label"  : "Passes",
+                    "Min"    : 1,
+                    "Max"    : 4,
+                    "Step"   : 1,
+                    "Path"   : ["Kuwahara", "Passes"],
+                    "Bump"   : ["Kuwahara"],
+                    "Format" : {
+                        "Kind" : "Round"
+                    }
+                },
+                "Sky"                : {
+                    "Label"  : "Sky wash",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Strength"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Clouds"             : {
+                    "Label"  : "Reserved clouds",
+                    "Min"    : 0,
+                    "Max"    : 1.2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Clouds"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CloudCoverage"      : {
+                    "Label"  : "Coverage",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Coverage"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CloudSize"          : {
+                    "Label"  : "Cloud size",
+                    "Min"    : 0.4,
+                    "Max"    : 8,
+                    "Step"   : 0.05,
+                    "Path"   : ["Sky", "ScaleKm"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Suffix" : " km"
+                    }
+                },
+                "CloudHeight"        : {
+                    "Label"  : "Cloud height",
+                    "Min"    : 0.4,
+                    "Max"    : 6,
+                    "Step"   : 0.05,
+                    "Path"   : ["Sky", "BaseKm"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : " km"
+                    }
+                },
+                "CloudDrift"         : {
+                    "Label"  : "Drift",
+                    "Min"    : -40,
+                    "Max"    : 40,
+                    "Step"   : 0.1,
+                    "Path"   : ["Sky", "DriftKm"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Signed",
+                        "Digits" : 1,
+                        "Suffix" : " km"
+                    }
+                },
+                "CloudUndersides"    : {
+                    "Label"  : "Undersides",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Undersides"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CloudSoftness"      : {
+                    "Label"  : "Soft bases",
+                    "Min"    : 0,
+                    "Max"    : 4,
+                    "Step"   : 0.05,
+                    "Path"   : ["Sky", "SoftnessMm"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Suffix" : " mm"
+                    }
+                },
+                "CloudSimplify"      : {
+                    "Label"  : "Simplify",
+                    "Min"    : 0,
+                    "Max"    : 8,
+                    "Step"   : 0.1,
+                    "Path"   : ["Sky", "SimplifyMm"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Suffix" : " mm",
+                        "Off"    : {
+                            "NotAbove" : 0,
+                            "Text"     : "off"
+                        }
+                    }
+                },
+                "CloudCut"           : {
+                    "Label"  : "Cut edges",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Crispness"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CloudPool"          : {
+                    "Label"  : "Edge pooling",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Pool"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "CloudBlooms"        : {
+                    "Label"  : "Blooms",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Sky", "Blooms"],
+                    "Bump"   : ["Sky"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "PageWhiteness"      : {
+                    "Label"  : "Page whiteness",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Paper", "Whiteness"],
+                    "Bump"   : ["Paper"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Emboss"             : {
+                    "Label"  : "Grain relief",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Paper", "Emboss"],
+                    "Bump"   : ["Finish"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "PaintedGrain"       : {
+                    "Label"  : "Grain in paint",
+                    "Min"    : 0,
+                    "Max"    : 4,
+                    "Step"   : 0.01,
+                    "Path"   : ["Paper", "PaintedEmboss"],
+                    "Bump"   : ["Finish"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Offset" : 1,
+                        "Prefix" : "×"
+                    }
+                },
+                "InkDry"             : {
+                    "Label"  : "Dry ink",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Paper", "InkDry"],
+                    "Bump"   : ["Finish"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Vignette"           : {
+                    "Label"  : "Painted area",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Composition", "Vignette"],
+                    "Bump"   : ["Composition"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Roughness"          : {
+                    "Label"  : "Edge irregularity",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Composition", "Roughness"],
+                    "Bump"   : ["Composition"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "Indication"         : {
+                    "Label"  : "Amount",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Indication", "Amount"],
+                    "Bump"   : ["Indication"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "PenDetail"          : {
+                    "Label"  : "Detail",
+                    "Min"    : -1,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "Detail"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"  : "Sided",
+                        "Zero"  : {
+                            "Below" : 0.005,
+                            "Text"  : "as drawn"
+                        },
+                        "Above" : {
+                            "Kind"   : "Fixed",
+                            "Digits" : 2,
+                            "Prefix" : "keep +"
+                        },
+                        "Under" : {
+                            "Kind"   : "Fixed",
+                            "Digits" : 2,
+                            "Prefix" : "simplify "
+                        }
+                    }
+                },
+                "PenLostInLight"     : {
+                    "Label"  : "Lost in light",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "LostInLight"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "PenDepthFade"       : {
+                    "Label"      : "Depth fade",
+                    "Min"        : 0,
+                    "Max"        : 2.5,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "DepthFade"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenConstruction"    : {
+                    "Label"      : "Construction",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Construction"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenConstructionMm"  : {
+                    "Label"  : "… running on",
+                    "Min"    : 1,
+                    "Max"    : 14,
+                    "Step"   : 0.1,
+                    "Path"   : ["Pen", "ConstructionMm"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Suffix" : " mm"
+                    }
+                },
+                "PenContrast"        : {
+                    "Label"      : "Hierarchy",
+                    "Min"        : 0,
+                    "Max"        : 2.2,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Contrast"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenProfile"         : {
+                    "Label"      : "Silhouettes",
+                    "Min"        : 0.6,
+                    "Max"        : 2.5,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Profile"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenGround"          : {
+                    "Label"      : "Ground line",
+                    "Min"        : 0.6,
+                    "Max"        : 2.5,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Ground"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenShadowSide"      : {
+                    "Label"  : "Shadow side",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "ShadowSide"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Prefix" : "+",
+                        "Suffix" : "%"
+                    }
+                },
+                "PenInkDensity"      : {
+                    "Label"      : "Ink density",
+                    "Min"        : 0.3,
+                    "Max"        : 1.3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "InkDensity"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenWobble"          : {
+                    "Label"      : "Wobble",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Wobble"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenDrift"           : {
+                    "Label"      : "Drift (bow)",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Drift"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenTremor"          : {
+                    "Label"      : "Tremor",
+                    "Min"        : 0,
+                    "Max"        : 4,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Tremor"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenOvershoot"       : {
+                    "Label"      : "Overshoot",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Overshoot"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenMissedJoins"     : {
+                    "Label"      : "Missed joins",
+                    "Min"        : 0,
+                    "Max"        : 4,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "MissedJoins"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenSearching"       : {
+                    "Label"      : "Searching lines",
+                    "Min"        : 0,
+                    "Max"        : 4,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Searching"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenPressure"        : {
+                    "Label"      : "Pressure",
+                    "Min"        : 0,
+                    "Max"        : 2.5,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Pressure"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenTaper"           : {
+                    "Label"      : "Taper",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Taper"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenDwell"           : {
+                    "Label"      : "Ink dwell",
+                    "Min"        : 0,
+                    "Max"        : 4,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Dwell"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenFlick"           : {
+                    "Label"      : "End flick",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Flick"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenBreaks"          : {
+                    "Label"      : "Breaks",
+                    "Min"        : 0,
+                    "Max"        : 4,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "Breaks"],
+                    "Bump"       : ["Lines"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenNibContrast"     : {
+                    "Label"  : "Broad nib",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "NibContrast"],
+                    "Bump"   : ["Lines"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "round"
+                        }
+                    }
+                },
+                "PenNibAngle"        : {
+                    "Label"  : "Nib angle",
+                    "Min"    : 0,
+                    "Max"    : 180,
+                    "Step"   : 1,
+                    "Path"   : ["Pen", "NibAngle"],
+                    "Bump"   : ["Lines"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Suffix" : "°"
+                    }
+                },
+                "PenHatchAmount"     : {
+                    "Label"  : "Amount",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "HatchAmount"],
+                    "Bump"   : ["ArtDirection", "Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "off"
+                        }
+                    }
+                },
+                "PenHatchAngle"      : {
+                    "Label"  : "Angle",
+                    "Min"    : 0,
+                    "Max"    : 180,
+                    "Step"   : 1,
+                    "Path"   : ["Pen", "HatchAngle"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Suffix" : "°"
+                    }
+                },
+                "PenHatchSpacingMm"  : {
+                    "Label"  : "Spacing",
+                    "Min"    : 0.6,
+                    "Max"    : 3,
+                    "Step"   : 0.05,
+                    "Path"   : ["Pen", "HatchSpacingMm"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : " mm"
+                    }
+                },
+                "PenHatchCross"      : {
+                    "Label"  : "Cross-hatch",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "HatchCross"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "never"
+                        }
+                    }
+                },
+                "PenHatchReach"      : {
+                    "Label"  : "Reach into light",
+                    "Min"    : 0.02,
+                    "Max"    : 0.6,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "HatchReach"],
+                    "Bump"   : ["ArtDirection", "Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Prefix" : "light < ",
+                        "Suffix" : "%"
+                    }
+                },
+                "PenHatchLoose"      : {
+                    "Label"      : "Looseness",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "HatchLoose"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenVegOutline"      : {
+                    "Label"  : "Outline",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegOutline"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "off"
+                        }
+                    }
+                },
+                "PenVegClump"        : {
+                    "Label"      : "Clump size",
+                    "Min"        : 0.4,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "VegClump"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenVegSketch"       : {
+                    "Label"  : "Sketchiness",
+                    "Min"    : 0,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegSketch"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Prefix" : "+",
+                        "Suffix" : " passes",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "one pass"
+                        }
+                    }
+                },
+                "PenVegLostInLight"  : {
+                    "Label"  : "Lost in light",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegLostInLight"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "PenVegLeaves"       : {
+                    "Label"  : "Leaves",
+                    "Min"    : 0,
+                    "Max"    : 4,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegLeaves"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "none"
+                        }
+                    }
+                },
+                "PenVegLeafSize"     : {
+                    "Label"      : "Leaf size",
+                    "Min"        : 0.5,
+                    "Max"        : 2.5,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "VegLeafSize"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenVegShade"        : {
+                    "Label"  : "Shade",
+                    "Min"    : 0,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegShade"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "off"
+                        }
+                    }
+                },
+                "PenVegBranches"     : {
+                    "Label"  : "Branches",
+                    "Min"    : 0,
+                    "Max"    : 2.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegBranches"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "hidden"
+                        }
+                    }
+                },
+                "PenVegTwigs"        : {
+                    "Label"  : "Twigs",
+                    "Min"    : 0,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "VegTwigs"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "none"
+                        }
+                    }
+                },
+                "PenVegWeight"       : {
+                    "Label"      : "Pen weight",
+                    "Min"        : 0.5,
+                    "Max"        : 2,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "VegWeight"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenVegWild"         : {
+                    "Label"      : "Wildness",
+                    "Min"        : 0,
+                    "Max"        : 3,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "VegWild"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenDistantOutline"  : {
+                    "Label"      : "Outline",
+                    "Min"        : 0,
+                    "Max"        : 2,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "DistantOutline"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "PenDistantBelt"     : {
+                    "Label"  : "Far belt",
+                    "Min"    : 0,
+                    "Max"    : 2,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "DistantBelt"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "off"
+                        }
+                    }
+                },
+                "PenDistantSketch"   : {
+                    "Label"  : "Sketchiness",
+                    "Min"    : 0,
+                    "Max"    : 3,
+                    "Step"   : 0.01,
+                    "Path"   : ["Pen", "DistantSketch"],
+                    "Bump"   : ["Discipline"],
+                    "Format" : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 1,
+                        "Prefix" : "+",
+                        "Suffix" : " passes",
+                        "Off"    : {
+                            "Below" : 0.005,
+                            "Text"  : "one pass"
+                        }
+                    }
+                },
+                "PenDistantWeight"   : {
+                    "Label"      : "Pen weight",
+                    "Min"        : 0.5,
+                    "Max"        : 2,
+                    "Step"       : 0.01,
+                    "Path"       : ["Pen", "DistantWeight"],
+                    "Bump"       : ["Discipline"],
+                    "Format"     : {
+                        "Kind"   : "Fixed",
+                        "Digits" : 2,
+                        "Suffix" : "×"
+                    },
+                    "Multiplier" : true
+                },
+                "DistantUnfade"      : {
+                    "Label"  : "Unfade",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "DistantUnfade"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                },
+                "DistantColour"      : {
+                    "Label"  : "Colour",
+                    "Min"    : 0,
+                    "Max"    : 1,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "DistantColour"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"  : "Steps",
+                        "Steps" : [
+                            [0.05, "as mixed"],
+                            [0.5, "sage"],
+                            [0.85, "olive"]
+                        ],
+                        "Else"  : "warm olive"
+                    }
+                },
+                "DistantLoose"       : {
+                    "Label"  : "Looseness",
+                    "Min"    : 0,
+                    "Max"    : 1.5,
+                    "Step"   : 0.01,
+                    "Path"   : ["Wash", "DistantLoose"],
+                    "Bump"   : ["Wash"],
+                    "Format" : {
+                        "Kind"   : "Round",
+                        "Scale"  : 100,
+                        "Suffix" : "%"
+                    }
+                }
+            },
+            "ControlsNotes"  : {
+                "PaintedGrain"  : "Grain relief's multiplier on paint: ×1 leaves it as it is",
+                "PageWhiteness" : "The sheet's tone mixed toward white (55, PainterlyNPR__Paper__Tone): 0% is the preset's own tone, 100% pure white; the washes lift with it, the ink does not"
+            },
+            "PenTabKeys"     : ["Discipline", "LineWeight", "InkDry"],
+            "PenTabKeysNote" : "Older homes in State a Pen preset also sets",
+            "Note"           : "Every range control: its label and range (Label, Min, Max, Step - the panel builds its slider from these), the state it sets (Path), the inputs it dirties (Bump), and how its readout writes the value (Format)."
+        }
+    }
+}

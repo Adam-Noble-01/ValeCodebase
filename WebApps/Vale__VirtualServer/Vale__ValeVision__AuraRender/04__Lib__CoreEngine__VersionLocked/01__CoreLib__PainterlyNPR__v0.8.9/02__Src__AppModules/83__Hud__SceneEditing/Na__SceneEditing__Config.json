@@ -1,0 +1,35 @@
+{
+    "PainterlyNPR__SceneEditing__Config" : {
+        "PainterlyNPR__SceneEditing__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Scene Editing",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Selecting what is on the sheet and what can be done to it: the outline a selection is shown by, and the steps the menu's actions take. Undo and redo are 84__System__UndoHistory's.",
+            "ReadBy"        : "02__Src__AppModules/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Selection__.mjs, PainterlyNPR__SceneEdit__Actions__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.7.0"
+        },
+
+        "PainterlyNPR__SceneEditing__Config__Highlight" : {
+            "Note"            : "A selection is shown by its outline over the sheet, read from the truth buffers: what is hidden behind something else is not outlined. It goes while the camera moves and comes back when the drawing has settled.",
+            "Rgb"             : [95, 122, 145],
+            "RgbNote"         : "The interface's slate: focus and selection",
+            "FillAlpha"       : 0.14,
+            "EdgeAlpha"       : 0.95,
+            "EdgePx"          : 2,
+            "EdgePxNote"      : "The outline's width in the sheet's own pixels (5 px a millimetre at the default size)",
+            "HoverRgb"        : [188, 101, 64],
+            "HoverRgbNote"    : "Terracotta: what a carried swatch would be given to",
+            "HoverFillAlpha"  : 0.22
+        },
+
+        "PainterlyNPR__SceneEditing__Config__Actions" : {
+            "Note"            : "The steps the menu's actions take on a plop.",
+            "TurnDeg"         : 45,
+            "ScaleStep"       : 1.1,
+            "ScaleStepNote"   : "Bigger multiplies a plop's size by this, smaller divides: within the library's ScaleClamp",
+            "DuplicateGapM"   : 0.4,
+            "DuplicateGapMNote": "A copy stands beside its original, this far clear of its spread, to the right as the camera sees it",
+            "SwapMax"         : 16,
+            "SwapMaxNote"     : "The Swap submenu lists at most this many assets: the same type first, then the same collection"
+        }
+    }
+}

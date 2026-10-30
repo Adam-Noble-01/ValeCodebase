@@ -110,6 +110,10 @@
         fill                               : #f4f1ea;
     }
 
+    .aura-vp__picture--stale {
+        opacity                            : 0.55;                         /* <-- Its last picture, pale: waiting for the engine to draw the new one */
+    }
+
     .aura-vp__placeholder-text {
         fill                               : #8a7f6d;
         font-family                        : var(--Aura_Font);

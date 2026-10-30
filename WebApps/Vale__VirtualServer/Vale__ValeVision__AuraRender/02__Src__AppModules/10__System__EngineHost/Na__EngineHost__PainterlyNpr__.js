@@ -47,6 +47,11 @@
 //   still with a half-height of (sheet height x scale / 2000) metres is a
 //   true-scale drawing whose pen widths are true on the paper (1:50 on A3 is a
 //   7.425 m half-height, the engine's own measured elevation).
+// - A STILL IS DRAWN AT ITS FRAME'S TRUE SIZE (frameMm, PainterlyNPR 0.8.9 on):
+//   only the part of the sheet the frame shows is read back, with the
+//   engine's vignette fitted to it (SetFrame), and a perspective smaller than
+//   the sheet widens its field of view so its framing is as before, so its
+//   pens, grain and bleed are their true millimetres on the paper.
 // - POINTS FROM ANOTHER SHEET (RefitPoints): a drawing set placed its points
 //   on the sheet the engine had then; the engine's own RefitPoints moves them
 //   to stand over the same part of the drawing on today's.
@@ -56,6 +61,21 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.8.0 (AURA 0.5.5)
+// - RenderStill takes the viewport's frame (frameMm, scaled) and draws the
+//   picture at its true size on the paper: the region the frame shows, the
+//   vignette fitted to it, a perspective's field of view (or an ortho
+//   preset's half-height) widened so the framing is unchanged, the view's
+//   points shrunk with it by the engine's RefitPoints. FitsFrames says whether
+//   the pin can (SetFrame, PainterlyNPR 0.8.9); an older one draws as before.
+//
+// 30-Oct-2026 - Version 1.7.0 (AURA 0.5.6)
+// - ProjectWorld and PointerRay: the engine's own camera rig (Compute,
+//   Project, Unproject) for the 3D Environment's drawing planes, drawn over
+//   the drawing and dragged along their normals.
+// - BuildingBounds is measured once a scene and handed out as copies: an open
+//   elevation's cut reads it on every navigation frame.
+//
 // 30-Oct-2026 - Version 1.6.0 (AURA 0.4.3)
 // - The engine's sheet is A3 (PainterlyNPR 0.8.3; Adam: the line work must
 //   look as it would printed at scale): Na__EngineHost__RefitPoints hands the
@@ -173,10 +193,13 @@
     import { PainterlyNPR__Interface__RenderPointList } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointList__.mjs';
     import { PainterlyNPR__Interface__UpdateOverlay } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';
     import { PainterlyNPR__ArtDirection__FS_FIELD as FS_FIELD } from 'PainterlyNPR/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__FieldShader__.mjs';
+    import * as PainterlyNPR__Field from 'PainterlyNPR/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs';   // <-- SetFrame (0.8.9 on) by name at call time: an older pin still loads
     import {
         PainterlyNPR__CameraRig__ApplyPreset,
         PainterlyNPR__CameraRig__Compute,
         PainterlyNPR__CameraRig__Orbit,
+        PainterlyNPR__CameraRig__Project,
+        PainterlyNPR__CameraRig__Unproject,
         PainterlyNPR__CameraRig__Zoom
     } from 'PainterlyNPR/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Camera__.mjs';
     import { PainterlyNPR__CameraRig__CAMERA_PRESETS as CAMERA_PRESETS } from 'PainterlyNPR/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Presets__.mjs';
@@ -391,16 +414,24 @@
 
     // The building, not its garden: every vertex of an Architecture or Focal object
     // (walls, roofs, chimneys, windows, door, porch). Elevations and plans centre on it.
+    // Measured once a scene (an open elevation reads it every frame), handed out as copies.
+    const Na__EngineHost__BoundsCache = { Vertices: null, Length: -1, Objects: -1, Bounds: null };
+
     function Na__EngineHost__BuildingBounds() {
         if (!Scene) return null;
-        const ids = new Set(Scene.Objects.filter((o) => o.Role === 'Architecture' || o.Role === 'Focal').map((o) => o.Id));
-        const v = Scene.Vertices;
-        const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
-        for (let i = 0; i < v.length; i += 8) {
-            if (!ids.has(Math.round(v[i + 6]))) continue;
-            for (let k = 0; k < 3; k++) { if (v[i + k] < min[k]) min[k] = v[i + k]; if (v[i + k] > max[k]) max[k] = v[i + k]; }
+        const c = Na__EngineHost__BoundsCache;
+        if (c.Vertices !== Scene.Vertices || c.Length !== Scene.Vertices.length || c.Objects !== Scene.Objects.length) {
+            const ids = new Set(Scene.Objects.filter((o) => o.Role === 'Architecture' || o.Role === 'Focal').map((o) => o.Id));
+            const v = Scene.Vertices;
+            const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+            for (let i = 0; i < v.length; i += 8) {
+                if (!ids.has(Math.round(v[i + 6]))) continue;
+                for (let k = 0; k < 3; k++) { if (v[i + k] < min[k]) min[k] = v[i + k]; if (v[i + k] > max[k]) max[k] = v[i + k]; }
+            }
+            Object.assign(c, { Vertices: v, Length: v.length, Objects: Scene.Objects.length, Bounds: Number.isFinite(min[0]) ? { Min: min, Max: max } : null });
         }
-        if (!Number.isFinite(min[0])) return null;
+        if (!c.Bounds) return null;
+        const min = c.Bounds.Min.slice(), max = c.Bounds.Max.slice();
         return { Min: min, Max: max, Centre: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2] };
     }
     // ------------------------------------------------------------
@@ -479,6 +510,36 @@
 
     function Na__EngineHost__Redraw() {
         PainterlyNPR__RenderGraph__Request('Navigate');                          // <-- The preview at once, refined when still
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | World Points on the Live Drawing: [{ U, V, Depth }]
+    // ------------------------------------------------------------
+    // The engine's own projection (its camera rig's Compute and Project), for
+    // what AURA draws over the drawing (the drawing planes). U runs across the
+    // sheet and V down it, 0 to 1; Depth is metres in front of the eye (a
+    // point behind it is negative, and its U and V mean nothing). Compute is
+    // what the render graph runs on a camera bump: run here too it gives the
+    // same camera, current even before the next frame.
+    // ------------------------------------------------------------
+    function Na__EngineHost__ProjectWorld(points) {
+        PainterlyNPR__CameraRig__Compute();
+        return (points || []).map((p) => {
+            const s = PainterlyNPR__CameraRig__Project(p);
+            return { U: s.X / Gpu.Width, V: 1 - s.Y / Gpu.Height, Depth: s.Depth };
+        });
+    }
+
+    // The ray under a point of the live drawing (U, V as above): { Origin, Dir } in world metres, Dir unit length
+    function Na__EngineHost__PointerRay(u, v) {
+        PainterlyNPR__CameraRig__Compute();
+        const x = u * Gpu.Width, y = (1 - v) * Gpu.Height;
+        const a = PainterlyNPR__CameraRig__Unproject(x, y, 1);
+        const b = PainterlyNPR__CameraRig__Unproject(x, y, 2);
+        const d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+        const len = Math.hypot(d[0], d[1], d[2]) || 1;
+        return { Origin: a, Dir: d.map((c) => c / len) };
     }
     // ------------------------------------------------------------
 
@@ -972,7 +1033,81 @@
 // REGION | Stills for the Sheets
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Draw One Still: { camera, scale, controls, points } -> { canvas, widthPx, heightPx, ms }
+    // HELPER FUNCTION | Can the Pinned Engine Fit Its Vignette to a Frame? (SetFrame, PainterlyNPR 0.8.9)
+    // ------------------------------------------------------------
+    // Then a still is drawn at its frame's true size; an older pin draws the
+    // whole sheet, for the sheet to fit into the frame as before.
+    // ------------------------------------------------------------
+    function Na__EngineHost__FitsFrames() {
+        return typeof PainterlyNPR__Field.PainterlyNPR__ArtDirection__SetFrame === 'function';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | How a Still Fills Its Frame: { Picture, Magnify, Region, Show } (sheet mm), or null
+    // ------------------------------------------------------------
+    // frameMm: the viewport's frame on the paper; scaled: an elevation or the
+    // roof plan, at true scale already. Region is the part of the engine's sheet
+    // the frame shows, about its middle (read back, the vignette fitted to it);
+    // Show its size on the paper. Picture is how far a perspective's drawing
+    // shrinks on the sheet so the frame shows what the whole sheet sliced into
+    // it showed: its field of view is widened by as much, so its pens, grain
+    // and bleed stay true. A frame bigger than the sheet takes the sheet's
+    // most and enlarges it (Magnify): the engine draws on nothing bigger.
+    // ------------------------------------------------------------
+    function Na__EngineHost__FrameFit(frameMm, scaled) {
+        const fw = Number(frameMm && frameMm.WidthMm), fh = Number(frameMm && frameMm.HeightMm);
+        if (!(fw > 0 && fh > 0)) return null;
+        if (scaled) {
+            const region = [Math.min(fw, SHEET_WIDTH_MM), Math.min(fh, SHEET_HEIGHT_MM)];
+            return { Picture: 1, Magnify: 1, Region: region, Show: region.slice() };
+        }
+        const slice = Math.max(fw / SHEET_WIDTH_MM, fh / SHEET_HEIGHT_MM);      // <-- The whole sheet sliced into the frame: how it was shown before
+        const magnify = Math.max(slice, 1);
+        return { Picture: Math.min(slice, 1), Magnify: magnify, Region: [fw / magnify, fh / magnify], Show: [fw, fh] };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Camera for a Drawing Shrunk on the Sheet by k (a copy), or null
+    // ------------------------------------------------------------
+    // The same eye and direction, a wider view: about the sheet's middle the
+    // picture is the old one shrunk by k. Null when the camera cannot widen.
+    // ------------------------------------------------------------
+    function Na__EngineHost__WidenCamera(camera, k) {
+        const c = JSON.parse(JSON.stringify(camera));
+        if (k >= 1) return c;
+        if (c.Mode === 'Ortho') {
+            if (!(Number(c.HalfHeight) > 0)) return null;
+            c.HalfHeight = c.HalfHeight / k;
+        } else {
+            if (!(Number(c.FovY) > 0)) return null;
+            c.FovY = 2 * Math.atan(Math.tan(c.FovY * Math.PI / 360) / k) * 180 / Math.PI;
+        }
+        return c;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A View's Points for Its Drawing Shrunk on the Sheet by k (copies)
+    // ------------------------------------------------------------
+    // Each point's place and sizes shrink with the picture about the sheet's
+    // middle. The engine's own RefitPoints does it (its size keys, its
+    // rounding), from a sheet 1/k the size whose middle is this one's.
+    // ------------------------------------------------------------
+    function Na__EngineHost__ShrinkPoints(points, k) {
+        const dx = SHEET_WIDTH_MM / 2 * (1 / k - 1), dy = SHEET_HEIGHT_MM / 2 * (1 / k - 1);
+        const moved = (Array.isArray(points) ? points : []).map((p) => {
+            const q = JSON.parse(JSON.stringify(p));
+            if (Array.isArray(q.PaperMm) && q.PaperMm.length === 2) q.PaperMm = [Number(q.PaperMm[0]) + dx, Number(q.PaperMm[1]) + dy];
+            return q;
+        });
+        return Na__EngineHost__RefitPoints(moved, [SHEET_WIDTH_MM / k, SHEET_HEIGHT_MM / k], false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw One Still: { camera, scale, controls, points, frameMm, scaled } -> { canvas, widthPx, heightPx, ms, showMm }
     // ------------------------------------------------------------
     // PainterlyNPR's PNG export, kept in memory. The camera is swapped in and any
     // control overrides set, the whole graph runs at the scale (pixels per mm x
@@ -982,26 +1117,37 @@
     // points: the view's own Art Direction Points (copies: an object-anchored
     // point is re-placed for this camera, the view's own data never). Show
     // influence never reaches a sheet, and the point overlay sits the still out.
+    // frameMm and scaled: the viewport's frame (FrameFit). With a pin that
+    // fits frames the still is only the frame's region, drawn at true size, and
+    // showMm is its size on the paper; otherwise the whole sheet and null.
     // ------------------------------------------------------------
     function Na__EngineHost__RenderStill(request) {
         if (!Na__EngineHost__State.booted) throw new Error('The engine has not started.');
         const gl = Gpu.Gl;
         const scale = Math.max(0.25, Math.min(4, Number(request.scale) || 1));
         const started = performance.now();
+        let fit = request.frameMm && Na__EngineHost__FitsFrames() ? Na__EngineHost__FrameFit(request.frameMm, !!request.scaled) : null;
+        const camera = fit ? Na__EngineHost__WidenCamera(request.camera, fit.Picture) : null;
+        if (!camera) fit = null;                                                 // <-- A camera that cannot widen: the whole sheet, as before
         const saved = { Camera: State.Camera, Preset: State.CameraPreset, Controls: [], Points: State.Points, Selected: Ui.SelectedPointId,
                         ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence };
         Na__EngineHost__State.busy = true;
         Graph.Token++;                                                           // <-- A refinement in flight stops at its next pass
         let pixels = null, width = 0, height = 0, failure = null;
         try {
-            State.Camera = JSON.parse(JSON.stringify(request.camera));
+            State.Camera = fit ? camera : JSON.parse(JSON.stringify(request.camera));
             State.CameraPreset = 'Custom';
             PainterlyNPR__RenderGraph__Bump('Camera');
-            if (Array.isArray(request.points)) State.Points = Na__EngineHost__MakePoints(request.points);
+            if (Array.isArray(request.points)) State.Points = Na__EngineHost__MakePoints(fit && fit.Picture < 1 ? Na__EngineHost__ShrinkPoints(request.points, fit.Picture) : request.points);
             Ui.SelectedPointId = null;
             Ui.ActiveTab = 'Scene';                                              // <-- The overlay hides itself: the still's points are not the live ones
             State.ShowInfluence = false;
             PainterlyNPR__RenderGraph__Bump('ArtDirection', 'Overlay');
+            if (fit) {
+                PainterlyNPR__Field.PainterlyNPR__ArtDirection__SetFrame({ CentreMm: [SHEET_WIDTH_MM / 2, SHEET_HEIGHT_MM / 2],
+                                                                           Scale: [fit.Region[0] / SHEET_WIDTH_MM, fit.Region[1] / SHEET_HEIGHT_MM] });
+                PainterlyNPR__RenderGraph__Bump('Composition');                  // <-- The paint dissolves inside the frame's edges, not the sheet's
+            }
             Object.entries(request.controls || {}).forEach(([key, value]) => {
                 const spec = CONTROLS[key];
                 if (!spec) return;
@@ -1015,16 +1161,27 @@
             }
             PainterlyNPR__RenderGraph__RunAll();
             const target = Gpu.Targets.Composite;
+            let x = 0, y = 0;
             width = target.Width;
             height = target.Height;
+            if (fit) {                                                           // <-- Only the frame's region, about the sheet's middle
+                width = Math.max(1, Math.min(target.Width, Math.round(fit.Region[0] * target.Width / SHEET_WIDTH_MM)));
+                height = Math.max(1, Math.min(target.Height, Math.round(fit.Region[1] * target.Height / SHEET_HEIGHT_MM)));
+                x = Math.floor((target.Width - width) / 2);
+                y = Math.floor((target.Height - height) / 2);
+            }
             pixels = new Uint8Array(width * height * 4);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, target.Fbo);
-            gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
         } catch (error) {
             failure = error;
         }
         // Put everything back, whatever happened
+        if (fit) {
+            PainterlyNPR__Field.PainterlyNPR__ArtDirection__SetFrame(null);    // <-- The 3D Environment's drawing is the whole sheet again
+            PainterlyNPR__RenderGraph__Bump('Composition');
+        }
         saved.Controls.reverse().forEach(({ spec, value }) => { PainterlyNPR__Interface__Set(spec.Path, value); PainterlyNPR__RenderGraph__Bump(...spec.Bump); });
         State.Camera = saved.Camera;
         State.CameraPreset = saved.Preset;
@@ -1047,7 +1204,8 @@
         const image = ctx.createImageData(width, height);
         for (let y = 0; y < height; y++) image.data.set(pixels.subarray((height - 1 - y) * width * 4, (height - y) * width * 4), y * width * 4);
         ctx.putImageData(image, 0, 0);
-        return { canvas, widthPx: width, heightPx: height, ms: performance.now() - started };
+        return { canvas, widthPx: width, heightPx: height, ms: performance.now() - started,
+                 showMm: fit ? { WidthMm: fit.Show[0], HeightMm: fit.Show[1] } : null };
     }
     // ------------------------------------------------------------
 
@@ -1075,6 +1233,8 @@
         Na__EngineHost__Orbit,
         Na__EngineHost__Zoom,
         Na__EngineHost__Redraw,
+        Na__EngineHost__ProjectWorld,
+        Na__EngineHost__PointerRay,
         Na__EngineHost__AttachNavigation,
         Na__EngineHost__WorkMode,
         Na__EngineHost__SetWorkMode,
@@ -1112,7 +1272,8 @@
         Na__EngineHost__Borrowed,
         Na__EngineHost__LiveCanvas,
         Na__EngineHost__Release,
-        Na__EngineHost__RenderStill
+        Na__EngineHost__RenderStill,
+        Na__EngineHost__FitsFrames
     };
 
 // endregion -------------------------------------------------------------------

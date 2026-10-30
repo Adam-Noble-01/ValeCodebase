@@ -419,7 +419,8 @@
 
     export {
         Na__Parameters__Build,
-        Na__Parameters__Sync
+        Na__Parameters__Sync,
+        Na__Parameters__TypeIn                                                 // <-- The Cameras section's lens readout types in the same way (AURA 0.5.6)
     };
 
 // endregion -------------------------------------------------------------------

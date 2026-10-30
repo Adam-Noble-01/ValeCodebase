@@ -1,0 +1,148 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - CONTEXT MENU
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__ContextMenu__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - ContextMenu
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The app's own right-click menu (80's ContextMenu): a card of
+ *              warm paper over everything, its items, shortcuts, swatches,
+ *              headings and submenus
+ * CREATED    : 30-Oct-2026 (v0.7.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   after the drawer's: it sits over the drawer's carried card (z-index 60).
+ * - Quiet as the panel is: the lit item in slate, one taking something out in
+ *   brick red; a long menu (the materials) scrolls inside itself.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * MENU | The Card, Its Title, Its Rules and Headings
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__ContextMenu {
+        position                           :  fixed;
+        z-index                            :  80;
+        min-width                          :  214px;
+        max-width                          :  320px;
+        padding                            :  5px;
+        overflow-y                         :  auto;
+        overscroll-behavior                :  contain;
+        scrollbar-width                    :  thin;
+        border                             :  1px solid rgba(43, 42, 40, 0.16);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_Ink);
+        box-shadow                         :  0 2px 6px rgba(60, 48, 36, 0.14), 0 12px 30px rgba(60, 48, 36, 0.18);
+        font-family                        :  var(--PainterlyNPR_FontStack);
+        font-size                          :  12.5px;
+        user-select                        :  none;
+        outline                            :  none;
+    }
+
+    .PainterlyNPR__ContextMenu__Title {
+        margin-bottom                      :  4px;
+        padding                            :  4px 8px 6px;
+        border-bottom                      :  1px solid var(--PainterlyNPR_Rule);
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+        font-weight                        :  600;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        white-space                        :  nowrap;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+    }
+
+    .PainterlyNPR__ContextMenu__Rule {
+        height                             :  1px;
+        margin                             :  4px 6px;
+        background                         :  var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__ContextMenu__Heading {
+        padding                            :  7px 8px 2px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  10.5px;
+        font-weight                        :  600;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * ITEMS | Lit, Disabled, Taking Out; the Mark, the Label, the Shortcut
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__ContextMenu__Item {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  8px;
+        width                              :  100%;
+        padding                            :  5px 8px;
+        border                             :  0;
+        border-radius                      :  5px;
+        background                         :  transparent;
+        color                              :  inherit;
+        font                               :  inherit;
+        text-align                         :  left;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__ContextMenu__Item--hot {
+        background                         :  rgba(95, 122, 145, 0.13);
+    }
+
+    .PainterlyNPR__ContextMenu__Item:disabled {
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_InkGhost);
+        cursor                             :  default;
+    }
+
+    .PainterlyNPR__ContextMenu__Item--danger {
+        color                              :  var(--PainterlyNPR_Brick);
+    }
+
+    .PainterlyNPR__ContextMenu__Item--danger.PainterlyNPR__ContextMenu__Item--hot {
+        background                         :  rgba(154, 74, 53, 0.11);
+    }
+
+    .PainterlyNPR__ContextMenu__Mark {
+        display                            :  grid;
+        place-items                        :  center;
+        flex                               :  none;
+        width                              :  12px;
+        height                             :  12px;
+        color                              :  var(--PainterlyNPR_Slate);
+        font-size                          :  11px;
+    }
+
+    .PainterlyNPR__ContextMenu__Mark--swatch {
+        border-radius                      :  3px;
+        box-shadow                         :  inset 0 0 0 1px rgba(43, 42, 40, 0.18);
+    }
+
+    .PainterlyNPR__ContextMenu__Label {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__ContextMenu__Hint {
+        flex                               :  none;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  10.5px;
+    }
+
+    .PainterlyNPR__ContextMenu__Item:disabled .PainterlyNPR__ContextMenu__Hint {
+        color                              :  var(--PainterlyNPR_InkGhost);
+    }
+
+/* #endregion ------------------------------------------------------------------- */

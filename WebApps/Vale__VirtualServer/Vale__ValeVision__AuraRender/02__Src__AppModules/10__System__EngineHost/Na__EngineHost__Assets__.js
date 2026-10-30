@@ -44,8 +44,8 @@
 // - ONLY WHILE THE DRAWER IS OUT (AURA 0.5.1, Adam: "In both apps make it so as
 //   you can only select items when the assets menu is open"): with it folded a
 //   click on the drawing selects and paints nothing, and folding it does what
-//   leaving the tab does. PainterlyNPR v0.8.6 has the same gate as seams
-//   (SceneEdit__Editing, SceneEdit__WatchLibrary); this pin (v0.8.5) has not,
+//   leaving the tab does. PainterlyNPR v0.8.8 has the same gate as seams
+//   (SceneEdit__Editing, SceneEdit__WatchLibrary); the pinned engine (v0.8.7) has not,
 //   so the host keeps it until the next sync, then takes the engine's.
 // - NOT YET: the engine's right-click menu (83's SceneEdit__Wire) cancels the
 //   browser's menu on the whole page, so it waits for an engine seam that keeps
@@ -182,7 +182,7 @@
 
     // HELPER FUNCTION | Folding the Drawer Away Lets Go of Everything, as Leaving the Tab Does
     // ------------------------------------------------------------
-    // The pinned engine (v0.8.5) has no WatchLibrary yet (v0.8.6): at the next
+    // The pinned engine (v0.8.7) has no WatchLibrary yet (v0.8.8): at the next
     // sync this gives way to PainterlyNPR__SceneEdit__WatchLibrary.
     // ------------------------------------------------------------
     function Na__EngineHost__WatchDrawer(root) {

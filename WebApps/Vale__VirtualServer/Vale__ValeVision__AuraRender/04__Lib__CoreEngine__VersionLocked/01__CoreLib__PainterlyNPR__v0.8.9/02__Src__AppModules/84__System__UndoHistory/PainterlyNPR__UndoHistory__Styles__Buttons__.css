@@ -1,0 +1,80 @@
+/* =============================================================================
+ * PAINTERLYNPR - SYSTEM | UNDO HISTORY - STYLES - BUTTONS
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__UndoHistory__Styles__Buttons__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : UndoHistory - Styles - Buttons
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The meta strip's Undo and Redo: two small arrows in a pill, greyed
+ *              when there is nothing to undo or redo, a brief flash when used
+ * CREATED    : 30-Oct-2026 (v0.7.4)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   last. The pill matches the Rendered / Proxy switch beside it (80's WorkMode
+ *   part). The icons are the config's (Na__UndoHistory__Config.json, Icons),
+ *   drawn in currentColor.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * UNDO HISTORY | Two Arrows in One Pill
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__History {
+        display                            :  inline-flex;
+        gap                                :  2px;
+        padding                            :  2px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  999px;
+        background                         :  rgba(250, 247, 240, 0.55);
+    }
+
+    .PainterlyNPR__History__Button {
+        display                            :  inline-flex;
+        align-items                        :  center;
+        justify-content                    :  center;
+        width                              :  28px;
+        height                             :  22px;
+        padding                            :  0;
+        border                             :  0;
+        border-radius                      :  999px;
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        cursor                             :  pointer;
+        transition                         :  background var(--PainterlyNPR_Transition), color var(--PainterlyNPR_Transition), opacity var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__History__Button svg {
+        width                              :  16px;
+        height                             :  16px;
+    }
+
+    .PainterlyNPR__History__Button:hover:not(:disabled) {
+        background                         :  rgba(95, 122, 145, 0.14);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__History__Button:disabled {
+        opacity                            :  0.35;
+        cursor                             :  default;
+    }
+
+    /* Used, from its button or its key: the slate of the switch beside it, fading out */
+    .PainterlyNPR__History__Button--flash {
+        animation                          :  PainterlyNPR_HistoryFlash 450ms ease-out;
+    }
+
+    @keyframes PainterlyNPR_HistoryFlash {
+        from {
+            background                     :  var(--PainterlyNPR_Slate);
+            color                          :  var(--PainterlyNPR_Cream);
+        }
+        to {
+            background                     :  transparent;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

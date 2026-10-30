@@ -26,7 +26,7 @@
 
    ============================================================================= */
 
-var AURA_VERSION = '2026-10-30-11';                                         // <-- Bump with every engine sync (a re-sync of the same version too)
+var AURA_VERSION = '2026-10-30-12';                                         // <-- Bump with every engine sync (a re-sync of the same version too)
 var AURA_SHELL   = 'aura-shell-' + AURA_VERSION;
 var AURA_ENGINE  = 'aura-engine-' + AURA_VERSION;                                // <-- Kept until the next version of this worker
 var AURA_PEN     = 'aura-pen-';                                                  // <-- The handwriting model's caches: its worker keeps the current one

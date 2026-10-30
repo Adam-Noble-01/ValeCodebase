@@ -32,6 +32,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.0 (AURA 0.5.5)
+// - A picture drawn for its frame (the render queue's showMm): a scaled one at
+//   its own size about the frame's middle, a perspective fitting the frame.
+//   A viewport's last picture stands in, pale, while its new one is drawn.
+//
 // 30-Oct-2026 - Version 2.0.0 (AURA 0.5.0)
 // - Scenes: Add finds or makes the viewport's scene; the panel's Scene picker
 //   replaces the Side and View pickers (and 0.4.4's "Its own view"); Centre
@@ -119,32 +124,32 @@
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, fill: 'transparent' }, inner);   // <-- Something to press while it draws (clear: the sheet's paper shows through)
 
         const picture = Na__RenderQueue__Picture(viewport, doc);
+        const failure = Na__ViewportEditor__State.failures.get(id);
         if (picture) {
             const image = Na__Dom__Svg('image', {}, inner);
-            if (Na__Views__IsScaled(viewport)) {
-                const max = Na__Views__MaxScaledFrame();
+            if (Na__Views__IsScaled(viewport)) {                                // <-- True scale: the picture at its own size about the frame's middle
+                const size = picture.showMm || Na__Views__MaxScaledFrame();      // <-- Drawn for its frame (PainterlyNPR 0.8.9 on), else the engine's whole sheet
                 const cx = f.X + f.WidthMm / 2, cy = f.Y + f.HeightMm / 2;
-                Object.entries({ x: cx - max.WidthMm / 2, y: cy - max.HeightMm / 2, width: max.WidthMm, height: max.HeightMm, preserveAspectRatio: 'none' })
+                Object.entries({ x: cx - size.WidthMm / 2, y: cy - size.HeightMm / 2, width: size.WidthMm, height: size.HeightMm, preserveAspectRatio: 'none' })
                       .forEach(([k, v]) => image.setAttribute(k, String(v)));
-            } else {
+            } else {                                                             // <-- Drawn for its frame it fits it exactly; the whole sheet (or a stand-in) is sliced into it
                 Object.entries({ x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, preserveAspectRatio: 'xMidYMid slice' })
                       .forEach(([k, v]) => image.setAttribute(k, String(v)));
             }
             image.setAttribute('href', picture.url);
-            image.setAttribute('class', 'aura-vp__picture');
+            image.setAttribute('class', picture.stale ? 'aura-vp__picture aura-vp__picture--stale' : 'aura-vp__picture');
         } else {
-            const failure = Na__ViewportEditor__State.failures.get(id);
             Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, class: 'aura-vp__placeholder' }, inner);
             const words = Na__Dom__Svg('text', { x: f.X + f.WidthMm / 2, y: f.Y + f.HeightMm / 2, 'text-anchor': 'middle', class: 'aura-vp__placeholder-text',
                                                  'font-size': Na__Format__Clamp(Math.min(f.WidthMm, f.HeightMm) / 12, 2.5, 6) }, inner);
             words.textContent = failure ? 'This view could not be drawn' : 'Drawing in pen and wash...';
-            if (!failure) {
-                Na__RenderQueue__Request(viewport, doc, (pic, error) => {
-                    if (error) Na__ViewportEditor__State.failures.set(id, error.message || String(error));
-                    else Na__ViewportEditor__State.failures.delete(id);
-                    if (Na__AppState__Data.tab !== 'environment') Na__Surface__RedrawLayer('viewports');
-                });
-            }
+        }
+        if ((!picture || picture.stale) && !failure) {                         // <-- Missing, or its last picture standing in: draw the new one
+            Na__RenderQueue__Request(viewport, doc, (pic, error) => {
+                if (error) Na__ViewportEditor__State.failures.set(id, error.message || String(error));
+                else Na__ViewportEditor__State.failures.delete(id);
+                if (Na__AppState__Data.tab !== 'environment') Na__Surface__RedrawLayer('viewports');
+            });
         }
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, class: 'aura-vp__frame' }, g);
 

@@ -384,3 +384,240 @@
     }
 
 /* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Cameras: the Lens and the Elevation Planes (AURA 0.5.6)
+ * ----------------------------------------------------------------------------- */
+
+    .aura-cameras {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 16px;
+    }
+
+    .aura-cameras__group {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 8px;
+    }
+
+    .aura-cameras__heading {
+        margin                             : 0;
+        font-size                          : 13px;
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-cameras__lens.is-disabled .aura-param__range {
+        opacity                            : 0.45;
+        cursor                             : not-allowed;
+    }
+
+    .aura-cameras__note {
+        margin                             : 0;
+    }
+
+    .aura-cameras__show,
+    .aura-cameras__atBuilding {
+        justify-content                    : center;
+    }
+
+    .aura-cameras__show.is-active {
+        background                         : var(--Aura_Brand);
+        border-color                       : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+    .aura-cameras__snap {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        font-size                          : 13px;
+    }
+
+    .aura-cameras__snapToggle {
+        min-height                         : 30px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        margin-right                       : auto;                         /* <-- The step (minus, value, plus) sits at the right */
+    }
+
+    .aura-cameras__step {
+        width                              : 28px;
+        height                             : 28px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 15px;
+        line-height                        : 1;
+        cursor                             : pointer;
+    }
+
+    .aura-cameras__step:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-cameras__stepValue {
+        min-width                          : 56px;
+        text-align                         : center;
+        font-size                          : 12px;
+        color                              : var(--Aura_TextSecondary);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .aura-cameras__planes {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+    }
+
+    .aura-cameras__plane {
+        display                            : grid;
+        grid-template-columns              : 12px minmax(0, 1fr) 84px auto 24px;
+        align-items                        : center;
+        gap                                : 6px;
+        font-size                          : 13px;
+    }
+
+    .aura-cameras__swatch {
+        width                              : 12px;
+        height                             : 12px;
+        border-radius                      : 3px;
+    }
+
+    .aura-cameras__name {
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-cameras__cut {
+        width                              : 100%;
+        min-height                         : 28px;
+        padding                            : 2px 6px;
+        font-size                          : 12px;
+        font-variant-numeric               : tabular-nums;
+        text-align                         : right;
+    }
+
+    .aura-cameras__unit {
+        font-size                          : 12px;
+        color                              : var(--Aura_TextFaint);
+    }
+
+    .aura-cameras__reset {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 24px;
+        height                             : 24px;
+        padding                            : 0;
+        border                             : none;
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : transparent;
+        color                              : var(--Aura_TextSecondary);
+        cursor                             : pointer;
+    }
+
+    .aura-cameras__reset:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-cameras__reset[hidden] {
+        display                            : inline-flex;
+        visibility                         : hidden;                       /* <-- Keeps its column: the rows' boxes stay in line */
+    }
+
+    .aura-cameras__reset .aura-icon svg {
+        width                              : 14px;
+        height                             : 14px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Elevation Planes Over the Drawing (Na__Environment3d__DrawingPlanes__)
+ * ----------------------------------------------------------------------------- */
+
+    /* Over the canvas, under the engine's point layer (no z-index: the order
+       in the wrapper decides); only the grips and the name tabs take the
+       pointer, so the drawing still orbits through a face */
+    .aura-planes {
+        position                           : absolute;
+        inset                              : 0;
+        width                              : 100%;
+        height                             : 100%;
+        display                            : none;
+        overflow                           : hidden;
+        pointer-events                     : none;
+    }
+
+    .aura-planes.is-shown {
+        display                            : block;
+    }
+
+    .aura-planes.is-dragging {
+        cursor                             : grabbing;
+    }
+
+    .aura-planes [data-handle] {
+        pointer-events                     : all;
+        cursor                             : grab;
+    }
+
+    .aura-planes.is-dragging [data-handle] {
+        cursor                             : grabbing;
+    }
+
+    .aura-planes__face,
+    .aura-planes__outline {
+        stroke-linejoin                    : round;
+    }
+
+    .aura-planes__arrow {
+        stroke-width                       : 1.5;
+        stroke-linecap                     : round;
+    }
+
+    .aura-planes__pad {
+        fill                               : #ffffff;
+        fill-opacity                       : 0.88;
+        stroke-width                       : 1.2;
+    }
+
+    .aura-planes__plus {
+        fill                               : none;
+        stroke-width                       : 1.6;
+        stroke-linecap                     : round;
+    }
+
+    .aura-planes__name {
+        font-family                        : var(--Aura_Font);
+        font-size                          : 10.5px;
+        font-weight                        : var(--Aura_FontSemiBold);
+        letter-spacing                     : 0.04em;
+    }
+
+    .aura-planes__plane.is-uncut .aura-planes__name {
+        font-weight                        : var(--Aura_FontRegular);
+    }
+
+    .aura-planes__readout rect {
+        fill                               : var(--Aura_Brand);
+        fill-opacity                       : 0.92;
+    }
+
+    .aura-planes__readout text {
+        fill                               : var(--Aura_OnBrand);
+        font-family                        : var(--Aura_Font);
+        font-size                          : 12px;
+        font-variant-numeric               : tabular-nums;
+    }
+
+/* endregion ------------------------------------------------------------------- */

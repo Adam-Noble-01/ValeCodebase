@@ -1,0 +1,19 @@
+{
+    "PainterlyNPR__StrokeSynthesis__Config" : {
+        "PainterlyNPR__StrokeSynthesis__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Stroke Synthesis",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "What the Pen's path sliders add on top of the macro, in millimetres on the sheet.",
+            "ReadBy"        : "02__Src__AppModules/33__Stroke__Synthesis/PainterlyNPR__StrokeSynthesis__Pen__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__StrokeSynthesis__Config__Path" : {
+            "PenPathAdd" : {
+                "WobbleMm" : 0.12,
+                "DriftMm"  : 0.35,
+                "TremorMm" : 0.05
+            }
+        }
+    }
+}

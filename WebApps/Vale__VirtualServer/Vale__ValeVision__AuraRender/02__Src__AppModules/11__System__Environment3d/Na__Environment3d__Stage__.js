@@ -32,8 +32,8 @@
 //   - An elevation or the roof plan opens square and to scale, and its
 //     orientation is held while it is open: pan and zoom, never orbit (Adam:
 //     "when in the elevations its locks the camera to those orientations").
-//     R brings it back. An elevation camera tool (the cut position) is another
-//     job (Adam).
+//     R brings it back. Its cut is held too: the camera's eye stays at its
+//     drawing plane (the Cameras section, AURA 0.5.6).
 //   - + Add Scene keeps the camera and the points as a new scene (a scaled
 //     scene's copy, centred where it is now, while one is open).
 //   - A right-click: Rename, Update from camera (a 3D scene takes the camera
@@ -45,9 +45,10 @@
 //   a quick proxy preview to work in, or lets it refine into pen and wash when
 //   the camera rests - the engine's own work mode. Remembered per viewer. The
 //   sheets' pictures are always rendered.
-// - THE PANEL folds by section (Parameters, then Art direction points), each
-//   remembered in this browser, and its left edge drags it wider or narrower
-//   (Na__AppUtils__Panels__, after ValeVision 3D's Layout Editor).
+// - THE PANEL folds by section (Parameters, Art direction points, then
+//   Cameras: the lens and the elevation planes, Na__Environment3d__Cameras__
+//   and Na__Environment3d__DrawingPlanes__), and its left edge drags it wider
+//   or narrower (Na__AppUtils__Panels__, after ValeVision 3D's Layout Editor).
 // - THE ASSETS DRAWER down the stage's left edge is PainterlyNPR's own
 //   (Na__EngineHost__Assets__): trees, plants and furniture dragged onto the
 //   drawing, materials given to an object or a face. A click on the drawing is
@@ -56,6 +57,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.0 (AURA 0.5.6)
+// - A third section, Cameras (Adam: "Add a Cameras tab"): the lens and the
+//   elevation planes, whose layer is mounted over the canvas under the points.
+// - HoldOrientation holds an open elevation's cut as well (Na__Views__
+//   ApplyCut), and runs again when a scene changes or an undo lands; + Add
+//   Scene and Duplicate carry the cut, a new scaled scene its centre at the
+//   open one's depth.
+//
 // 30-Oct-2026 - Version 2.0.1 (AURA 0.5.2)
 // - The panel's sections flipped: Parameters first, then Art direction points
 //   (Adam: "Flip the order of these").
@@ -127,9 +136,12 @@
     import { Na__EngineHost__AttachAssets, Na__EngineHost__AssetsTap, Na__EngineHost__AssetsAway } from '../10__System__EngineHost/Na__EngineHost__Assets__.js';
     import { Na__DrawingSet__NewScene, Na__DrawingSet__SceneName, Na__DrawingSet__Scene } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
     import {
-        Na__Views__IsScaled, Na__Views__SceneCamera, Na__Views__SceneLock, Na__Views__UpdateScene, Na__Views__ScenesUsing
+        Na__Views__IsScaled, Na__Views__SceneCamera, Na__Views__SceneLock, Na__Views__UpdateScene, Na__Views__ScenesUsing,
+        Na__Views__ApplyCut, Na__Views__ScaledCentre
     } from '../21__System__Viewports/Na__Viewports__Views__.js';
     import { Na__Parameters__Build, Na__Parameters__Sync } from './Na__Environment3d__Parameters__.js';
+    import { Na__Cameras__Build, Na__Cameras__SetOpen, Na__Cameras__Sync } from './Na__Environment3d__Cameras__.js';
+    import { Na__DrawingPlanes__Mount, Na__DrawingPlanes__Redraw } from './Na__Environment3d__DrawingPlanes__.js';
     import {
         Na__ArtDirection3d__Mount, Na__ArtDirection3d__Show, Na__ArtDirection3d__SetOpen, Na__ArtDirection3d__UseScene,
         Na__ArtDirection3d__LeaveScene, Na__ArtDirection3d__Owner, Na__ArtDirection3d__Adopt, Na__ArtDirection3d__Keep,
@@ -187,20 +199,26 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | An Open Elevation or Roof Plan Keeps Its Orientation (pan and zoom only)
+    // HELPER FUNCTION | An Open Elevation or Roof Plan Keeps Its Orientation and Its Cut (pan and zoom only)
     // ------------------------------------------------------------
     // The engine's navigation can hold the camera still, not its orientation
     // alone, so a move that turned the camera is put square again at once (the
     // same frame: only the square view is drawn). A seam in PainterlyNPR's
-    // navigation would do it there; the elevation camera tool is to come.
+    // navigation would do it there. The eye is stood at the scene's cut again
+    // too (Na__Views__ApplyCut), so a key that walks the camera never walks it
+    // through the plane, and a cut set in the Cameras section, or undone,
+    // reaches the live drawing at once.
     // ------------------------------------------------------------
     function Na__Environment3d__HoldOrientation() {
-        const lock = Na__Views__SceneLock(Na__Environment3d__OpenScene());
+        const open = Na__Environment3d__OpenScene();
+        const lock = Na__Views__SceneLock(open);
         if (!lock || Na__EngineHost__Borrowed()) return;
         const camera = Na__EngineHost__Camera().Camera;
-        const near = (a, b) => Math.abs((Number(a) || 0) - b) < 1e-6;
-        if (camera.Mode === 'Ortho' && near(camera.Yaw, lock.Yaw) && near(camera.Pitch, lock.Pitch)) return;
-        Na__EngineHost__SetCamera(Object.assign({}, camera, { Mode: 'Ortho', Yaw: lock.Yaw, Pitch: lock.Pitch }), 'Custom');
+        const held = Na__Views__ApplyCut(Object.assign({}, camera, { Mode: 'Ortho', Yaw: lock.Yaw, Pitch: lock.Pitch }), open);
+        const near = (a, b) => Math.abs((Number(a) || 0) - (Number(b) || 0)) < 1e-6;
+        if (camera.Mode === 'Ortho' && near(camera.Yaw, lock.Yaw) && near(camera.Pitch, lock.Pitch) && near(camera.Distance, held.Distance)
+            && [0, 1, 2].every((i) => near(camera.Target[i], held.Target[i]))) return;
+        Na__EngineHost__SetCamera(held, 'Custom');
     }
     // ------------------------------------------------------------
 
@@ -286,9 +304,9 @@
     // FUNCTION | + Add Scene: the camera and points now, as a new scene
     // ------------------------------------------------------------
     // While an elevation or the roof plan is open the new scene is one too
-    // (the same side, centred where the camera looks now), so it stays square
-    // and to scale; otherwise it is a 3D scene of the camera. It is the open
-    // scene from then on.
+    // (the same side and cut, centred where the camera looks now), so it stays
+    // square and to scale; otherwise it is a 3D scene of the camera. It is the
+    // open scene from then on.
     // ------------------------------------------------------------
     function Na__Environment3d__AddScene() {
         const doc = Na__AppState__Data.doc;
@@ -298,7 +316,8 @@
         const camera = Na__EngineHost__Camera().Camera;
         const name = Na__DrawingSet__SceneName(doc, `Scene ${(doc.AuraDrawingSet__SavedViews || []).length + 1}`);
         const scene = Na__Views__IsScaled(open)
-            ? Na__DrawingSet__NewScene({ name, kind: open.View__Kind, side: open.View__Side, centre: camera.Target, points: Na__EngineHost__Points() })
+            ? Na__DrawingSet__NewScene({ name, kind: open.View__Kind, side: open.View__Side, centre: Na__Views__ScaledCentre(open, camera.Target),
+                                         cut: open.View__CutM, points: Na__EngineHost__Points() })
             : Na__DrawingSet__NewScene({ name, kind: 'Perspective', camera, points: Na__EngineHost__Points() });
         doc.AuraDrawingSet__SavedViews.push(scene);
         Na__ArtDirection3d__Adopt(scene);
@@ -426,7 +445,7 @@
         Na__ArtDirection3d__Keep();
         const copy = Na__DrawingSet__NewScene({
             name: Na__DrawingSet__SceneName(doc, scene.View__Name), kind: scene.View__Kind, side: scene.View__Side, camera: scene.View__Camera,
-            preset: scene.View__Preset, centre: scene.View__CentreM, points: scene.View__Points
+            preset: scene.View__Preset, centre: scene.View__CentreM, cut: scene.View__CutM, points: scene.View__Points
         });
         const list = doc.AuraDrawingSet__SavedViews;
         list.splice(list.indexOf(scene) + 1, 0, copy);
@@ -636,6 +655,12 @@
         const points = Na__Panels__Section(panel, { id: 'env-points', title: 'Art direction points', icon: 'ArtDirectionPoints', onToggle: (open) => Na__ArtDirection3d__SetOpen(open) });
         Na__ArtDirection3d__Mount(points, sheetWrap, canvas, () => Na__Environment3d__MarkScene());
 
+        // Then the cameras (Adam: "Add a Cameras tab"): the lens, and the
+        // elevation planes, whose layer lies over the canvas under the points
+        Na__DrawingPlanes__Mount(sheetWrap, canvas);
+        const cameras = Na__Panels__Section(panel, { id: 'env-cameras', title: 'Cameras', icon: 'Cameras', onToggle: (open) => Na__Cameras__SetOpen(open) });
+        Na__Cameras__Build(cameras, { onCut: () => Na__Environment3d__HoldOrientation() });
+
         // The scene line under the stage
         const scene = root.querySelector('[data-env-scene]');
         if (scene) {
@@ -646,8 +671,15 @@
 
         Na__Environment3d__RenderTabs();
         Na__AppState__On('saved', () => Na__Environment3d__RenderTabs());
-        Na__AppState__On('changed', () => Na__Environment3d__RenderTabs());      // <-- A scene added, renamed or removed (here or from a sheet)
-        Na__AppState__On('restored', () => Na__Environment3d__RenderTabs());     // <-- An undo or redo
+        Na__AppState__On('changed', (detail) => {                               // <-- A scene added, renamed or removed (here or from a sheet)
+            Na__Environment3d__RenderTabs();
+            if (detail && detail.reason === 'views') Na__Environment3d__HoldOrientation();   // <-- A scene's cut moved: the open one's live camera follows
+        });
+        Na__AppState__On('restored', () => {                                    // <-- An undo or redo
+            Na__Environment3d__RenderTabs();
+            Na__Environment3d__HoldOrientation();
+            Na__Cameras__Sync();
+        });
     }
     // ------------------------------------------------------------
 
@@ -684,6 +716,8 @@
         Na__EngineHost__Redraw();
         Na__Parameters__Sync();
         Na__Environment3d__RenderTabs();
+        Na__Cameras__Sync();
+        Na__DrawingPlanes__Redraw();                                            // <-- Its watch stopped while a sheet was open
     }
     // ------------------------------------------------------------
 

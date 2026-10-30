@@ -21,16 +21,28 @@
 //   the engine), and while a viewport's points are edited on its sheet (that
 //   viewport has it). Meanwhile the edited viewport shows a PREVIEW: the live
 //   engine's drawing of it (SetPreview), until its still is drawn again.
-// - Pictures are WebP in memory (object URLs), about forty kept.
+// - Pictures are PNG in memory (object URLs), lossless as the engine's own
+//   export: WebP's halved colour and smoothing took the edge off the pens,
+//   the grain and the washes. Kept within AuraConfig__Viewport__PictureCacheMb,
+//   forty at most, the oldest let go first.
 // - PICTURES ARE 300 DPI ON THE PAPER (Adam: "Documents should be 300 dpi"):
 //   the engine draws its whole sheet at AuraConfig__Viewport__RenderDpi, so a
 //   printed sheet's pens and grain are as sharp as its title block. A GPU that
 //   cannot hold the sheet at that size draws it at screen size instead and
 //   says so in the console: a viewport is never left empty.
+// - A PICTURE IS DRAWN FOR ITS FRAME (PainterlyNPR 0.8.9 on): at the frame's
+//   true size, the vignette fitted to it (Na__EngineHost__RenderStill), so
+//   the frame is in its key. While a viewport's new picture is drawn its last
+//   one stands in, pale; a frame being resized waits to rest
+//   (AuraConfig__Viewport__RedrawSettleMs) before it is drawn again.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.3.0 (AURA 0.5.5)
+// - Pictures drawn for their frame (frameMm, scaled) and kept as PNG within a
+//   memory budget; one waiting picture a viewport, its last one standing in.
+//
 // 30-Oct-2026 - Version 1.2.0 (AURA 0.4.3)
 // - Stills at 300 dpi on the paper (Viewport__RenderDpi), not the engine's
 //   screen density; the screen size if the GPU cannot.
@@ -51,8 +63,8 @@
 
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__EngineHost__RenderStill, Na__EngineHost__Settings, Na__EngineHost__SheetMm, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__Views__Camera, Na__Views__Points } from './Na__Viewports__Views__.js';
+    import { Na__EngineHost__RenderStill, Na__EngineHost__FitsFrames, Na__EngineHost__Settings, Na__EngineHost__SheetMm, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__Views__Camera, Na__Views__IsScaled, Na__Views__Points } from './Na__Viewports__Views__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -64,9 +76,11 @@
     const Na__RenderQueue__KEEP = 40;
 
     const Na__RenderQueue__State = {
-        cache    : new Map(),                    // <-- key -> { url, widthPx, heightPx, ms }; the newest last
-        previews : new Map(),                    // <-- viewport id -> { url, owned }: shown instead while its points are edited
-        waiting  : [],                           // <-- [{ key, camera, points, scale, callbacks }]
+        cache    : new Map(),                    // <-- key -> { url, widthPx, heightPx, ms, showMm, bytes, frame }; the newest last
+        bytes    : 0,                            // <-- What the kept pictures weigh, together
+        lastKey  : new Map(),                    // <-- viewport id -> the key of its newest picture: it stands in while the next is drawn
+        previews : new Map(),                    // <-- viewport id -> { url, owned, showMm }: shown instead while its points are edited
+        waiting  : [],                           // <-- [{ id, key, camera, points, scale, frameMm, scaled, frame, settle, at, callbacks }]
         current  : '',                           // <-- The key being drawn now
         running  : false,
         paused   : false,
@@ -86,11 +100,20 @@
         const camera = Na__Views__Camera(viewport, doc);
         const points = Na__Views__Points(viewport, doc).map((p) => { const copy = Object.assign({}, p); delete copy.Id; return copy; });   // <-- Ids only tell points apart
         const scale = Na__RenderQueue__Scale();
+        const scaled = Na__Views__IsScaled(viewport);
+        const f = viewport.Viewport__FrameMm || {};
+        const tenth = (v) => Math.round((Number(v) || 0) * 10) / 10;
+        const frameMm = Na__EngineHost__FitsFrames() ? { WidthMm: tenth(f.WidthMm), HeightMm: tenth(f.HeightMm) } : null;   // <-- Drawn for its frame: a new size is a new picture
+        const frame = frameMm ? `${frameMm.WidthMm}x${frameMm.HeightMm}${scaled ? ' scaled' : ''}` : '';
         return {
+            id    : viewport.Viewport__Id,
             camera,
             points,
             scale,
-            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: scale })
+            frameMm,
+            scaled,
+            frame,
+            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: scale, f: frame })
         };
     }
     // ------------------------------------------------------------
@@ -110,28 +133,43 @@
     // FUNCTION | Show a Preview in a Viewport While Its Points Are Edited (null: its still again)
     // ------------------------------------------------------------
     // owned: the preview's object URL is this queue's to let go of (a still
-    // already kept in the cache is lent, never revoked here).
+    // already kept in the cache is lent, never revoked here, and keeps its
+    // own size on the paper; an owned one is the engine's whole sheet).
     // ------------------------------------------------------------
     function Na__RenderQueue__SetPreview(viewportId, url, owned) {
         const previews = Na__RenderQueue__State.previews;
         const old = previews.get(viewportId);
         if (old && old.owned && old.url !== url) URL.revokeObjectURL(old.url);
-        if (url) previews.set(viewportId, { url, owned: !!owned });
-        else previews.delete(viewportId);
+        if (url) {
+            let showMm = null;
+            if (!owned) for (const picture of Na__RenderQueue__State.cache.values()) if (picture.url === url) { showMm = picture.showMm || null; break; }
+            previews.set(viewportId, { url, owned: !!owned, showMm });
+        } else previews.delete(viewportId);
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Keep a Picture, Letting the Oldest Go
+    // HELPER FUNCTION | Keep a Picture, Letting the Oldest Go (past forty, or past the memory budget)
+    // ------------------------------------------------------------
+    // A lossless picture of a whole A3 sheet at 300 dpi is tens of megabytes, so
+    // the budget, not the count, usually decides. The newest is always kept. A
+    // picture lent as a preview is let go of without revoking it.
     // ------------------------------------------------------------
     function Na__RenderQueue__Keep(key, picture) {
-        const cache = Na__RenderQueue__State.cache;
+        const S = Na__RenderQueue__State;
+        const cache = S.cache;
+        const old = cache.get(key);
+        if (old) S.bytes -= old.bytes || 0;
         cache.delete(key);
         cache.set(key, picture);
-        while (cache.size > Na__RenderQueue__KEEP) {
-            const [oldKey, old] = cache.entries().next().value;
+        S.bytes += picture.bytes || 0;
+        const budget = Math.max(64, Number(Na__AppConfig__Get('Viewport__PictureCacheMb', 768)) || 768) * 1048576;
+        while (cache.size > 1 && (cache.size > Na__RenderQueue__KEEP || S.bytes > budget)) {
+            const [oldKey, oldest] = cache.entries().next().value;
             cache.delete(oldKey);
-            URL.revokeObjectURL(old.url);
+            S.bytes -= oldest.bytes || 0;
+            const lent = [...S.previews.values()].some((p) => p.url === oldest.url);
+            if (!lent) URL.revokeObjectURL(oldest.url);
         }
     }
     // ------------------------------------------------------------
@@ -139,11 +177,27 @@
 
     // FUNCTION | The Picture for a Viewport Now, if There Is One (else null; Request draws it)
     // ------------------------------------------------------------
+    // Its own picture, or its last one marked stale (Request draws the new one):
+    // a frame being resized or a setting changed shows the old drawing, pale,
+    // never an empty frame.
+    // ------------------------------------------------------------
     function Na__RenderQueue__Picture(viewport, doc) {
-        const preview = Na__RenderQueue__State.previews.get(viewport.Viewport__Id);
-        if (preview) return { url: preview.url, preview: true };
+        const S = Na__RenderQueue__State;
+        const preview = S.previews.get(viewport.Viewport__Id);
+        if (preview) return { url: preview.url, preview: true, showMm: preview.showMm || null };
         const { key } = Na__RenderQueue__Key(viewport, doc);
-        return Na__RenderQueue__State.cache.get(key) || null;
+        const kept = S.cache.get(key);
+        if (kept) return kept;
+        const last = S.cache.get(S.lastKey.get(viewport.Viewport__Id));
+        return last ? Object.assign({}, last, { stale: true }) : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | How Long a Resized Frame Rests Before It Is Drawn Again (ms)
+    // ------------------------------------------------------------
+    function Na__RenderQueue__SettleMs() {
+        return Math.max(0, Number(Na__AppConfig__Get('Viewport__RedrawSettleMs', 400)) || 0);
     }
     // ------------------------------------------------------------
 
@@ -160,14 +214,22 @@
     // again while it waits is drawn once, and only its first caller hears: the
     // sheet redraws its whole layer when one arrives, and a redraw asks again for
     // every picture still missing, so adding each ask would multiply the redraws.
+    // A viewport waits with its newest ask only, and one whose frame changed
+    // (or that asked again while waiting: a drag) rests first (settle).
     // ------------------------------------------------------------
     function Na__RenderQueue__Request(viewport, doc, onDone) {
+        const S = Na__RenderQueue__State;
         const job = Na__RenderQueue__Key(viewport, doc);
-        const kept = Na__RenderQueue__State.cache.get(job.key);
+        const kept = S.cache.get(job.key);
         if (kept) return kept;
         if (!job.camera) { if (onDone) onDone(null, new Error('This view has no camera (its saved view was deleted).')); return null; }
-        if (Na__RenderQueue__State.current === job.key || Na__RenderQueue__State.waiting.some((w) => w.key === job.key)) return null;
-        Na__RenderQueue__State.waiting.push(Object.assign(job, { callbacks: onDone ? [onDone] : [] }));
+        if (S.current === job.key || S.waiting.some((w) => w.key === job.key)) return null;
+        const before = S.waiting.length;
+        S.waiting = S.waiting.filter((w) => w.id !== job.id);
+        const last = S.cache.get(S.lastKey.get(job.id));
+        job.settle = S.waiting.length < before || (!!last && last.frame !== job.frame);
+        job.at = performance.now();
+        S.waiting.push(Object.assign(job, { callbacks: onDone ? [onDone] : [] }));
         Na__RenderQueue__Pump();
         return null;
     }
@@ -206,24 +268,28 @@
             while (S.waiting.length && !S.paused) {
                 const job = S.waiting[0];
                 if (S.onStatus) S.onStatus(`Drawing view ${done + 1} of ${done + S.waiting.length} in pen and wash...`);
-                await new Promise((resolve) => setTimeout(resolve, 30));        // <-- A breath: the page repaints between stills
-                if (S.paused || S.waiting[0] !== job) continue;                 // <-- Cleared, or paused (a viewport borrowed the engine), while it waited
+                const rest = job.settle ? Na__RenderQueue__SettleMs() - (performance.now() - job.at) : 0;
+                await new Promise((resolve) => setTimeout(resolve, Math.max(30, rest)));   // <-- A breath: the page repaints between stills (a resized frame rests first)
+                if (S.paused || S.waiting[0] !== job) continue;                 // <-- Cleared, replaced or paused (a viewport borrowed the engine) while it waited
                 S.waiting.shift();
                 S.current = job.key;
                 let picture = null, failure = null;
                 try {
                     let still;
+                    const request = { camera: job.camera, scale: job.scale, points: job.points, frameMm: job.frameMm, scaled: job.scaled };
                     try {
-                        still = Na__EngineHost__RenderStill({ camera: job.camera, scale: job.scale, points: job.points });
+                        still = Na__EngineHost__RenderStill(request);
                     } catch (error) {
                         if (job.scale === 1) throw error;
                         console.warn('[AURA RenderQueue] The sheet at print resolution is past this GPU: drawn at screen size instead.', error);
-                        still = Na__EngineHost__RenderStill({ camera: job.camera, scale: 1, points: job.points });   // <-- The screen's 5 px/mm: the same drawing, less sharp in print
+                        still = Na__EngineHost__RenderStill(Object.assign(request, { scale: 1 }));   // <-- The screen's 5 px/mm: the same drawing, less sharp in print
                     }
-                    const blob = await new Promise((resolve) => still.canvas.toBlob(resolve, 'image/webp', 0.92));
+                    const blob = await new Promise((resolve) => still.canvas.toBlob(resolve, 'image/png'));   // <-- Lossless, as the engine's own export
                     if (!blob) throw new Error('The picture could not be encoded.');
-                    picture = { url: URL.createObjectURL(blob), widthPx: still.widthPx, heightPx: still.heightPx, ms: still.ms };
+                    picture = { url: URL.createObjectURL(blob), widthPx: still.widthPx, heightPx: still.heightPx, ms: still.ms,
+                                showMm: still.showMm || null, bytes: blob.size, frame: job.frame };
                     Na__RenderQueue__Keep(job.key, picture);
+                    S.lastKey.set(job.id, job.key);
                 } catch (error) {
                     console.error('[AURA RenderQueue] A view could not be drawn:', error);
                     failure = error;

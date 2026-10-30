@@ -27,7 +27,8 @@
 //   viewports in the layout think SketchUp -> Layout logic"). A scene is what
 //   is looked at: its kind (Perspective, Elevation or Plan), an elevation's
 //   side, a 3D scene's camera (or the engine preset it starts from), a scaled
-//   scene's centre, and its Art Direction Points. They are the records of
+//   scene's centre and cut (its drawing plane), and its Art Direction Points.
+//   They are the records of
 //   AuraDrawingSet__SavedViews (View__*: the AURA API takes only the four root
 //   keys it knows, so the key keeps its first name). Every viewport shows one
 //   scene (Viewport__SceneId), and every viewport showing it follows it.
@@ -56,6 +57,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.5.0 (AURA 0.5.6)
+// - A scaled scene's cut, View__CutM (its drawing plane, metres along the
+//   plane's normal; null: not cut): NewScene takes it as cut, Normalise keeps
+//   it, FindOrMakeScene never shares a cut scene with an uncut view.
+//
 // 30-Oct-2026 - Version 1.4.0 (AURA 0.5.0)
 // - Scenes: Na__DrawingSet__NewScene, Na__DrawingSet__FindOrMakeScene,
 //   Na__DrawingSet__SceneName and Na__DrawingSet__Scene; a viewport is
@@ -180,17 +186,19 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | A New Scene: { name, kind, side, camera, preset, centre, points }
+    // FUNCTION | A New Scene: { name, kind, side, camera, preset, centre, cut, points }
     // ------------------------------------------------------------
     // camera: the engine's object or the file's form. A 3D scene with no camera
     // starts from an engine preset (View__Preset, ThreeQuarter unless named),
     // read from the engine when it is drawn, never copied here. A scaled
-    // scene's centre is null until it is moved: centred on the building.
+    // scene's centre is null until it is moved: centred on the building. Its
+    // cut (View__CutM, AURA 0.5.6) is null until its plane is moved: not cut.
     // ------------------------------------------------------------
     function Na__DrawingSet__NewScene(options) {
         const o = options || {};
         const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(o.kind) ? o.kind : 'Perspective';
         const camera = kind === 'Perspective' ? Na__DrawingSet__CameraJson(o.camera) : null;
+        const cut = o.cut === null || o.cut === undefined || o.cut === '' ? NaN : Number(o.cut);
         return {
             View__Id      : Na__Format__Id('Scene'),
             View__Name    : String(o.name || 'Scene').slice(0, 60),
@@ -199,6 +207,7 @@
             View__Camera  : camera,                                              // <-- A 3D scene's camera, in the file's form
             View__Preset  : kind === 'Perspective' && !camera ? String(o.preset || 'ThreeQuarter') : null,
             View__CentreM : kind !== 'Perspective' ? Na__DrawingSet__Point3(o.centre) : null,
+            View__CutM    : kind !== 'Perspective' && Number.isFinite(cut) ? Math.round(cut * 1000) / 1000 : null,   // <-- Metres along the plane's normal from the world origin; null: not cut
             View__Points  : Na__DrawingSet__CleanPoints(o.points)
         };
     }
@@ -232,7 +241,7 @@
         const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         const found = made.View__Points.length ? null : (doc.AuraDrawingSet__SavedViews || []).find((v) =>
             v.View__Kind === made.View__Kind && v.View__Side === made.View__Side && v.View__Preset === made.View__Preset
-            && same(v.View__CentreM, made.View__CentreM) && same(v.View__Camera, made.View__Camera));
+            && same(v.View__CentreM, made.View__CentreM) && same(v.View__Camera, made.View__Camera) && same(v.View__CutM ?? null, made.View__CutM));
         if (found) return found;
         made.View__Name = Na__DrawingSet__SceneName(doc, made.View__Name);
         doc.AuraDrawingSet__SavedViews = doc.AuraDrawingSet__SavedViews || [];
@@ -430,7 +439,7 @@
             .filter((v) => v && v.View__Id)
             .map((v) => {
                 const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(v.View__Kind) ? v.View__Kind : 'Perspective';   // <-- A saved view from before scenes was 3D
-                const scene = Na__DrawingSet__NewScene({ name: v.View__Name, kind, side: v.View__Side, camera: v.View__Camera, preset: v.View__Preset, centre: v.View__CentreM, points: v.View__Points });
+                const scene = Na__DrawingSet__NewScene({ name: v.View__Name, kind, side: v.View__Side, camera: v.View__Camera, preset: v.View__Preset, centre: v.View__CentreM, cut: v.View__CutM, points: v.View__Points });
                 scene.View__Id = v.View__Id;
                 return Object.assign(v, scene);                                  // <-- The engine's camera object from before 0.4.4 moves across with it
             });

@@ -65,9 +65,9 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 |---|---|
 | `01__AppCore` | Start-up, the shared sign-in and the level gate, the app state and its events, the config, the developers' parameter dump (`Na__AppCore__ParameterDump__`) |
 | `02__AppData` | The app config |
-| `03__AppUtils` | The API client, DOM builders and line icons, toasts, ids and dates, the panels' folding sections and resize grips, the undo history's snapshot store |
+| `03__AppUtils` | The API client, DOM builders and line icons, toasts, ids and dates, the panels' folding sections and resize grips, the undo history's snapshot store, the drawing planes' snap and drag maths (TrueVision 3D's, `Na__AppUtils__PlaneMaths__`) |
 | `10__System__EngineHost` | The one door to PainterlyNPR: boot, camera, parameters, settings, Art Direction Points (the engine's own editor, lent to a sheet's viewport while its points are edited), stills for the sheets; the engine's panel config (`Na__EngineHost__Panel__`); the engine's Assets drawer, placed assets and given materials (`Na__EngineHost__Assets__`); everything the engine holds, read only, for the parameter dump (`Na__EngineHost__Dump__`) |
-| `11__System__Environment3d` | The 3D Environment tab: the engine's live drawing and its navigation, the engine's Assets drawer down its left edge, the scene tabs (each scene a viewport on a sheet, SketchUp to LayOut), the presets, the Art direction points section, parameters (built from the engine's own panel config) |
+| `11__System__Environment3d` | The 3D Environment tab: the engine's live drawing and its navigation, the engine's Assets drawer down its left edge, the scene tabs (each scene a viewport on a sheet, SketchUp to LayOut), the presets, the Art direction points section, parameters (built from the engine's own panel config), the Cameras section (the lens, and the elevation planes drawn over the drawing: `Na__Environment3d__Cameras__`, `Na__Environment3d__DrawingPlanes__`) |
 | `20__System__DrawingSheets` | Vale's drawing page (A1 to A4, landscape and portrait, on the engine's own paper), the title block, the sheet surface, tabs, the workspace, and the sheets' navigation (the Layout Editor's, with its key map `Na__Hotkeys__DrawingSheets__.json`) |
 | `21__System__Viewports` | Elevations and the roof plan to scale, 3D views, their cameras and points, the render queue, editing, and a viewport's Art direction points edited on its picture |
 | `30__System__Annotations` | Handwritten notes and leader notes on the sheet |
@@ -108,7 +108,19 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   orientation: pan and zoom only); **+ Add Scene** keeps the camera as a new one; right-click a tab to Rename, Update
   from camera, Duplicate or Delete it. A sheet's "Add a view" lists the scenes first; a viewport's panel picks its
   scene and keeps its own scale, pen, frame, title and pan.
-- **The panels:** every panel's sections fold (Art direction points, Parameters in the 3D Environment),
+- **Cameras** (0.5.6, the 3D Environment's third section): the **lens** is ValeVision 3D's, a full-frame focal length
+  from 24 to 75 mm (the engine's view is a 45 mm lens), its readout typed into; like an orbit, Update from camera keeps
+  it in the open scene. Elevations and the roof plan are to scale and have none. **Elevation planes** are TrueVision
+  3D's drawing planes: **Show elevation planes** draws every elevation's plane and the roof plan's over the drawing,
+  each in its own colour with its scene's name. A plane is where its drawing is cut: nothing in front of it is drawn.
+  Drag one by a corner grip or its name and it moves along its own direction only, on the **Snap** grid (10, 25, 50,
+  100, 250 or 500 mm from the model's origin; off, to the millimetre); Escape puts it back. Each plane's row takes
+  its position typed in millimetres; clear it, or press its cross, for not cut. **Cut elevations at the building** puts
+  every elevation's cut 50 mm in front of the building's box, measured from the building drawn (the roof plan is left
+  as it is). A plane never moved is not cut: it
+  waits, dashed, 1.5 m in front of the building. A cut is the scene's: every viewport of it follows, and undo takes
+  it back. Planes never appear on a sheet or in a picture.
+- **The panels:** every panel's sections fold (Parameters, Art direction points, Cameras in the 3D Environment),
   and a panel's inner edge drags it wider or narrower (double-click puts it back); both are remembered in this browser.
   The 3D Environment's sections and its parameter sections (Paper and finish, Light, Pen, Wash, Sky) carry line icons,
   `01__AppAssets__AuraRender/UiIcons__MenuIcons__PanelSections` (house ink, the app's own glyph weight).
@@ -134,7 +146,10 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 - **Add a view:** the four elevations and the roof plan at 1:20, 1:50, 1:100 or 1:200, or a 3D view (a preset, a saved
   view, or the 3D Environment's view now). Drag to move, drag a handle to resize, Alt and drag inside a scaled view to
   pan it, Delete to remove. A scaled view is at most the engine's own sheet, A3 (420 x 297 mm): the engine draws one sheet that size, its pen
-  widths true on the paper. Pictures are drawn by the engine one at a time ("Drawing in pen and wash...").
+  widths true on the paper. Pictures are drawn by the engine one at a time ("Drawing in pen and wash..."), each for its
+  frame (0.5.5, PainterlyNPR 0.8.9): at the frame's true size, so a 3D view's pens, grain and bleed are their real
+  millimetres too, with the engine's vignette fitted inside the frame. They are lossless PNG; a resized frame is drawn
+  again once it rests, its last picture standing in, pale.
 - **Notes:** the **Note** tool (N) places words where you press; the **Leader** tool (L) is pressed on what it points at
   and dragged to where the words go. The panel holds the words, letter height, ink, hand, **Letters**, **Pen** and
   **Write a new copy**. Size the box by dragging the handle on either side of a selected note; the words wrap to it.
@@ -180,7 +195,11 @@ menu). The dev server mounts AURA's API itself. The handwriting needs its model 
   `Content__AuraScene__AssetFiles` (the pin has no `.glb` yet); brick indication and window shadow lines on it (a GLB
   carries no surfaces); method two, ValeVision Cloud Sync's AURA export tab (a Painterly Scene Package into
   `Content__AuraScenePackages`).
-- Cross sections and floor plans (the roof plan is a plan from above).
+- Cross sections and floor plans with their cut faces filled: since 0.5.6 an elevation or the roof plan can be cut,
+  its cut faces left open (no poche).
+- The elevation planes drawn behind the building where it stands in front of them (they are drawn over the drawing),
+  Perspective Correction for the lens (an engine seam: the engine has no lens shift yet), and moving a plane to a
+  picked face (TrueVision's Move to face).
 - PDF and print export of a sheet. Its pictures are already 300 dpi on the paper (`AuraConfig__Viewport__RenderDpi`, AURA 0.4.3).
 - Scaled views larger than the engine's A3 sheet (420 x 297 mm).
 - The install card (`Shared__AppInstall`) and a `/help/install-app/` entry; the Server Manager's activity tab names

@@ -39,10 +39,23 @@
 //   elevation ceiling (a Natural Pen at most); Concept follows the discipline.
 // - ART DIRECTION POINTS are the scene's, shared by every viewport showing it
 //   and edited in the 3D Environment or on any sheet (Adam, 30-Oct-2026).
+// - THE CUT (Adam, 30-Oct-2026: "we need to be able to adjust elevation cut
+//   position"): a scaled scene's plane (View__CutM) is where its drawing is
+//   taken from, TrueVision 3D's section plane: nothing in front of it is
+//   drawn. It is one number, how far along the plane's normal (towards the
+//   viewer) it sits from the world origin, in metres; a height for the roof
+//   plan. The camera's eye stands just before it (ApplyCut), so the engine's
+//   own near clip does the cutting. Null is not cut: the camera stands its
+//   usual 60 m out, as before (Adam's call: "Not cut until moved").
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.0 (AURA 0.5.6)
+// - The cut: SceneNormal, CutM, SetCut, ApplyCut (SceneCamera and Camera stand
+//   the eye at it) and ScaledCentre (UpdateScene keeps a scaled scene's centre
+//   at its own depth, so a cut's target never moves the scene).
+//
 // 30-Oct-2026 - Version 2.0.0 (AURA 0.5.0)
 // - Scenes: Scene, SceneCamera, SceneLock, UpdateScene and ScenesUsing; Camera,
 //   Title, Pan and the points read the viewport's scene. Pan takes the
@@ -185,8 +198,8 @@
         const scale = Number(v && v.Viewport__ScaleDenominator) || Na__DrawingSet__DefaultScale(scene.View__Kind);
         const halfHeight = (Na__EngineHost__SheetMm().HeightMm * scale) / 2000;  // <-- 297 mm (A3) at 1:50 is 14.85 m: a 7.425 m half-height
         const lock = Na__Views__SceneLock(scene);
-        return { Mode: 'Ortho', Yaw: lock.Yaw, Pitch: lock.Pitch, Distance: Na__AppConfig__Get('Viewport__OrthoDistanceM', 60),
-                 Target: Na__Views__SceneCentre(scene), FovY: 30, HalfHeight: halfHeight, Ceiling: ceiling };
+        return Na__Views__ApplyCut({ Mode: 'Ortho', Yaw: lock.Yaw, Pitch: lock.Pitch, Distance: Na__AppConfig__Get('Viewport__OrthoDistanceM', 60),
+                                     Target: Na__Views__SceneCentre(scene), FovY: 30, HalfHeight: halfHeight, Ceiling: ceiling }, scene);
     }
 
     // A scaled scene's held orientation ({ Yaw, Pitch }), else null
@@ -207,7 +220,96 @@
         const camera = Na__Views__SceneCamera(scene, doc, viewport);
         const pan = viewport.Viewport__PanM;
         if (Na__Views__IsScaled(scene) && Array.isArray(pan) && pan.length === 3) camera.Target = camera.Target.map((v, i) => v + Number(pan[i] || 0));
+        return Na__Views__ApplyCut(camera, scene);                               // <-- Again after the pan: the roof plan's slight tilt carries a pan into its depth
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Scaled Scene's Plane Normal, Towards the Viewer ([x, y, z], unit), Else Null
+    // ------------------------------------------------------------
+    // An elevation's is level, square to the face it looks at (yaw 0: +Z, the
+    // front); the roof plan's is straight up.
+    // ------------------------------------------------------------
+    function Na__Views__SceneNormal(scene) {
+        if (!scene) return null;
+        if (scene.View__Kind === 'Plan') return [0, 1, 0];
+        if (scene.View__Kind !== 'Elevation') return null;
+        const yaw = Na__Views__Elevation(scene.View__Side).YawDeg * Math.PI / 180;
+        const tidy = (v) => (Math.abs(v) < 1e-9 ? 0 : v);                      // <-- cos 90 degrees is 6e-17, not 0
+        return [tidy(Math.sin(yaw)), 0, tidy(Math.cos(yaw))];
+    }
+
+    // A scaled scene's cut in metres along its normal, else null (not cut)
+    function Na__Views__CutM(scene) {
+        const v = scene ? scene.View__CutM : null;
+        return v === null || v === undefined || v === '' || !Number.isFinite(Number(v)) ? null : Number(v);
+    }
+
+    // Set it (metres, kept to the millimetre), or null for not cut
+    function Na__Views__SetCut(scene, cutM) {
+        if (!Na__Views__IsScaled(scene)) return;
+        scene.View__CutM = cutM === null || cutM === undefined || !Number.isFinite(Number(cutM)) ? null : Math.round(Number(cutM) * 1000) / 1000;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Stand a Scaled Camera at Its Scene's Cut: nothing in front of the plane is drawn
+    // ------------------------------------------------------------
+    // The engine clips at its near plane: 0.1 m from the eye for the wash, 0.2 m
+    // for the pen (PainterlyNPR 31__Line__Visibility). The eye stands
+    // Cameras__CutEyeOffsetM (0.2) before the plane, so the pen stops exactly
+    // at it and a face standing on it keeps its lines. Under a parallel
+    // projection the distance changes what is cut, never the scale. A plane at
+    // or behind the target takes the target back with it (the eye stays where
+    // it is), so the camera always looks forward. Not cut: its usual stand-off
+    // (Viewport__OrthoDistanceM) from the scene's own depth, as before cuts.
+    // Running it twice changes nothing: the open elevation runs it every frame.
+    // ------------------------------------------------------------
+    function Na__Views__ApplyCut(camera, scene) {
+        const n = Na__Views__SceneNormal(scene);
+        if (!n || !camera || !Array.isArray(camera.Target)) return camera;
+        const cut = Na__Views__CutM(scene);
+        if (cut === null) {
+            camera.Target = Na__Views__AtDepth(scene, camera.Target);
+            camera.Distance = Na__AppConfig__Get('Viewport__OrthoDistanceM', 60);
+            return camera;
+        }
+        const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        const yaw = Number(camera.Yaw) * Math.PI / 180, pitch = Number(camera.Pitch) * Math.PI / 180;
+        const dir = [Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)];   // <-- Target to eye, as the engine's camera rig reads Yaw and Pitch
+        const along = dot(n, dir) || 1;                                          // <-- 1 for an elevation, sin 89.9 degrees for the roof plan
+        const target = camera.Target.map(Number);
+        const least = Na__AppConfig__Get('Cameras__CutLeastDistanceM', 1);
+        let distance = (cut - dot(target, n)) * along + Na__AppConfig__Get('Cameras__CutEyeOffsetM', 0.2);
+        if (distance < least) {
+            const back = (least - distance) / (along * along);                  // <-- Exactly enough that the distance is the least again
+            camera.Target = target.map((v, i) => v - dir[i] * back);
+            distance = least;
+        }
+        camera.Distance = distance;
         return camera;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Scaled Scene's Centre From a Camera Target, at the Scene's Own Depth
+    // ------------------------------------------------------------
+    // Across the view the target is where the scene is centred; along it, it is
+    // the cut's business (ApplyCut moves it back), so the scene keeps the depth
+    // it had and taking a cut away later leaves the camera where it was.
+    // ScaledCentre is for the file (to the millimetre), AtDepth for the camera.
+    // ------------------------------------------------------------
+    function Na__Views__AtDepth(scene, target) {
+        const t = (Array.isArray(target) ? target : [0, 0, 0]).map(Number);
+        const n = Na__Views__SceneNormal(scene);
+        if (!n) return t;
+        const was = Na__Views__SceneCentre(scene);
+        const off = (t[0] - was[0]) * n[0] + (t[1] - was[1]) * n[1] + (t[2] - was[2]) * n[2];
+        return t.map((v, i) => v - n[i] * off);
+    }
+
+    function Na__Views__ScaledCentre(scene, target) {
+        return Na__Views__AtDepth(scene, target).map((v) => Math.round(v * 1000) / 1000);
     }
     // ------------------------------------------------------------
 
@@ -226,12 +328,13 @@
     // FUNCTION | Update a Scene From the 3D Environment: the camera now, and the points
     // ------------------------------------------------------------
     // SketchUp's Update Scene. A 3D scene takes the camera whole; a scaled one
-    // keeps its side and takes only where the camera is centred, so it stays
-    // square and to scale. Every viewport showing it follows.
+    // keeps its side and its cut and takes only where the camera is centred
+    // across the view, so it stays square and to scale. Every viewport showing
+    // it follows.
     // ------------------------------------------------------------
     function Na__Views__UpdateScene(scene, camera, points) {
         if (Na__Views__IsScaled(scene)) {
-            scene.View__CentreM = (camera.Target || [0, 0, 0]).map((v) => Math.round(Number(v) * 1000) / 1000);
+            scene.View__CentreM = Na__Views__ScaledCentre(scene, camera.Target);
         } else {
             scene.View__Camera = Na__DrawingSet__CameraToJson(camera);
             scene.View__Preset = null;
@@ -332,6 +435,12 @@
         Na__Views__SceneCamera,
         Na__Views__SceneLock,
         Na__Views__Camera,
+        Na__Views__SceneNormal,
+        Na__Views__CutM,
+        Na__Views__SetCut,
+        Na__Views__ApplyCut,
+        Na__Views__ScaledCentre,
+        Na__Views__SceneCentre,
         Na__Views__SameCamera,
         Na__Views__UpdateScene,
         Na__Views__Pan,

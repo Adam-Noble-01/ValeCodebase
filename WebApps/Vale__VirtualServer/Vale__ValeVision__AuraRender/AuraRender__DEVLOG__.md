@@ -1,5 +1,146 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.6, 30-Oct-2026: Cameras, the Lens and the Elevation Planes
+
+**Asked by Adam** (a screenshot of the 3D Environment's panel, the room under its sections ringed): "Read your NPR
+Skill / Add a Cameras tab / It should contain two diffeent features, adjust camera lense angle same as ValeVision 3D
+(you must read that repo before editing) / 2. show elevation camera planes, switches on the elevation camera planes
+alowing you to reposition them, look at the way these kinds of plan and section planes work in TrueVision 3D AND COPY
+THAT FUINCTIONALITY". This is the elevation camera tool 0.5.0 left for another agent ("we need to be able to adjust
+elevation cut position").
+
+**His calls:** an elevation not cut until its plane is moved (drawings stay as they were); the roof plan gets a plane
+too; the lens only for now (Perspective Correction needs an engine seam); from TrueVision's tools, the drag with snap
+and a typed position (no Move to face, no switch per plane).
+
+**Read first:** ValeVision 3D's `11__CameraUtils/Na__UiFeature__CameraLens__Controls.js` and its config's
+`cameraLens`; TrueVision 3D's `TrueVision__PLAN__DrawingPlanes__.md`, `47__System__DrawingPlanes` (config, maths,
+plane mesh) and `45__System__ElevationViews` (the camera stands off in front of its plane; Section mode removes what
+is in front); PainterlyNPR's camera rig (near planes 0.1 m for the wash, 0.2 m for the pen).
+
+**Built:**
+- **A third panel section, Cameras** (`11__System__Environment3d/Na__Environment3d__Cameras__.js` 1.0.0, new; its icon
+  `Icon__PanelSections__Cameras__.svg`), after Parameters and Art direction points.
+- **The lens**, ValeVision 3D's: a full-frame focal length, 24 to 75 mm in whole millimetres, turned into the engine
+  camera's FovY (2 atan(24 / 2f): the engine's 30 degrees is 45 mm, ValeVision's default). Its readout is typed into
+  as every parameter's is, and shows the camera's real lens even outside the slider, following the camera however it
+  changed (ValeVision's 14-Aug-2026 lesson). A change is a camera move: the scene's tab stays lit and Update from
+  camera keeps it. An elevation or the roof plan reads "To scale" and the slider rests.
+- **The cut** (`21__System__Viewports/Na__Viewports__Views__.js` 2.1.0): a scaled scene's `View__CutM`, its drawing
+  plane, one number in metres along the plane's normal from the world origin (a height, for the roof plan). Nothing in
+  front of it is drawn: the camera's eye stands 0.2 m before the plane, so the engine's own near clip cuts there and
+  the pen stops exactly at it (`ApplyCut`, in `SceneCamera` and `Camera`, so the 3D Environment, every viewport and
+  its stills agree). Not cut is the camera 60 m out, as before. A plane behind the scene's centre takes the target
+  back so the camera still looks forward. `UpdateScene` keeps a scaled scene's centre at its own depth.
+- **The planes** (`Na__Environment3d__DrawingPlanes__.js` 1.0.0, new), TrueVision 3D's drawing planes:
+  - **Show elevation planes** draws every elevation's plane and the roof plan's over the drawing.
+  - Each plane has a faint face and a solid outline in its own colour (chosen from the scene's id, so a deletion
+    never recolours the rest), its scene's name in capitals in a boxed tab inside the top-left corner, a boxed plus
+    in each other corner, and an arrow from each corner the way the drawing looks.
+  - Sized from the building, never the garden: its span plus an overshoot, the larger of 1.5 m and 8 % of its
+    longer side.
+  - **Drag** a grip or the name: the plane moves along its own normal only (the point on the normal nearest the
+    pointer's ray). Its absolute position snaps to the world grid, the **Snap** step 10, 25, 50, 100, 250 or 500 mm
+    (50 by default, kept in this browser). Too square on to the camera it holds still and says so. Escape puts it back.
+  - **A never-cut plane** waits dashed, NOT CUT on its tab, an overshoot in front of the building; its first drag cuts
+    it there.
+  - **Each plane's row** in the section shows its colour and takes its position typed in millimetres; clearing it, or
+    its cross, is not cut.
+  - **Cut elevations at the building** (asked next: "UPDATE THE ASSOCIATE SCENES FOR THROWER SO THEY HAVE THE CORRECT
+    CUTS ASSIGNED"; his calls: a button rather than values typed or the server's file written, "Offset the cut 50mm
+    infrtont of box plane", the roof plan not cut). One press sets every elevation's cut 50 mm
+    (`AuraConfig__Cameras__CutAtBuildingM`) in front of the face of the building's box, measured from the building
+    drawn now. That is the box the planes are sized from, so the cuts suit the demo cottage today and a project's own
+    whitecard once it is drawn. The roof plan is left as it is; all the cuts are one undo step. For the cottage AURA
+    draws for Thrower now (box x -4.68 to 4.68, z -3.16 to 4.35 m) that is Front 4 400, Right 4 730, Rear 3 210 and
+    Left 4 730 mm. It is pressed in Thrower's own AURA, so the drawing set is saved through Adam's session.
+  - A cut is the scene's: saved, one undo step, every viewport of it follows. An open elevation's live camera
+    follows at once, and its cut is held as the camera moves (`HoldOrientation`, `Na__Environment3d__Stage__.js`
+    2.1.0). + Add Scene and Duplicate carry the cut.
+  - Planes are an SVG layer over the canvas, never part of the engine, so no sheet, still or export can hold one.
+  - The snap and drag maths are TrueVision's, ported as they are (`03__AppUtils/Na__AppUtils__PlaneMaths__.js` 1.0.0,
+    new).
+- **The engine host** (`Na__EngineHost__PainterlyNpr__.js` 1.7.0): `ProjectWorld` and `PointerRay`, the engine's own
+  camera rig (Compute, Project, Unproject) for drawing over the drawing; `BuildingBounds` measured once a scene.
+- **The drawing set** (`Na__DrawingSet__Model__.js` 1.5.0): `View__CutM` on a scene (null: not cut), kept by
+  Normalise; an older set loads with nothing cut. The config's `AuraConfig__Cameras__*` keys hold the lens, the cut's
+  offsets and the planes' snap, bounds, look and drag.
+
+**Checked:**
+- All 46 AURA modules parse and every named import resolves, the engine's against the v0.8.7 pin.
+- In Node, the cut on the real Views module (22 checks, all pass):
+  - each side cut 6 m out puts the eye 6.2 m out along its normal, the roof plan's 0.2 m above its plane;
+  - a plane behind the centre keeps the eye at the plane, the distance 1 m and the camera looking forward;
+  - applying it twice changes nothing (elevation and plan);
+  - taking a cut away is 60 m from the scene's centre again, and UpdateScene keeps the centre's depth;
+  - TrueVision's snap (20 013 to 20 000 on 50), the axis solve and the 6-degree steep test.
+- Not run in a browser here: Adam tests it.
+
+**Not yet:**
+- The building does not stand in front of a plane: they are drawn over the drawing. The faces are faint for that
+  reason; seen square on in an elevation or the plan a plane is left out.
+- A cut leaves its cut faces open (no poche).
+- Grips are a fixed size on screen.
+- Perspective Correction (an engine lens-shift seam) and TrueVision's Move to face.
+- Wrappers note for PainterlyNPR: AURA now stands an orthographic eye anywhere from 1 m to 60 m from its target. The
+  engine's aerial perspective is measured from the eye (`AerialRange`: distance + 8 m), so it still starts 8 m behind
+  the target. Its `71__Camera__ElevationPlane` README describes this tool, which could move into the engine when the
+  Noble Architecture wrapper needs it.
+
+(Uncommitted, waiting on Adam.)
+
+## Version 0.5.5, 30-Oct-2026: Sheet Pictures at Their Frame's True Size
+
+**Asked by Adam:** "For some reason Aura Does not look as good as NPR's preview / investigate why / does aura have all of
+the same poaram,ets mapped?", then, on the findings, "Yes, fix sheets". **His calls:** "True size, same framing" for
+3D views, "Fade inside the frame" for elevations and the roof plan, "Commit NPR and sync AURA" for the engine seam.
+
+**What was wrong:** every parameter was mapped, and the 3D Environment is the engine's own A3 canvas. The sheets were
+the difference:
+- a 3D view's picture was the engine's whole A3 sheet shrunk into its frame (a 180 x 120 mm frame: 43%), so the four
+  technical pens printed thinner than their widths (0.13 mm at 0.056 mm) and the bleed, rings and grain shrank with
+  them;
+- an elevation's frame cut its true-scale picture off hard: the vignette lay outside the frame;
+- pictures were lossy WebP (0.92), which halves the colour and smooths the pens, grain and washes.
+
+**Built:**
+- **PainterlyNPR v0.8.9** (0e79f92, committed at Adam's word, not pushed): `PainterlyNPR__ArtDirection__SetFrame` fits
+  the engine's vignette to a host's frame; with no frame it draws as before. Synced: the pin is
+  `01__CoreLib__PainterlyNPR__v0.8.9` (WorkingTreeClean true, with v0.8.7's GLB scenes and v0.8.8's gate), the import
+  map and its index point at it, and the worker's token is `2026-10-30-12`.
+- **A still drawn for its frame** (`Na__EngineHost__PainterlyNpr__.js` 1.8.0, `RenderStill`'s `frameMm` and `scaled`):
+  - a 3D view widens its field of view (an orthographic preset its half-height) by the factor the whole sheet used to
+    shrink by, so the framing is unchanged, and its points shrink with it through the engine's own `RefitPoints`;
+  - only the frame's part of the sheet is read back, with the vignette fitted inside it (both kinds);
+  - a frame bigger than the engine's sheet takes the sheet's most and enlarges it, as before;
+  - `FitsFrames` says whether the pin can; an older pin draws the whole sheet, as before.
+- **The render queue** (`Na__Viewports__RenderQueue__.js` 1.3.0):
+  - pictures are lossless PNG, kept within `AuraConfig__Viewport__PictureCacheMb` (768), forty at most;
+  - the frame's size is in a picture's key;
+  - a viewport waits with its newest ask only, and a resized frame is drawn again once it has rested for
+    `AuraConfig__Viewport__RedrawSettleMs` (400 ms);
+  - meanwhile its last picture stands in, pale (`.aura-vp__picture--stale`), never an empty frame.
+- **The sheet** (`Na__Viewports__Editor__.js` 2.1.0): a scaled picture sits at its own size about the frame's middle, a
+  3D one fits its frame.
+
+**Checked:** PainterlyNPR's module test (117 modules, 686 imports) and config test pass. The pin's `--check` passes, and
+the engine's Init is unchanged from v0.8.7. Every AURA module edited parses. AURA's 617 named imports resolve against
+the new pin. In Node, the points' shrink matches the engine's RefitPoints exactly (a 180 x 120 mm frame: 0.4286, a
+30 degree view becomes 64.03 degrees).
+
+**Not yet:**
+- Not run in a browser here: Adam tests it.
+- While a viewport's points are edited on its sheet, the live engine's preview is still the whole sheet shrunk; its
+  still is drawn true size when the editing ends. That preview is WebP (`Na__Viewports__ArtDirection__.js`), not
+  changed here.
+- A 3D frame bigger than A3 (on A1 or A2) still enlarges the engine's sheet: thicker pens. The engine draws on nothing
+  bigger.
+- A small frame now gets a simpler drawing (the Drawing Discipline reads millimetres on the paper), as a hand would.
+- The Thrower drawing set's own sun (2 degrees, 14 degrees) and seed are not the engine's starting -44 / 38: they are
+  its saved settings, left alone.
+
+(Uncommitted, waiting on Adam.)
+
 ## Version 0.5.4, 30-Oct-2026: AURA Draws the Project's Own Model (the Whitecard From ValeVision 3D)
 
 **Asked by Adam:** "We need to update Aura so it can now load the Whitecard model from ValeVision or (SketchUp
@@ -95,8 +236,8 @@ annopyingly selecting and highliting things so i need to way to gate it".
   (`AssetsTap` asks `Na__EngineHost__AssetsOpen` first). Orbit, pan, zoom and the art direction points are untouched.
 - Folding the drawer away does what leaving the tab does: the selection goes, the brush is put down and a placement is
   cancelled, so nothing stays outlined (`WatchDrawer`, watching the root's `PainterlyNPR--assetsOpen`).
-- **PainterlyNPR v0.8.6** (uncommitted) has the same gate as engine seams, `PainterlyNPR__SceneEdit__Editing` and
-  `PainterlyNPR__SceneEdit__WatchLibrary`, used by its own app. AURA's pin is v0.8.5, without them, so the host keeps
+- **PainterlyNPR v0.8.8** (288832c, pushed) has the same gate as engine seams, `PainterlyNPR__SceneEdit__Editing` and
+  `PainterlyNPR__SceneEdit__WatchLibrary`, used by its own app. AURA's pin (v0.8.7) is without them, so the host keeps
   its two small helpers until the next sync, then takes the engine's.
 
 **Checked:** the module parses.

@@ -21,7 +21,9 @@
 #   record's valeVision_ModelUrls) byte for byte into Content__AuraScene__
 #   ModelFiles, names unchanged, each copy's SHA-256 checked against its
 #   source. A SketchUp sync replacing ValeVision 3D's files never changes a
-#   finished drawing.
+#   finished drawing. A copy already holding the same bytes is left as it is;
+#   any other is written beside it and renamed into place, so a copy the
+#   Server Manager pushed (its pusher's, mode 644) never stops the API.
 # - A RE-IMPORT KEEPS THE LAST SAVE, ONE ZIP (Adam: "zipped and archived, keep
 #   the last save, deleted each subiquent zip once one is backed up as a
 #   failsage"): the files it replaces go into 00__Archive/<id>__Aura
@@ -45,6 +47,12 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.0.1
+# - A copy is never opened over an existing file: same bytes are left alone,
+#   anything else is written beside it and renamed into place. Thrower's first
+#   import on the server could not have written over the 7 copies pushed from
+#   the PC (adam, mode 644; the API runs as valeapp).
+#
 # 30-Oct-2026 - Version 1.0.0
 # - Initial build, at Adam's word ("STOP GIVING UP": AURA loads the whitecard).
 #
@@ -56,6 +64,7 @@
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import struct
@@ -334,9 +343,16 @@ def build_import(folder, previous):
         if part is None:
             continue
         source = src / file_name
-        shutil.copyfile(source, dst / file_name)
+        target = dst / file_name
         digest = sha256(source)
-        if sha256(dst / file_name) != digest:
+        if not target.is_file() or sha256(target) != digest:                      # <-- The same bytes already there: nothing to write
+            temp = dst / f'.{file_name}.importing'
+            try:
+                shutil.copyfile(source, temp)
+                os.replace(temp, target)                                          # <-- Renamed into place: the folder's group write is enough, whoever owns the old copy
+            finally:
+                temp.unlink(missing_ok=True)
+        if sha256(target) != digest:
             raise OSError(f'the copy of {file_name} did not match its source')
         doc = glb_json(source)
         lo, hi = glb_bounds(doc)

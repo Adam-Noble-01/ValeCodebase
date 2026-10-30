@@ -36,17 +36,32 @@
 #   in the drawing set ('#Id') keep meaning the same object.
 # - THE IMPORT RULES (use, role, category, starting material, by file name)
 #   are AURA's config (AuraConfig__SceneImport__*), the same file the page reads.
+# - A LIBRARY ASSET IS STORED ONCE (Adam: "save a copy but instance it where
+#   possible"): when a drawing set is saved with an asset the scene has not
+#   stored, its MOD .glb and DAT .json are copied, library names unchanged,
+#   from the engine AURA's import map pins into Content__AuraScene__AssetFiles
+#   and listed in AuraScene__AssetFiles (store_assets, called by the drawing
+#   set's save). One record per asset Id however many placements; a project
+#   with no scene yet stores nothing (the scene is made on its first open).
+#   An asset the pin cannot give (no MOD .glb) is left for a later save.
 # - WHO: Management and AppAdmin, on projects switched on for AURA, as every
 #   project route.
 #
 # ROUTES:
-#   GET  /api/projects/<id>/scene          the scene and its _rev, or null; where its model files are served;
+#   GET  /api/projects/<id>/scene          the scene and its _rev, or null; where its model and asset files are served;
 #                                          whether ValeVision 3D has a whitecard, and a newer one than the scene's
 #   POST /api/projects/<id>/scene/import   make the scene from ValeVision 3D's whitecard, or bring it up to date
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.1.0
+# - Library assets stored: store_assets copies a placed asset's MOD and DAT
+#   from the pinned engine (the import map's PainterlyNPR/ folder) into
+#   Content__AuraScene__AssetFiles once, and adds its AuraScene__AssetFiles
+#   record, under the import's lock and through the library writer (_rev).
+#   GET scene also says where the asset files are served (assetBase).
+#
 # 30-Oct-2026 - Version 1.0.1
 # - A copy is never opened over an existing file: same bytes are left alone,
 #   anything else is written beside it and renamed into place. Thrower's first
@@ -88,6 +103,11 @@ aura_scene_api           = Blueprint('aura_scene_api', __name__)
 
 SCENE_DIR                = 'UserData__AuraScene'
 MODEL_DIR                = 'Content__AuraScene__ModelFiles'
+ASSET_DIR                = 'Content__AuraScene__AssetFiles'
+IMPORT_MAP               = aura_core.APP_DIR / '04__Lib__CoreEngine__VersionLocked' / 'Vale__CoreEngine__ImportMap__Index__.json'
+ENGINE_PREFIX            = 'PainterlyNPR/'                                        # <-- The one prefix AURA imports the engine through
+ASSET_LIBRARY            = '12__Data__AssetLibrary'                               # <-- Beside the pin's 02__Src__AppModules (the sync's runtime folders)
+ASSET_ID                 = re.compile(r'^NPR_[0-9]{2}_[0-9]{4}$')
 ARCHIVE_DIR              = '00__Archive'
 SOURCE_PARTS             = ('ValeVision3D', 'Content__3dModel__GlbFiles')
 LIST_KEY                 = 'valeVision_ModelUrls'
@@ -120,8 +140,26 @@ def model_dir(folder):
     return folder / aura_core.BUCKET / MODEL_DIR
 
 
+def asset_dir(folder):
+    return folder / aura_core.BUCKET / ASSET_DIR
+
+
 def source_dir(folder):
     return folder.joinpath(*SOURCE_PARTS)
+
+
+def copy_in(source, target, digest):
+    """Copy a file byte for byte, checked. Same bytes already there: nothing written. Anything else is written beside
+    it and renamed into place, so a copy the Server Manager pushed (its pusher's, mode 644) never stops the API."""
+    if not target.is_file() or sha256(target) != digest:
+        temp = target.with_name(f'.{target.name}.importing')
+        try:
+            shutil.copyfile(source, temp)
+            os.replace(temp, target)                                              # <-- Renamed into place: the folder's group write is enough, whoever owns the old copy
+        finally:
+            temp.unlink(missing_ok=True)
+    if sha256(target) != digest:
+        raise OSError(f'the copy of {target.name} did not match its source')
 
 
 def sha256(path):
@@ -345,15 +383,7 @@ def build_import(folder, previous):
         source = src / file_name
         target = dst / file_name
         digest = sha256(source)
-        if not target.is_file() or sha256(target) != digest:                      # <-- The same bytes already there: nothing to write
-            temp = dst / f'.{file_name}.importing'
-            try:
-                shutil.copyfile(source, temp)
-                os.replace(temp, target)                                          # <-- Renamed into place: the folder's group write is enough, whoever owns the old copy
-            finally:
-                temp.unlink(missing_ok=True)
-        if sha256(target) != digest:
-            raise OSError(f'the copy of {file_name} did not match its source')
+        copy_in(source, target, digest)
         doc = glb_json(source)
         lo, hi = glb_bounds(doc)
         rule = file_rule(part, file_rules)
@@ -463,6 +493,103 @@ def source_state(folder, scene):
 
 
 # #region ---------------------------------------------------------------------
+# REGION | Library Assets: Stored Once, However Often Placed
+# -----------------------------------------------------------------------------
+
+def pinned_library():
+    """(the pinned engine's asset library folder, 'PainterlyNPR v<version>'): the engine AURA's import map names, so the
+    API stores what the page draws. (None, None) when the record cannot be read."""
+    try:
+        record = json.loads(IMPORT_MAP.read_text(encoding='utf-8'))
+        imports = next(v for k, v in record.items() if k.endswith('__Imports'))
+        modules = (IMPORT_MAP.parent.parent / imports[ENGINE_PREFIX]).resolve()  # <-- './04__Lib__.../01__CoreLib__PainterlyNPR__v0.8.9/02__Src__AppModules/'
+    except (OSError, ValueError, StopIteration, KeyError, TypeError) as error:
+        aura_core.log(f'[AURA API] the engine pin could not be found: {error}')
+        return None, None
+    pin = modules.parent
+    lock = (Na__Library__ReadJson(pin / 'PainterlyNPR__CoreLib__VersionLock__.json') or {}).get('AuraRender__CoreEngine__VersionLock') or {}
+    version = (lock.get('AuraRender__CoreEngine__VersionLock__Source') or {}).get('EngineVersion') or pin.name.rsplit('__v', 1)[-1]
+    return pin / ASSET_LIBRARY, f'PainterlyNPR v{version}'
+
+
+def placed_asset_ids(drawing_set):
+    """The library asset Ids a drawing set places (AuraDrawingSet__Engine.Settings.Assets), each once, in first-placed order."""
+    settings = ((drawing_set or {}).get('AuraDrawingSet__Engine') or {}).get('Settings') or {}
+    ids = []
+    for placement in settings.get('Assets') or []:
+        asset_id = str(placement.get('AssetId') or '') if isinstance(placement, dict) else ''
+        if ASSET_ID.match(asset_id) and asset_id not in ids:                     # <-- The Id's own form only: it becomes part of a file path
+            ids.append(asset_id)
+    return ids
+
+
+def store_one(folder, library, version, asset_id, now, user):
+    """Copy one asset's MOD and DAT from the pinned library into the project: its AuraScene__AssetFiles record, or None
+    when the pin cannot give it (no such asset, or no MOD .glb: a pin synced before the sync's 1.2.0)."""
+    found = sorted(library.glob(f'*/{asset_id}__*/{asset_id}__DAT__*.json'))     # <-- '<collection>/<Id>__<Type>__<Name>__<Var>__/<Id>__DAT__...json'
+    if not found:
+        aura_core.log(f'[AURA API] asset {asset_id} is not in the pinned library: not stored')
+        return None
+    dat_path = found[0]
+    doc = (json.loads(dat_path.read_text(encoding='utf-8')) or {}).get('PainterlyNPR__AssetData') or {}
+    mod_name = ((doc.get('PainterlyNPR__AssetData__Files') or {}).get('MOD') or {}).get('File') or ''
+    mod_path = dat_path.parent / mod_name
+    if not mod_name.endswith('.glb') or '/' in mod_name or '\\' in mod_name or not mod_path.is_file():
+        aura_core.log(f'[AURA API] asset {asset_id}: the pinned library has no MOD .glb for it: not stored yet')
+        return None
+    target = asset_dir(folder)
+    target.mkdir(parents=True, exist_ok=True)
+    glb_digest = sha256(mod_path)
+    copy_in(mod_path, target / mod_name, glb_digest)
+    copy_in(dat_path, target / dat_path.name, sha256(dat_path))                  # <-- The record as it was when copied
+    return {'AssetFile__AssetId': asset_id,
+            'AssetFile__Name': (doc.get('PainterlyNPR__AssetData__Identity') or {}).get('DisplayName') or asset_id,
+            'AssetFile__GlbFile': mod_name, 'AssetFile__DatFile': dat_path.name,
+            'AssetFile__LibraryFolder': dat_path.parent.relative_to(library).as_posix(),
+            'AssetFile__LibraryVersion': version,
+            'AssetFile__Instanced': not (doc.get('PainterlyNPR__AssetData__Placement') or {}).get('NewShapeEachPlop'),
+            'AssetFile__GlbBytes': mod_path.stat().st_size, 'AssetFile__GlbSha256': glb_digest,
+            'AssetFile__CopiedIso': now, 'AssetFile__CopiedBy': user}
+
+
+def store_assets(folder, drawing_set):
+    """Store every asset the drawing set places that the scene has not stored yet: its MOD and DAT copied once into
+    Content__AuraScene__AssetFiles, its record added to AuraScene__AssetFiles (a new _rev). Returns the Ids stored.
+    No scene yet: nothing (the scene is made on the project's first open, and the next save stores them)."""
+    wanted = placed_asset_ids(drawing_set)
+    path = scene_path(folder)
+    if not wanted or not path.is_file():
+        return []
+    stored = {a.get('AssetFile__AssetId') for a in (Na__Library__ReadJson(path) or {}).get('AuraScene__AssetFiles') or []}
+    if all(asset_id in stored for asset_id in wanted):                           # <-- Every autosave of a set with nothing new: one read, no lock
+        return []
+    with Na__Library__Locked(folder / aura_core.BUCKET / 'SceneImport'):         # <-- The import's lock: a re-import never writes over an asset just stored
+        scene = Na__Library__ReadJson(path)
+        library, version = pinned_library()
+        if not scene or library is None:
+            return []
+        records = list(scene.get('AuraScene__AssetFiles') or [])
+        stored = {a.get('AssetFile__AssetId') for a in records}
+        now, user = iso_now(), aura_core.user_code()
+        added = []
+        for asset_id in wanted:
+            if asset_id not in stored:
+                record = store_one(folder, library, version, asset_id, now, user)
+                if record:
+                    records.append(record)
+                    added.append(asset_id)
+        if not added:
+            return []
+        scene['AuraScene__AssetFiles'] = records
+        scene['AuraScene__Meta'] = dict(scene['AuraScene__Meta'], UpdatedIso=now, UpdatedBy=user or scene['AuraScene__Meta'].get('UpdatedBy'))
+        Na__Library__WriteJson(path, scene, user, folder, expected_rev=int(scene.get('_rev', 0) or 0))
+    aura_core.activity('scene.assets', f'Stored {len(added)} library asset(s) in the AURA scene: {", ".join(added)}', folder)
+    return added
+
+# endregion -------------------------------------------------------------------
+
+
+# #region ---------------------------------------------------------------------
 # REGION | Routes
 # -----------------------------------------------------------------------------
 
@@ -489,7 +616,8 @@ def read_scene(pid):
         aura_core.log(f'[AURA API] scene unreadable for {folder.name}: {error}')
         return aura_core.fail('The scene on the server could not be read.', 500)
     response = jsonify({'ok': True, 'scene': scene, 'rev': int((scene or {}).get('_rev', 0) or 0),
-                        'modelBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{MODEL_DIR}/', 'source': source})
+                        'modelBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{MODEL_DIR}/',
+                        'assetBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{ASSET_DIR}/', 'source': source})
     response.headers['Cache-Control'] = 'no-store'
     return response
 
@@ -519,7 +647,8 @@ def import_scene(pid):
     aura_core.activity('scene.import', f'Made the AURA scene from ValeVision 3D (import {number}, {len(scene["AuraScene__ModelFiles"])} files)', folder)
     scene['_rev'] = result['rev']
     response = jsonify({'ok': True, 'scene': scene, 'rev': result['rev'],
-                        'modelBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{MODEL_DIR}/', 'source': source_state(folder, scene)})
+                        'modelBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{MODEL_DIR}/',
+                        'assetBase': Na__Library__Url(folder) + f'{aura_core.BUCKET}/{ASSET_DIR}/', 'source': source_state(folder, scene)})
     response.headers['Cache-Control'] = 'no-store'
     return response
 

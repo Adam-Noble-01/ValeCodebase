@@ -95,6 +95,55 @@ copy is right.
 
 **Live:** needs `aura` (this version, with the v0.8.10 pin). No API change.
 
+## AURA Scene API 1.1.0, 30-Oct-2026: Library Assets Stored Once (No App Version: the Page Is Unchanged)
+
+**Asked by Adam** (the scene schema's brief): library assets, "save a copy but instance it where possible". The schema's
+"To Build Next" item 1: when a drawing set is saved with an asset the project has not stored, the API copies its MOD
+and DAT into `Content__AuraScene__AssetFiles` and lists it in the scene.
+
+**Built:**
+- **On a drawing-set save** (`AuraRender__Api__Drawings__.py` 1.2.0, `PUT api/projects/<id>/drawings`): after the set is
+  written, every asset Id in `AuraDrawingSet__Engine.Settings.Assets` the scene has not stored is stored. The answer
+  lists them in `assetsStored`. Storing never fails the save: an error is logged and the next save tries again.
+- **The store** (`AuraRender__Api__Scene__.py` 1.1.0, `store_assets`):
+  - one record per asset Id however many placements; the files keep the library's names, flat in the folder;
+  - copied from the engine AURA's import map pins (`Vale__CoreEngine__ImportMap__Index__.json`'s `PainterlyNPR/`
+    folder, its `12__Data__AssetLibrary`), so the API stores the library the page draws; `AssetFile__LibraryVersion`
+    is that pin's (`PainterlyNPR v0.8.10` now);
+  - `AssetFile__Instanced` from the DAT's `Placement.NewShapeEachPlop` (trees false, the bench true);
+  - a copy already holding the same bytes is left alone, anything else is written beside it and renamed into place
+    (`copy_in`, now shared with the import), so a file the Server Manager pushed never stops the API;
+  - the scene is written through the library writer with its `_rev`, under the import's lock, so a re-import and an
+    asset store never write over each other; the re-import already carries the stored assets over;
+  - every autosave of a set with nothing new costs one read of the scene, no lock;
+  - only Ids of the library's own form (`NPR_CC_TTFI`) are looked up; an Id the pin lacks is logged and skipped;
+  - a project with no scene yet stores nothing (the scene is made on its first open; the next save stores them).
+- **GET scene** also answers `assetBase`, where the stored files are served (behind the library gate, as the models).
+- **The sync** (`AuraRender__BuildUtil__SyncCoreEngine__.py` 1.2.0): the pin carries the asset library's MOD `.glb`
+  files (26, 3.0 MB at v0.8.9; they are committed in PainterlyNPR, so no engine change). Never `.skp`. The page never
+  fetches them, so the service worker never caches them.
+
+**Checked** (a sandbox `VALE_ROOT` holding a copy of Thrower's record, whitecard and AURA folder; Flask's test client
+with the sign-in stubbed; a test pin made by the sync script's new rule from PainterlyNPR's 0e79f92, in the sandbox):
+- The test pin: 412 files, 26 `.glb` and no `.skp`; its `--check` untouched.
+- On AURA's real pin (v0.8.9, synced before the rule): the set saves, nothing is stored, the scene stays at rev 1.
+- One mature oak placed: its MOD (418,860 bytes) and DAT stored, byte for byte the pin's, one record, scene rev 2,
+  valid against the contract, model files and objects unchanged.
+- A second oak: nothing stored, the scene and the files untouched.
+- A bench beside them, an unknown Id and `../../etc`: only the bench stored (Instanced true).
+- A re-import keeps both records; with no scene, the set saves and nothing is made.
+- Thrower's live folder untouched (scene rev 1, no asset files).
+
+**Not yet:**
+- **The pin:** v0.8.10 (0710926), synced with the new rule by another session, carries the 26 `.glb`; the test run
+  again on it passes. A pin without them stores nothing and logs why; the first save on one with them stores
+  everything placed.
+- **The sync's `--check`** sorted version folders as text, so v0.8.9 read as newer than v0.8.10: they now sort by
+  version number (`Na__Sync__VersionFolders`), and `--check` passes on the live folders.
+- **Live:** needs `server-api` (and a restart of `vale@ValeVision__AuraRender`) and `aura` (the v0.8.10 pin).
+- AURA still draws a placement from the engine's generator, not the stored copy; the stored MOD is for SketchUp and
+  the apps that read GLBs (the schema's "How AURA's Tools Use It").
+
 ## Version 0.5.6, 30-Oct-2026: Cameras, the Lens and the Elevation Planes
 
 **Asked by Adam** (a screenshot of the 3D Environment's panel, the room under its sections ringed): "Read your NPR

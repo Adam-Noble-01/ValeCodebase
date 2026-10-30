@@ -19,9 +19,9 @@ from the commit: it was never pushed.
 - `02__Src__AppModules`, whole: every module, config and stylesheet part.
 - Beside it, what the engine reads at run time from outside its modules (since AURA 0.4.0, sync 1.1.0), only these
   file types: `12__Data__AssetLibrary` (the asset library's index, register and DATs, its RND and PXY pictures: .json,
-  .webp), `07__Data__MaterialRecipes` (the material register and swatches: .json, .webp) and
-  `03__Style__AppStylesheets` (.css: the engine's design tokens, which AURA's host links). Never the SketchUp sources
-  (.skp) or the three.js models (.glb).
+  .webp; since sync 1.2.0 its MOD models, .glb, which AURA's API copies into a project when an asset is placed),
+  `07__Data__MaterialRecipes` (the material register and swatches: .json, .webp) and `03__Style__AppStylesheets`
+  (.css: the engine's design tokens, which AURA's host links). Never the SketchUp sources (.skp).
 - They sit as in PainterlyNPR's repository because the engine finds them from its own files (since PainterlyNPR
   v0.8.2): a pin needs no path of AURA's to read them.
 

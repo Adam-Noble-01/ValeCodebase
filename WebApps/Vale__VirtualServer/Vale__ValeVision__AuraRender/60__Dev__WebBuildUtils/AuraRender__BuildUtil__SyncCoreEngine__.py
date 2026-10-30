@@ -29,7 +29,8 @@ DESCRIPTION:
   - 02__Src__AppModules, whole: every module, config and stylesheet part.
   - What the engine reads at run time from outside it (NA__SYNC__RUNTIME): the
     asset library (12__Data__AssetLibrary: its index, register and DATs, its
-    RND and PXY pictures; never the .skp sources or the .glb models), the
+    RND and PXY pictures, and since 1.2.0 its MOD .glb models; never the .skp
+    sources), the
     material library (07__Data__MaterialRecipes: its register and swatches),
     and the engine's own stylesheets (03__Style__AppStylesheets, for its
     design tokens).
@@ -66,6 +67,16 @@ REQUIRES:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+30-Oct-2026 - Version 1.2.0
+- The pin carries the asset library's MOD .glb models (26 files, 3.0 MB at
+  v0.8.9): AURA's API copies a placed asset's MOD and DAT into the project's
+  Content__AuraScene__AssetFiles from the pin (scene schema 1.0.0, "A stored
+  asset"). The page never fetches them, so the service worker never caches
+  them. Still never the .skp sources (SketchUp's slot).
+- Version folders sort by version number, not as text: --check compared the
+  repo with v0.8.9 as "the newest copy" once v0.8.10 was pinned, and said the
+  repo was newer.
+
 30-Oct-2026 - Version 1.1.0 (AURA 0.4.0)
 - The pin carries what the engine reads at run time from outside its modules:
   the asset and material libraries (their .json and .webp) and its own
@@ -105,7 +116,7 @@ NA__SYNC__LIB_DIR                 = NA__SYNC__AURA_ROOT / "04__Lib__CoreEngine__
 NA__SYNC__FOLDER_PREFIX           = "01__CoreLib__PainterlyNPR__v"                           # <-- + the engine's AppVersion
 NA__SYNC__MODULES                 = "02__Src__AppModules"                                   # <-- Copied whole, under its own name
 NA__SYNC__RUNTIME                 = (                                                       # <-- What the engine reads at run time from outside its modules (v1.1.0)
-    ("12__Data__AssetLibrary",     (".json", ".webp")),                                     # <-- The index, register and DATs; the RND and PXY pictures (no .skp, no .glb)
+    ("12__Data__AssetLibrary",     (".json", ".webp", ".glb")),                             # <-- The index, register and DATs; the RND and PXY pictures; the MOD models, for AURA's API to store a placed asset (1.2.0). Never .skp
     ("07__Data__MaterialRecipes",  (".json", ".webp")),                                     # <-- The register and the swatches
     ("03__Style__AppStylesheets",  (".css",)),                                              # <-- The engine's design tokens, linked by AURA's host from the pin
 )
@@ -158,6 +169,17 @@ def Na__Sync__Git(repo: Path, *args: str) -> str:
         return out.stdout.strip() if out.returncode == 0 else ""
     except (OSError, subprocess.SubprocessError):
         return ""
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | The Version Folders, Oldest to Newest by Version Number (v0.8.10 after v0.8.9, never before it as text sorts)
+# ------------------------------------------------------------
+def Na__Sync__VersionFolders() -> list:
+    def version(p: Path) -> tuple:
+        try:
+            return tuple(int(x) for x in p.name[len(NA__SYNC__FOLDER_PREFIX):].split("."))
+        except ValueError:
+            return ()                                                              # <-- A folder not named by a version sorts first
+    return sorted((p for p in NA__SYNC__LIB_DIR.glob(f"{NA__SYNC__FOLDER_PREFIX}*") if p.is_dir()), key=lambda p: (version(p), p.name))
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | Is This Path (relative to the engine's root) One the Pin Carries?
@@ -348,7 +370,7 @@ def Na__Sync__Run(allow_dirty: bool) -> int:
     init_sha = files.get(NA__SYNC__INIT_MODULE, "")
     if previous and previous.get("AuraRender__CoreEngine__VersionLock__Host", {}).get("InitSha256") not in ("", init_sha):
         print("  NOTE: PainterlyNPR's AppCore Init changed since the last sync of this version.")
-    others = sorted(p.name for p in NA__SYNC__LIB_DIR.glob(f"{NA__SYNC__FOLDER_PREFIX}*") if p.is_dir() and p != target_folder)
+    others = [p.name for p in Na__Sync__VersionFolders() if p != target_folder]
     if others:
         print(f"  Other version folders kept: {', '.join(others)}")
         print("  Point AURA's import map (index.html and Vale__CoreEngine__ImportMap__Index__.json) at the new folder,")
@@ -360,7 +382,7 @@ def Na__Sync__Run(allow_dirty: bool) -> int:
 # ------------------------------------------------------------
 def Na__Sync__Check() -> int:
     problems = 0
-    folders = sorted(p for p in NA__SYNC__LIB_DIR.glob(f"{NA__SYNC__FOLDER_PREFIX}*") if p.is_dir())
+    folders = Na__Sync__VersionFolders()
     if not folders:
         print("[AURA SyncCoreEngine] No engine copy yet. Run this script without --check.")
         return 1

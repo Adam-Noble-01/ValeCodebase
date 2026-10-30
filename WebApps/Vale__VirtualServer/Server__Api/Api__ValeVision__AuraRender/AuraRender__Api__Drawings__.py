@@ -28,11 +28,18 @@
 #   GET  /api/config                          the app's config (public: no data in it)
 #   GET  /api/projects/<id>                   the project's id, number, name (Management, switched on)
 #   GET  /api/projects/<id>/drawings          the drawing set and its _rev, or null (Management, switched on)
-#   PUT  /api/projects/<id>/drawings          the whole set, with the _rev it was loaded at (Management, switched on)
+#   PUT  /api/projects/<id>/drawings          the whole set, with the _rev it was loaded at (Management, switched on);
+#                                             stores in the scene any placed library asset it has not stored yet
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.2.0
+# - A save stores the library assets it places that the project's scene has
+#   not stored yet (AuraRender__Api__Scene__ store_assets: MOD and DAT copied
+#   once into Content__AuraScene__AssetFiles); the answer lists them in
+#   assetsStored. Storing never fails the save: the set is written first.
+#
 # 30-Oct-2026 - Version 1.1.0
 # - Projects not switched on for AURA in the Gallery's Project Editor are refused
 #   (403, notSwitchedOn): _open_project replaces _project_or_404.
@@ -51,6 +58,7 @@ import json
 from flask import Blueprint, jsonify, request
 
 import AuraRender__Api__Core__ as aura_core
+import AuraRender__Api__Scene__ as aura_scene
 from ValeShared__Library__ import Na__Library__Conflict, Na__Library__ReadJson, Na__Library__WriteJson
 
 # endregion -------------------------------------------------------------------
@@ -181,8 +189,13 @@ def save_drawings(pid):
         return aura_core.fail('The drawing set could not be saved on the server.', 500)
     if first:
         aura_core.activity('drawings.create', 'Started an AURA drawing set', folder)
+    try:
+        stored = aura_scene.store_assets(folder, doc)                             # <-- A placed asset the scene has not stored yet: its MOD and DAT copied once
+    except (OSError, ValueError, KeyError, TypeError, Na__Library__Conflict) as error:
+        aura_core.log(f'[AURA API] assets not stored for {folder.name}: {error}')  # <-- The set is saved; the next save tries again
+        stored = []
     sheets = doc.get('AuraDrawingSet__Sheets') or []
-    response = jsonify({'ok': True, 'rev': result['rev'], 'sheets': len(sheets), 'bytes': len(json.dumps(doc))})
+    response = jsonify({'ok': True, 'rev': result['rev'], 'sheets': len(sheets), 'bytes': len(json.dumps(doc)), 'assetsStored': stored})
     response.headers['Cache-Control'] = 'no-store'
     return response
 

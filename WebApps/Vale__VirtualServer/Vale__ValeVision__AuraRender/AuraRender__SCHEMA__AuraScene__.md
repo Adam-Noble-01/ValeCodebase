@@ -8,6 +8,8 @@
   against the contract; on the PC, not yet on the server (the last section).
 - **Built (AURA 0.5.4):** the API makes and reads a project's scene, and AURA draws the project's own model from it (the
   "Built" section near the end); what is still to come is listed after it.
+- **Built (scene API 1.1.0):** a drawing-set save stores each placed library asset once (its MOD and DAT), from the
+  v0.8.10 pin on (the pin carries the `.glb` files).
 
 **Asked by Adam:** "update Aura so it can now load the Whitecard model from ValeVision or (SketchUp Eventually) ...
 This first method of creating an aura file should copy all GLB files accross and make them avaiblible to Auras tools,
@@ -264,15 +266,23 @@ origin.
 - **The sync map:** `Content__AuraScene__ModelFiles` and `Content__AuraScene__AssetFiles` in `ServerMadeContent`, so
   every Collect brings the server's copies to the PC (see The Project Folder).
 
+## Built (Scene API 1.1.0, 30-Oct-2026): Storing an Asset
+
+- **A drawing-set save** (`AuraRender__Api__Drawings__.py` 1.2.0) stores every asset Id in `Settings.Assets` the scene
+  has not stored (`AuraRender__Api__Scene__.py` 1.1.0, `store_assets`): its MOD and DAT copied, library names
+  unchanged, from the pin AURA's import map names into `Content__AuraScene__AssetFiles`, and its record added to
+  `AuraScene__AssetFiles` (a new `_rev`, under the import's lock). Once per asset however often it is placed; never
+  fails the save; a project with no scene stores nothing. The save's answer lists the Ids in `assetsStored`; GET
+  scene answers `assetBase`.
+- **The pin:** the sync (1.2.0) carries the library's 26 MOD `.glb` files (3.0 MB); AURA's v0.8.10 pin has them. A
+  pin synced before that rule stores nothing, and a save says why in the service's log.
+
 ## To Build Next
 
-1. **Storing an asset** when a drawing set is saved with one the project has not stored (its MOD and DAT into
-   `Content__AuraScene__AssetFiles`); the pin carries the library's `.json` and `.webp` but no `.glb`, so the 26 MOD
-   `.glb` files (3.0 MB) are pinned first.
-2. **The library gate, AURA's own:** live since 30-Oct-2026 16:18 UTC through the `valevision` route (signed-in staff,
+1. **The library gate, AURA's own:** live since 30-Oct-2026 16:18 UTC through the `valevision` route (signed-in staff,
    nginx `607291531112`). Once AURA's API answers `library-access` (Managers and App Admins, project switched on), the
    three folders move to the `aura` route.
-3. **Saving the scene from the page** (`PUT api/projects/<id>/scene`), once the page edits it (the model placement, an
+2. **Saving the scene from the page** (`PUT api/projects/<id>/scene`), once the page edits it (the model placement, an
    object's class).
 
 ---

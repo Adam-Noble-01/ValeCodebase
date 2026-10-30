@@ -202,8 +202,8 @@ menu). The dev server mounts AURA's API itself. The handwriting needs its model 
 
 ## Not Yet
 
-- For a project's own model (0.5.4 draws it): storing a placed asset's MOD and DAT in the scene's
-  `Content__AuraScene__AssetFiles` (the pin has no `.glb` yet); brick indication and window shadow lines on it (a GLB
+- For a project's own model (0.5.4 draws it): a placed asset's MOD and DAT are stored in the scene's
+  `Content__AuraScene__AssetFiles` (scene API 1.1.0) from the v0.8.10 pin on (the first to carry the `.glb` files); brick indication and window shadow lines on it (a GLB
   carries no surfaces); method two, ValeVision Cloud Sync's AURA export tab (a Painterly Scene Package into
   `Content__AuraScenePackages`).
 - Cross sections and floor plans with their cut faces filled: since 0.5.6 an elevation or the roof plan can be cut,

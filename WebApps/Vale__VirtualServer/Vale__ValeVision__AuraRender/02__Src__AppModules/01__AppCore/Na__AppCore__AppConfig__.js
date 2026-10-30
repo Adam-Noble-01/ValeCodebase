@@ -20,6 +20,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.4.8)
+// - Na__AppConfig__All: the whole config, for the parameter dump.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build, from ValeVision Theia's config loader.
 //
@@ -66,6 +69,14 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | The Whole Config, a Copy, Full Keys (the developers' parameter dump)
+    // ------------------------------------------------------------
+    function Na__AppConfig__All() {
+        return JSON.parse(JSON.stringify(Na__AppConfig__Values));
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -75,7 +86,8 @@
 
     export {
         Na__AppConfig__Load,
-        Na__AppConfig__Get
+        Na__AppConfig__Get,
+        Na__AppConfig__All
     };
 
 // endregion -------------------------------------------------------------------

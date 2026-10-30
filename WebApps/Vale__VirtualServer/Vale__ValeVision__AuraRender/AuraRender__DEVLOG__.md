@@ -1,5 +1,51 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.4.8, 30-Oct-2026: A Parameter Dump for Developers
+
+**Asked by Adam** (a screenshot of the avatar menu, an arrow under "Save the drawing set now"): "For developers in here
+in the Aura App, add a parameter dump button, this dumps literally all settings for everything to a json file for
+debugging / handover to coding agents"
+
+**Built:**
+- **The button** (`Na__AppCore__AuraApp__.js`): **Download a parameter dump**, under a Developer tools heading at the
+  foot of the avatar menu's own items. App Admins only (`adminOnly`), as ValeVision 3D's and Theia's developer tools.
+- **The dump** (new `Na__AppCore__ParameterDump__.js` 1.0.0): one JSON file,
+  `ValeVisionAura__ParameterDump__<library id>__<yyyymmdd-hhmmss>.json`, made in the browser and downloaded. Nothing
+  goes to the server, and taking it changes nothing. One key a part:
+  - `Meta`: when, who (code, name, level, role), the app's version and page, the browser (window, screen, pixel
+    ratio, cores, memory), the service worker and the PWA's `aura-` caches by name (a stale cache shows here), and
+    `Errors`.
+  - `Project`: the project's record, without the client's address.
+  - `Page`: the open tab and sheet, the selection, the tool, unsaved edits, the drawing set's revision, the header's
+    save state and the engine's status line.
+  - `Engine`: everything PainterlyNPR holds (below).
+  - `DrawingSet`: the whole document: sheets, viewports, notes, saved views, the engine's saved settings.
+  - `AppConfig`: every key of the app config, as the page has it (new `Na__AppConfig__All`).
+  - `Handwriting`: the engine's loading state.
+  - `BrowserStorage`: this browser's AURA and PainterlyNPR keys (panel widths, work mode, open folds). No other
+    app's keys.
+- **The engine's part** (new `Na__EngineHost__Dump__.js` 1.0.0, in the engine host: only that folder imports the
+  engine; recorded in the import map's index). Read only: it sets nothing and asks for no render.
+  - The whole `State`, not only what a drawing set saves (that is there too, as `SavedSettings`).
+  - The live camera and points, and the 3D Environment's own when a sheet's viewport has borrowed the engine.
+  - Every range control: its path into State, label, range, value and the engine's own readout.
+  - The two choices with their options, and the camera presets with their cameras.
+  - The render graph: its flags, the inputs' versions, every pass's status, stamp and last time. Read through the
+    module's namespace, so a pin without one of those exports still loads.
+  - The GPU in sizes only: targets, scale, largest texture, the renderer's name. No pixels.
+  - The scene's counts and the building's bounds.
+- **Plain JSON whatever it meets:** Maps become objects, NaN and Infinity their names, typed arrays their type and
+  length, elements their tag; a part that throws is written as `{ DumpError }`, listed in `Meta.Errors`, and the toast
+  says how many parts could not be read.
+- **Checked on the local server** (Thrower, engine v0.8.5): signed out, the engine started on a spare canvas, then a
+  dump taken before and after it started. No part failed either time; about 77 KB, with 89 controls, 18 passes, the
+  GPU, the scene and all 20 State keys. The save made its blob link and toast and took the link away again (the
+  download itself held back). The menu item shows only to a signed-in App Admin, so it was not seen there.
+- **Live** on app.valegardenhouses.com/aura/ (it went up with the push of the versions after it; the live module is
+  byte for byte the PC's). The API reads the config fresh, so no restart.
+
+(Committed at Adam's word: "Commit it". The code and its records only: the versions round it were not done yet.)
+
 ## Version 0.3.1, 30-Oct-2026: Undo and Redo
 
 **Asked by Adam:** "Add a comprehensive user undo / redo caching system to both The NPR Demo Environment and Aura so

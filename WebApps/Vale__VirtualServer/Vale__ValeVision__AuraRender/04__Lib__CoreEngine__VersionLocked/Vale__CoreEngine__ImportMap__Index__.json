@@ -5,6 +5,7 @@
         "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.6.0/02__Src__AppModules/"
     },
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
-        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js"
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
+        "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Dump__.js"
     ]
 }

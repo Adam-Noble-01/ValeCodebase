@@ -16,7 +16,8 @@
 //   02__Src__AppModules (04__Lib__CoreEngine__VersionLocked, reached through the
 //   import map's "PainterlyNPR/" prefix in index.html). Nothing in AURA edits
 //   it: a change goes into PainterlyNPR, then a sync brings the new version.
-//   Only this module imports from it.
+//   Only this module and Na__EngineHost__Dump__ (everything it holds, read
+//   only, for the parameter dump) import from it.
 // - BOOT is PainterlyNPR's own AppCore Init (region Boot) without its panel,
 //   graph strip and header: the same context options, programs, vertex arrays,
 //   targets and first request. When the engine's Init changes, this boot is

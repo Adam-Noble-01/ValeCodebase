@@ -30,6 +30,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.4.8
+// - Developer tools in the avatar menu (App Admins only): Download a
+//   parameter dump, every setting the page holds in one JSON file
+//   (Na__AppCore__ParameterDump__).
+//
 // 30-Oct-2026 - Version 0.3.1
 // - Undo and redo start with the saving (Na__DrawingSet__History__, its
 //   arrows in the header's #auraHistory); an undo or redo reopens the tab it
@@ -65,6 +70,7 @@
     import { Na__Persistence__Load, Na__Persistence__Start, Na__Persistence__Save } from '../40__Feature__DrawingSet/Na__DrawingSet__Persistence__.js';
     import { Na__RefreshGuard__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__RefreshGuard__.js';
     import { Na__History__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__History__.js';
+    import { Na__ParameterDump__Download } from './Na__AppCore__ParameterDump__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -276,7 +282,8 @@
             menuItems : [
                 { label: 'Open ValeVision Gallery', onClick: () => { window.location.href = Na__Aura__GALLERY; } },
                 ...(projectId ? [{ label: 'Open this project in ValeVision 3D', onClick: () => { window.location.href = `/valevision/?project=${encodeURIComponent(projectId)}`; } }] : []),
-                { label: 'Save the drawing set now', minLevel: 'Management', onClick: () => Na__Persistence__Save() }
+                { label: 'Save the drawing set now', minLevel: 'Management', onClick: () => Na__Persistence__Save() },
+                { label: 'Download a parameter dump', adminOnly: true, section: 'Developer tools', onClick: () => Na__ParameterDump__Download() }   // <-- Every setting, one JSON file (0.4.8)
             ],
             onReady   : async (user) => {
                 Na__AppState__Data.user = user;

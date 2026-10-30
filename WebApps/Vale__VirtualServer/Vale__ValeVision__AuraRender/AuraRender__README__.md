@@ -53,10 +53,10 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 
 | Folder | What it does |
 |---|---|
-| `01__AppCore` | Start-up, the shared sign-in and the level gate, the app state and its events, the config |
+| `01__AppCore` | Start-up, the shared sign-in and the level gate, the app state and its events, the config, the developers' parameter dump (`Na__AppCore__ParameterDump__`) |
 | `02__AppData` | The app config |
 | `03__AppUtils` | The API client, DOM builders and line icons, toasts, ids and dates, the panels' folding sections and resize grips, the undo history's snapshot store |
-| `10__System__EngineHost` | The one door to PainterlyNPR: boot, camera, parameters, settings, Art Direction Points (the engine's own editor, lent to a sheet's viewport while its points are edited), stills for the sheets |
+| `10__System__EngineHost` | The one door to PainterlyNPR: boot, camera, parameters, settings, Art Direction Points (the engine's own editor, lent to a sheet's viewport while its points are edited), stills for the sheets; everything the engine holds, read only, for the parameter dump (`Na__EngineHost__Dump__`) |
 | `11__System__Environment3d` | The 3D Environment tab: the engine's live drawing and its navigation, presets, saved views with their points, the Art direction points section, parameters |
 | `20__System__DrawingSheets` | Vale's drawing page (A1 to A4, landscape and portrait), the title block, the sheet surface, tabs, the workspace, and the sheets' navigation (the Layout Editor's, with its key map `Na__Hotkeys__DrawingSheets__.json`) |
 | `21__System__Viewports` | Elevations and the roof plan to scale, 3D views, their cameras and points, the render queue, editing, and a viewport's Art direction points edited on its picture |

@@ -28,6 +28,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 1.1.2 (ValeVision3D v2.79.4)
+// - The bell icon (the Internal tab's New project notice card).
+//
+// 28-Oct-2026 - Version 1.1.1 (ValeVision3D v2.79.1)
+// - The download icon: the Gold Standards' download (Icon__NaAdminMenu__
+//   DownloadPdf__, an arrow into a tray), redrawn on this set's 24 grid.
+//
 // 28-Oct-2026 - Version 1.1.0 (ValeVision3D v2.79.0, client emails sent)
 // - Na__ClientLinks__IsEmailAddress and Na__ClientLinks__ParseAddresses; the
 //   send, eye and alert icons.
@@ -73,6 +80,8 @@
         replay      : '<path d="M4.6 12a7.4 7.4 0 1 0 2.2-5.3"/><path d="M4.4 4.6v3.9h3.9"/>',
         help        : '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7"/><circle cx="12" cy="16.9" r="0.6" fill="currentColor"/>',
         send        : '<path d="M20.5 3.5L10.8 13.2"/><path d="M20.5 3.5l-6.2 17-3.5-7.3-7.3-3.5 17-6.2z"/>',
+        download    : '<path d="M12 3.09v11.25M8.69 11.03L12 14.34l3.31-3.31"/><path d="M3.75 13.13v5.34a1.69 1.69 0 0 0 1.69 1.69h13.12a1.69 1.69 0 0 0 1.69-1.69v-5.34"/>',   // <-- Gold Standards: Icon__NaAdminMenu__DownloadPdf__ at 24/1024
+        bell        : '<path d="M6.2 16.8V11a5.8 5.8 0 0 1 11.6 0v5.8l1.7 2H4.5z"/><path d="M10 20.8a2.1 2.1 0 0 0 4 0"/><path d="M12 3.2v2"/>',
         eye         : '<path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>',
         alert       : '<path d="M12 3.8l9 15.7H3l9-15.7z"/><path d="M12 9.8v4.4"/><circle cx="12" cy="16.9" r="0.6" fill="currentColor"/>'
     };

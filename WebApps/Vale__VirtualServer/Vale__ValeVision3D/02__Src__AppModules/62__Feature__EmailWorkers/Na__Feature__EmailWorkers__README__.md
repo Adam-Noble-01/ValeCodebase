@@ -57,7 +57,7 @@ Reply-To the sender
 
 | File | Purpose |
 |------|---------|
-| `Na__ClientLinks__ShareTab__.js` | The External tab: client links, and the Client email panel (addresses, Send email, Generate & download) |
+| `Na__ClientLinks__ShareTab__.js` | The External tab: client links, and the Client email panel (addresses, Download Email, Send email) |
 | `Na__ClientLinks__SendCheck__.js` | The modal: "This email is going outside Vale", the checklist, the tick box, the send, "Email sent to ..." |
 | `Na__ClientLinks__ClientEmail__Builder__.js` | Fills the template; a sent email gets the sender's sign-off (Kind regards, name, role) |
 | `Na__ClientLinks__ClientEmail__Template__.html` | The client email card |
@@ -88,7 +88,8 @@ Reply-To the sender
 
 ## Send Flow
 
-**Internal:** pick recipients, fill greeting and notes, **Send email** (or **Send app notification**). The toast says
+**Internal:** choose the email on its two picture cards (**Project link email**, or **New project notice**: no link, it
+points to the install guide), pick recipients, fill greeting and notes, then **Send email** (v2.79.4). The toast says
 where it went: "Email successfully sent to derek@..., roger@... and 2 more."
 
 **Client email:**
@@ -100,7 +101,7 @@ where it went: "Email successfully sent to derek@..., roger@... and 2 more."
 4. "Email sent": successfully sent to the address(es), who was copied in, the client emails left this hour. The panel
    keeps a record and the form clears.
 
-**Generate & download** (both tabs) still makes the HTML to paste into Outlook; a downloaded client email has no
+**Download Email** (both tabs) still makes the HTML to paste into Outlook; a downloaded client email has no
 sign-off (the sender's own Outlook signature follows it).
 
 ## Server Settings

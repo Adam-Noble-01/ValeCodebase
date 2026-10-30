@@ -56,7 +56,9 @@
                   model re-parents it, so two projections sharing a cached stage
                   would steal it from one another mid-run and silently project one
                   view through the other's basis. The second is that this work is
-                  CPU bound on one thread.
+                  CPU bound on one thread. A render asked for while another runs
+                  waits its turn; it is never refused (refusing it was the Drawing
+                  Editor "hang" of 28-Oct-2026, see RenderAll).
 
      STALENESS    A projection that outlives its geometry is worse than none, because
                   it looks authoritative and is wrong. A render is keyed to the
@@ -150,6 +152,7 @@ import {
 
     const DEFAULT_MAX_RESULTS  =  16;
     const DEFAULT_MAX_STAGES   =  2;
+    const DEFAULT_MAX_RESTORED =  32;
     // ------------------------------------------------------------
 
 
@@ -164,6 +167,8 @@ import {
     let   VghLantern__ProjectedEdges__Pipeline__IsShown       =  false;       // <-- Runtime visibility, not a config value
     let   VghLantern__ProjectedEdges__Pipeline__IsWorking     =  false;       // <-- A render is in progress
     let   VghLantern__ProjectedEdges__Pipeline__Abort         =  null;        // <-- Controller for the render in progress
+    let   VghLantern__ProjectedEdges__Pipeline__InFlightKeys  =  new Set();   // <-- Cache keys the render in progress is producing
+    const VghLantern__ProjectedEdges__Pipeline__IdleWaiters   =  [];          // <-- Renders queued behind the one in progress, released by its finally
     // ------------------------------------------------------------
 
 
@@ -268,7 +273,8 @@ import {
     // HELPER FUNCTION | Bound a Cache by Dropping Its Oldest Entry
     // ------------------------------------------------------------
     // A Map iterates in insertion order, so the first key is the oldest and dropping
-    // it is a plain first in first out eviction.
+    // it is a plain first in first out eviction. A Set iterates the same way, which
+    // is how the restored lantern keys are bounded by this too.
     //
     // An evicted stage is dropped, never disposed. Its geometries are shared with
     // the live 3D viewport and were never rendered from here in the first place;
@@ -597,7 +603,10 @@ import {
 
         abortSignal.throwIfAborted();
 
-        const slicer  =  VghLantern__ProjectedEdges__Scheduler__CreateSlicer(options.YieldEveryMs);
+        // The signal goes into the slicer because the intersection pass ticks it
+        // between every pair of meshes, and that pass is most of a render: without
+        // it a cancelled render ran its cut lines to the end before it noticed.
+        const slicer  =  VghLantern__ProjectedEdges__Scheduler__CreateSlicer(options.YieldEveryMs, abortSignal);
         const entry   =  await VghLantern__ProjectedEdges__Pipeline__GetLantern(job, options, report, slicer, onPhase, true);
 
         abortSignal.throwIfAborted();
@@ -825,7 +834,28 @@ import {
     export async function VghLantern__ProjectedEdges__Pipeline__RenderAll(onProgress) {
         await VghLantern__ProjectedEdges__ConfigAccess__Ready();
 
-        if (VghLantern__ProjectedEdges__Pipeline__IsWorking) return { Rendered : 0, Total : 0, WasBusy : true };
+        // ------------------------------------------------------
+        // QUEUED BEHIND A RENDER IN PROGRESS, NEVER DROPPED.
+        //
+        // This used to return at once, reporting itself busy, and nothing ever
+        // asked again. 28-Oct-2026, the Drawing Editor "hang": an edit started a
+        // render, opening the Drawing Editor a moment later cancelled it, and the
+        // restart arrived while the cancelled render was still winding down - so
+        // it was refused, and the sheet waited for linework that was never coming.
+        // Measured: none after ninety seconds, with the status reading 0 of 3.
+        //
+        // So the request waits for the render in progress to finish, whatever the
+        // outcome, and then collects its jobs afresh. If that render produced
+        // everything, the collection is empty and this returns at once; if it was
+        // cancelled for a newer shape, this is the render that draws the new one.
+        // Everything from here to IsWorking being set runs without an await, so
+        // two queued requests cannot both start: the second finds the first
+        // working and waits again.
+        // ------------------------------------------------------
+        while (VghLantern__ProjectedEdges__Pipeline__IsWorking) {
+            await VghLantern__ProjectedEdges__Pipeline__WhenIdle();
+        }
+
         if (!VghLantern__ProjectedEdges__ConfigAccess__IsEnabled()) return { Rendered : 0, Total : 0 };
 
         const jobs  =  VghLantern__ProjectedEdges__Pipeline__CollectJobs(false);
@@ -843,11 +873,19 @@ import {
         VghLantern__ProjectedEdges__Pipeline__IsShown    =  !VghLantern__ProjectedEdges__Pipeline__UserHidden;
         VghLantern__ProjectedEdges__Pipeline__Abort      =  new AbortController();
 
+        // What this render will produce, so a surface mounted while it runs - the
+        // Drawing Editor's frames, typically - can be recognised as wanting work
+        // that is already under way rather than as a reason to throw it away.
+        VghLantern__ProjectedEdges__Pipeline__InFlightKeys  =  new Set(jobs.map(function(job) { return job.CacheKey; }));
+
         const signal   =  VghLantern__ProjectedEdges__Pipeline__Abort.signal;
-        const options  =  VghLantern__ProjectedEdges__Projector__BuildOptions();
         let   done     =  0;
 
         try {
+            // Inside the try, so a fault here still runs the finally. A render left
+            // marked as working would hold every later request in the queue.
+            const options  =  VghLantern__ProjectedEdges__Projector__BuildOptions();
+
             // ------------------------------------------------------
             // PASS ONE. Every view gets a provisional picture before any view
             // gets its linework. The order matters: a viewport showing the old
@@ -888,8 +926,9 @@ import {
             });
             VghLantern__ProjectedEdges__Pipeline__StoredLanterns.clear();
         } finally {
-            VghLantern__ProjectedEdges__Pipeline__IsWorking  =  false;
-            VghLantern__ProjectedEdges__Pipeline__Abort      =  null;
+            VghLantern__ProjectedEdges__Pipeline__IsWorking     =  false;
+            VghLantern__ProjectedEdges__Pipeline__Abort         =  null;
+            VghLantern__ProjectedEdges__Pipeline__InFlightKeys  =  new Set();
 
             // Belt and braces against a placeholder outliving its render. Refresh
             // above already replaces the previews of views that finished; this
@@ -903,9 +942,50 @@ import {
             // make the two files import each other. An event costs nothing and keeps
             // the dependency pointing one way.
             window.dispatchEvent(new CustomEvent(VGHLANTERN__PROJECTED_EDGES__CHANGED_EVENT));
+
+            // Last, so every request queued behind this render finds it finished.
+            VghLantern__ProjectedEdges__Pipeline__IdleWaiters.splice(0).forEach(function(release) { release(); });
         }
 
         return { Rendered : done, Total : jobs.length };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Resolve Once No Render Is in Progress
+    // ------------------------------------------------------------
+    // Settles whether the render in progress succeeds, fails or is cancelled, because
+    // its finally releases the queue on every path. A caller must still re-check
+    // IsWorking afterwards: another queued request may have started in between.
+    function VghLantern__ProjectedEdges__Pipeline__WhenIdle() {
+        if (!VghLantern__ProjectedEdges__Pipeline__IsWorking) return Promise.resolve();
+
+        return new Promise(function(resolve) {
+            VghLantern__ProjectedEdges__Pipeline__IdleWaiters.push(resolve);
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Whether the Render in Progress Already Covers What Is Wanted
+    // ------------------------------------------------------------
+    // True when every live surface's wanted linework is either in hand or among the
+    // keys the render in progress is producing. A surface that has only just been
+    // mounted for the SAME lantern - the Drawing Editor's three frames, opened while
+    // the Lantern Editor's render is still running - is waiting on that render, not
+    // a reason to cancel it.
+    function VghLantern__ProjectedEdges__Pipeline__IsWantedInFlight() {
+        const live  =  VghLantern__ProjectedEdges__Pipeline__LiveList();
+
+        for (let i = 0; i < live.length; i++) {
+            const state   =  live[i][SURFACE_STATE_KEY];
+            const wanted  =  state ? state.WantedKey : null;
+
+            if (!wanted || VghLantern__ProjectedEdges__Pipeline__ResultCache.has(wanted)) continue;
+            if (!VghLantern__ProjectedEdges__Pipeline__InFlightKeys.has(wanted)) return false;
+        }
+
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -935,12 +1015,21 @@ import {
             window.clearTimeout(VghLantern__ProjectedEdges__Pipeline__AutoTimer);
         }
 
-        // Whatever is in flight is now for the wrong shape. Stopping it frees the
-        // workers immediately rather than at the end of a run nobody wants.
-        if (VghLantern__ProjectedEdges__Pipeline__IsWorking) {
+        // Whatever is in flight is for the wrong shape ONLY if it is not producing
+        // what the surfaces now want. Stopping a stale render frees the workers
+        // immediately rather than at the end of a run nobody wants. But a surface
+        // mounted for the lantern already being rendered - opening the Drawing
+        // Editor while the Lantern Editor's render runs - wants exactly that render,
+        // and cancelling it (28-Oct-2026) threw away seconds of work only to start
+        // the same work again from nothing.
+        if (VghLantern__ProjectedEdges__Pipeline__IsWorking &&
+            !VghLantern__ProjectedEdges__Pipeline__IsWantedInFlight()) {
             VghLantern__ProjectedEdges__Pipeline__Cancel();
         }
 
+        // Set even when the render in progress covers everything: it queues behind
+        // that render and finds nothing left to do, and if that render is cancelled
+        // for a newer shape after all, this is what draws the newer shape.
         VghLantern__ProjectedEdges__Pipeline__AutoTimer  =  window.setTimeout(function() {
             VghLantern__ProjectedEdges__Pipeline__AutoTimer  =  null;
 
@@ -1100,6 +1189,17 @@ import {
             VghLantern__ProjectedEdges__Pipeline__RestoredKeys.has(stageKey)) return;
 
         VghLantern__ProjectedEdges__Pipeline__RestoredKeys.add(stageKey);
+
+        // Bounded like the caches. Every edit to a lantern carrying a stored block
+        // is a new shape and lands here, and each key is the lantern's whole JSON
+        // (two to three kilobytes): unbounded, a long editing session kept every
+        // shape it ever passed through. Forgetting an old key costs at most one more
+        // cheap attempt to restore a block that will be refused again.
+        const performanceCfg  =  VghLantern__ProjectedEdges__ConfigAccess__Section('Performance');
+        VghLantern__ProjectedEdges__Pipeline__Bound(
+            VghLantern__ProjectedEdges__Pipeline__RestoredKeys,
+            (typeof performanceCfg.MaxRestoredLanternKeys === 'number') ? performanceCfg.MaxRestoredLanternKeys : DEFAULT_MAX_RESTORED
+        );
 
         const recovered  =  VghLantern__ProjectedEdges__Pipeline__ImportFromProject(block, lantern);
         if (recovered > 0) return;

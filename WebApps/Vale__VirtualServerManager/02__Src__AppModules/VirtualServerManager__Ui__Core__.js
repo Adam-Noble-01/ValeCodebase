@@ -19,6 +19,10 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   28-Oct-2026 - Version 0.15.0
+   - Restart manager (header) and the version banner's Restart now / Reload page: Vsm.Restart
+     posts /api/restart and knows the next copy by its pid (up to 30 s). Jobs wait meanwhile.
+
    08-Oct-2026 - Version 0.10.0
    - Fifth tab: user activity (Vsm.Activity).
 
@@ -50,9 +54,10 @@
     // MODULE VARIABLES | Shared State
     // ------------------------------------------------------------
     var Vsm = window.Vsm = {
-        PageVersion: '0.14.0',                                                 // <-- Must match the local server's version
+        PageVersion: '0.15.0',                                                 // <-- Must match the local server's version
         State      : null,                                                     // <-- Last /api/state payload
         Running    : false,                                                    // <-- A job request is in flight
+        Restarting : false,                                                    // <-- Restart manager: waiting for the next copy
         Tab        : 'explorer',
         Matrix     : null,                                                     // <-- Set by the Matrix module
         Explorer   : null,                                                     // <-- Set by the Explorer module
@@ -218,20 +223,18 @@
             .then(function(state) {
                 if (state.error) throw new Error(state.error);
                 Vsm.El('Vsm__Offline').hidden = true;
-                Vsm.El('Vsm__Stale').hidden = !state.version || state.version === Vsm.PageVersion;
-                Vsm.El('Vsm__Stale').textContent = Vsm.NewerThan(state.version, Vsm.PageVersion)
-                    ? 'This page (' + Vsm.PageVersion + ') is older than the manager server (' + state.version + '): reload it with Ctrl+Shift+R.'
-                    : 'The manager server is running ' + state.version + ' but this page is ' + Vsm.PageVersion +
-                      ': restart the server. Run Restart__VirtualServerManager__8020__.bat, or: python VirtualServerManager__LocalServer__.py --restart';
+                Vsm__RenderStale(state.version);
                 Vsm.State = state;
                 Vsm.RenderHeader(state.gateway, state.live);
                 if (Vsm.Matrix) Vsm.Matrix.Render();
                 Vsm.SchedulePoll();
             })
             .catch(function(err) {
-                Vsm.El('Vsm__Offline').hidden = false;
-                Vsm.El('Vsm__Conn').textContent = 'Manager offline';
-                Vsm.El('Vsm__Conn').className = 'Vsm__Pill is-bad';
+                if (!Vsm.Restarting) {                                         // <-- Down for a moment during a restart: Vsm.Restart says so
+                    Vsm.El('Vsm__Offline').hidden = false;
+                    Vsm.El('Vsm__Conn').textContent = 'Manager offline';
+                    Vsm.El('Vsm__Conn').className = 'Vsm__Pill is-bad';
+                }
                 Vsm.SchedulePoll(5000);
                 console.warn(err);
             });
@@ -248,6 +251,7 @@
     // FUNCTION | Run a Job (one server session)
     // ------------------------------------------------------------
     Vsm.Operate = function(action, body, okText) {
+        if (Vsm.Restarting) { Vsm.Toast('Wait: the manager is restarting.', true); return Promise.resolve(null); }
         if (Vsm.Running) { Vsm.Toast('Wait for the current job to finish.', true); return Promise.resolve(null); }
         Vsm.Running = true;
         if (Vsm.Matrix) Vsm.Matrix.RenderToolbar();
@@ -327,7 +331,7 @@
     // ------------------------------------------------------------
     Vsm.RenderHeader = function(g, live) {
         var pill = Vsm.El('Vsm__Conn');
-        if (g) {
+        if (g && !Vsm.Restarting) {                                             // <-- Keeps "Restarting manager…" until the next copy answers
             if (g.cooldown_s > 0) {
                 pill.className = 'Vsm__Pill is-bad';
                 pill.textContent = 'Cooldown ' + Math.floor(g.cooldown_s / 60) + ':' + String(g.cooldown_s % 60).padStart(2, '0');
@@ -357,6 +361,99 @@
         if (st && st.uptime_h != null) bits.push('up <b>' + st.uptime_h + ' h</b>');
         Vsm.El('Vsm__Stats').innerHTML = bits.length ? bits.join(' · ') +
             (live.status === 'live' ? '' : ' <span class="Vsm__Muted">(last seen)</span>') : 'mirror sync';
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Restart the Manager: Header Button and Version Banner
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | How Long the Page Waits for the Next Copy
+    // ------------------------------------------------------------
+    var Vsm__RestartWaitMs = 30e3;                                              // <-- Then it says what it saw last
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Version Banner: Which Side Is Old, With the One-Click Fix (rebuilt only when the version changes)
+    // ------------------------------------------------------------
+    function Vsm__RenderStale(serverVersion) {
+        var box = Vsm.El('Vsm__Stale');
+        box.hidden = !serverVersion || serverVersion === Vsm.PageVersion;
+        if (box.hidden || box.dataset.version === serverVersion) return;
+        box.dataset.version = serverVersion;
+        var pageOld = Vsm.NewerThan(serverVersion, Vsm.PageVersion);
+        box.innerHTML = Vsm.Esc(pageOld
+                ? 'This page (' + Vsm.PageVersion + ') is older than the manager server (' + serverVersion + ').'
+                : 'The manager server is running ' + serverVersion + ' but this page is ' + Vsm.PageVersion + '.') +
+            '<button type="button" class="Vsm__BtnSmall" data-stale="' + (pageOld ? 'reload' : 'restart') + '"' +
+            (Vsm.Restarting ? ' disabled' : '') + '>' + (pageOld ? 'Reload page' : 'Restart now') + '</button>';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Show a Restart in Progress (its buttons off, the pill says so)
+    // ------------------------------------------------------------
+    function Vsm__RestartBusy(on) {
+        Vsm.Restarting = on;
+        var btn = Vsm.El('Vsm__BtnRestart');
+        btn.disabled = on;
+        btn.textContent = on ? 'Restarting…' : 'Restart manager';
+        Vsm.El('Vsm__Stale').querySelectorAll('[data-stale="restart"]').forEach(function(b) { b.disabled = on; });
+        if (!on) return;
+        var pill = Vsm.El('Vsm__Conn');
+        pill.className = 'Vsm__Pill is-warn';
+        pill.textContent = 'Restarting manager…';
+        pill.title = '';
+        pill.onclick = null;
+        pill.style.cursor = 'default';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restart the Manager (POST /api/restart: the next copy takes over the port; the page knows it by its pid)
+    // ------------------------------------------------------------
+    Vsm.Restart = function() {
+        if (Vsm.Restarting) return;
+        if (Vsm.Running || (Vsm.State && Vsm.State.busy && Vsm.State.busy.label)) {
+            Vsm.Toast('Wait for the current job to finish, then restart the manager.', true);
+            return;
+        }
+        Vsm__RestartBusy(true);
+        Vsm.Post('/api/restart', {}).then(function(res) {
+            if (!res.ok) {
+                Vsm__RestartBusy(false);
+                Vsm.Toast(/HTTP 404/.test(res.error || '')
+                    ? 'This manager predates the Restart button (0.15.0): run Restart__VirtualServerManager__8020__.bat once.'
+                    : 'Not restarted: ' + (res.error || 'no answer from the manager.'), true);
+                Vsm.Refresh();
+                return;
+            }
+            var until = Date.now() + Vsm__RestartWaitMs;
+            var last  = 'old';                                                  // <-- What the last check saw: the 'old' copy, or 'none'
+            var poll = function() {
+                fetch('/api/state', { cache: 'no-store' })
+                    .then(function(r) { return r.json(); })
+                    .then(function(state) {
+                        if (!state.pid || state.pid === res.pid) { last = 'old'; wait(); return; }
+                        Vsm__RestartBusy(false);
+                        Vsm.Toast('Restarted: manager ' + state.version + (state.version !== res.version ? ' (was ' + res.version + ')' : '') + '.');
+                        Vsm.Refresh();
+                    })
+                    .catch(function() { last = 'none'; wait(); });
+            };
+            var wait = function() {
+                if (Date.now() < until) { window.setTimeout(poll, 500); return; }
+                Vsm__RestartBusy(false);
+                Vsm.Toast(last === 'old'
+                    ? 'The new copy did not take over: manager ' + res.version + ' is still running. See VirtualServerManager__Startup.log.'
+                    : 'The manager is not answering after 30 s. See VirtualServerManager__Startup.log, or run Restart__VirtualServerManager__8020__.bat.', true);
+                Vsm.Refresh();
+            };
+            window.setTimeout(poll, 500);
+        });
     };
     // ------------------------------------------------------------
 
@@ -497,6 +594,13 @@
         document.addEventListener('click', Vsm__SortTableClick);
         Vsm.El('Vsm__BtnStatus').addEventListener('click', Vsm.ShowStatus);
         Vsm.El('Vsm__BtnSettings').addEventListener('click', function() { if (Vsm.State) Vsm.ShowSettings(); });
+        Vsm.El('Vsm__BtnRestart').addEventListener('click', function() { Vsm.Restart(); });
+        Vsm.El('Vsm__Stale').addEventListener('click', function(e) {            // <-- The banner's button is rebuilt with the version
+            var act = e.target.closest && e.target.closest('[data-stale]');
+            if (!act || act.disabled) return;
+            if (act.dataset.stale === 'reload') window.location.reload();
+            else Vsm.Restart();
+        });
         Vsm.El('Vsm__BtnBackupAll').addEventListener('click', function() {
             if (!Vsm.State) return;
             Vsm.Operate('backup', { ids: Vsm.State.mappings.map(function(m) { return m.Id; }) },

@@ -1,0 +1,355 @@
+{
+    "projectName": "Thrower",
+    "projectCode": "63403",
+    "projectNameAlias": "",
+    "CrossSection__Config": {
+        "CrossSection__Enabled": true,
+        "CrossSection__FillColor": "#f0f0f0",
+        "CrossSection__LineColor": "#323232",
+        "CrossSection__LineWidthPx": 2
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -30189
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 24663
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 40000,
+    "ProjectType": "Whitecard",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "28-Jul-2026 at 13:51",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Thrower__WhiteCardModel__0.5.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0.745334,
+                        "y": 0.666411,
+                        "z": -0.019301
+                    },
+                    "eye": {
+                        "x": -12075.9405,
+                        "y": -4304.652,
+                        "z": 2518.6483
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 8983.3756,
+                        "y": 14524.701,
+                        "z": 1973.3134
+                    },
+                    "up": {
+                        "x": 0.014388,
+                        "y": 0.012865,
+                        "z": 0.999814
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "Full Context",
+                "scene_name": "IMG01__3dView__MainShot__",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__28-Jul-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Great CAD File, little bit of a more complex massing and existing conditions, completed within time budgeted.",
+        "conceptArtist": "Anna",
+        "designer": "Gary",
+        "input": "CAD File"
+    },
+    "scheduleData": {
+        "dateFulfilled": "28-Jul-2026",
+        "dateReceived": "27-Jul-2026",
+        "timeTaken": 3,
+        "timeAllocated": 3
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__28-Jul-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "Thrower__01__OrbitHelperCube__MeshModel__.glb",
+        "Thrower__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Thrower__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Thrower__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Thrower__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Thrower__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Thrower__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Walk": true,
+        "Navmode__EnabledModes__Fly": true
+    },
+    "displayName": "Thrower",
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__28-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__28-Jul-2026.png"
+    ],
+    "enabled": true,
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "Scene_001",
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__Name": "Scene 1",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": -12076,
+                        "Camera__DefaultPos__PosY": 2519,
+                        "Camera__DefaultPos__PosZ": 4305
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.029,
+                        "Camera__DefaultRotation__RotY": -0.841,
+                        "Camera__DefaultRotation__RotZ": -0.0216
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 8983,
+                    "OrbitHelperCube__Position__PosY": 1973,
+                    "OrbitHelperCube__Position__PosZ": -14525
+                },
+                "PresentationMode__Scene__ThumbnailVersion": 1793179718871,
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__Name": "Scene 2",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__LensMm": 40,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": -3011,
+                        "Camera__DefaultPos__PosY": 2224,
+                        "Camera__DefaultPos__PosZ": 98
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0453,
+                        "Camera__DefaultRotation__RotY": -0.7389,
+                        "Camera__DefaultRotation__RotZ": -0.0305
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 33.3985
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 356,
+                    "OrbitHelperCube__Position__PosY": 2057,
+                    "OrbitHelperCube__Position__PosZ": -3594
+                },
+                "PresentationMode__Scene__NavigationMode": "fly",
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__ThumbnailVersion": 1793179807616,
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__LandscapeEnvironment": true
+                }
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__Name": "Scene 3",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__LensMm": 26,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 755,
+                        "Camera__DefaultPos__PosY": 1780,
+                        "Camera__DefaultPos__PosZ": -12993
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.9458,
+                        "Camera__DefaultRotation__RotY": -1.5478,
+                        "Camera__DefaultRotation__RotZ": -0.9457
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 50
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 5754,
+                    "OrbitHelperCube__Position__PosY": 1686,
+                    "OrbitHelperCube__Position__PosZ": -13060
+                },
+                "PresentationMode__Scene__NavigationMode": "fly",
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__ThumbnailVersion": 1793179789916,
+                "PresentationMode__Scene__Order": 3
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_004",
+                "PresentationMode__Scene__Name": "Scene 4",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
+                "PresentationMode__Scene__LensMm": 26,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 4395,
+                        "Camera__DefaultPos__PosY": 10692,
+                        "Camera__DefaultPos__PosZ": -5088
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.8076,
+                        "Camera__DefaultRotation__RotY": -0.6232,
+                        "Camera__DefaultRotation__RotZ": -0.5478
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 50
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 7314,
+                    "OrbitHelperCube__Position__PosY": 7758,
+                    "OrbitHelperCube__Position__PosZ": -7894
+                },
+                "PresentationMode__Scene__NavigationMode": "fly",
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__ThumbnailVersion": 1793179827796,
+                "PresentationMode__Scene__Order": 4
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_005",
+                "PresentationMode__Scene__Name": "Scene 5",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_005.webp",
+                "PresentationMode__Scene__LensMm": 26,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 3034,
+                        "Camera__DefaultPos__PosY": 9610,
+                        "Camera__DefaultPos__PosZ": -19324
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -2.2607,
+                        "Camera__DefaultRotation__RotY": -0.8348,
+                        "Camera__DefaultRotation__RotZ": -2.4097
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 50
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 6739,
+                    "OrbitHelperCube__Position__PosY": 7021,
+                    "OrbitHelperCube__Position__PosZ": -17188
+                },
+                "PresentationMode__Scene__NavigationMode": "fly",
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__ThumbnailVersion": 1793179843063,
+                "PresentationMode__Scene__Order": 5
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__Groups": [
+            {
+                "PresentationMode__Group__Id": "Group_001",
+                "PresentationMode__Group__Name": "Exterior 3D Views",
+                "PresentationMode__Group__Order": 1,
+                "PresentationMode__Group__Enabled": true
+            },
+            {
+                "PresentationMode__Group__Id": "Group_002",
+                "PresentationMode__Group__Name": "Interior 3D Views",
+                "PresentationMode__Group__Order": 2,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_003",
+                "PresentationMode__Group__Name": "Dollhouse View",
+                "PresentationMode__Group__Order": 3,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_004",
+                "PresentationMode__Group__Name": "Floor Plans",
+                "PresentationMode__Group__Order": 4,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_005",
+                "PresentationMode__Group__Name": "Elevations",
+                "PresentationMode__Group__Order": 5,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_006",
+                "PresentationMode__Group__Name": "Cross Sections",
+                "PresentationMode__Group__Order": 6,
+                "PresentationMode__Group__Enabled": false
+            }
+        ]
+    },
+    "_rev": 6
+}

@@ -3,6 +3,105 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.10.2 - 28-Oct-2026
+### BUGFIX | The Drawing tab "hang": projected linework lost when a render was interrupted
+
+Adam: "I want you to test why there seems to be a significant hang when pressing on the drawing tab. It seems to get
+stuck for sometimes 5 to 10 minutes, even though the individual drawings can clearly be seen regenerated in the actual
+configurator tab. When you go to the actual layout drawing tab, it will just hang for absolutely ages." Asked for tests,
+and for memory, callbacks and promises to be checked.
+
+---
+
+#### WHAT WAS WRONG
+
+Nothing in the Drawing Editor itself: on a settled lantern the sheet composes in 0.3 s (1.1 s at four times slower
+CPU), and twenty visits leaked no WebGL context and no heap. The hang was the projected linework never arriving,
+because the realtime projection (`27__System__ProjectedEdges2d`) lost renders. Three faults together:
+
+- **A render asked for while another ran was refused, and nothing asked again.** `RenderAll` returned "busy" at once.
+  Opening the Drawing tab mounts three new frames; each asked for linework not yet in hand, which cancelled the render
+  in progress and asked for a new one 160 ms later, while the cancelled one was still winding down. Refused. The
+  sheet then showed no linework, and the status read 0 of 3, for as long as anyone waited (40 s and 90 s watched).
+  The same happened in the Lantern Editor whenever a second edit landed mid render.
+- **A cancel did not stop the expensive part.** The intersection pass (the cut lines between solids, two thirds of a
+  render) took no abort signal, so a cancelled render ran it to the end with the interface held in long tasks: 3.2 s
+  at full speed after a second edit, about 28 s at four times slower CPU, where a click on the Drawing tab was handled
+  5.8 s late.
+- **Opening the Drawing tab cancelled the very render it needed.** The realtime loop assumed whatever was in flight was
+  for a stale shape, but the new frames wanted the same lantern and views.
+
+Also found:
+- `ForceRender`, the gate in front of Preview and Send and Alt+Shift+R, said a render in progress was "joined" but
+  returned at once (0 ms, 0 of 3 views): Preview and Send could compose its pack before the linework existed.
+- The set of lantern shapes already offered their stored linework kept every shape edited, each a 2 to 3 kB key, for
+  as long as the page stayed open: a slow leak.
+- A clip worker that failed to load never answered and its promise never settled, which would have held the
+  projection "in progress" for the rest of the session (found reading the code; not seen on the PC or the live site,
+  where the worker files are served as JavaScript).
+
+---
+
+#### WHAT CHANGED
+
+- `RenderAll` queues behind a render in progress and then collects its jobs afresh: nothing left to do means it
+  returns at once, a cancelled render's newer shape is drawn by it. Never refused.
+- The realtime loop cancels a render in progress only when it is not already producing what every live surface wants
+  (the keys in flight are recorded when a render starts).
+- The time slicer takes the abort signal and every tick is a cancellation point, so the intersection pass stops
+  between two pairs of meshes.
+- `ForceRender` joins: it resolves once the linework exists.
+- The restored lantern keys are bounded like the caches: `Performance.MaxRestoredLanternKeys` 32.
+- The pooled clip run rejects when a worker errors, and the view is retried on the main thread.
+
+---
+
+#### CHECKED
+
+- `node --check` on the four changed modules and the service worker; both changed JSON files parse; ASCII only.
+- A Playwright harness on my own testing server (port 8039, sandbox data, headless Edge): the 3 lantern demo job,
+  editor settled, then the Drawing tab; the same with an edit just before the click; a second edit mid render;
+  `ForceRender` mid render; five Drawing and Editor round trips; stepping through the lanterns on the sheet. Before
+  and after, the before served from git HEAD to the browser only (the files the live site runs), at full speed and
+  with the CPU slowed four times:
+
+| Case | Before | After |
+|---|---|---|
+| Edit, Drawing tab 0.6 s later | no linework, 0 of 3 after 40 s | 3 of 3, 6.9 s after the click |
+| Same, CPU four times slower | no linework after 90 s; thread held 28 s | 3 of 3, 31 s after the click (one render) |
+| Second edit mid render | thread held 3,219 ms; no linework after 60 s | released in 85 ms; new shape drawn in 6.3 s |
+| `ForceRender` mid render | returned in 0 ms with 0 of 3 | returned in 6.4 s with 3 of 3 |
+| Settled lantern, Drawing tab | 0.3 s | 0.3 s |
+
+- The testing server's smoke on my copy: CLEAN, 604 requests, no load failures, sign-in at all four levels.
+- Not tried by hand in a visible browser: Adam to try it on his 8031.
+
+---
+
+#### STILL OPEN
+
+- The intersection pass itself is the remaining wait: 4.9 s for the first lantern of the 3 lantern demo job on the
+  office PC, about 30 s at four times slower CPU, in uninterruptible pieces of up to 0.8 s (up to 5 s slower). Most of
+  it is the 22,848 triangle trim mesh against the structural members and the lead (one pair alone 0.8 s, finding no
+  cut line). Making it cheaper, or moving it off the main thread, is a separate decision.
+- The demo designs' stored linework predates `2026-10-20-glazing-panels`, so each is re-rendered once on opening, as
+  intended after a token bump.
+
+---
+
+#### FILES
+
+- Changed: `27__System__ProjectedEdges2d\VghLantern__ProjectedEdges__Pipeline__.mjs` (the queue, the keys in flight,
+  the cancel test, the bounded restored keys), `__Scheduler__.mjs` (the abort-aware slicer), `__ToolbarButton__.mjs`
+  (`ForceRender` joins), `__WorkerPool__.mjs` (a worker error settles the pooled run), `Na__ProjectedEdges__Config.json`
+  (`MaxRestoredLanternKeys`); AppVersion 0.10.2; service worker `2026-10-28-1`.
+- Unchanged: the geometry, `MODEL_BUILD_TOKEN`, the drawings' linework, the Drawing Editor, the PDF and the SketchUp
+  payload.
+
+---
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.10.1 - 21-Oct-2026
 ### FEATURE | 3D View Measure Tool: Vertex to Vertex and Face to Face, with Polycam's axis snapping
 

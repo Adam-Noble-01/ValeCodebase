@@ -279,6 +279,10 @@
 }
 
 .na-email-workers-overlay__btn {
+    display                            : inline-flex;
+    align-items                        : center;
+    justify-content                    : center;
+    gap                                : 7px;
     padding                            : 9px 18px;
     border-radius                      : 5px;
     font-family                        : 'Open Sans', sans-serif;
@@ -313,6 +317,25 @@
     background                         : #f3f5f7;
 }
 
+.na-email-workers-overlay__btn-icon {
+    width                              : 16px;
+    height                             : 16px;
+}
+
+.na-email-workers-overlay__actions {
+    align-items                        : center;                        /* <-- Send email is the taller button */
+}
+
+.na-email-workers-overlay__btn--send {                                  /* <-- The main action: on the right, bigger (v2.79.4) */
+    padding                            : 12px 26px;
+    font-size                          : 0.9rem;
+}
+
+.na-email-workers-overlay__btn--send .na-email-workers-overlay__btn-icon {
+    width                              : 18px;
+    height                             : 18px;
+}
+
 .na-email-workers-overlay__btn--compact {
     padding                            : 7px 14px;
     font-size                          : 0.78rem;
@@ -322,34 +345,119 @@
 
 
 /* ================================================================= */
-/* REGION  |  Send Email - Generate & Download Type Chooser          */
+/* REGION  |  Send Email - Which Email: Two Picture Cards (v2.79.4)  */
 /* ================================================================= */
 
-.na-email-workers-overlay__generate-chooser {
-    display                            : none;
-    margin                             : 0 0 14px;
-    padding                            : 12px 14px;
-    border                             : 1px solid rgba(23, 43, 58, 0.22);
-    border-left                        : 4px solid #172b3a;
-    border-radius                      : 6px;
-    background                         : #f3f6f8;
+.na-email-workers-overlay__types {
+    display                            : grid;
+    grid-template-columns              : 1fr 1fr;
+    gap                                : 10px;
+    margin                             : 0 0 16px;
+    padding                            : 0;
+    border                             : 0;
+    min-width                          : 0;
 }
 
-.na-email-workers-overlay__generate-chooser.is-visible {
-    display                            : block;
+.na-email-workers-overlay__types > legend {
+    grid-column                        : 1 / -1;
+    padding                            : 0;
 }
 
-.na-email-workers-overlay__generate-chooser-label {
-    margin                             : 0 0 10px;
-    font-size                          : 0.8rem;
-    font-weight                        : 600;
+.na-email-workers-overlay__type {
+    position                           : relative;
+    display                            : flex;
+    align-items                        : flex-start;
+    gap                                : 10px;
+    padding                            : 12px 12px 12px 12px;
+    border                             : 1px solid rgba(23, 43, 58, 0.2);
+    border-radius                      : 8px;
+    background                         : #ffffff;
+    cursor                             : pointer;
+    transition                         : border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.na-email-workers-overlay__type:hover {
+    border-color                       : rgba(23, 43, 58, 0.45);
+}
+
+.na-email-workers-overlay__type-radio {
+    position                           : absolute;
+    opacity                            : 0;
+    pointer-events                     : none;
+}
+
+.na-email-workers-overlay__type-badge {
+    display                            : inline-flex;
+    align-items                        : center;
+    justify-content                    : center;
+    flex-shrink                        : 0;
+    width                              : 36px;
+    height                             : 36px;
+    border-radius                      : 50%;
+    background                         : #e8eef3;
     color                              : #172b3a;
 }
 
-.na-email-workers-overlay__generate-chooser-actions {
+.na-email-workers-overlay__type-badge .na-client-icon {
+    width                              : 20px;
+    height                             : 20px;
+}
+
+.na-email-workers-overlay__type-text {
     display                            : flex;
-    flex-wrap                          : wrap;
-    gap                                : 8px;
+    flex-direction                     : column;
+    gap                                : 3px;
+    padding-right                      : 18px;
+    font-size                          : 0.74rem;
+    line-height                        : 1.4;
+    color                              : #656565;
+}
+
+.na-email-workers-overlay__type-text strong {
+    font-size                          : 0.84rem;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__type-tick {
+    position                           : absolute;
+    top                                : 10px;
+    right                              : 10px;
+    display                            : none;
+    color                              : #ffffff;
+    background                         : #172b3a;
+    border-radius                      : 50%;
+    padding                            : 2px;
+}
+
+.na-email-workers-overlay__type-tick .na-client-icon {
+    width                              : 12px;
+    height                             : 12px;
+}
+
+.na-email-workers-overlay__type:has(.na-email-workers-overlay__type-radio:checked) {
+    border-color                       : #172b3a;
+    background                         : #f5f8fa;
+    box-shadow                         : 0 0 0 1px #172b3a;
+}
+
+.na-email-workers-overlay__type:has(.na-email-workers-overlay__type-radio:checked) .na-email-workers-overlay__type-badge {
+    background                         : #172b3a;
+    color                              : #ffffff;
+}
+
+.na-email-workers-overlay__type:has(.na-email-workers-overlay__type-radio:checked) .na-email-workers-overlay__type-tick {
+    display                            : inline-flex;
+}
+
+.na-email-workers-overlay__type:has(.na-email-workers-overlay__type-radio:focus-visible) {
+    outline                            : 2px solid #172b3a;
+    outline-offset                     : 2px;
+}
+
+@media (max-width: 520px) {
+    .na-email-workers-overlay__types {
+        grid-template-columns          : 1fr;
+    }
 }
 
 /* endregion -------------------------------------------------------- */

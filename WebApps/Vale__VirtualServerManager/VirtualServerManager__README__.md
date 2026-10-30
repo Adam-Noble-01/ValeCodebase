@@ -34,16 +34,29 @@ D:\10_CoreLib__ValeCodebase\WebApps\Vale__VirtualServer   ==   valevps:/srv/vale
 |---|---|
 | `Start__VirtualServerManager__WindowsStartUp__Silent__8020__.bat` | Hidden start for the Startup folder. Skips if port 8020 is already running. Logs to `VirtualServerManager__Startup.log` |
 | `Start__VirtualServerManager__Localhost__8020__.bat` | Console start with live logs, for debugging. If the manager is already running it only opens the app; `--restart` (or `-r`) replaces the running copy |
-| `Restart__VirtualServerManager__8020__.bat` | **After code changes.** Stops the running copy and starts it again silently, then reload the app page |
+| `Restart__VirtualServerManager__8020__.bat` | **After code changes.** Stops the running copy and starts it again silently, then reload the app page. Since 0.15.0 the app's **Restart manager** button does the same |
 
-**Restarting.** `python VirtualServerManager__LocalServer__.py --restart` (or `-r`, `--r`):
+**Restarting from the app (0.15.0).** Click **Restart manager** at the top right, or **Restart now** in the
+version banner. This restarts only this app's local server on the PC; the Vale server is not touched.
+- It refuses while a push, collect or users save is running (the page says so; the server answers 409).
+- `POST /api/restart` starts the next copy silently, as the sign-in launcher does: pythonw with
+  `--silent --log-file VirtualServerManager__Startup.log --restart`. Once up, that copy asks the running one
+  to stop and takes over the port. Its output goes to the log from the first line.
+- If the new code cannot start, the old copy keeps serving. After 30 s the page says "the new copy did not
+  take over", and the error is in the log.
+- The page knows the new copy by its pid (`/api/state` reports `pid` and `started`). The pill reads
+  "Restarting manager…" meanwhile, then a toast says "Restarted: manager 0.15.0".
+- From an agent's shell, use the same route. The restart outlives the call:
+  `curl -X POST -H "X-Vale-Manager: 1" -H "Content-Type: application/json" -d "{}" http://127.0.0.1:8020/api/restart`
+
+**Restarting from a console.** `python VirtualServerManager__LocalServer__.py --restart` (or `-r`, `--r`):
 - checks that the program on the port really is this manager;
 - refuses while a push, collect or users save is running;
 - asks it to stop (`POST /api/shutdown`; a copy older than 0.4.0 is ended by PID);
 - waits for the port, then starts.
 
-`--stop` stops it and exits. The page's version banner says whether to reload the page or restart
-the server.
+`--stop` stops it and exits. The page's version banner says which side is old, with the fix as a
+button: **Restart now** when the server is older, **Reload page** when the page is older.
 
 It needs:
 - Python 3.10 or later; nothing else is installed;

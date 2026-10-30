@@ -1,6 +1,335 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.82.0 - 29-Oct-2026 - Each Client Gets an App of Their Own; the Install Card
+### Adam (an iPhone's Add to Home Screen sheet named "ValeVision 3D", and its icon opened the staff sign-in): "it links to the main PWA which is incorrect ... Take a look how I deal with this on TrueVision where my clients get an individualised PWA named for their project with no cross access to the others"; then "Add a proper install app call to action modal too like TrueVision has ... a couple of seconds after the user interacts with something in the 3D Scene ... use the Vale SVG from the emailer"
+
+**What went wrong (v2.81.1):** index.html carried the staff manifest as a static `<link rel="manifest">`. Safari
+keeps the FIRST manifest link it parses for the life of the page (WebKit bug 229059) and a Home Screen icon opens
+that manifest's `start_url`, not the page. v2.81.1's head script removed the link after Safari had already read it,
+so every client's icon was the staff app ("ValeVision 3D", start_url `/valevision/`): the staff sign-in. TrueVision
+hit the same wall on 19-Sep-2026 and documents it (`62__Feature__AppInstallability/README__PwaInstallability__.md`).
+
+- **One app per client, TrueVision's pattern** (`93__Feature__ClientLinks/Na__ClientLinks__AppManifest__.js`, a
+  blocking classic script in index.html's head; index.html carries NO static manifest link any more, with a note
+  saying never to add one):
+  - on a client link it builds the client's own manifest as a `data:` URL, every URL absolute: `id` and
+    `start_url` = `https://app.valegardenhouses.com/valevision/?project=<id>&share=<token>` (other query words
+    dropped), `name` "Thrower - ValeVision 3D", `short_name` "Thrower 3D" (the Home Screen label, from the library id:
+    `63403__Thrower` -> Thrower, `3256__MordorOrangery` -> Mordor Orangery, kept to 12 characters), `scope`
+    `/valevision/`, standalone, landscape, the Vale icons; and sets `apple-mobile-web-app-title` and
+    `application-name` to the same label. Because `id` differs per link, every client's app is separate, never the
+    staff app, and it holds only that client's share token: the server opens that one project to it;
+  - on the staff page it links the staff manifest file exactly as before;
+  - it holds Chrome / Edge's `beforeinstallprompt` from the first moment (client links only) and notes
+    `appinstalled`.
+- **The install card** (`Na__ClientLinks__InstallApp__.js`, replacing v2.81.1's iPhone-only card): headed like the
+  client email (the pavilion mark, cropped as the email crops it, "ValeVision 3D", "By Vale Garden Houses"),
+  "Get your design as an app".
+  - **When:** after the model is on screen and the tour has closed, the first press on the model, its view
+    pictures or its navigation, then 2 s; never mid-drag (it waits for the finger to lift), never over another card
+    or panel, once per browser session, never after an install from this browser and never inside the app.
+    **Install the app** in the guest bubble shows it at any time.
+  - **Chrome, Edge, Samsung Internet (Android and computers):** **Install app** calls the browser's own install
+    prompt inside the client's tap: one tap, no menus. Offered only once the browser has said it can install.
+  - **iPhone and iPad Safari:** Apple gives web pages no way to start Add to Home Screen, so three pictured steps
+    (Share, Add to Home Screen, Open "Thrower 3D") and a bouncing "Share is here" arrow at the edge of the screen
+    where Share is (the bottom bar on an iPhone held upright, else the top).
+  - **Chrome / Edge / Firefox on iPhone:** the same steps with **Copy link** (paste it into Safari). **Firefox on
+    Android:** the browser menu's Install. **Safari on a Mac:** File, Add to Dock. Firefox on a computer: not
+    offered.
+  - On a phone held sideways the card sits in two columns, so it fits the ~342px Safari leaves.
+- `Na__ClientLinks__ClientLandscape__` 1.2.0 (the iPhone card removed; a tap inside the install card never asks for
+  full screen, as the install prompt needs that tap), `Na__ClientLinks__ClientMode__` 1.2.1 (starts the install
+  card; the bubble's "Install the app"; no longer renames the icon), `Na__ClientLinks__ClientTour__` (waits for the
+  install card), the stylesheet (the install card; the old card's styles gone).
+
+**Checked:** the scripts parse. The real page through a local server: in WebKit (iPhone 13) and Edge (Pixel 7, a
+computer) a client link gets exactly one manifest link, its own (id, start_url, name, short_name, landscape as
+above), and the staff page the staff file. Edge (Chrome DevTools Protocol): the client manifest parses with no
+errors; in a normal profile there are no installability errors, the head script holds Edge's install prompt, and
+clicking **Install app** on the card calls it from that click. The card drawn by WebKit (iPhone upright and
+sideways, iPhone SE, iPad) and Edge (Android sideways, a computer). The timing in WebKit: nothing during the tour or
+before a press, nothing 1 s after the first press, the card by 2.6 s; Not now closes it; mid-drag it waits for the
+finger to lift. **Not checked on a real iPhone or Android phone.** An icon added before this release keeps the old
+staff address inside it: remove it and add it again.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.81.4 - 29-Oct-2026 - The Device Decided by What It Is: a PC Always Keeps Its Top Bar
+### Adam: "ON A PC THE TOP MENU SHOULD NOT ANIMATE AWAY AND HIDE ... improve device specific hanlding dont rely on just pixel by pixel ratios"
+
+**Why a PC got the folding bar:** only two things ever move the bar, the phone layout and the staff drawing editor
+(never on a client link). The phone layout was switched on by "touch first and the screen's short side under 600 CSS
+px", which a Windows PC with a touch or pen screen and high display scaling can meet (a 2560 x 1600 laptop at 300%
+is 853 x 533 CSS px).
+
+- **One decision, made once, by what the device is** (index.html's head script, before anything draws):
+  `<html data-na-device="phone|tablet|computer">`, and `na-phone-ui` on a phone only.
+  - phone: an iPhone or iPod; an Android whose browser says Mobile; a browser whose `userAgentData.mobile` is true; an
+    unknown system that calls itself Mobi.
+  - tablet: an iPad (iPadOS asks for desktop sites, so a "Mac" with a touchscreen is an iPad); an Android without
+    Mobile.
+  - computer: Windows, macOS, ChromeOS, Linux desktops, and anything unknown. Touch, pens and screen size never make a
+    computer a phone.
+- `Na__ClientLinks__ClientLandscape__` 1.1.2 reads it (no more touch and size test), and its "installed" test is now
+  the standalone or minimal-ui display mode (or iOS's `navigator.standalone`): Chrome also reports `fullscreen` for a
+  browser tab gone full screen, which was being read as the Home Screen app.
+- The `?phone-ui=` override is gone; to see the phone layout on a computer, use the browser's device emulation with a
+  phone selected.
+
+**Checked:** the head script itself, run against 19 real browser identity strings (touchscreen Windows Edge, Windows
+Chrome and Firefox, Mac Safari and Chrome, iPad posing as a Mac, old iPad, iPhone Safari and Chrome, Android phones in
+Chrome, Firefox and Samsung Internet, Android tablets, Android with Desktop site on, Chromebook, Linux, KaiOS, an
+empty string): 19 of 19 right. The real page in Edge (desktop with a touchscreen, and as a Pixel 7) and WebKit
+(desktop with a touchscreen, iPhone 13, iPad Pro 11): computer, phone, phone, tablet, computer.
+
+**Live (Adam: "Push it"), 29-Oct-2026 12:03 UTC:** `valevision3d` (stamp `20261029-120300`, the 4 files replaced,
+nothing else pending; index.html's changes all inside the head script's device check); checked through Cloudflare,
+all 4 byte-identical to the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.81.3 - 29-Oct-2026 - Upright Tweaks; No Menu Flourish on Client Links
+### Adam (an iPhone held upright): "Make top bar a little smaller, make carousel a tiny bit bigger on portrait ... the menu folding down on init on the client version ... remove that"
+
+- **Upright on a phone:** the top bar is 48px (was 54px; logo 33px), and the view carousel is 60% while idle and 85%
+  in use (was 50% and 75%). On its side nothing changes.
+- **Client links:** Tools & Settings no longer drops open by itself for 2.6 s at start-up
+  (`Na__UiFeature__PromptToolsMenu` in index.html returns on `na-client-mode`); it opens only when pressed. Staff
+  still get it.
+- Files: `Na__Feature__PhoneUi__Stylesheet__.css` (the portrait rules; the carousel's now sits after the carousel's
+  own rules so it wins), index.html.
+
+**Checked** (WebKit 26.6 as an iPhone 13): upright the bar is 48px at 0 with a 33px logo, the carousel 0.6 idle and
+0.85 in use; sideways the bar 54px folded and the carousel 0.5 and 0.75. Not checked on a real iPhone.
+
+**Live (Adam: "Push it"), 29-Oct-2026 11:36 UTC:** `valevision3d` (stamp `20261029-113612`, the 2 files replaced,
+nothing else pending; index.html's only change the one line); checked through Cloudflare, both byte-identical to
+the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.81.2 - 29-Oct-2026 - Upright in a Browser Is Fine: the Bar Stays, No Turn Screen
+### Adam: "On the portrait version dont fold the vale logo ... if used in browser in portrait dont steer them anymore to rotate etc as it looks shit, if you use in browser asume portrait so keep the top vale logo bar"
+
+- **Held upright, the top bar never folds** (every phone): a portrait rule in the phone stylesheet beats the fold
+  class and any drag, hides the pull tab and starts the canvas under the bar again. On its side the bar still folds
+  and pulls back down as before.
+- **The turn screen shows only inside the Home Screen app.** A browser tab held upright is a normal way to use the
+  app, so it is never asked to turn. The nudge is towards the Home Screen app (the iPhone card, unchanged); inside
+  that app an upright phone or tablet is still asked to turn. Android's full screen and landscape on the first tap
+  are unchanged.
+- Modules: `Na__Feature__PhoneUi__Stylesheet__.css` (the portrait rule), `Na__Feature__PhoneUi__` 1.0.1 (its note),
+  `Na__ClientLinks__ClientLandscape__` 1.1.1.
+
+**Checked** (WebKit 26.6 as an iPhone 13): upright with the fold class on, the bar sits at 0, the pull tab is gone,
+the canvas starts at 54px and the corner icons sit under the bar; on its side the bar still folds (-57px). Not
+checked on a real iPhone.
+
+**Live (Adam: "Push it"), 29-Oct-2026 11:32 UTC:** `valevision3d` (stamp `20261029-113237`, the 3 files replaced,
+nothing else pending); checked through Cloudflare, all 3 byte-identical to the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.81.1 - 29-Oct-2026 - iPhone: Full Screen from the Home Screen
+### Adam: "It dosnt work on iphones looks great on android"; on a client link in Safari, "safaris menus clutter the browser we need to full screen it"
+
+**Why the iPhone differs** (checked 29-Oct-2026): the phone layout itself draws the same in WebKit 26.6 (Playwright,
+an emulated iPhone 13) as on Android. What an iPhone cannot do is hide Safari's bars: there is no Fullscreen API for
+a web page on iPhone (only for a video), `minimal-ui` went in iOS 8 and scrolling the page no longer tucks the bars
+away. Since iOS 26, every site added to the Home Screen opens as a full screen web app by default (WebKit, Safari 26).
+
+- **"See your design full screen"** (an iPhone in a browser tab, on a client link): once the model is on screen and
+  the tour and the turn screen are done, a card shows three pictured steps: **Tap Share** (at the bottom of Safari,
+  or under •••), **Add to Home Screen** (leave Open as Web App on), **Open it** from the new icon. "Got it" or "Not
+  now" rests it for a week; **Full screen on iPhone** in the guest bubble shows it any time. Not on Android (forced
+  full screen already), an iPad (the Fullscreen API works there) or inside the Home Screen app.
+- **The Home Screen icon opens the client's own link**: on a client link the head script drops the manifest (its
+  start_url would open the staff page; iPhone keeps the current address when there is none), and the icon is named
+  after the project ("Thrower 3D").
+- **Graphics** (vector-graphic-artist, the 3D navigation family, stroke 58): `Icon__ClientLinks__IosShare__`,
+  `__AddToHomeScreen__`, `__OpenFromHomeScreen__` in `01__AppAssets__ValeVision/UiIcons__ClientLinks/`; skill copies in
+  the 20-Series outputs, generator in `01__ProductionFiles`.
+- Modules: `Na__ClientLinks__ClientLandscape__` 1.1.0 (the card), `Na__ClientLinks__ClientMode__` 1.2.0 (the bubble's
+  item, the icon's name), `Na__ClientLinks__ClientTour__` (waits for the card), the stylesheet, index.html (the head
+  script).
+
+**Checked** (no iPhone): the modules parse; the card drawn by WebKit as an iPhone 13 held sideways (fits the 342px
+under Safari's bars) and upright. **Not checked on a real iPhone**: adding to the Home Screen and the icon reopening
+the client link.
+
+**Live (Adam: "Push it"), 29-Oct-2026 11:27 UTC:** `valevision3d` (stamp `20261029-112735`, 3 added, 5 replaced,
+nothing else pending; index.html's only change was the head script); checked through Cloudflare, all 8
+byte-identical to the PC. (v2.81.0's push was stamp `20261029-111546`.)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.81.0 - 29-Oct-2026 - The Phone Layout
+### Adam (four phone screenshots): "On mobile phones the UI is horrendous ... create a mobile phone specific UI"
+
+Every phone (staff and clients; Adam's choice), never a tablet or computer. `<html class="na-phone-ui">` is set by a
+head script before anything draws: touch first and the screen's short side under 600 CSS px (the line
+`Na__ClientLinks__ClientLandscape__` uses). `?phone-ui=1` forces it on a computer, `=0` off.
+
+- **The top bar** is 90% height (54px; logo and title at 90%). It is down on landing, then folds up 2 s after the
+  model shows, at TrueVision 3D's layout editor pace (1000 ms, `cubic-bezier(0.40, 0, 0.20, 1)`, on `top`). A pull
+  tab hangs under it: tap it, or drag it down (the bar follows the finger, then snaps in 380 ms). Down again, it
+  folds after 5 s untouched or at once on a touch on the model; never while the person menu is open. The canvas now
+  starts at the top of the screen on a phone, so folding never moves the 3D view.
+- **The navigation** (Adam's image 4: top left) is the active mode's icon alone. The first press grows it into the
+  row (Orbit, Walk, Fly, Reset View, Help: the buttons arrive one after another) and does nothing else; a press in
+  the row acts, then it shrinks back. It also closes after 4 s or on a touch elsewhere.
+- **Tools & Settings** (top right) is its icon alone; pressed, the card unfolds from the icon's corner and the name
+  slides in. The narrow-window swap behind the toolbar's Menu button is off on a phone. Opening one corner closes the
+  other. Both corners ride down with the bar when it is pulled.
+- **The view carousel** is 50% and faded while idle, 75% while in use (Adam), and wakes for 3 s after the last
+  touch. It never faded before: a phone keeps `:hover` on the last thing tapped, so the old idle rule never let go
+  (sticky hover is now switched off for the carousel, the toolbar and the menu on a phone). The first tap on an idle
+  carousel only wakes it, so a small picture is never picked by accident.
+- **The client tour** keeps the carousel awake while it explains the views, and the navigation open while it
+  explains looking around and Help.
+- Modules: new `65__Feature__PhoneUi/` (`Na__Feature__PhoneUi__.js`, `Na__Feature__PhoneUi__Stylesheet__.css`,
+  imported last in `Na__CoreUi__Styles__Index__.css`), index.html (the head script, the start-up call after the
+  carousel).
+
+**Checked** (no phone): the module parses and its imports resolve; the four states (landing, folded, navigation
+open, Tools & Settings open) drawn by headless Edge at 844 x 390 from the real stylesheets and markup. **Not
+checked**: the timings, the drag and the taps on a real phone.
+
+**Live (Adam: "Push it"), 29-Oct-2026 about 11:15 UTC:** `valevision3d` (2 added, 2 replaced, nothing else pending;
+a compare afterwards shows nothing left); checked through Cloudflare, all 4 byte-identical to the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.80.0 - 29-Oct-2026 - Client Links: Full Screen and Landscape on Phones and Tablets
+### Adam: "force clients on mobile to use the tool in landscape and not portrait and to full screen ... same with tablets in portrait ... if not possible strongly nudge with graphics"
+
+**What browsers allow** (researched 29-Oct-2026: caniuse, MDN, the W3C Screen Orientation spec, WebKit's notes):
+- Full screen always needs a tap or key first, never on load. Android browsers and iPad Safari have it; **iPhone
+  Safari does not** (only a video can go full screen there, still true on iOS 26).
+- Turning the screen (`screen.orientation.lock('landscape')`) works on Android, only while full screen. **Safari on
+  iPhone and iPad has never shipped it.**
+
+**So:**
+- **Android phones and tablets are forced.** The first tap anywhere (the tour's own buttons included) goes full
+  screen and turns the screen to landscape, even with the device held upright.
+- **iPad** goes full screen on the first tap and is asked to turn while upright.
+- **iPhone** is asked to turn (no full screen exists for a web page there).
+- **The turn screen**, while a phone or tablet is held upright: a turning phone (new animated graphic), "Turn your
+  phone sideways" (or tablet), why, and how to unlock rotation on that device (Control Centre's Rotation Lock on
+  iOS, Auto-rotate on Android). On Android a **Turn to landscape** button turns it there and then. It goes the
+  moment the device is sideways. "Continue without turning" shows after 6 s on a phone, 3 s on a tablet (a phone in
+  a stand cannot turn), and holds for that browser session.
+- Leaving full screen is allowed; the next tap goes back in, up to three times a visit, then the menu's Enter Full
+  Screen is left to the client. The tour waits while the turn screen is up.
+- **The device handler** (`Na__ClientLandscape__Profile`): touch first (`(hover: none) and (pointer: coarse)`, or an
+  iPhone, iPad or Android), phone or tablet by the screen's short side (under 600 CSS px is a phone), and the
+  device's own orientation (`screen.orientation.type`, iOS's `window.orientation`, then the media query), so an iPad
+  held sideways in Split View is not asked. `<html>` carries `na-client-device--phone|tablet` and
+  `na-client-orient--portrait|landscape`. Computers are never touched.
+- Modules: new `93__Feature__ClientLinks/Na__ClientLinks__ClientLandscape__.js` (reuses
+  `60__Feature__FullScreenMode`'s browser logic), `Na__ClientLinks__ClientMode__` 1.1.0 (starts it),
+  `Na__ClientLinks__ClientTour__` 1.2.1 (waits for it), the stylesheet (the turn screen).
+- **Graphic:** `01__AppAssets__ValeVision/UiIcons__ClientLinks/Icon__ClientLinks__RotateToLandscape__.svg`, a
+  self-running loop (the phone turns with a slight overshoot, a tick shows once it is sideways), in the 3D navigation
+  menu family (stroke 58, filled rounded arrowhead). Skill copy in the 20-Series outputs, generator in
+  `01__ProductionFiles`.
+
+**Checked** (no device): the modules parse and their imports resolve; the graphic's frames and the turn screen
+(iPhone and Android wording, phone and tablet widths) drawn by headless Edge. **Not checked on a real phone or
+tablet**: the forced turn on Android and full screen on iPad need a device.
+
+**Live (Adam: "Push it"), 29-Oct-2026 10:48 UTC:** `valevision3d` (stamp `20261029-104850`, 2 added, 3 replaced,
+nothing else pending); checked through Cloudflare, all 5 byte-identical to the PC (the graphic served as
+`image/svg+xml`).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.79.5 - 29-Oct-2026 - Client Links Simplified (Temporary)
+### Adam: "we are trying to simplify things for the user ... temporarily removed based on J. Watchorns comments and awaiting directors feedback"
+
+All of this is commented out, not deleted, so it can come back as it was.
+
+- **Tools & Settings on a client link:** Export Image and Toggle Model Layers are hidden from clients. Their `<li>`
+  no longer carries `data-na-client-menu` (index.html), with a note above each saying how to restore it. Clients
+  now see Camera Settings, Enter Full Screen and App Settings. Staff keep the full menu.
+- **The client tour** (`Na__ClientLinks__ClientTour__` 1.2.0): the Menu step (which opened Tools & Settings) and the
+  Your menu step (which opened the person icon's menu to share the link) are commented out. The tour is now
+  Welcome, Views, Look, Help, Done.
+- Unchanged: the guest bubble's own menu still has Take the tour again, How to look around and Copy the link.
+
+**Checked** (no app): both modules parse; index.html has three client menu items.
+
+**Live (Adam: "Push it"), 29-Oct-2026 10:31 UTC:** `valevision3d` (stamp `20261029-103100`, the three files replaced,
+nothing else pending); checked through Cloudflare, byte-identical to the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.79.4 - 28-Oct-2026 - The Internal Tab: Two Picture Cards, One Row of Actions
+### Adam: "Make these easier to understand, use graphics and better" (Cancel, Generate & download email, Send app notification, Send email)
+
+- **Which email?** Two picture cards at the top of Internal Vale Company Sharing: **Project link email** (the link
+  icon: "A button that opens this project in ValeVision 3D") and **New project notice** (a new bell icon: "Says the
+  project is now in the ValeVision app. No link: it points to the install guide"). The chosen card is outlined in
+  navy with a tick; the project link email is chosen when the form opens.
+- **One row of actions:** Cancel, **Download Email** (the download icon) and **Send email** on the right, bigger
+  (the paper plane), as on External Client Sharing. Both act on the chosen card, so the pop-up "Which email type do
+  you want to generate & download?" chooser and the separate Send app notification button are gone. The two emails,
+  their payload builders and their toasts are unchanged.
+- Modules: `Na__Feature__EmailWorkers__FormOverlay__` (the cards, `getEmailType()`, `setBusy()`), `__UiInteractionLogic__`
+  (one Download, one Send), the stylesheet (the cards; the chooser's styles gone), `Na__ClientLinks__Helpers__` 1.1.2
+  (the bell), the folder README.
+
+**Checked** (no app): the modules parse and their imports resolve; the real form built from the modules and drawn
+by headless Edge.
+
+**Live (Adam: "Push it"), 28-Oct-2026 11:53 UTC:** `valevision3d` (stamp `20261028-115327`, the four files replaced,
+nothing else pending); checked through Cloudflare, byte-identical to the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.79.3 - 28-Oct-2026 - Client Email First, in Green; Client Link Second
+### Adam: "This is not true, it sends to the client. make that option first and make it green and the other second"
+
+- **External Client Sharing** now shows the **Client email** panel first, green (its edge, badge and tag "Send to
+  the client"), and opens it with the tab; the **Client link** panel is second, in Vale navy (its tag "Safe to send
+  to clients" follows). `Na__ClientLinks__ShareTab__` 1.1.3, the stylesheet (the panel colours swapped).
+- His screenshot still showed the tag "Paste into Outlook", which v2.79.0 had already replaced: that browser held
+  the page from before 11:32. A reload with Ctrl+Shift+R brings the live one.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.79.2 - 28-Oct-2026 - The Sign-Off Inside the Card; Send Email on the Right
+### Adam (a sent client email in Outlook): "the sign off isn't placed correctly"; "change Download email HTML to Download Email and flip the actions around send should be on the right and easier to see and press"
+
+- **The sign-off** ("Kind regards," name, role) of an email sent from the app now sits inside the card's frame, under
+  View Your Project in 3D and above the grey footer, lined up with the text. It sat outside the card, under its
+  footer. A downloaded email still has none (`Na__ClientLinks__ClientEmail__Builder__` 1.1.1, the template).
+- **The buttons:** Download Email (was Download email HTML) on the left, then Send email on the right, bigger
+  (12 x 26 padding, 18 px icon) and the row set to the right (`Na__ClientLinks__ShareTab__` 1.1.2, the stylesheet).
+
+**Checked** (no browser for the panel): the modules parse; a sent and a downloaded email built with the real builder
+and template (the sign-off inside the card, after the button and before the footer; none in a download), and the
+sent one drawn by headless Edge.
+
+**Live (Adam: "Push it"), 28-Oct-2026 11:45 UTC:** `valevision3d --scope 02__Src__AppModules/93__Feature__ClientLinks`
+(stamp `20261028-114538`, the four files replaced, nothing else pending); checked through Cloudflare against the PC.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.79.1 - 28-Oct-2026 - The Client Email's Two Buttons, Each With Its Picture
+### Adam: "Why are there not two buttons? one to send the email and one to download email html ... add graphics too"
+
+His screenshot was the panel as it was before 11:32 (one button, Generate & download email); v2.79.0 had already put
+Send email beside it. Now:
+- **Download email HTML** is the second button's name (was Generate & download email), in Adam's words.
+- **Each button carries a picture:** Send email the paper plane (v2.79.0); Download email HTML the Gold Standards'
+  download (`10__GoldStandards__GeneralWebAppIcons/Icon__NaAdminMenu__DownloadPdf__.svg`: an arrow into a tray),
+  redrawn on the panel's 24 grid at its 1.8 stroke, so it sits with Copy and the paper plane (the Gold Standard's own
+  60 / 1024 draws under 1 px at the button's 16 px). No Gold Standard exists for send or for an envelope, so the
+  panel's own paper plane and envelope stay.
+- "Making the email…" changes the label only, so the icon stays while the email is made.
+
+**Modules:** `Na__ClientLinks__ShareTab__` 1.1.1, `Na__ClientLinks__Helpers__` 1.1.1 (the `download` icon),
+`Na__ClientLinks__Styles__.css` (a comment). The Internal tab's own Generate & download email is unchanged.
+
+**Checked** (no browser): both modules parse as modules and every import resolves; the two buttons and the icon drawn
+offline at 16, 24 and 48 px beside the Gold Standard and the panel's Copy button.
+
+**Live (Adam: "Push it"), 28-Oct-2026 11:41 UTC:** `valevision3d --scope 02__Src__AppModules/93__Feature__ClientLinks`
+(stamp `20261028-114152`, the three files replaced, nothing else pending); checked through Cloudflare, sizes equal the PC's.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.79.0 - 28-Oct-2026 - Client Emails Sent From the App: the Send Check, the Sender CC'd, 30 / 10 / 20 an Hour
 ### Adam: "now we need a way to send those beautifully formatted emails actually out to our Vale Garden Houses Clients"
 
@@ -86,9 +415,12 @@ admin sending one CC'd once; a failed send giving its place back; an Employee st
 admin at 20, an Affiliate refused; the ledger lines; health's limits); the page's address rule against the server's
 on 11 cases. The panel and the modal are not tried in a browser.
 
-**Not live yet.** To go live: push `server-api` and `valevision3d`, restart `vale@ValeVision3D` (a push never
-restarts it), then `GET /valevision/api/email/health` should show `limits`. Take `RATE_LIMIT_MAX_PER_HOUR` out of
-`/etc/vale/apps/ValeVision3D.env` if it is set there.
+**Live (Adam: "push ALL" once every live session said what was finished), 28-Oct-2026 11:32 UTC:** one engine
+push of `server-api`, `server-devtools` and `valevision3d` (stamp `20261028-113217`, no deletions), which also took
+the library gate's finished API code (its nginx Apply is still Adam's to give); then `vale@ValeVision3D` and
+`vale@ValeVision__TheiaVideoPlayer` restarted. Checked: both active; `GET /valevision/api/email/health` answers
+configured, adminBcc and limits 30 / 10 / 20, also through Cloudflare; `Na__ClientLinks__SendCheck__.js` is served.
+`RATE_LIMIT_MAX_PER_HOUR` is still in `/etc/vale/apps/ValeVision3D.env`; nothing reads it now.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.78.0 - 28-Oct-2026 - Analytics: What Clients and Staff Do, and a Tour Step for Sharing

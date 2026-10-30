@@ -23,8 +23,10 @@
 //   app does not start behind it. A visit is counted once per browser session
 //   (?view=1), as Theia counts one.
 // - THE CLIENT'S VIEW (Adam, 28-Oct-2026):
-//     Tools & Settings  Camera Settings, Export Image, Toggle Model Layers,
-//                       Enter Full Screen and App Settings only. The menu items
+//     Tools & Settings  Camera Settings, Enter Full Screen and App Settings
+//                       only (Export Image and Toggle Model Layers TEMPORARILY
+//                       REMOVED 29-Oct-2026, v2.79.5, based on J. Watchorn's
+//                       comments, awaiting the directors). The menu items
 //                       a client sees carry data-na-client-menu in index.html;
 //                       every other item is hidden by the client styles, so a
 //                       menu item added later stays hidden from clients until
@@ -35,7 +37,11 @@
 //                       pill and the install card.
 //     The guest bubble  the shared sign-in's guest state, as Theia's: "Shared
 //                       with you by Vale Garden Houses", the link's end date,
-//                       Take the tour again, How to look around, Copy the link.
+//                       Take the tour again, How to look around, Install the
+//                       app (not inside the app), Copy the link.
+//     Their own app      Na__ClientLinks__AppManifest__ (index.html's head) makes
+//                       the client's own manifest; Na__ClientLinks__InstallApp__
+//                       offers it after their first press on the model.
 //   <html class="na-client-mode"> is set by a script in index.html's head
 //   before anything draws (the same rule as Na__DevGate__IsClientLink), so the
 //   full menu never flashes up first.
@@ -44,10 +50,27 @@
 //   reads only to a client link, never a write.
 // - The first-launch tour (Na__ClientLinks__ClientTour__) starts once the model
 //   is on screen (na-app-scene-ready).
+// - PHONES AND TABLETS (v2.80.0): Na__ClientLinks__ClientLandscape__ puts them
+//   in full screen and landscape where the browser allows, and shows "Turn
+//   your phone sideways" while one is held upright.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Oct-2026 - Version 1.2.1 (ValeVision3D v2.82.0)
+// - No longer renames the Home Screen icon: the client's own manifest
+//   (Na__ClientLinks__AppManifest__, in index.html's head) names it.
+// - Starts Na__ClientLinks__InstallApp__ (the install card after the first
+//   press on the model); the guest bubble's "Install the app" replaces "Full
+//   screen on iPhone".
+//
+// 29-Oct-2026 - Version 1.2.0 (ValeVision3D v2.81.1)
+// - iPhone: "Full screen on iPhone" in the guest bubble (the Home Screen card),
+//   and the Home Screen icon is named after the project ("<title> 3D").
+//
+// 29-Oct-2026 - Version 1.1.0 (ValeVision3D v2.80.0)
+// - Starts Na__ClientLinks__ClientLandscape__ once the link has opened.
+//
 // 28-Oct-2026 - Version 1.0.0
 // - Initial build (ValeVision3D v2.77.0).
 //
@@ -62,6 +85,8 @@
     import { Na__ClientLinks__Api, Na__ClientLinks__ApiPath, Na__ClientLinks__Copy, Na__ClientLinks__El, Na__ClientLinks__FormatDate,
              Na__ClientLinks__Icon } from './Na__ClientLinks__Helpers__.js';
     import { Na__ClientTour__MaybeStart, Na__ClientTour__Start } from './Na__ClientLinks__ClientTour__.js';
+    import { Na__ClientLandscape__Start } from './Na__ClientLinks__ClientLandscape__.js';
+    import { Na__InstallApp__Start, Na__InstallApp__Show, Na__InstallApp__CanOffer } from './Na__ClientLinks__InstallApp__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -136,6 +161,7 @@
             menuItems : [
                 { label : 'Take the tour again',         onClick : () => Na__ClientTour__Start() },
                 { label : 'How to look around',          onClick : Na__ClientMode__OpenHelp },
+                ...(Na__InstallApp__CanOffer() ? [{ label : 'Install the app', onClick : () => Na__InstallApp__Show(true) }] : []),
                 { label : 'Copy the link to this project', onClick : () => Na__ClientLinks__Copy(window.location.href, 'Link copied') }
             ]
         });
@@ -214,7 +240,10 @@
 
         Na__ClientMode__Link = { project : answer.project || { id : projectId }, share : answer.share || {}, token };
         if (answer.project && answer.project.title) document.title = `${answer.project.title} · ValeVision 3D`;
+        // The Home Screen name and launch address are Na__ClientLinks__AppManifest__'s alone (index.html's head)
         Na__ClientMode__Guest(Na__ClientMode__Link.share);
+        Na__ClientLandscape__Start();                                           // <-- Phones and tablets: full screen and landscape
+        Na__InstallApp__Start();                                                // <-- The client's own app, offered after their first press on the model
         Na__ClientMode__ArmTour();
         return Na__ClientMode__Link;
     }

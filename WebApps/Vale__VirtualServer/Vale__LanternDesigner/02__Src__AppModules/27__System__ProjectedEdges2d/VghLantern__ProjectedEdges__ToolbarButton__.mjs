@@ -304,12 +304,12 @@ import {
     //   It returns what happened, so a caller that must not continue until the
     //   linework exists can await it and know whether anything was actually done.
     //
-    // A render already in progress is joined rather than started again.
+    // A render already in progress is joined rather than started again: the pipeline
+    // queues this request behind it and then renders only what is still missing,
+    // usually nothing. 28-Oct-2026: this returned at once while a render was running,
+    // so Preview and Send could compose its pack before the linework existed, the
+    // opposite of what its gate is for.
     export async function VghLantern__ProjectedEdges__ToolbarButton__ForceRender() {
-        if (VghLantern__ProjectedEdges__Pipeline__Status().IsWorking) {
-            return { Rendered : 0, Total : 0, WasBusy : true };
-        }
-
         VghLantern__ProjectedEdges__ProgressOverlay__Open();
         VghLantern__ProjectedEdges__ToolbarButton__Sync();
 

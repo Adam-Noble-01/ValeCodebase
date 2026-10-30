@@ -37,14 +37,15 @@ One server, one origin, one store (since v2.72.0). Nothing comes from GitHub Pag
 |---|---|---|
 | **Staff** (any Vale account) | `/valevision/?project=<id>` (a staff link) | the sign-in first, then the viewer; Employee and up get Share Project Link (Internal and External tabs) |
 | **App admins** (AppAdmin: Adam, Shane) | the same | also the Dev Tools menu, every save and the Layout Editor's editing (`Na__AppUtils__DevGate__`) |
-| **Clients** (no account) | `/valevision/?project=<id>&share=<token>` (a client link) | the model, the scene carousel and Tools & Settings with Camera Settings, Export Image, Toggle Model Layers, Enter Full Screen and App Settings only; a guest bubble; a first-launch tour |
+| **Clients** (no account) | `/valevision/?project=<id>&share=<token>` (a client link) | the model, the scene carousel and Tools & Settings with Camera Settings, Enter Full Screen and App Settings only (Export Image and Toggle Model Layers temporarily removed, v2.79.5); a guest bubble; a first-launch tour; on phones and tablets, full screen and landscape (forced on Android, asked for on iPhone and iPad, v2.80.0); on any phone, staff included, the phone layout (`65__Feature__PhoneUi`, v2.81.0: the bar folds away and pulls back down, navigation and Tools & Settings as corner icons, a shrinking carousel). Phone, tablet or computer is decided once, in index.html's head script, by what the device is (`<html data-na-device>`, v2.81.4), never by screen size: a computer always keeps its top bar. Each client link installs as the client's own app (v2.82.0: `Na__ClientLinks__AppManifest__`, a per-link manifest named for the project that opens only their link; index.html has NO static manifest link, Safari keeps the first it meets), offered by the install card after their first press on the model (`Na__ClientLinks__InstallApp__`: one tap on Chrome / Edge, pictured steps on iPhone and iPad) |
 
 - A client link is made on **Share Project Link > External Client Sharing** (Theia's client link panel: who it is
   for, an expiry, Copy, Switch off, how often it was opened) or with the **client email** on the same tab. Employee
   and up make links and switch off their own; Management and App Admins switch off anyone's.
 - **Client emails are sent from the app (v2.79.0):** the Client email panel sends the email straight to the client
   (up to 10 addresses) after the send check: what goes where, a checklist, a tick box that unlocks Send, then "Email
-  sent to ...". The server (`ValeVision3D__Api__Email__.py`) lets an address outside Vale have only the client email
+  sent to ...". Beside Send email (on the right), **Download Email** (v2.79.2) makes the same email as a file to
+  paste into Outlook instead. A sent email signs off inside the card: Kind regards, the sender's name and role. The server (`ValeVision3D__Api__Email__.py`) lets an address outside Vale have only the client email
   with a live client link; the sender is CC'd and the admin blind-copied. Each sender may send 10 client emails an
   hour (Management and App Admins 20) and 30 internal ones. Guide: `62__Feature__EmailWorkers/` README.
 - **The API decides** (`ValeVision3D__Api__ClientLinks__.py`, one guard before every request): a read needs a Vale

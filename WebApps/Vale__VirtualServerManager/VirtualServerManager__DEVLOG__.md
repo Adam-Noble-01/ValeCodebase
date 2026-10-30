@@ -1,5 +1,39 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.15.0, 28-Oct-2026: Restart Manager (One-Click Restart From the App)
+
+**Asked:** after the version banner said "restart the server", Adam wanted a button by Server status / Snapshot
+user data / Settings, so a restart never needs the .bat again.
+
+**The page** (`Ui__Core__.js`, `App__.html`, the CSS):
+- **Restart manager** in the header, after Settings. Its tooltip says it restarts this app's local server on this
+  PC, and that the Vale server is not touched.
+- The version banner gets its fix as a button, rebuilt only when the version changes: **Restart now** when the
+  server is older than the page, **Reload page** when the page is older.
+- `Vsm.Restart`:
+  - refuses while a job runs;
+  - turns its buttons off and sets the pill to "Restarting manager…";
+  - posts `/api/restart`, then checks `/api/state` every 500 ms for a new pid (up to 30 s);
+  - then toasts "Restarted: manager 0.15.0", or says what it saw last: the old copy still running ("the new copy
+    did not take over"), or no answer (see the log, or run the .bat).
+  - Jobs (`Vsm.Operate`) wait while it restarts, and the offline banner stays down for the moment the port is
+    free. A server older than 0.15.0 answers 404, and the toast says to run the .bat once.
+
+**The server** (`LocalServer__.py`):
+- `POST /api/restart`, with the same Host, `X-Vale-Manager` and JSON checks as every POST:
+  - 409 while a job or a users save runs (`Na__Server__BusyLabel`, now shared with `/api/shutdown`);
+  - otherwise it starts the next copy and answers `{ok, version, pid}`. That copy is detached: pythonw,
+    `--port <same> --silent --log-file <same, or VirtualServerManager__Startup.log> --restart`, run from the app
+    folder, `DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP`, and out of any job object when Windows allows it.
+  - Its stdout and stderr go to the log from the first line, so an import error in new code is written there.
+- The next copy's own `--restart` asks this copy to `/api/shutdown` and waits for the port. So new code that cannot
+  start leaves the old copy serving.
+- `/api/state` gains `pid` and `started`.
+- The log's over-5-MB rotation is skipped while the old copy still holds the file open (it rotates next time).
+
+**Versions:** `NA__SERVER__VERSION`, `Vsm.PageVersion` and the service worker's cache
+(`vale-virtual-server-shell-v0.15.0`) all moved to 0.15.0 together.
+
 ## Version 0.14.0, 28-Oct-2026: The Library Gate (nginx auth_request for Project Files)
 
 **Asked:** stop nginx serving a project's ValeVision 3D model files and its `ProjectData__<id>__.json` (and Theia's

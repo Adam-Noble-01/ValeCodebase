@@ -23,13 +23,12 @@
      - No closing line in the card. A DOWNLOADED email has none at all: the
        sender's own close and Outlook signature follow the card (Adam,
        22-Oct-2026, for Theia's). An email SENT from ValeVision 3D carries the
-       sender's sign-off under the card (Adam, 28-Oct-2026): Kind regards,
-       their name and their role.
+       sender's sign-off inside the card, under the button and above the
+       footer (Adam, 28-Oct-2026): Kind regards, their name and their role.
      - Pasted into Outlook from a browser (Ctrl+A, Ctrl+C), or sent whole by
        the server, so every style that matters is inline. The <style> block
        only frames the page in a browser and guards against mail apps' dark
-       modes. The page is a column, so a sign-off sits under the card wherever
-       the <style> block is read (a browser, Apple Mail).
+       modes.
      - The button's padding is on its cell, not the link: Outlook ignores
        padding on a link.
      - Every address is the production one (app.valegardenhouses.com).
@@ -42,7 +41,7 @@
      - __PROJECT_URL__          the client link (/valevision/?project=<id>&share=<token>)
      - __LINK_EXPIRY_HTML__     "This link works until 22-Nov-2026." or nothing
      - __YEAR__                 the copyright year
-     - __SIGN_OFF_HTML__        a sent email's sign-off under the card, or nothing (a download)
+     - __SIGN_OFF_HTML__        a sent email's sign-off inside the card, or nothing (a download)
 
      =============================================================================
 -->
@@ -77,7 +76,7 @@
             padding-right                  : 10px;
             margin                         : 0;
             display                        : flex;
-            flex-direction                 : column;                        /* <-- The card, then a sent email's sign-off under it */
+            flex-direction                 : column;                        /* <-- The card, centred */
             justify-content                : flex-start;
             align-items                    : center;
             min-height                     : 100vh;
@@ -228,6 +227,7 @@
                                                 </td>
                                             </tr>
                                         </table>
+                                        __SIGN_OFF_HTML__
                                     </td>
                                 </tr>
                             </table>
@@ -241,7 +241,6 @@
                         </td>
                     </tr>
                 </table>
-                __SIGN_OFF_HTML__
                 <!-- ========================================================= -->
                 <!-- VALEVISION3D CLIENT EMAIL - END                           -->
                 <!-- ========================================================= -->

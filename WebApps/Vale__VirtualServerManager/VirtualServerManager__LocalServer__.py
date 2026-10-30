@@ -26,10 +26,22 @@ DESCRIPTION:
 - -r / --r / --restart: stop the copy already running on the port (asks it to shut
   down; an older copy without that endpoint is ended by PID), wait for the port,
   then start. Refuses while a push / collect / users save is running.
+- POST /api/restart (the page's Restart manager button): starts the next copy,
+  silent like the sign-in launcher, with --restart. Once that copy is up it asks
+  this one to shut down, so new code that cannot start leaves this copy serving.
+  Refused while a job runs.
 
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+28-Oct-2026 - Version 0.15.0
+- POST /api/restart (Restart manager in the header, Restart now in the version banner): a detached
+  pythonw copy with --silent --log-file --restart takes over the port; its output goes to the log
+  from the first line, so an import error in new code is written there. Refused (409) while a job
+  or a users save runs (Na__Server__BusyLabel, shared with /api/shutdown).
+- /api/state gains pid and started (the page knows the new copy by its pid).
+- The log's over-5-MB rotation is skipped while another copy still holds the file open.
+
 28-Oct-2026 - Version 0.14.0
 - The library gate (the engine): an app route's LibraryProtected / LibraryHidden lists in the routes
   file become nginx auth_request locations; tab 03 shows them. No route of this server changed; the
@@ -121,7 +133,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.14.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.15.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root
@@ -150,6 +162,9 @@ NA__SERVER__LAST_ACTION           = {}                                         #
 NA__SERVER__ACTIVITY_FETCH        = {}                                         # <-- Tab 05: the last fetch of the activity ledger
 NA__SERVER__QUIET                 = False
 NA__SERVER__HTTPD                 = None                                       # <-- Set in Main; /api/shutdown stops it
+NA__SERVER__LAUNCH                = {"port": NA__SERVER__DEFAULT_PORT, "log_file": ""}   # <-- Set in Main; /api/restart starts the next copy alike
+NA__SERVER__RESTART_LOG           = "VirtualServerManager__Startup.log"        # <-- The sign-in launcher's log: used when this copy has none
+NA__SERVER__STARTED               = time.time()                                # <-- Reported with the pid in /api/state
 
 # endregion ----------------------------------------------------
 
@@ -378,7 +393,8 @@ def Na__Server__State() -> dict:
     cfg = Na__Engine.Na__Config__Load()
     now = time.time()
     plans = {k: Na__Server__PlanForUi(p) for k, (t, p) in NA__SERVER__PLANS.items() if now - t < NA__SERVER__PLAN_TTL_S}
-    return {"version": NA__SERVER__VERSION, "config": cfg, "mappings": Na__Engine.Na__Engine__LocalOverview(cfg),
+    return {"version": NA__SERVER__VERSION, "pid": os.getpid(), "started": int(NA__SERVER__STARTED),
+            "config": cfg, "mappings": Na__Engine.Na__Engine__LocalOverview(cfg),
             "unmapped": Na__Engine.Na__Engine__UnmappedFolders(cfg), "gateway": Na__Engine.Na__Gateway__Summary(),
             "plans": plans, "last_action": NA__SERVER__LAST_ACTION, "live": Na__Live.summary(),
             "busy": {"label": NA__SERVER__BUSY["label"],
@@ -640,12 +656,20 @@ class Na__Server__Handler(BaseHTTPRequestHandler):
                 return self.Na__Handler__Json({"ok": False, "error": "; ".join(res["errors"]), "errors": res["errors"]}, 400)
             return self.Na__Handler__Json({**res, **Na__Engine.Na__Users__Payload(cfg)})
         if path == "/api/shutdown":
-            busy = NA__SERVER__BUSY["label"] or ("saving user accounts" if NA__SERVER__USERS_LOCK.locked() else "")
+            busy = Na__Server__BusyLabel()
             if busy and not body.get("force"):
                 return self.Na__Handler__Json({"ok": False, "error": f"busy: {busy}"}, 409)
             self.Na__Handler__Json({"ok": True, "version": NA__SERVER__VERSION, "pid": os.getpid()})
             threading.Thread(target=Na__Server__Shutdown, daemon=True, name="shutdown").start()
             return None
+        if path == "/api/restart":                                              # <-- The next copy asks this one to /api/shutdown
+            busy = Na__Server__BusyLabel()
+            if busy:
+                return self.Na__Handler__Json({"ok": False, "error": f"the manager is busy ({busy}). Wait for it to finish, then restart."}, 409)
+            err = Na__Server__StartSuccessor()
+            if err:
+                return self.Na__Handler__Json({"ok": False, "error": err}, 500)
+            return self.Na__Handler__Json({"ok": True, "version": NA__SERVER__VERSION, "pid": os.getpid()})
         if path == "/api/clear-cooldown":
             st = Na__Engine.Na__Gateway__LoadState()
             st["cooldown_until"], st["cooldown_reason"] = 0, ""
@@ -698,6 +722,45 @@ def Na__Server__Shutdown() -> None:
         time.sleep(0.1)
     if NA__SERVER__HTTPD:
         NA__SERVER__HTTPD.shutdown()
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | What This Copy Is Doing ("" when idle): a stop or a restart waits for it
+# ------------------------------------------------------------
+def Na__Server__BusyLabel() -> str:
+    return NA__SERVER__BUSY["label"] or ("saving user accounts" if NA__SERVER__USERS_LOCK.locked() else "")
+# ---------------------------------------------------------------
+
+# FUNCTION | Start the Next Copy (POST /api/restart)
+# ------------------------------------------------------------
+def Na__Server__StartSuccessor() -> str:
+    """Starts a new copy of this server, silent like the sign-in launcher, with --restart: once
+    it is up it asks this copy to shut down, waits for the port, then serves. If the new code
+    cannot start, this copy keeps serving. Returns "" or what went wrong."""
+    exe = Path(sys.executable)
+    if os.name == "nt" and exe.with_name("pythonw.exe").is_file():
+        exe = exe.with_name("pythonw.exe")                                     # <-- No console window
+    log_name = NA__SERVER__LAUNCH["log_file"] or NA__SERVER__RESTART_LOG
+    log_path = Path(log_name) if Path(log_name).is_absolute() else NA__SERVER__APP_ROOT_PATH / log_name
+    args = [str(exe), str(Path(__file__).resolve()), "--port", str(NA__SERVER__LAUNCH["port"]),
+            "--silent", "--log-file", log_name, "--restart"]
+    flags = [0]
+    if os.name == "nt":
+        base = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+        flags = [base | subprocess.CREATE_BREAKAWAY_FROM_JOB, base]           # <-- Out of any job that ends with this copy, when allowed
+    print(f"Restart requested ({time.strftime('%H:%M:%S')}): starting the next copy (log: {log_path.name}).", flush=True)
+    error = None
+    try:
+        with open(log_path, "a", encoding="utf-8") as log:                     # <-- Its output from the first line: an import error lands here
+            for flag in flags:
+                try:
+                    subprocess.Popen(args, cwd=str(NA__SERVER__APP_ROOT_PATH), stdin=subprocess.DEVNULL,
+                                     stdout=log, stderr=log, creationflags=flag, start_new_session=os.name != "nt")
+                    return ""
+                except OSError as e:
+                    error = e
+    except OSError as e:
+        error = e
+    return f"could not start the next copy: {error}"
 # ---------------------------------------------------------------
 
 # HELPER FUNCTION | Is Something Listening on the Port?
@@ -771,7 +834,10 @@ def Na__Server__UseLogFile(path: str) -> None:
     if not log_path.is_absolute():
         log_path = NA__SERVER__APP_ROOT_PATH / log_path
     if log_path.exists() and log_path.stat().st_size > 5_000_000:
-        log_path.replace(log_path.with_suffix(".old.log"))
+        try:
+            log_path.replace(log_path.with_suffix(".old.log"))
+        except OSError:
+            pass                                                               # <-- Still open in the copy being replaced: rotate next time
     handle = open(log_path, "a", encoding="utf-8", buffering=1)
     sys.stdout = sys.stderr = handle
 # ---------------------------------------------------------------
@@ -789,6 +855,7 @@ def Na__Server__Main() -> int:
                     help="stop the manager already running on the port, then start this one (picks up code changes)")
     ap.add_argument("--stop", action="store_true", help="stop the manager running on the port, then exit")
     a = ap.parse_args()
+    NA__SERVER__LAUNCH.update(port=a.port, log_file=a.log_file)
     if a.log_file:
         Na__Server__UseLogFile(a.log_file)
     NA__SERVER__QUIET = a.silent
@@ -821,7 +888,7 @@ def Na__Server__Main() -> int:
     print("=" * 77)
     print(f" UI        : {url}")
     print(f" Sync map  : {Na__Engine.NA__ENGINE__CONFIG_PATH}")
-    print(" Stop      : Ctrl+C          Restart after code changes: --restart (-r)")
+    print(" Stop      : Ctrl+C          Restart after code changes: Restart manager (app header), or --restart (-r)")
     print("=" * 77, flush=True)
     if not (a.no_browser or a.silent or was_running):                          # <-- A restart reuses the open app window
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()

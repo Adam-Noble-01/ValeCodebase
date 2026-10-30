@@ -11,6 +11,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Pictures and one choice (ValeVision3D v2.79.4)
+// - Adam: "Make these easier to understand, use graphics". The Internal tab
+//   picks its email on two picture cards (Project link email: the link icon;
+//   New project notice: the bell), first under the hint. One row of actions:
+//   Cancel, Download Email (the download icon) and Send email on the right,
+//   bigger (the paper plane). Both act on the chosen card, so the pop-up
+//   "which email type" chooser and the second Send button are gone.
+//   getEmailType() and setBusy(button, words) for the UI logic.
+//
 // 28-Oct-2026 - Vale addresses only, said (ValeVision3D v2.79.0, client emails sent)
 // - The Internal tab's hint says a client is emailed from External Client
 //   Sharing: the server refuses an address outside Vale from this tab.
@@ -203,59 +212,70 @@
         notesInput.placeholder = 'Optional message appended to the generated email.';
         applyAntiAutofillAttributes(notesInput, 'notes');
 
-        const generateChooser = document.createElement('div');
-        generateChooser.className = 'na-email-workers-overlay__generate-chooser';
+        // EMAIL TYPE | Two picture cards: which email goes (Adam, v2.79.4; was a pop-up chooser and two Send buttons)
+        // ------------------------------------------------------------
+        const typeField = document.createElement('fieldset');
+        typeField.className = 'na-email-workers-overlay__field na-email-workers-overlay__types';
 
-        const generateChooserLabel = document.createElement('p');
-        generateChooserLabel.className = 'na-email-workers-overlay__generate-chooser-label';
-        generateChooserLabel.textContent = 'Which email type do you want to generate & download?';
+        const typeLegend = document.createElement('legend');
+        typeLegend.className = 'na-email-workers-overlay__label';
+        typeLegend.textContent = 'Which email?';
+        typeField.appendChild(typeLegend);
 
-        const generateChooserActions = document.createElement('div');
-        generateChooserActions.className = 'na-email-workers-overlay__generate-chooser-actions';
+        const makeTypeCard = (value, icon, name, text) => {
+            const card = document.createElement('label');
+            card.className = 'na-email-workers-overlay__type';
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `${antiAutofillToken}-type`;
+            radio.value = value;
+            radio.className = 'na-email-workers-overlay__type-radio';
+            const badge = document.createElement('span');
+            badge.className = 'na-email-workers-overlay__type-badge';
+            badge.appendChild(Na__ClientLinks__Icon(icon));
+            const words = document.createElement('span');
+            words.className = 'na-email-workers-overlay__type-text';
+            const strong = document.createElement('strong');
+            strong.textContent = name;
+            const small = document.createElement('span');
+            small.textContent = text;
+            words.append(strong, small);
+            const tick = document.createElement('span');
+            tick.className = 'na-email-workers-overlay__type-tick';
+            tick.appendChild(Na__ClientLinks__Icon('check'));
+            card.append(radio, badge, words, tick);
+            typeField.appendChild(card);
+            return radio;
+        };
+        const typeLink = makeTypeCard('link', 'link', 'Project link email',
+                                      'A button that opens this project in ValeVision 3D.');
+        makeTypeCard('notice', 'bell', 'New project notice',
+                     'Says the project is now in the ValeVision app. No link: it points to the install guide.');
+        typeLink.checked = true;
+        // ------------------------------------------------------------
 
-        const btnGenerateLink = document.createElement('button');
-        btnGenerateLink.type = 'button';
-        btnGenerateLink.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
-        btnGenerateLink.textContent = 'Link email (legacy)';
-
-        const btnGenerateNotification = document.createElement('button');
-        btnGenerateNotification.type = 'button';
-        btnGenerateNotification.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
-        btnGenerateNotification.textContent = 'App notification email';
-
-        const btnGenerateChooserCancel = document.createElement('button');
-        btnGenerateChooserCancel.type = 'button';
-        btnGenerateChooserCancel.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
-        btnGenerateChooserCancel.textContent = 'Cancel';
-
-        generateChooserActions.appendChild(btnGenerateLink);
-        generateChooserActions.appendChild(btnGenerateNotification);
-        generateChooserActions.appendChild(btnGenerateChooserCancel);
-        generateChooser.appendChild(generateChooserLabel);
-        generateChooser.appendChild(generateChooserActions);
-
+        // ACTIONS | Cancel, Download Email, then Send email on the right (the main one)
+        // ------------------------------------------------------------
         const actions = document.createElement('div');
         actions.className = 'na-email-workers-overlay__actions';
 
-        const btnCancel = document.createElement('button');
-        btnCancel.type = 'button';
-        btnCancel.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary';
-        btnCancel.textContent = 'Cancel';
-
-        const btnGenerate = document.createElement('button');
-        btnGenerate.type = 'button';
-        btnGenerate.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary';
-        btnGenerate.textContent = 'Generate & download email';
-
-        const btnSendNotification = document.createElement('button');
-        btnSendNotification.type = 'button';
-        btnSendNotification.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--primary';
-        btnSendNotification.textContent = 'Send app notification';
-
-        const btnSend = document.createElement('button');
-        btnSend.type = 'button';
-        btnSend.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--primary';
-        btnSend.textContent = 'Send email';
+        const makeButton = (kind, icon, label) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `na-email-workers-overlay__btn na-email-workers-overlay__btn--${kind}`;
+            if (icon) button.appendChild(Na__ClientLinks__Icon(icon, 'na-email-workers-overlay__btn-icon'));
+            const text = document.createElement('span');
+            text.textContent = label;
+            button.appendChild(text);
+            return button;
+        };
+        const btnCancel = makeButton('secondary', null, 'Cancel');
+        const btnGenerate = makeButton('secondary', 'download', 'Download Email');
+        btnGenerate.title = 'Download the chosen email as an HTML file, to paste into Outlook';
+        const btnSend = makeButton('primary', 'send', 'Send email');
+        btnSend.classList.add('na-email-workers-overlay__btn--send');
+        btnSend.title = 'Send the chosen email to the recipients';
+        // ------------------------------------------------------------
 
         recipientsField.appendChild(recipientsLabel);
         recipientsField.appendChild(recipientsContainer);
@@ -268,14 +288,13 @@
 
         actions.appendChild(btnCancel);
         actions.appendChild(btnGenerate);
-        actions.appendChild(btnSendNotification);
         actions.appendChild(btnSend);
 
         internalPanel.appendChild(hint);
+        internalPanel.appendChild(typeField);
         internalPanel.appendChild(recipientsField);
         internalPanel.appendChild(greetingField);
         internalPanel.appendChild(notesField);
-        internalPanel.appendChild(generateChooser);
         internalPanel.appendChild(actions);
 
         panel.appendChild(antiAutofillTrapUser);
@@ -301,7 +320,6 @@
                 tab.tabIndex = on ? 0 : -1;
                 tabPanel.hidden = !on;
             });
-            hideGenerateChooser();
             if (typeof api.onTabChange === 'function') api.onTabChange(external ? 'external' : 'internal');
         }
         // ------------------------------------------------------------
@@ -325,15 +343,18 @@
 
         function hide() {
             overlay.classList.remove('is-visible');
-            hideGenerateChooser();                                              // <-- Reset chooser so it never re-opens stale
         }
 
-        function showGenerateChooser() {
-            generateChooser.classList.add('is-visible');
+        function getEmailType() {                                               // <-- 'link' (the project link email) or 'notice'
+            const chosen = typeField.querySelector('input:checked');
+            return chosen ? chosen.value : 'link';
         }
 
-        function hideGenerateChooser() {
-            generateChooser.classList.remove('is-visible');
+        function setBusy(button, words) {                                       // <-- Words while working; null puts the label back
+            const text = button.lastChild;
+            if (!button.dataset.label) button.dataset.label = text.textContent;
+            button.disabled = Boolean(words);
+            text.textContent = words || button.dataset.label;
         }
 
         function getNotesValue() {
@@ -353,14 +374,9 @@
             onTabChange : null,                                                 // <-- Set by the UI logic: fills the External tab on first use
             btnCancel,
             btnGenerate,
-            btnSendNotification,
             btnSend,
-            generateChooser,
-            btnGenerateLink,
-            btnGenerateNotification,
-            btnGenerateChooserCancel,
-            showGenerateChooser,
-            hideGenerateChooser,
+            getEmailType,
+            setBusy,
             recipientInput,
             chipsContainer,
             suggestionsList,

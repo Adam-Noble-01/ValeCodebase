@@ -8,6 +8,7 @@ This README never syncs, because `.md` files stay on the PC.
 | Folder | On the server | Served to the web? |
 |---|---|---|
 | `index.html` | Landing page (`/`) | Yes |
+| `favicon.ico` | The site icon every browser asks for by default (`/favicon.ico`): the Vale V at 16, 32, 48 and 64 px, made from `AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__512x512.png` (29-Oct-2026). Without it, every page logged a failed `/favicon.ico` in browsers that do not use the pages' SVG icon | Yes |
 | `Server__Api\` | Internal APIs: one Flask service per app (`Api__<App>\wsgi.py`), behind nginx; `Api__Shared\` holds the shared sign-in, accounts and library code | **Never** (404) |
 | `Server__DeveloperTools\` | Server scripts and config; `40__Config__Nginx\` holds a record of the generated nginx routes; `ValeDev__LocalServer__.py` runs this whole folder on <http://127.0.0.1:8030> like the server | **Never** (404) |
 | `Server__UserAccountData\` | **Vale user accounts** (below): the users register and per-app user configs. Git-ignored | **Never** (404) |

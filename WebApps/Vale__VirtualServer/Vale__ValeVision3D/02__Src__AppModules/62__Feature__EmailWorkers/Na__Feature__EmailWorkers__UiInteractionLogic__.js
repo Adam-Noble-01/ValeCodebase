@@ -11,6 +11,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - One Download, one Send (ValeVision3D v2.79.4)
+// - Both act on the email chosen on the form's cards (form.getEmailType():
+//   'link' or 'notice'); the type chooser and Send app notification are gone.
+//   The toasts and the two payload builders are as they were.
+//
 // 28-Oct-2026 - Where it went (ValeVision3D v2.79.0, client emails sent)
 // - Both sends say where the email went, from the server's answer (sentTo):
 //   "Email successfully sent to derek@..., roger@... and 2 more." The server now
@@ -244,75 +249,20 @@
         // ------------------------------------------------------------
 
 
-        // EVENT HANDLER | Generate Button Toggles the Email Type Chooser
+        // EVENT HANDLER | Download Email: the email chosen on the cards, as an HTML file
         // ------------------------------------------------------------
         form.btnGenerate.addEventListener('click', () => {
-            const isChooserVisible = form.generateChooser.classList.contains('is-visible');
-            if (isChooserVisible) {
-                form.hideGenerateChooser();                                    // <-- Second press dismisses
-                return;
-            }
-            form.showGenerateChooser();                                        // <-- Ask which email type to generate
-        });
-
-        form.btnGenerateLink.addEventListener('click', () => {
-            form.hideGenerateChooser();
-            generateAndDownloadLinkEmail();
-        });
-
-        form.btnGenerateNotification.addEventListener('click', () => {
-            form.hideGenerateChooser();
-            generateAndDownloadNotificationEmail();
-        });
-
-        form.btnGenerateChooserCancel.addEventListener('click', () => {
-            form.hideGenerateChooser();
-        });
-        // ------------------------------------------------------------
-
-        // EVENT HANDLER | Send App Notification Email (New Pipeline - No Project Link)
-        // ------------------------------------------------------------
-        form.btnSendNotification.addEventListener('click', async () => {
-            const selectedRecipients = autocomplete.getRecipients();
-            if (selectedRecipients.length === 0) {
-                showToast('Please add at least one recipient.', true);
-                return;
-            }
-
-            if (!Na__Feature__EmailWorkers__CanSend()) {
-                showToast('Sign in with your Vale account to send email.', true);
-                return;
-            }
-
-            try {
-                form.btnSendNotification.disabled = true;
-                form.btnSendNotification.textContent = 'Sending...';
-
-                const payload = await Na__Feature__AppNotificationEmail__BuildSendPayload({
-                    selectedRecipients,
-                    notesRaw                  : form.getNotesValue(),
-                    recipientNamesRawOverride : form.getGreetingNamesValue()
-                });
-
-                const sendResult = await apiClient.sendEmail(payload);
-                showToast(`App notification successfully sent to ${Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients)}.`);
-                autocomplete.clear();
-                form.notesInput.value = '';
-                closeOverlay();
-            } catch (error) {
-                console.error('[ValeVision3D] Send app notification failed:', error);
-                showToast(error?.message || 'App notification send failed.', true);
-            } finally {
-                form.btnSendNotification.disabled = false;
-                form.btnSendNotification.textContent = 'Send app notification';
-            }
+            if (form.getEmailType() === 'notice') generateAndDownloadNotificationEmail();
+            else generateAndDownloadLinkEmail();
         });
         // ------------------------------------------------------------
 
 
-        // EVENT HANDLER | Send Legacy Share-Link Email (Kept As-Is By Design)
+        // EVENT HANDLER | Send Email: the email chosen on the cards (the project link email, or the
+        //                 new project notice, which carries no project link)
         // ------------------------------------------------------------
         form.btnSend.addEventListener('click', async () => {
+            const isNotice = form.getEmailType() === 'notice';
             const selectedRecipients = autocomplete.getRecipients();
             if (selectedRecipients.length === 0) {
                 showToast('Please add at least one recipient.', true);
@@ -325,17 +275,18 @@
             }
 
             try {
-                form.btnSend.disabled = true;
-                form.btnSend.textContent = 'Sending...';
+                form.setBusy(form.btnSend, 'Sending...');
 
-                const payload = await Na__Feature__EmailWorkers__BuildSendPayload({
+                const build = isNotice ? Na__Feature__AppNotificationEmail__BuildSendPayload : Na__Feature__EmailWorkers__BuildSendPayload;
+                const payload = await build({
                     selectedRecipients,
                     notesRaw                  : form.getNotesValue(),
                     recipientNamesRawOverride : form.getGreetingNamesValue()
                 });
 
                 const sendResult = await apiClient.sendEmail(payload);
-                showToast(`Email successfully sent to ${Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients)}.`);
+                showToast(`${isNotice ? 'New project notice' : 'Email'} successfully sent to `
+                        + `${Na__Feature__EmailWorkers__SentToText(sendResult, selectedRecipients)}.`);
                 autocomplete.clear();
                 form.notesInput.value = '';
                 closeOverlay();
@@ -343,8 +294,7 @@
                 console.error('[ValeVision3D] Send email failed:', error);
                 showToast(error?.message || 'Email send failed.', true);
             } finally {
-                form.btnSend.disabled = false;
-                form.btnSend.textContent = 'Send email';
+                form.setBusy(form.btnSend, null);
             }
         });
     }

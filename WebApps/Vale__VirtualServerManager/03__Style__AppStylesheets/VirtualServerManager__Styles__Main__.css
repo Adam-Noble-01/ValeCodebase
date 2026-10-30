@@ -95,6 +95,7 @@
         margin: 14px 24px 0; padding: 10px 14px; border-radius: var(--Vsm_Radius);
         background: var(--Vsm_BadSoft); color: var(--Vsm_Bad); font-weight: 600;
     }
+    .Vsm__Offline .Vsm__BtnSmall { margin-left: 10px; }                     /* <-- The version banner's Restart now / Reload page */
 
 /* endregion ------------------------------------------------------------------- */
 

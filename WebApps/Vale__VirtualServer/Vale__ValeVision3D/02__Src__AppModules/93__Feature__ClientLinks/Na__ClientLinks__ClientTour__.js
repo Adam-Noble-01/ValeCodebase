@@ -23,6 +23,7 @@
 //                carousel can be tried while this step is up.
 //     Look       the navigation bar: turn, zoom and slide with the mouse (or
 //                fingers on a touchscreen), and Reset View.
+//     (Menu and Your menu: TEMPORARILY REMOVED 29-Oct-2026, see the log.)
 //     Menu       Tools & Settings dropped down: Export Image (high quality
 //                pictures, highlighted), Camera Settings, Toggle Model Layers,
 //                Enter Full Screen. On a narrow screen the bar's Menu opens it.
@@ -49,6 +50,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 29-Oct-2026 - Version 1.2.1 (ValeVision3D v2.80.0)
+// - The tour waits while "Turn your phone sideways" is up (Na__ClientTour__Busy).
+//
+// 29-Oct-2026 - Version 1.2.0 (ValeVision3D v2.79.5)
+// - TEMPORARILY REMOVED, based on J. Watchorn's comments and awaiting the
+//   directors' feedback: the Menu step (Tools & Settings opened) and the Your
+//   menu step (the person icon's menu, sharing the link). Both are commented
+//   out in Na__ClientTour__Steps, ready to restore. The tour is now Welcome,
+//   Views, Look, Help, Done.
+//
 // 28-Oct-2026 - Version 1.1.0 (ValeVision3D v2.78.0)
 // - The tour is reported to the activity ledger (above).
 // - "Your menu", before the last card (Adam): the person icon's menu opened and
@@ -173,7 +184,7 @@
     function Na__ClientTour__Busy() {
         const loading = document.getElementById('loadingOverlay');
         if (loading && getComputedStyle(loading).display !== 'none' && !loading.classList.contains('hidden')) return true;
-        return !!document.querySelector('.na-nav-help.na-nav-help--open, .na-confirm-dialog.is-open, .ValeUserLogin__Overlay--visible, .na-email-workers-overlay.is-visible');
+        return !!document.querySelector('.na-nav-help.na-nav-help--open, .na-confirm-dialog.is-open, .ValeUserLogin__Overlay--visible, .na-email-workers-overlay.is-visible, .na-client-rotate.is-visible, .na-client-install.is-visible');
     }
     // ------------------------------------------------------------
 
@@ -265,6 +276,9 @@
                     Na__ClientTour__Para(`Lost your way? ${click} Reset View on this bar to go back to the start.`, 'na-client-tour__para--quiet')
                 ]
             },
+            // TEMPORARILY REMOVED (29-Oct-2026, v2.79.5): the Tools & Settings step, which opened the menu, based on
+            // J. Watchorn's comments and awaiting the directors' feedback. To restore, delete this comment's /* and */.
+            /*
             {
                 id        : 'menu',
                 title     : 'Tools & Settings',
@@ -298,6 +312,7 @@
                                                            : 'You can open it at any time from Tools & Settings, at the top right.', 'na-client-tour__para--quiet')
                 ]
             },
+            */
             {
                 id        : 'help',
                 title     : 'Help is always here',
@@ -309,6 +324,10 @@
                     ...(walkOrFly ? [Na__ClientTour__Para('It also explains Walk and Fly, which let you move around your design as if you were there.', 'na-client-tour__para--quiet')] : [])
                 ]
             },
+            // TEMPORARILY REMOVED (29-Oct-2026, v2.79.5): the sharing step (the person icon's menu opened, with Copy the
+            // link to share with family and friends), based on J. Watchorn's comments and awaiting the directors'
+            // feedback. To restore, delete this comment's /* and */.
+            /*
             {
                 id        : 'guest',
                 title     : 'See the tour again, or share',
@@ -344,6 +363,7 @@
                     Na__ClientTour__Row('link',   'Copy the link to this project', 'Share it with family and friends, so they can see your design too.')
                 ]
             },
+            */
             {
                 id        : 'done',
                 title     : 'You are all set',

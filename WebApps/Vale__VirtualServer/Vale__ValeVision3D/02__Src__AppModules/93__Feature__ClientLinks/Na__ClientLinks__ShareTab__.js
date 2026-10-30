@@ -22,8 +22,8 @@
 //   Adam, 28-Oct-2026): addressed to (Dear ...), the client link (a new one by
 //   default, never expiring, labelled "<addressee> - Email 28-Oct-26"; or one
 //   of the project's live links, one ending within 30 days flagged), special
-//   notes, then Generate & download email: the subject line to copy and Open
-//   the email, to paste into Outlook.
+//   notes, then Download Email: the subject line to copy and Open the
+//   email, to paste into Outlook.
 // - SEND EMAIL (1.1.0, Adam, 28-Oct-2026): the client email goes straight to
 //   the client. The client's address (up to 10, checked as typed), then Send
 //   email: the link is made if new, the email is built with the sender's
@@ -32,9 +32,11 @@
 //   that unlocks Send, then "Email sent to <address>"). The server sends it
 //   from Vale's apps address with the sender CC'd (api/email/send with the
 //   project and the link). A sent email leaves its record in the panel and the
-//   form clear for the next. Generate & download stays, for pasting into Outlook.
-// - ONE PANEL OPEN AT A TIME, as Theia's two. The client link panel opens with
-//   the tab: the tab itself already says the links are for clients.
+//   form clear for the next. Download Email stays, for pasting into Outlook.
+// - TWO BUTTONS, EACH WITH ITS PICTURE (1.1.1): Send email (the paper plane)
+//   and Download Email (the Gold Standards' download: an arrow into a tray).
+// - ONE PANEL OPEN AT A TIME, as Theia's two. The client email panel (first,
+//   green, 1.1.3) opens with the tab; the client link panel is second, navy.
 // - The plain project link (a staff link) stays on the Internal tab.
 // - The server decides who may do what (ValeVision3D__Api__ClientLinks__.py):
 //   Employee and up make links and switch off their own; Management and App
@@ -47,6 +49,20 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 1.1.3 (ValeVision3D v2.79.3)
+// - Adam: the Client email panel first and green (it sends to the client),
+//   the Client link panel second, in navy. The email panel opens with the tab.
+//
+// 28-Oct-2026 - Version 1.1.2 (ValeVision3D v2.79.2)
+// - Adam: the second button is Download Email, and Send email moves to the
+//   right, bigger and easier to see and press than the download.
+//
+// 28-Oct-2026 - Version 1.1.1 (ValeVision3D v2.79.1)
+// - Adam: "one to send the email and one to download email html", with
+//   graphics. The second button is Download email HTML (was Generate &
+//   download email) and carries the download icon, as Send email carries the
+//   paper plane; the busy words go in its label, so the icon stays.
+//
 // 28-Oct-2026 - Version 1.1.0 (ValeVision3D v2.79.0, client emails sent)
 // - The Client email panel sends: the client's address, Send email (primary),
 //   the send check, the sent record. Generate & download is the second button.
@@ -81,7 +97,7 @@
     const Na__ClientLinks__EXPIRY_DAYS   = [0, 7, 30, 90, 365];                    // <-- Theia's TheiaConfig__Share__ExpiryOptionsDays
     const Na__ClientLinks__NEW_LINK      = 'new';                                  // <-- The email dropdown's "make a new link" choice
     const Na__ClientLinks__SOON_DAYS     = 30;                                     // <-- A link ending within this many days is flagged
-    const Na__ClientLinks__MAKE_LABEL    = 'Generate & download email';
+    const Na__ClientLinks__MAKE_LABEL    = 'Download Email';
     const Na__ClientLinks__SEND_LABEL    = 'Send email';
     const Na__ClientLinks__MAX_TO        = 10;                                     // <-- Client addresses in one send (the server's MAX_CLIENT_RECIPIENTS)
     const Na__ClientLinks__TO_NOTE       = 'Two or more? Separate them with commas (up to 10). You are copied in, and replies come to you.';
@@ -229,7 +245,7 @@
             if (p === clientPanel) label.focus();
             else toBox.focus();
         }));
-        root.append(clientPanel.panel, emailPanel.panel);
+        root.append(emailPanel.panel, clientPanel.panel);                     // <-- The email first (green), the link second (Adam, 1.1.3)
 
         const actions = Na__ClientLinks__El('div', 'na-client-share__actions');
         const close = Na__ClientLinks__El('button', 'na-client-share__btn', 'Close', { type: 'button' });
@@ -286,9 +302,11 @@
                                                  'Check the email, then send it to the client');
         send.type = 'submit';                                                  // <-- Enter in a box opens the send check; only its own Send sends
         const sendLabel = send.lastChild;
-        const make = Na__ClientLinks__El('button', 'na-client-share__btn na-client-share__btn--outline', Na__ClientLinks__MAKE_LABEL, { type: 'button' });
+        const make = Na__ClientLinks__IconButton('download', 'na-client-share__btn na-client-share__btn--outline', Na__ClientLinks__MAKE_LABEL,
+                                                 'Download the email as an HTML file, to paste into Outlook');
+        const makeLabel = make.lastChild;
         const emailActions = Na__ClientLinks__El('div', 'na-client-share__email-actions');
-        emailActions.append(send, make);
+        emailActions.append(make, send);                                       // <-- Send on the right, the bigger target (Adam, 1.1.2)
         emailForm.append(Na__ClientLinks__El('label', 'na-client-share__label', 'Client email address', { for: 'naClientEmailTo' }), toBox, toNote,
                          Na__ClientLinks__El('label', 'na-client-share__label', 'Addressed to (Dear …)', { for: 'naClientEmailDear' }), dear,
                          Na__ClientLinks__El('label', 'na-client-share__label', 'Client link', { for: 'naClientEmailLink' }), choice, linkNote,
@@ -606,7 +624,7 @@
         // ------------------------------------------------------------
 
 
-        // EVENT HANDLER | Generate & Download: the Link (made if new), the Email, the Download
+        // EVENT HANDLER | Download Email: the Link (made if new), the Email, the Download
         // ------------------------------------------------------------
         make.addEventListener('click', async () => {
             const addressee = dear.value.trim();
@@ -616,7 +634,7 @@
                 return;
             }
             setEmailBusy(true);
-            make.textContent = 'Making the email…';
+            makeLabel.textContent = 'Making the email…';
             try {
                 const link = await ensureLink(addressee);
                 const html = await Na__ClientLinks__BuildEmailHtml({ project, addressee, notes: notes.value, token: link.token,
@@ -634,7 +652,7 @@
                 Na__ClientLinks__Toast(error.message || 'The email could not be made.', true);
             } finally {
                 setEmailBusy(false);
-                make.textContent = Na__ClientLinks__MAKE_LABEL;
+                makeLabel.textContent = Na__ClientLinks__MAKE_LABEL;
             }
         });
         // ------------------------------------------------------------
@@ -643,7 +661,7 @@
         // FUNCTION | The Tab Is On Show: open the client link panel the first time, fetch the links afresh
         // ------------------------------------------------------------
         const show = () => {
-            if (!clientPanel.panel.open && !emailPanel.panel.open) clientPanel.panel.open = true;
+            if (!clientPanel.panel.open && !emailPanel.panel.open) emailPanel.panel.open = true;
             loadLinks();
             showLinkNote();
             setTimeout(() => (emailPanel.panel.open ? toBox : label).focus(), 0);

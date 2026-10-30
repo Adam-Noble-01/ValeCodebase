@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" stroke="#172b3a" stroke-width="58" stroke-linecap="round" stroke-linejoin="round" class="na-rotate-landscape">
+  <style>
+    .na-rotate-landscape .na-rl-phone { transform-box: view-box; transform-origin: 512px 540px; animation: na-rl-turn 3.6s infinite; }
+    .na-rotate-landscape .na-rl-arrow { animation: na-rl-arrow 3.6s infinite; }
+    .na-rotate-landscape .na-rl-tick  { stroke-dasharray: 330; stroke-dashoffset: 330; animation: na-rl-tick 3.6s infinite; }
+    @keyframes na-rl-turn {
+      0%, 22%   { transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(0.34, 1.45, 0.52, 1); }
+      48%, 86%  { transform: rotate(90deg); opacity: 1; }
+      93%       { transform: rotate(90deg); opacity: 0; }
+      94%       { transform: rotate(0deg); opacity: 0; }
+      100%      { transform: rotate(0deg); opacity: 1; }
+    }
+    @keyframes na-rl-arrow {
+      0%, 26%   { opacity: 1; }
+      40%, 94%  { opacity: 0; }
+      100%      { opacity: 1; }
+    }
+    @keyframes na-rl-tick {
+      0%, 52%   { stroke-dashoffset: 330; opacity: 1; }
+      64%, 86%  { stroke-dashoffset: 0; opacity: 1; }
+      93%, 100% { stroke-dashoffset: 0; opacity: 0; }
+    }
+  </style>
+  <g class="na-rl-arrow">
+    <path d="M414.3 148A404 404 0 0 1 861.9 338" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M911.2 443.3L925.1 312.3L804.5 366Z" fill="#172b3a" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g class="na-rl-phone"><rect x="362" y="280" width="300" height="520" rx="64" stroke-linecap="round" stroke-linejoin="round"/><line x1="472" y1="344" x2="552" y2="344" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <path class="na-rl-tick" d="M438 542L490 592L592 488" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

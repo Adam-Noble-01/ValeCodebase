@@ -22,12 +22,16 @@
 //   joined with "and" ("Derek, Roger, Sally" -> "Derek, Roger and Sally").
 // - THE SIGN-OFF (1.1.0): an email the server SENDS has no Outlook signature to
 //   follow it, so { signOff: { name, role } } puts "Kind regards," and the
-//   sender's name and role under the card (Adam, 28-Oct-2026). A download
-//   passes none and is as it was.
+//   sender's name and role inside the card, under the button (Adam,
+//   28-Oct-2026). A download passes none and is as it was.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Oct-2026 - Version 1.1.1 (ValeVision3D v2.79.2)
+// - The sign-off moves inside the card's frame, under the button and lined up
+//   with the text (Adam: it sat outside the card, under its footer).
+//
 // 28-Oct-2026 - Version 1.1.0 (ValeVision3D v2.79.0, client emails sent)
 // - signOff: the sender's sign-off under the card (__SIGN_OFF_HTML__), for an
 //   email sent from the app.
@@ -208,26 +212,27 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | A Sent Email's Sign-Off Under the Card ("Kind regards," name, role), or ''
+    // HELPER FUNCTION | A Sent Email's Sign-Off Inside the Card ("Kind regards," name, role), or ''
     // ------------------------------------------------------------
-    // As wide as the card and lined up with it; outside its frame, where the
-    // sender's own close would follow a pasted card.
+    // 1.1.1 (Adam, 28-Oct-2026): inside the card's frame, under the button and
+    // lined up with the text; it sat outside the frame before. Its space above
+    // is the cell's padding: Outlook ignores a table's margin.
     // ------------------------------------------------------------
     function Na__ClientLinks__BuildSignOffHtml(signOff) {
         const name = String((signOff && signOff.name) || '').trim();
         if (!name) return '';
         const role = String((signOff && signOff.role) || '').trim();
         const roleHtml = role ? `
-                            <p style="margin: 0; padding: 0; color: #656565; font-size: 14px; line-height: 1.5; font-family: Arial, sans-serif;">${Na__ClientLinks__EscapeHtml(role)}</p>` : '';
+                                                    <p style="margin: 0; padding: 0; color: #656565; font-size: 14px; line-height: 1.5; font-family: Arial, sans-serif;">${Na__ClientLinks__EscapeHtml(role)}</p>` : '';
         return `
-                <table class="vv3d-email-signoff" role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; max-width: 440px; width: 100%; margin: 0 auto 20px;">
-                    <tr>
-                        <td style="padding: 4px 2px 0; color: #172b3a; font-family: Arial, sans-serif;">
-                            <p style="margin: 0 0 16px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">Kind regards,</p>
-                            <p style="margin: 0; padding: 0; color: #172b3a; font-size: 14px; font-weight: 700; line-height: 1.5; font-family: Arial, sans-serif;">${Na__ClientLinks__EscapeHtml(name)}</p>${roleHtml}
-                        </td>
-                    </tr>
-                </table>`;
+                                        <table class="vv3d-email-signoff" role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+                                            <tr>
+                                                <td align="left" style="padding: 26px 0 0; color: #172b3a; text-align: left; font-family: Arial, sans-serif;">
+                                                    <p style="margin: 0 0 14px; padding: 0; color: #172b3a; font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">Kind regards,</p>
+                                                    <p style="margin: 0; padding: 0; color: #172b3a; font-size: 14px; font-weight: 700; line-height: 1.5; font-family: Arial, sans-serif;">${Na__ClientLinks__EscapeHtml(name)}</p>${roleHtml}
+                                                </td>
+                                            </tr>
+                                        </table>`;
     }
     // ------------------------------------------------------------
 

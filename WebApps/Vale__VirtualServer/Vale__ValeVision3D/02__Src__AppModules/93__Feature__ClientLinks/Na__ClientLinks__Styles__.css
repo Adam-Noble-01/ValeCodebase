@@ -22,6 +22,9 @@
  * - THE TOUR sits at 9998, appended last, so it is above every viewer layer
  *   (the menu 1001, the bar 1002, the carousel 1004, Help 9998) and below the
  *   toast and the confirm dialog (9999).
+ * - TURN YOUR PHONE SIDEWAYS (v2.80.0, Na__ClientLinks__ClientLandscape__) sits
+ *   at 10000, above the tour and the toast: phones and tablets held upright.
+ * - INSTALL THE APP (v2.82.0, Na__ClientLinks__InstallApp__) sits at 9999.
  * - THE SEND CHECK (v2.79.0, Na__ClientLinks__SendCheck__) sits at 9998 too:
  *   above the Share Project Link form (3100), below the toast, so "Email sent
  *   to ..." shows over it. Amber while it asks (the email is going outside
@@ -48,7 +51,7 @@
 
     /* THE TWO PANELS: one open at a time, each with its own icon, colour and tag */
     .na-client-share__panel {
-        --share-ink                        : #1f6b45;                      /* <-- Client: green (Theia's) */
+        --share-ink                        : #1f6b45;                      /* <-- The client email, first: green (Theia's green; Adam, v2.79.3) */
         --share-tint                       : #e6f3eb;
         margin-top                         : 0;
         border                             : 1px solid rgba(23, 43, 58, 0.16);
@@ -62,8 +65,8 @@
         margin-top                         : 10px;
     }
 
-    .na-client-share__panel--email {
-        --share-ink                        : #172b3a;                      /* <-- The email: Vale navy */
+    .na-client-share__panel--client {
+        --share-ink                        : #172b3a;                      /* <-- The client link, second: Vale navy */
         --share-tint                       : #e8eef3;
     }
 
@@ -303,12 +306,24 @@
         align-self                         : flex-start;
     }
 
-    /* THE CLIENT EMAIL'S TWO WAYS OUT: Send email (the main one), then Generate & download */
+    /* THE CLIENT EMAIL'S TWO WAYS OUT: Download Email, then Send email on the right, bigger (Adam, v2.79.2) */
     .na-client-share__email-actions {
         display                            : flex;
         flex-wrap                          : wrap;
-        gap                                : 8px;
-        margin-top                         : 14px;
+        justify-content                    : flex-end;
+        align-items                        : center;
+        gap                                : 10px;
+        margin-top                         : 16px;
+    }
+
+    .na-client-share__email-actions .na-client-share__btn--primary {
+        padding                            : 12px 26px;
+        font-size                          : 0.9rem;
+    }
+
+    .na-client-share__email-actions .na-client-share__btn--primary .na-client-icon {
+        width                              : 18px;
+        height                             : 18px;
     }
 
     .na-client-share__btn--outline {
@@ -813,6 +828,448 @@
         margin                             : 26px 0 0;
         font-size                          : 0.74rem;
         color                              : #9aa3ad;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Turn Your Phone Sideways (Na__ClientLinks__ClientLandscape__, v2.80.0)
+ * -----------------------------------------------------------------------------
+ * Phones and tablets held upright on a client link. Above the tour (9998) and
+ * the toast (9999): nothing else matters until the device is turned. */
+
+    .na-client-rotate {
+        position                           : fixed;
+        inset                              : 0;
+        z-index                            : 10000;
+        display                            : none;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+        box-sizing                         : border-box;
+        overflow-y                         : auto;
+        background                         : #f5f6f7;
+        font-family                        : 'Open Sans', sans-serif;
+        color                              : #172b3a;
+        text-align                         : center;
+        touch-action                       : manipulation;
+    }
+
+    .na-client-rotate.is-visible {
+        display                            : flex;
+    }
+
+    .na-client-rotate__card {
+        width                              : 100%;
+        max-width                          : 420px;
+    }
+
+    .na-client-rotate__graphic {
+        display                            : block;
+        width                              : min(52vw, 220px);
+        height                             : auto;
+        margin                             : 0 auto 8px;
+    }
+
+    .na-client-rotate__title {
+        margin                             : 0 0 12px;
+        font-size                          : 1.6rem;
+        font-weight                        : 600;
+        line-height                        : 1.25;
+    }
+
+    .na-client-rotate__text {
+        margin                             : 0 0 24px;
+        font-size                          : 1.08rem;
+        line-height                        : 1.6;
+        color                              : #3d4f5c;
+    }
+
+    .na-client-rotate__button {
+        width                              : 100%;
+        max-width                          : 320px;
+        padding                            : 16px 26px;
+        margin                             : 0 0 22px;
+        border                             : none;
+        border-radius                      : 8px;
+        background                         : #172b3a;
+        color                              : #ffffff;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 1.08rem;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+    .na-client-rotate__hint {
+        margin                             : 0 0 18px;
+        padding                            : 12px 14px;
+        border-radius                      : 8px;
+        background                         : #e8eef3;
+        font-size                          : 0.9rem;
+        line-height                        : 1.5;
+        color                              : #3d4f5c;
+    }
+
+    .na-client-rotate__skip {
+        padding                            : 10px 12px;
+        border                             : none;
+        background                         : none;
+        color                              : #6b7884;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 0.88rem;
+        text-decoration                    : underline;
+        cursor                             : pointer;
+    }
+
+    .na-client-rotate__skip[hidden] {
+        display                            : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Install the Client's Own App (Na__ClientLinks__InstallApp__, v2.82.0)
+ * -----------------------------------------------------------------------------
+ * Headed like the client email (the pavilion mark, "ValeVision 3D", "By Vale
+ * Garden Houses" in Georgia). On a phone held sideways (about 340px under
+ * Safari's bars) the card sits in two columns, so nothing scrolls. Below the
+ * turn screen (10000), above the tour and the toast. */
+
+    .na-client-install {
+        position                           : fixed;
+        inset                              : 0;
+        z-index                            : 9999;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : 12px max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
+        box-sizing                         : border-box;
+        overflow-y                         : auto;
+        background                         : rgba(23, 43, 58, 0.45);
+        font-family                        : 'Open Sans', sans-serif;
+        color                              : #172b3a;
+        animation                          : na-client-install-in 240ms ease both;
+    }
+
+    .na-client-install__card {
+        position                           : relative;
+        width                              : 100%;
+        max-width                          : 460px;
+        margin                             : auto;
+        padding                            : 20px 22px 16px;
+        border-radius                      : 16px;
+        background                         : #ffffff;
+        box-shadow                         : 0 18px 48px rgba(23, 43, 58, 0.32);
+        box-sizing                         : border-box;
+        animation                          : na-client-install-card 360ms cubic-bezier(0.34, 1.3, 0.52, 1) both;
+    }
+
+    .na-client-install__close {
+        position                           : absolute;
+        top                                : 10px;
+        right                              : 10px;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 34px;
+        height                             : 34px;
+        padding                            : 0;
+        border                             : none;
+        border-radius                      : 50%;
+        background                         : transparent;
+        color                              : #6b7884;
+        cursor                             : pointer;
+    }
+
+    .na-client-install__close .na-client-icon {
+        width                              : 18px;
+        height                             : 18px;
+    }
+
+    /* THE BANNER | As in the client email */
+    .na-client-install__brand {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 12px;
+        margin                             : 0 40px 12px 0;
+    }
+
+    .na-client-install__mark {
+        display                            : block;
+        flex                               : none;
+        width                              : 33px;
+        height                             : 45px;
+    }
+
+    .na-client-install__mark svg,
+    .na-client-install__mark img {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : contain;
+    }
+
+    .na-client-install__brand-words {
+        display                            : flex;
+        flex-direction                     : column;
+        font-family                        : Georgia, 'Times New Roman', serif;
+        line-height                        : 1.2;
+    }
+
+    .na-client-install__brand-name {
+        font-size                          : 1.2rem;
+        color                              : #172b3a;
+    }
+
+    .na-client-install__brand-by {
+        margin-top                         : 2px;
+        font-size                          : 0.8rem;
+        color                              : #9aa3ad;
+    }
+
+    .na-client-install__title {
+        margin                             : 0 0 6px;
+        font-size                          : 1.25rem;
+        font-weight                        : 600;
+        line-height                        : 1.25;
+    }
+
+    .na-client-install__lead {
+        margin                             : 0 0 14px;
+        font-size                          : 0.95rem;
+        line-height                        : 1.55;
+        color                              : #3d4f5c;
+    }
+
+    /* THE STEPS | Numbered, pictured */
+    .na-client-install__steps {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 8px;
+        margin                             : 0 0 14px;
+        padding                            : 0;
+        list-style                         : none;
+    }
+
+    .na-client-install__step {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 12px;
+        padding                            : 9px 12px;
+        border-radius                      : 12px;
+        background                         : #f3f6f8;
+    }
+
+    .na-client-install__step-icon {
+        position                           : relative;
+        flex                               : none;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 44px;
+        height                             : 44px;
+    }
+
+    .na-client-install__step-icon img {
+        width                              : 38px;
+        height                             : 38px;
+    }
+
+    .na-client-install__step-number {
+        position                           : absolute;
+        top                                : -5px;
+        left                               : -6px;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 20px;
+        height                             : 20px;
+        border-radius                      : 50%;
+        background                         : #1f6b45;
+        color                              : #ffffff;
+        font-size                          : 0.72rem;
+        font-weight                        : 700;
+    }
+
+    .na-client-install__step-words {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 1px;
+        min-width                          : 0;
+    }
+
+    .na-client-install__step-title {
+        font-size                          : 0.92rem;
+        font-weight                        : 600;
+    }
+
+    .na-client-install__step-text {
+        font-size                          : 0.8rem;
+        line-height                        : 1.4;
+        color                              : #4d5d69;
+    }
+
+    /* THE ACTIONS | The way forward on the right, biggest */
+    .na-client-install__actions {
+        display                            : flex;
+        justify-content                    : flex-end;
+        align-items                        : center;
+        flex-wrap                          : wrap;
+        gap                                : 10px;
+    }
+
+    .na-client-install__btn {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : 8px;
+        padding                            : 11px 18px;
+        border                             : none;
+        border-radius                      : 8px;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 0.95rem;
+        font-weight                        : 600;
+        cursor                             : pointer;
+        -webkit-tap-highlight-color        : transparent;
+    }
+
+    .na-client-install__btn .na-client-icon {
+        width                              : 18px;
+        height                             : 18px;
+    }
+
+    .na-client-install__btn--primary {
+        padding                            : 13px 28px;
+        background                         : #172b3a;
+        color                              : #ffffff;
+        font-size                          : 1rem;
+    }
+
+    .na-client-install__btn--secondary {
+        background                         : #e8eef3;
+        color                              : #172b3a;
+    }
+
+    .na-client-install__btn--quiet {
+        background                         : none;
+        color                              : #6b7884;
+        font-weight                        : 400;
+    }
+
+    /* THE ARROW | Where Safari's Share button is (iPhone upright: the bottom bar; else the top) */
+    .na-client-install__pointer {
+        position                           : fixed;
+        z-index                            : 1;
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 2px;
+        color                              : #ffffff;
+        font-size                          : 0.8rem;
+        font-weight                        : 600;
+        text-shadow                        : 0 1px 4px rgba(0, 0, 0, 0.45);
+        pointer-events                     : none;
+    }
+
+    .na-client-install__pointer--bottom {
+        bottom                             : max(4px, env(safe-area-inset-bottom));
+        left                               : 50%;
+        flex-direction                     : column-reverse;              /* <-- The arrow nearest the bar, its words above */
+        transform                          : translateX(-50%);
+        animation                          : na-client-install-nudge-down 1.1s ease-in-out infinite;
+    }
+
+    .na-client-install__pointer--top {
+        top                                : max(4px, env(safe-area-inset-top));
+        right                              : max(14px, env(safe-area-inset-right));
+        flex-direction                     : row-reverse;                 /* <-- The arrow pointing up at the bar, its words beside it */
+        gap                                : 6px;
+        animation                          : na-client-install-nudge-up 1.1s ease-in-out infinite;
+    }
+
+    .na-client-install:has(.na-client-install__pointer--top) {
+        padding-top                        : max(44px, calc(env(safe-area-inset-top) + 40px));   /* <-- The card clear of the arrow */
+    }
+
+    .na-client-install:has(.na-client-install__pointer--bottom) {
+        padding-bottom                     : max(58px, calc(env(safe-area-inset-bottom) + 54px));
+    }
+
+    /* A SHORT PHONE HELD UPRIGHT (an iPhone SE) | A tighter card, so it fits above the arrow */
+    @media (orientation: portrait) and (max-height: 620px) {
+        .na-client-install__card       { padding : 14px 16px 12px; }
+        .na-client-install__brand      { margin-bottom : 8px; }
+        .na-client-install__mark       { width : 29px; height : 40px; }
+        .na-client-install__title      { font-size : 1.1rem; }
+        .na-client-install__lead       { margin-bottom : 10px; font-size : 0.88rem; line-height : 1.45; }
+        .na-client-install__steps      { gap : 6px; margin-bottom : 10px; }
+        .na-client-install__step       { padding : 6px 10px; }
+        .na-client-install__step-text  { font-size : 0.76rem; }
+    }
+
+    .na-client-install__pointer--top .na-client-install__pointer-arrow {
+        transform                          : rotate(180deg);
+    }
+
+    .na-client-install__pointer-arrow {
+        width                              : 34px;
+        height                             : 34px;
+        stroke-width                       : 2.6;
+        filter                             : drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+    }
+
+    /* SIDEWAYS ON A PHONE | Two columns: who and why on the left, how on the right */
+    @media (orientation: landscape) and (max-height: 500px) {
+        .na-client-install__card {
+            display                        : grid;
+            grid-template-columns          : minmax(0, 0.9fr) minmax(0, 1.1fr);
+            grid-template-areas            : 'brand steps' 'title steps' 'lead steps' 'lead actions';
+            grid-template-rows             : auto auto 1fr auto;          /* <-- Spare height under the words, not between them */
+            column-gap                     : 20px;
+            max-width                      : 720px;
+            padding                        : 12px 16px 12px;
+        }
+
+        .na-client-install__brand   { grid-area : brand; margin-bottom : 6px; }
+        .na-client-install__title   { grid-area : title; font-size : 1.1rem; }
+        .na-client-install__lead    { grid-area : lead; align-self : start; margin-bottom : 0; font-size : 0.88rem; }
+        .na-client-install__steps   { grid-area : steps; gap : 5px; margin : 30px 0 8px; }
+        .na-client-install__actions { grid-area : actions; align-self : end; }
+
+        .na-client-install__step {
+            padding                        : 5px 10px;
+        }
+
+        .na-client-install__btn--primary {
+            padding                        : 11px 24px;
+        }
+
+        .na-client-install__card--chromium {
+            grid-template-areas            : 'brand actions' 'title actions' 'lead actions';
+            align-items                    : center;
+        }
+    }
+
+    @keyframes na-client-install-in {
+        from { opacity : 0; }
+        to   { opacity : 1; }
+    }
+
+    @keyframes na-client-install-card {
+        from { opacity : 0; transform : translateY(16px) scale(0.94); }
+        to   { opacity : 1; transform : none; }
+    }
+
+    @keyframes na-client-install-nudge-down {
+        0%, 100% { transform : translateX(-50%) translateY(0); }
+        50%      { transform : translateX(-50%) translateY(8px); }
+    }
+
+    @keyframes na-client-install-nudge-up {
+        0%, 100% { transform : translateY(0); }
+        50%      { transform : translateY(-8px); }
     }
 
 /* endregion ------------------------------------------------------------------- */

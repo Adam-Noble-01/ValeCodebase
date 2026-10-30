@@ -16,14 +16,22 @@
     <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <link rel="apple-touch-icon" sizes="192x192" href="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png">
     <link rel="apple-touch-icon" href="/AppAssets__CommonApplicationAssets/AppIcons/Na__AppInstallability__Icon__192x192.png">
-    <link rel="manifest" href="ValeVision3D__Pwa__Manifest__.webmanifest">
     <meta name="theme-color" content="#172b3a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ValeVision 3D">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="ValeVision 3D">
-    
+
+    <!-- THE APP MANIFEST (v2.82.0): THERE IS DELIBERATELY NO STATIC <link rel="manifest"> IN THIS
+         FILE. DO NOT ADD ONE. Safari keeps the FIRST manifest link it parses for the life of the page
+         (WebKit bug 229059), and an installed icon opens that manifest's start_url, not the page. The
+         static staff link that used to sit here made every client's Home Screen icon the staff app,
+         opening the staff sign-in. This blocking script makes the only manifest link: on a client link
+         a manifest of that client's own (their project's name, their link as the launch address, one
+         app per client); on the staff page the staff file, as before. TrueVision's pattern. -->
+    <script src="02__Src__AppModules/93__Feature__ClientLinks/Na__ClientLinks__AppManifest__.js"></script>
+
     <!-- endregion -------------------------------------------------------- -->
 
 
@@ -43,6 +51,34 @@
                     document.documentElement.classList.add('na-client-mode');
                 }
             } catch (error) { /* an address that cannot be read: the staff page, behind its sign-in */ }
+        })();
+
+        // THE DEVICE (v2.81.4): <html data-na-device="phone|tablet|computer"> before anything draws,
+        // and on a phone <html class="na-phone-ui"> (65__Feature__PhoneUi). Decided by WHAT the device
+        // is, never by its size (Adam: "dont rely on just pixel by pixel ratios"): a touchscreen PC,
+        // a pen display or a laptop at 250% scaling is still a computer, and keeps its top bar.
+        //   phone     an iPhone or iPod; an Android whose browser says Mobile; any browser whose
+        //             userAgentData says mobile; an unknown system that calls itself Mobi
+        //   tablet    an iPad (iPadOS asks for desktop sites: a Mac with a touchscreen is an iPad);
+        //             an Android without Mobile
+        //   computer  Windows, macOS, ChromeOS, Linux desktops, and anything unknown
+        // The one place this is decided: Na__ClientLinks__ClientLandscape__ and the phone layout read it.
+        (function Na__Boot__MarkDevice() {
+            var html = document.documentElement;
+            var kind = 'computer';
+            try {
+                var ua = navigator.userAgent || '';
+                var uaData = navigator.userAgentData;
+                var ipadOs = /Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1;
+                if (/iPhone|iPod/.test(ua)) kind = 'phone';
+                else if (/iPad/.test(ua) || ipadOs) kind = 'tablet';
+                else if (/Android/i.test(ua)) kind = (/Mobile/i.test(ua) || (uaData && uaData.mobile === true)) ? 'phone' : 'tablet';
+                else if (uaData && uaData.mobile === true) kind = 'phone';
+                else if (/Windows|Macintosh|CrOS|X11|Linux/.test(ua)) kind = 'computer';
+                else if (/Mobi/i.test(ua)) kind = 'phone';
+            } catch (error) { kind = 'computer'; }                           // <-- Unsure: the computer layout, top bar and all
+            html.setAttribute('data-na-device', kind);
+            if (kind === 'phone') html.classList.add('na-phone-ui');
         })();
     </script>
 
@@ -270,8 +306,8 @@
                 <span class="na-dropdown-menu__btn-label">Tools & Settings</span>
                 <span class="na-dropdown-menu__arrow">▾</span>
             </summary>
-            <!-- data-na-client-menu: the five items a client link shows (Camera Settings, Export Image,
-                 Toggle Model Layers, Enter Full Screen, App Settings). Every other item is hidden from
+            <!-- data-na-client-menu: the items a client link shows (Camera Settings, Enter Full Screen,
+                 App Settings; Export Image and Toggle Model Layers temporarily removed, 29-Oct-2026). Every other item is hidden from
                  clients (93__Feature__ClientLinks/Na__ClientLinks__Styles__.css): mark a new item only
                  when a client should have it. -->
             <ul class="na-dropdown-menu__list">
@@ -302,7 +338,10 @@
                         </div>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item" data-na-client-menu>
+                <!-- TEMPORARILY REMOVED from client links (29-Oct-2026, v2.79.5): Export Image is hidden from clients,
+                     based on J. Watchorn's comments and awaiting the directors' feedback. To restore, put
+                     data-na-client-menu back on the <li> below. Staff still see it. -->
+                <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naImageExportToggle">
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ExportImage__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Export Image</span>
@@ -563,7 +602,10 @@
                         </div>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item" data-na-client-menu>
+                <!-- TEMPORARILY REMOVED from client links (29-Oct-2026, v2.79.5): Toggle Model Layers is hidden from
+                     clients, based on J. Watchorn's comments and awaiting the directors' feedback. To restore, put
+                     data-na-client-menu back on the <li> below. Staff still see it. -->
+                <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naModelToggleButton">
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ViewModelLayers__.svg" alt="" />
                         <span class="na-dropdown-menu__btn-label">Toggle Model Layers</span>
@@ -1469,6 +1511,7 @@
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
     import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
+    import { Na__Feature__PhoneUi__Initialize } from './02__Src__AppModules/65__Feature__PhoneUi/Na__Feature__PhoneUi__.js';
     import { Na__Feature__BreadcrumbNav__Initialize } from './02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js';
     import { Na__AppPages__Initialize } from './02__Src__AppModules/36__System__AppPages/Na__AppPages__Navigation__.js';
     import { Na__DrawingPage__Initialize } from './02__Src__AppModules/36__System__AppPages/Na__AppPages__DrawingPage__Host__.js';
@@ -2029,6 +2072,7 @@
         if (!menu) return;
         const menuContainer = menu.closest('.na-dropdown-menu');
         if (menuContainer && getComputedStyle(menuContainer).display === 'none') return;  // <-- Mobile swap active: menu lives behind the toolbar hamburger, no teaser
+        if (document.documentElement.classList.contains('na-client-mode')) return;       // <-- A client link: the menu stays shut until pressed (Adam, v2.81.3)
 
         menu.setAttribute('open', 'open');
         setTimeout(() => {
@@ -2340,6 +2384,7 @@
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/
     // ------------------------------------------------------------
     Na__PresentationMode__UI__InitializeSceneCarousel(Na__Camera__Main, Na__Controls__Orbit);
+    Na__Feature__PhoneUi__Initialize();                                          // <-- Phones only: the folding bar, the corner icons, the shrinking carousel (65__Feature__PhoneUi)
 
     Na__PresentationMode__UI__InitializeSceneGroupSelector()                    // <-- Group pill above the carousel; loads its own config and mounts inside #naPresentationCarousel
         .catch((error) => console.warn('[ValeVision3D] Scene group selector failed to initialise.', error));

@@ -13,6 +13,9 @@ REM NOTES:
 REM - The running copy is asked to shut down (an older copy is ended by PID). It
 REM   refuses while a push, collect or user-accounts save is running: nothing stops.
 REM - Afterwards reload the app page (Ctrl+Shift+R).
+REM - Since 0.15.0 the app does this in one click: Restart manager (top right), or
+REM   Restart now in the version banner. This file is still needed once to move a
+REM   copy older than 0.15.0 onto it, or when the app does not open at all.
 REM - For live logs in a console instead: Start__VirtualServerManager__Localhost__8020__.bat --restart
 REM
 REM =============================================================================

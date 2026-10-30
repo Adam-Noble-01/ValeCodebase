@@ -98,8 +98,8 @@
         }
     ],
     "Applied": {
-        "Hash": "623ec7af6153",
-        "Utc": "2026-10-15T13:49:31Z",
+        "Hash": "7bc76aff4b54",
+        "Utc": "2026-10-28T11:55:28Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
@@ -110,7 +110,12 @@
             "/theia/": "200",
             "/Server__Api/": "404",
             "/Server__DeveloperTools/": "404",
-            "/Server__UserAccountData/": "404"
+            "/Server__UserAccountData/": "404",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ProjectData__GateCheck.json": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__3dModel__GlbFiles/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__3dModel__AppGenerated/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__SitePlanData/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision__TheiaVideo/Content__VideoFiles/GateCheck.bin": "401"
         }
     }
 }

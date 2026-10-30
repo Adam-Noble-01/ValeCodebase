@@ -289,7 +289,10 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
                 if (finished) return;
                 finished  =  true;
 
-                workers.forEach(function(worker) { worker.onmessage  =  null; });
+                workers.forEach(function(worker) {
+                    worker.onmessage  =  null;
+                    worker.removeEventListener('error', onWorkerError);
+                });
                 if (config.AbortSignal) config.AbortSignal.removeEventListener('abort', onAbort);
 
                 handler(value);
@@ -297,6 +300,16 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
 
             function onAbort() {
                 settle(reject, new DOMException('Projection aborted', 'AbortError'));
+            }
+
+            // A worker that fails to load, or dies mid view, never answers, and this
+            // promise used to wait for it for ever: the render stayed in progress for
+            // the rest of the session and no later render could start (28-Oct-2026,
+            // found reading the code, not seen in use). Rejecting hands the view to
+            // Run's catch, which retries it on the main thread. Added beside the
+            // pool's own onerror, which still latches the pool off.
+            function onWorkerError(errorEvent) {
+                settle(reject, new Error('Clip worker: ' + ((errorEvent && errorEvent.message) || 'failed to load or stopped')));
             }
 
             if (config.AbortSignal) {
@@ -323,6 +336,8 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
             };
 
             workers.forEach(function(worker) {
+                worker.addEventListener('error', onWorkerError);
+
                 worker.onmessage  =  function(event) {
                     const message  =  event.data;
                     if (!message || message.Generation !== generation) return;

@@ -60,7 +60,7 @@
 
    PUBLIC API:
        NextFrame()                              -> Promise, one animation frame
-       CreateSlicer(yieldEveryMs)               -> { Tick() }
+       CreateSlicer(yieldEveryMs, abortSignal)  -> { Tick() }, Tick throwing AbortError once cancelled
        DriveGenerator(task, yieldEveryMs, signal) -> Promise<generator return value>
 
    ============================================================================= */
@@ -102,16 +102,32 @@
     // Tick resolves immediately on a microtask while inside the budget, and costs a
     // real frame only when the budget is spent. Callers can therefore await it in
     // their innermost loop without thinking about the cadence.
-    export function VghLantern__ProjectedEdges__Scheduler__CreateSlicer(yieldEveryMs) {
+    //
+    // abortSignal is optional. When given, every Tick is also a cancellation point,
+    // and that is what lets a superseded render stop between two pairs of the
+    // intersection pass. 28-Oct-2026: that pass took no signal at all, so a render
+    // cancelled by an edit or a change of mode ran its cut lines to the end anyway -
+    // five seconds of a held interface on the office PC, nearer thirty on a slower
+    // one - for a shape nobody wanted any more.
+    export function VghLantern__ProjectedEdges__Scheduler__CreateSlicer(yieldEveryMs, abortSignal) {
         const budget  =  (typeof yieldEveryMs === 'number' && yieldEveryMs > 0) ? yieldEveryMs : 250;
         let   lastYieldAt  =  performance.now();
 
+        const throwIfAborted  =  function() {
+            if (abortSignal && abortSignal.aborted) {
+                throw new DOMException('Projection aborted', 'AbortError');
+            }
+        };
+
         return {
             Tick : async function() {
+                throwIfAborted();
                 if ((performance.now() - lastYieldAt) < budget) return;
 
                 await VghLantern__ProjectedEdges__Scheduler__NextFrame();
                 lastYieldAt  =  performance.now();
+
+                throwIfAborted();                                             // <-- The cancel arrives while the browser has the frame
             }
         };
     }

@@ -60,7 +60,7 @@
         },
 
         "VghLantern__ProjectedEdges__Config__Performance": {
-            "Description"                 : "Who does the work and how it is scheduled. Backend picks the engine: 'cpu' is this module's own kernel spread across web workers and is the default and the reference output; 'webgpu' hands the occlusion pass to the graphics card through the vendored compute implementation and falls back to cpu automatically where WebGPU is missing; 'legacy' is the unmodified vendored generator, kept so the DiffHarness always has something known-good to compare against. MaxWorkers is a ceiling, not a target - the pool takes one fewer than the machine's core count and never more than this. ClipBvhMaxLeafSize is small on purpose: a node test is six comparisons where a triangle test is a plane trim and an overlap solve, so paying for more node tests to avoid triangle tests is the right trade here. YieldEveryMs governs only the main-thread fallback path, where there are no workers to run behind; BvhMaxLeafSize and CacheBoundsTrees apply to the three-mesh-bvh trees that ModelStage primes, which the intersection pass and the legacy backend still use.",
+            "Description"                 : "Who does the work and how it is scheduled. Backend picks the engine: 'cpu' is this module's own kernel spread across web workers and is the default and the reference output; 'webgpu' hands the occlusion pass to the graphics card through the vendored compute implementation and falls back to cpu automatically where WebGPU is missing; 'legacy' is the unmodified vendored generator, kept so the DiffHarness always has something known-good to compare against. MaxWorkers is a ceiling, not a target - the pool takes one fewer than the machine's core count and never more than this. ClipBvhMaxLeafSize is small on purpose: a node test is six comparisons where a triangle test is a plane trim and an overlap solve, so paying for more node tests to avoid triangle tests is the right trade here. YieldEveryMs governs only the main-thread fallback path, where there are no workers to run behind; BvhMaxLeafSize and CacheBoundsTrees apply to the three-mesh-bvh trees that ModelStage primes, which the intersection pass and the legacy backend still use. MaxRestoredLanternKeys bounds the memory of lantern shapes already offered their stored linework (28-Oct-2026): every edit is a new shape and each key is the lantern's whole JSON, so unbounded it grew for as long as the page stayed open; forgetting an old one costs one more cheap restore attempt.",
             "Backend"                     : "cpu",
             "MaxWorkers"                  : 8,
             "MinimumEdgesForWorkers"      : 8000,
@@ -70,7 +70,8 @@
             "CacheBoundsTrees"            : true,
             "BvhMaxLeafSize"              : 1,
             "MaxCachedResults"            : 16,
-            "MaxCachedStages"             : 2
+            "MaxCachedStages"             : 2,
+            "MaxRestoredLanternKeys"      : 32
         },
 
         "VghLantern__ProjectedEdges__Config__Preview": {

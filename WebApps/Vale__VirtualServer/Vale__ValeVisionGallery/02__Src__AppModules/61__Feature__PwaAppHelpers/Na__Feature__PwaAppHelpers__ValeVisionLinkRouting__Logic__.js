@@ -43,9 +43,24 @@
     }
     // ---------------------------------------------------------------
 
+
+    // HELPER FUNCTION | ValeVision AURA URL for a Project
+    // ------------------------------------------------------------
+    // /aura/?project=<library project id>: the project's pen and wash drawings.
+    // Managers and App Admins only for now (Adam, 30-Oct-2026): the Gallery
+    // shows the link to them alone (ContentDetector canOpenAura), and AURA and
+    // its API refuse everyone else.
+    // ------------------------------------------------------------
+    function Na__Feature__PwaAppHelpers__BuildAuraProjectUrl(projectId) {
+        const safeId = encodeURIComponent(String(projectId || '').trim());
+        return safeId ? `/aura/?project=${safeId}` : null;
+    }
+    // ---------------------------------------------------------------
+
     window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting = {
         buildValeVisionProjectUrl   : Na__Feature__PwaAppHelpers__BuildValeVisionProjectUrl,
-        navigateToValeVisionProject : Na__Feature__PwaAppHelpers__NavigateToValeVisionProject
+        navigateToValeVisionProject : Na__Feature__PwaAppHelpers__NavigateToValeVisionProject,
+        buildAuraProjectUrl         : Na__Feature__PwaAppHelpers__BuildAuraProjectUrl
     };
 
 // endregion -------------------------------------------------------------------

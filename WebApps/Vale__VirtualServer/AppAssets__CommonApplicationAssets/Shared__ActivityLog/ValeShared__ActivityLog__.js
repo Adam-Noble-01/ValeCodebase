@@ -47,7 +47,7 @@
      <script src="/AppAssets__CommonApplicationAssets/Shared__ActivityLog/ValeShared__ActivityLog__.js"
              data-app="theia" data-api-base="/theia/api/" data-project-param="project"></script>
 
-     data-app            gallery | valevision3d | theia | help (the server's list)
+     data-app            gallery | valevision3d | theia | help | aura (the server's list)
      data-api-base       the API that takes the report (one with /api/activity)
      data-project-param  the query key naming the project (project, id); none: no project
 

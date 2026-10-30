@@ -18,6 +18,7 @@ This README never syncs, because `.md` files stay on the PC.
 | `Vale__ValeVisionGallery\` | ValeVision Gallery (route `/project-gallery/`). Its early codename is retired: never use it | Yes |
 | `Vale__ValeSpec\` | ValeSpec (route `/valespec/`) | Yes |
 | `Vale__LanternDesigner\` | Lantern Designer (route `/lantern-designer/`) | Yes |
+| `Vale__ValeVision__AuraRender\` | ValeVision AURA, pen and wash drawings round Adam's PainterlyNPR engine (route `/aura/`, API on 8006; Managers and App Admins only). Its `.py` files (the handwriting engine) and `*.pt` model never sync: that work runs on the user's own machine | Yes |
 
 Public routes (short URLs, QR short links) are set in the manager's tab 03, *URL configurator*.
 
@@ -31,7 +32,9 @@ Vale__Projects__MasterLibrary\ValeProjects__<year>\<code>__<Name>\
 │                        UserData__ShareLinks\   the project's client links (API only; since ValeVision 3D v2.77.0)
 ├── ValeVisionGallery\   Content__GalleryImages__FullQuality__VariantImages\  …__524p__VariantImages\  …__Thumbnail__VariantImages\
 ├── ValeVision__TheiaVideo\   AppData__VideoData\  Content__VideoFiles\  Content__VideoThumbnails\  UserData__UserAppConfigs\
-└── LanternDesigner\     UserData__LanternDesign\   the project's Lantern design (API only: it names the client)
+├── LanternDesigner\     UserData__LanternDesign\   the project's Lantern design (API only: it names the client)
+└── ValeVision__AuraRender\   UserData__AuraDrawings\   the project's AURA drawing set (API only; since 30-Oct-2026)
+                              Content__AuraScenePackages\   reserved for Cloud Sync's AURA export (not built yet)
 ```
 
 - Copy `ValeProjects__2026\12345__ExampleProject__Schema\` for a new project. Its JSON should be

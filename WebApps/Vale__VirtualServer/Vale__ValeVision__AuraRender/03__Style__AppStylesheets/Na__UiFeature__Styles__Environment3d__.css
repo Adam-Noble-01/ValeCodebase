@@ -1,0 +1,171 @@
+/* =============================================================================
+ * VALEVISION AURA - THE 3D ENVIRONMENT
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__Environment3d__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : 3D Environment Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The stage the engine's drawing sits on, the parameters and the
+ *              saved views beside it
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - The engine's canvas keeps its 3:2 sheet and fits the stage whole; the page
+ *   never magnifies it (zoom moves the camera).
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Stage
+ * ----------------------------------------------------------------------------- */
+
+    .aura-env {
+        flex                               : 1;
+        min-height                         : 0;
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .aura-env__body {
+        flex                               : 1;
+        min-height                         : 0;
+        display                            : flex;
+    }
+
+    .aura-env__stage {
+        position                           : relative;
+        flex                               : 1;
+        min-width                          : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : 22px 22px 44px;
+        background                         : var(--Aura_Stage);
+        overflow                           : hidden;
+    }
+
+    .aura-env__canvas {
+        display                            : block;
+        flex-shrink                        : 0;
+        width                              : 600px;                        /* <-- Until the stage measures itself: Na__Environment3d__Fit sets the 3:2 size */
+        height                             : 400px;
+        background                         : #f4efe4;
+        box-shadow                         : 0 10px 34px rgba(40, 32, 20, 0.22), 0 1px 3px rgba(40, 32, 20, 0.2);
+        cursor                             : grab;
+        touch-action                       : none;
+    }
+
+    .aura-env__canvas:active {
+        cursor                             : grabbing;
+    }
+
+    .aura-env__hint {
+        position                           : absolute;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 12px;
+        margin                             : 0;
+        text-align                         : center;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        pointer-events                     : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Parameters and Saved Views
+ * ----------------------------------------------------------------------------- */
+
+    .aura-params {
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .aura-param {
+        display                            : grid;
+        grid-template-columns              : 1fr auto;
+        grid-template-areas                : 'label readout' 'range range';
+        align-items                        : center;
+        gap                                : 4px 10px;
+        font-size                          : 13px;
+    }
+
+    .aura-param__label {
+        grid-area                          : label;
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-param__readout {
+        grid-area                          : readout;
+        font-size                          : 12px;
+        color                              : var(--Aura_TextSecondary);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .aura-param__range {
+        grid-area                          : range;
+        width                              : 100%;
+        accent-color                       : var(--Aura_Brand);
+    }
+
+    .aura-param--choice {
+        grid-template-areas                : 'label select';
+        grid-template-columns              : auto 1fr;
+    }
+
+    .aura-param__select {
+        grid-area                          : select;
+    }
+
+    .aura-views__form {
+        display                            : flex;
+        gap                                : 8px;
+    }
+
+    .aura-views__form .aura-input {
+        flex                               : 1;
+        min-width                          : 0;
+    }
+
+    .aura-views__list {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 2px;
+    }
+
+    .aura-views__row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 4px;
+    }
+
+    .aura-views__name {
+        flex                               : 1;
+        min-width                          : 0;
+        padding                            : 7px 10px;
+        border                             : none;
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_SurfaceMuted);
+        text-align                         : left;
+        cursor                             : pointer;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+    }
+
+    .aura-views__name:hover {
+        background                         : var(--Aura_ActiveBg);
+    }
+
+    .aura-views__empty {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        line-height                        : 1.45;
+    }
+
+/* endregion ------------------------------------------------------------------- */

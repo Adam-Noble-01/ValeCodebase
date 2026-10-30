@@ -1,0 +1,27 @@
+{
+    "PainterlyNPR__SmartFields__Config" : {
+        "PainterlyNPR__SmartFields__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - Smart Fields - Line Run-out",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How a Line run-out point lets lines run on past the paint: which classes take part and how far each runs.",
+            "ReadBy"        : "02__Src__AppModules/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__SmartFields__Config__RunOut" : {
+            "LineRunClasses"     : {
+                "Profiles" : 0,
+                "Main"     : 1,
+                "Most"     : 2,
+                "All"      : 3
+            },
+            "LineRunClassesNote" : "The last class a point's Lines let through",
+            "RunClassReach"      : [1, 0.92, 0.8, 0.65],
+            "RunClassReachNote"  : "Profiles run furthest, texture least - gently: a rail is often modelled Optional",
+            "Unaimed"            : {
+                "ObjectId" : null
+            },
+            "UnaimedNote"        : "For a caller that does not know its object: the pixel's stands in"
+        }
+    }
+}

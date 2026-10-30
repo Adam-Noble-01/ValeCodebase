@@ -1048,6 +1048,18 @@
         filter                             : none;                         /* <-- Preserve original dark icon on light button */
     }
 
+    /* ValeVision AURA (30-Oct-2026): a link styled as the navy action button, for Managers and App Admins */
+    .project-viewer__viewer-action-button--aura {
+        box-sizing                         : border-box;                   /* <-- A link: the same width as the buttons */
+        text-decoration                    : none;                         /* <-- A link: no underline */
+    }
+
+    .project-viewer__viewer-action-button--aura .project-viewer__viewer-action-icon {
+        width                              : 18px;                         /* <-- AURA's sheet icon reads at this size */
+        height                             : 18px;
+        filter                             : none;                         /* <-- Its own white sheet and navy line, not a white silhouette */
+    }
+
     .project-viewer__viewer-action-copied-message {
         position                           : absolute;                     /* <-- Show feedback below button */
         top                                : 100%;                         /* <-- Attach message below button */

@@ -368,6 +368,14 @@
         return `/theia/?project=${encodeURIComponent(project.folderId)}`;    // <-- The project's videos in Theia, as on the project page
     }
 
+    function projectCardAuraUrl(project) {
+        const routing = window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting;
+        if (routing && typeof routing.buildAuraProjectUrl === 'function') {
+            return routing.buildAuraProjectUrl(project.folderId);
+        }
+        return `/aura/?project=${encodeURIComponent(project.folderId)}`;     // <-- The project's pen and wash drawings in AURA
+    }
+
     function stopCardClick(event) {
         event.stopPropagation();                                             // <-- The link opens its app; the card does not also open the project page
     }
@@ -376,16 +384,18 @@
 
     // COMPONENT | Content Indicator Icons for Project Cards
     // ------------------------------------------------------------
-    // One row, inline. The watercolour icon only marks content; the 3D model
-    // and video icons are shortcuts into ValeVision 3D and ValeVision Theia.
+    // One row, inline. The watercolour icon only marks content; the 3D model,
+    // AURA and video icons are shortcuts into ValeVision 3D, ValeVision AURA
+    // (Managers and App Admins only, for now) and ValeVision Theia.
     // ------------------------------------------------------------
     function ContentIndicatorIcons({ project }) {
         const showWatercolorIcon = hasWatercolorContent(project);            // <-- Check if project has watercolor content
         const show3DModelIcon = has3DModelContent(project);                  // <-- Check if project has 3D model content
+        const showAuraIcon = canOpenAura(project);                           // <-- A model, and a Manager or App Admin looking
         const showVideoIcon = hasVideoContent(project);                      // <-- Check if project has ValeVision Theia videos
-        
+
         // Only render container if at least one icon should be shown
-        if (!showWatercolorIcon && !show3DModelIcon && !showVideoIcon) {
+        if (!showWatercolorIcon && !show3DModelIcon && !showAuraIcon && !showVideoIcon) {
             return null;                                                     // <-- Return null if no icons to display
         }
 
@@ -414,6 +424,24 @@
                     >
                         <img
                             src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__AvailableApps__ValeVision3d__.svg"
+                            alt=""
+                            className="project-card__content-icon"
+                            loading="lazy"
+                            decoding="async"
+                            draggable="false"
+                        />
+                    </a>
+                )}
+                {showAuraIcon && (
+                    <a
+                        href={projectCardAuraUrl(project)}
+                        className="project-card__content-link"
+                        title={`Open ${name}'s drawings in ValeVision AURA`}
+                        aria-label={`Open ${name}'s drawings in ValeVision AURA`}
+                        onClick={stopCardClick}
+                    >
+                        <img
+                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__AvailableApps__AuraRender__.svg"
                             alt=""
                             className="project-card__content-icon"
                             loading="lazy"

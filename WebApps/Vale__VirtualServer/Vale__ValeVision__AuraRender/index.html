@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+     =============================================================================
+     VALEVISION AURA - APP PAGE
+     =============================================================================
+
+     FILE       : index.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : ValeVision AURA, Vale Garden Houses' pen and wash drawing app,
+                  served at https://app.valegardenhouses.com/aura/
+     CREATED    : 30-Oct-2026
+
+     DESCRIPTION:
+     - /aura/?project=<library id>, from a project in ValeVision Gallery, signed
+       in with the shared Vale sign-in: Managers and App Admins only for now.
+     - AURA is a wrapper round Adam's PainterlyNPR renderer, its core library:
+       a pinned copy in 04__Lib__CoreEngine__VersionLocked, reached through the
+       import map's "PainterlyNPR/" prefix below and nowhere else but
+       02__Src__AppModules/10__System__EngineHost.
+     - Tabs: the 3D Environment (the engine's live drawing of the scene and its
+       parameters), then the drawing sheets (A1 to A4 in Vale's drawing page,
+       with elevation, roof plan and 3D viewports and handwritten notes).
+     - Plain ES modules: no build step, no framework, nothing from a CDN.
+     - The header is ValeVision 3D's: the Vale logo, then "ValeVision AURA" at
+       the right in its title style, and the shared user bubble.
+
+     =============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ValeVision AURA</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="referrer" content="same-origin">
+    <meta name="description" content="ValeVision AURA: Vale Garden Houses drawings in pen and wash.">
+
+    <link rel="icon" type="image/svg+xml" href="/AppAssets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="01__AppAssets__AuraRender/01__AppIcons/AuraRender__AppIcon__192x192.png">
+    <link rel="manifest" href="AuraRender__Pwa__Manifest__.webmanifest">
+    <meta name="theme-color" content="#172b3a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AURA">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ValeVision AURA">
+
+    <!-- The core library: PainterlyNPR, pinned (record: 04__Lib__CoreEngine__VersionLocked/Vale__CoreEngine__ImportMap__Index__.json) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "PainterlyNPR/": "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.5.0/02__Src__AppModules/"
+        }
+    }
+    </script>
+
+    <!-- Updates: after a source push, the changed files are refreshed in this browser (the Server Manager's deploy stamp) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/aura/" data-app-name="ValeVision AURA"></script>
+    <!-- Activity: what happens here goes into the activity ledger (the Server Manager's tab 05, User activity) -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__ActivityLog/ValeShared__ActivityLog__.js"
+            data-app="aura" data-api-base="/aura/api/" data-project-param="project"></script>
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.css">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__UserLogin/ValeShared__UserLogin__.js"></script>
+</head>
+<body class="aura">
+    <!-- START-UP SPINNER | The one ValeVision 3D shows; lifted once the engine has started -->
+    <div class="loading-overlay" id="auraLoadingOverlay" role="status" aria-live="polite">
+        <div class="loading-spinner"></div>
+        <p class="loading-text" id="auraLoadingText">Loading ValeVision AURA...</p>
+    </div>
+
+    <header class="aura-header">
+        <a class="aura-header__brand" aria-label="Vale Garden Houses: back to ValeVision Gallery">
+            <img class="aura-header__logo" src="/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" alt="Vale Garden Houses">
+        </a>
+        <div class="aura-header__title">
+            <span class="aura-header__save" id="auraSaveState" aria-live="polite"></span>
+            <span class="aura-header__app">ValeVision AURA</span>
+        </div>
+        <div class="aura-header__user" id="auraUserSlot"></div>
+    </header>
+
+    <main class="aura-main" id="auraRoot">
+        <nav class="aura-crumbs" id="auraCrumbs" aria-label="Where you are" hidden></nav>
+
+        <div class="aura-tabs" id="auraTabs" role="tablist" aria-label="3D Environment and drawing sheets" hidden></div>
+
+        <!-- THE 3D ENVIRONMENT | The engine's own canvas (300 x 200 mm at 5 px/mm), its presets, saved views and parameters -->
+        <section class="aura-env" id="auraEnvironment" hidden>
+            <div class="aura-toolbar" data-env-toolbar></div>
+            <div class="aura-env__body">
+                <div class="aura-env__stage">
+                    <canvas id="auraEngineCanvas" class="aura-env__canvas" width="1500" height="1000" aria-label="The scene, drawn in pen and wash: drag to orbit, scroll to move nearer or further"></canvas>
+                    <p class="aura-env__hint">Drag to orbit. Scroll, or press + and -, to move nearer or further. The drawing refines when the camera rests.</p>
+                </div>
+                <aside class="aura-panel aura-env__panel" data-env-panel aria-label="Saved views and parameters"></aside>
+            </div>
+            <div class="aura-statusbar">
+                <span class="aura-statusbar__engine" id="auraEngineVersion"></span>
+                <span class="aura-statusbar__status" id="auraEngineStatus">Starting...</span>
+                <span class="aura-statusbar__scene" data-env-scene></span>
+            </div>
+        </section>
+
+        <!-- THE DRAWING SHEETS | One SVG sheet in paper millimetres, its tools and its panel -->
+        <section class="aura-sheets" id="auraSheets" hidden>
+            <div class="aura-toolbar" data-sheet-toolbar></div>
+            <div class="aura-sheets__body">
+                <div class="aura-sheets__desk" data-sheet-desk></div>
+                <aside class="aura-panel aura-sheets__panel" data-sheet-panel aria-label="Sheet, viewport and note settings"></aside>
+            </div>
+        </section>
+
+        <div class="aura-message" id="auraMessage" hidden></div>
+    </main>
+
+    <noscript><p style="padding: 24px;">ValeVision AURA needs JavaScript.</p></noscript>
+    <script type="module" src="02__Src__AppModules/01__AppCore/Na__AppCore__AuraApp__.js"></script>
+    <script>
+        /* The installable app's worker: network first for AURA's own files, the pinned engine kept on the device */
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('AuraRender__Pwa__ServiceWorker__.js', { scope: './' }).catch(function(error) {
+                    console.warn('[AURA] The service worker did not register:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

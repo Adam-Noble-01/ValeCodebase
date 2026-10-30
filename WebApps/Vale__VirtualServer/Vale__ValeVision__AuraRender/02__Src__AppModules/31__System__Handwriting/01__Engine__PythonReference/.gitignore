@@ -1,0 +1,6 @@
+# The handwriting model's weights stay off GitHub (ValeCodebase is public): they were
+# trained on IAM-OnDB and are an evaluation asset only. Copy model.pt from the Vale
+# Handwriting Studio (Dev__EarlyStageDev__TestingFiles/Experiment__HandwritingTest) on a new machine.
+*.pt
+*.log
+__pycache__/

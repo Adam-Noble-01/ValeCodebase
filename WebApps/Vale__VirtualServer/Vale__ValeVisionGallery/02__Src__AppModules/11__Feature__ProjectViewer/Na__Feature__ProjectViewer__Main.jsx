@@ -440,6 +440,21 @@
                                         <span className="project-viewer__viewer-action-copied-message">Copied!</span>
                                     )}
                                 </button>
+                                {canUseAura() && (
+                                    <a
+                                        className="project-viewer__viewer-action-button project-viewer__viewer-action-button--aura"
+                                        href={`/aura/?project=${encodeURIComponent(project.folderId)}`}
+                                        onClick={() => { if (window.ValeActivity && typeof window.ValeActivity.Log === 'function') window.ValeActivity.Log('app.switch', { project: project.folderId, target: 'AURA' }); }}
+                                        title="Open this project's pen and wash drawings in ValeVision AURA (Managers and App Admins)"
+                                    >
+                                        <img
+                                            src="/AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__AvailableApps__AuraRender__.svg"
+                                            alt=""
+                                            className="project-viewer__viewer-action-icon"
+                                        />
+                                        Open in AURA
+                                    </a>
+                                )}
                             </div>
                             </div>
 

@@ -1,0 +1,107 @@
+{
+    "PainterlyNPR__PointControls__Config" : {
+        "PainterlyNPR__PointControls__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - A Point's Contextual Controls",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Three to six controls a point shows (manifest section 10); the rest wait under Advanced. A row is [key, label, min, max, step, format]; \"PointShape\" in a list stands for the shape rows every point has.",
+            "ReadBy"        : "02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__PointControls__Config__Points" : {
+            "Controls"    : {
+                "Focus"       : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "Fade"        : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "Suppress"    : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "LineControl" : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["LineWeight", "Weight", 0.3, 2, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["Pressure", "Pressure", 0, 3, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["Wobble", "Wobble", 0, 3, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["Breakup", "Break-up", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["Emphasis", "Emphasis", 0.5, 2.5, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["Overdraw", "Overdraw", 0, 3, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["VegLeaves", "Leaves", 0, 3, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }],
+                    ["VegLeafSize", "Leaf size", 0.4, 2.5, 0.01, { "Kind": "Fixed", "Digits": 2, "Suffix": "×" }]
+                ],
+                "Indication"  : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["Amount", "Amount", -1, 1, 0.01, { "Kind": "Special", "Name": "IndicationText" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "Discipline"  : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["Discipline", "Discipline", 0, 1, 0.01, { "Kind": "Special", "Name": "DisciplineNameAndValue" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "Hatch"       : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["HatchAngle", "Angle", 0, 180, 1, { "Kind": "Round", "Suffix": "°" }],
+                    ["HatchDensity", "Density", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["HatchReach", "Into light", 0.02, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ],
+                "RunOut"      : [
+                    ["RadiusMm", "Radius", 10, 140, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["RunReachMm", "Run-out", 0, 150, 1, { "Kind": "Round", "Suffix": " mm" }],
+                    ["RunUneven", "Unevenness", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["RunFade", "Fade-out", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["RunTaper", "Taper", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["RunBreak", "Break-up", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }]
+                ]
+            },
+            "Shape"       : [
+                ["Shape", "Shape", 0.2, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%", "From": { "AtLeast": 0.995, "Text": "round" } }],
+                ["Turn", "Turn", 0, 180, 1, { "Kind": "Round", "Suffix": "°" }]
+            ],
+            "ShapeNote"   : "Every point can be an ellipse",
+            "Selects"     : {
+                "LineControl" : [
+                    ["VegLeafStyle", "Leaf style", [["Kind", "The plant's own"], ["Arcs", "Arcs"], ["Loops", "Loops"], ["Scallops", "Cups"], ["Spikes", "Spikes"], ["Ticks", "Ticks"], ["Stipple", "Stipple"]]]
+                ],
+                "RunOut"      : [
+                    ["RunLines", "Lines", [["All", "Every line"], ["Most", "All but texture"], ["Main", "Main lines"], ["Profiles", "Profiles only"]]]
+                ]
+            },
+            "SelectsNote" : "[key, label, [[value, text]]]: menus in the open card, saved with the point",
+            "Advanced"    : {
+                "Focus"       : "PointShape",
+                "Fade"        : "PointShape",
+                "Suppress"    : "PointShape",
+                "Indication"  : "PointShape",
+                "Hatch"       : "PointShape",
+                "Discipline"  : "PointShape",
+                "LineControl" : [
+                    ["Looseness", "Looseness", -0.6, 0.8, 0.01, { "Kind": "Signed", "Digits": 2 }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    "PointShape"
+                ],
+                "RunOut"      : [
+                    ["RunVariety", "Ends vary", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["RunOnMm", "Run-on", 0, 80, 1, { "Kind": "Round", "Suffix": " mm", "Off": { "Below": 0.5, "Text": "off" } }],
+                    ["RunOnShare", "Run-ons", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    ["RunReveal", "Reveal", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%", "Off": { "Below": 0.005, "Text": "off" } }],
+                    ["Strength", "Strength", 0, 1, 0.01, { "Kind": "Round", "Scale": 100, "Suffix": "%" }],
+                    "PointShape"
+                ]
+            },
+            "Hints"       : {
+                "Indication"  : "Right asks for courses, tiles and flags where it reaches; left keeps them off.",
+                "Hatch"       : "Drag the knob on its ring to turn the hatching. Into light: how far up the light it reaches.",
+                "Suppress"    : "Strips tertiary and optional lines where it reaches - and thins material indication; profiles hold.",
+                "LineControl" : "On planting it reaches the leaves too: Leaves, Leaf size and Leaf style set how many, how big and in what hand; Wobble and Overdraw add their own wobble and searching passes; Looseness loosens where it falls; Emphasis weights the outline.",
+                "Discipline"  : "The Drawing Discipline set here - Technical to Expressive - fading to the sheet's own setting at its edge. Looser simplifies before it wobbles, as the main slider does; a measured elevation still caps it at Natural Pen.",
+                "RunOut"      : "Where it reaches, the pen runs on past the paint - past the vignette and any Fade to paper - as an architect's lines run off the side of the page: a second window on the line work alone. Run-out: how far out from the paint; Unevenness: how differently each line's length falls; Fade-out, Taper and Break-up: how each one ends, and Ends vary how alike. Advanced: Run-on carries true corners on past their ends; Reveal shows all the line work inside it, paint or not. Lines: which classes take part."
+            }
+        }
+    }
+}

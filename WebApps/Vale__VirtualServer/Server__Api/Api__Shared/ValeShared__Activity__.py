@@ -73,6 +73,10 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+30-Oct-2026 - Version 1.2.1
+- "aura" (ValeVision AURA) joins the apps a browser may report for. AURA's own
+  API takes its reports, so no other service needs a restart for it.
+
 28-Oct-2026 - Version 1.2.0
 - Richer analytics (Adam: see what clients and staff do, over time): ValeVision
   3D's menu actions (image.export, camera.lens, camera.correction, layer.toggle,
@@ -148,7 +152,8 @@ NA__ACTIVITY__WARNED              = {"at": 0.0}
 # The apps a browser may report for (key sent by the page -> name in the ledger)
 NA__ACTIVITY__APPS                = {"gallery": "ValeVision Gallery", "valevision3d": "ValeVision 3D",
                                      "theia": "ValeVision Theia", "help": "ValeVision Help",
-                                     "valespec": "ValeSpec", "lantern": "Lantern Designer"}
+                                     "valespec": "ValeSpec", "lantern": "Lantern Designer",
+                                     "aura": "ValeVision AURA"}
 
 # What a browser may report, and how it reads in the ledger ({app}, {target} filled in)
 NA__ACTIVITY__CLIENT_ACTIONS      = {

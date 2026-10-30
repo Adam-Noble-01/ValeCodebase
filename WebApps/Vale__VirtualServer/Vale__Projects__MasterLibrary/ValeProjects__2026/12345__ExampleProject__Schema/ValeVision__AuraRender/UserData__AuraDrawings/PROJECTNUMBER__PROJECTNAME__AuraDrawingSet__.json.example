@@ -1,0 +1,84 @@
+{
+    "AuraDrawingSet__Meta"       : {
+        "SchemaVersion" : "1.0.0",
+        "ProjectId"     : "64135__Holt",
+        "CreatedIso"    : "2026-10-30T10:00:00.000Z",
+        "UpdatedIso"    : "2026-10-30T10:20:00.000Z",
+        "CreatedBy"     : "USR00000001",
+        "UpdatedBy"     : "USR00000001",
+        "Description"   : "ValeVision AURA's drawing set for one project: written by the AURA API (PUT api/projects/<id>/drawings) into <project>/ValeVision__AuraRender/UserData__AuraDrawings/<id>__AuraDrawingSet__.json. User data: written on the server, collected to the PC, never pushed, never web-served. Every save keeps the previous copy in ProjectData__Revisions. Sheet millimetres run from the paper's top left, x right, y down; world metres are the engine's (Y up, the front of the building facing +Z)."
+    },
+    "AuraDrawingSet__Engine"     : {
+        "Settings" : {
+            "Seed"       : 20261029,
+            "Sun"        : { "Azimuth": -44, "Altitude": 38 },
+            "Discipline" : 0.5,
+            "InkFamily"  : "Sepia",
+            "Note"       : "Abridged here: every key PainterlyNPR's State carries except the camera and points (Na__EngineHost__Settings). null: the engine's own starting state."
+        }
+    },
+    "AuraDrawingSet__SavedViews" : [
+        {
+            "View__Id"     : "View_mh2x1k3a_3f2c",
+            "View__Name"   : "From the lane",
+            "View__Camera" : { "Mode": "Perspective", "Yaw": 30, "Pitch": 8, "Distance": 36, "Target": [0.4, 2.9, 2.8], "FovY": 30, "HalfHeight": 10, "Ceiling": 1 }
+        }
+    ],
+    "AuraDrawingSet__Sheets"     : [
+        {
+            "Sheet__Id"          : "Sheet_mh2x1k3a_9a1b",
+            "Sheet__Name"        : "Elevations",
+            "Sheet__PaperSize"   : "A1",
+            "Sheet__Orientation" : "landscape",
+            "Sheet__Fields"      : {
+                "Client"    : "Holt",
+                "Address"   : "",
+                "Title"     : "Elevations",
+                "Scale"     : "",
+                "Date"      : "30-Oct-2026",
+                "DrawnBy"   : "",
+                "CheckedBy" : "",
+                "DrawingNo" : "64135-AURA-01",
+                "Revisions" : [ { "Rev": "A", "Date": "30-Oct-2026", "Details": "First issue" } ]
+            },
+            "Sheet__Viewports"   : [
+                {
+                    "Viewport__Id"               : "Viewport_mh2x1k3a_77de",
+                    "Viewport__Kind"             : "Elevation",
+                    "Viewport__FrameMm"          : { "X": 30, "Y": 30, "WidthMm": 250, "HeightMm": 200 },
+                    "Viewport__ScaleDenominator" : 50,
+                    "Viewport__Side"             : "Front",
+                    "Viewport__PlanKind"         : null,
+                    "Viewport__CentreM"          : null,
+                    "Viewport__CameraSource"     : null,
+                    "Viewport__Profile"          : "Measured",
+                    "Viewport__Title"            : "Front Elevation",
+                    "Viewport__ShowTitle"        : true
+                }
+            ],
+            "Sheet__Annotations" : [
+                {
+                    "Annotation__Id"      : "Note_mh2x1k3a_c0de",
+                    "Annotation__Kind"    : "Leader",
+                    "Annotation__Text"    : "Handmade clay plain tiles",
+                    "Annotation__AtMm"    : { "X": 175, "Y": 246 },
+                    "Annotation__WidthMm" : 70,
+                    "Annotation__TipMm"   : { "X": 205, "Y": 108 },
+                    "Annotation__SizeMm"  : 4.5,
+                    "Annotation__InkKey"  : "Forest",
+                    "Annotation__HandKey" : "Steady",
+                    "Annotation__Seed"    : 42,
+                    "Annotation__Written" : {
+                        "Key"        : "the request the ink was written from (words, size, width, hand, seed)",
+                        "Paths"      : [ { "D": "M 3.411 2.166 C 3.399 2.152 3.367 2.114 3.343 2.083", "W": 0.308 } ],
+                        "HeightMm"   : 8.0,
+                        "InkWidthMm" : 42.1,
+                        "Lines"      : 1,
+                        "Warnings"   : [],
+                        "Seconds"    : 0.23
+                    }
+                }
+            ]
+        }
+    ]
+}

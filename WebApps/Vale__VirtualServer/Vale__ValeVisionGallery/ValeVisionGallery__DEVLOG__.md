@@ -1,5 +1,24 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.6.0, 30-Oct-2026: AURA, for Managers and App Admins Only
+
+**Asked by Adam:** "Create a Vale Style app for AURA ... accessed from ValeVision Gallery so projects in gallery can
+link to AURA (FOR NOW ONLY GIVE MANAGERS AND ADMIN ACCESS ((NOT EMPLOYEES))! From gallery, employees must not see
+Project Aura yet". He chose the shortcut on cards that have a 3D model, plus a button on every project page.
+
+**Changes:**
+- A project card with a ValeVision 3D model gets an AURA icon beside the 3D one, linking to
+  `/aura/?project=<library id>`, for Management and App Admins only (`canOpenAura`). Employees, Affiliates and
+  clients never see it.
+- A project page's Project Actions gain **Open in AURA** for the same people, on every project (`canUseAura`),
+  logged to the activity ledger as `app.switch` to AURA.
+- The icon is AURA's app icon: `AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/
+  Icon__AvailableApps__AuraRender__.svg` (needs the `commonassets` push).
+- Hiding the link is not the lock: AURA's page and its API refuse anyone below Management.
+- Files: `Na__Feature__ProjectGallery__ContentDetector.js`, `Na__Feature__ProjectGallery__Main.jsx`,
+  `Na__Feature__ProjectViewer__Main.jsx`, `Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js`
+  (`buildAuraProjectUrl`), `Na__CoreUi__Styles__App__.css` (the AURA action button).
+
 ## Version 1.5.4, 22-Oct-2026: The Display Name Alias Names the Project in Theia Too
 
 **Asked by Adam:** ValeVision Theia must use the same alias for a project as the Gallery.

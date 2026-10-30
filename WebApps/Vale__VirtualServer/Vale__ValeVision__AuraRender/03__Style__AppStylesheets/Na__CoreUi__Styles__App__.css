@@ -1,0 +1,755 @@
+/* =============================================================================
+ * VALEVISION AURA - MAIN APPLICATION STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__App__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Main Application Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The page: header, breadcrumbs, tabs, toolbars, panels, buttons,
+ *              fields, folds, dialogs, messages, toasts and the start-up spinner
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - The app fills the window: the header, a line of breadcrumbs, the tabs, then
+ *   the open tab's toolbar, its stage or desk, and its side panel.
+ * - The header is ValeVision 3D's (and Theia's): the Vale logo, the app's name
+ *   at the right in its title style, the shared user bubble.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Base
+ * ----------------------------------------------------------------------------- */
+
+    * {
+        box-sizing                         : border-box;
+    }
+
+    html, body {
+        margin                             : 0;
+        height                             : 100%;
+    }
+
+    body.aura {
+        display                            : flex;
+        flex-direction                     : column;
+        font-family                        : var(--Aura_Font);
+        font-size                          : var(--Aura_FontSize_Text);
+        color                              : var(--Aura_Text);
+        background                         : var(--Aura_Page);
+        -webkit-font-smoothing             : antialiased;
+        overflow                           : hidden;                       /* <-- The desk and the panels scroll, never the page */
+    }
+
+    button, input, select, textarea {
+        font-family                        : inherit;
+        font-size                          : inherit;
+        color                              : inherit;
+    }
+
+    a {
+        color                              : inherit;
+    }
+
+    [hidden] {
+        display                            : none !important;
+    }
+
+    .aura-icon {
+        display                            : inline-flex;
+        width                              : 20px;
+        height                             : 20px;
+        flex-shrink                        : 0;
+    }
+
+    .aura-icon svg {
+        width                              : 100%;
+        height                             : 100%;
+    }
+
+    :focus-visible {
+        outline                            : 2px solid var(--Aura_Focus);
+        outline-offset                     : 2px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header
+ * ----------------------------------------------------------------------------- */
+
+    .aura-header {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 16px;
+        flex-shrink                        : 0;
+        height                             : calc(var(--Aura_HeaderHeight) + env(safe-area-inset-top, 0px));
+        padding                            : env(safe-area-inset-top, 0px) max(var(--Aura_Gutter), env(safe-area-inset-right, 0px)) 0 max(var(--Aura_Gutter), env(safe-area-inset-left, 0px));
+        background                         : var(--Aura_Surface);
+        border-bottom                      : 2px solid var(--Aura_Brand);   /* <-- The Vale apps' navy rule */
+        box-shadow                         : var(--Aura_Shadow);
+        z-index                            : 20;
+    }
+
+    .aura-header__brand {
+        display                            : flex;
+        align-items                        : center;
+        flex-shrink                        : 0;
+    }
+
+    .aura-header__logo {
+        height                             : 42px;                         /* <-- ValeVision 3D's logo height */
+        width                              : auto;
+    }
+
+    .aura-header__title {
+        flex                               : 1;
+        min-width                          : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : flex-end;
+        gap                                : 18px;
+        white-space                        : nowrap;
+    }
+
+    /* "ValeVision AURA": ValeVision 3D's title, exactly (24px Open Sans SemiBold, navy) */
+    .aura-header__app {
+        font-size                          : 24px;
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_Brand);
+    }
+
+    .aura-header__save {
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextFaint);
+    }
+
+    .aura-header__save[data-state="dirty"],
+    .aura-header__save[data-state="saving"] {
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-header__save[data-state="error"] {
+        color                              : var(--Aura_Danger);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-header__user {
+        flex-shrink                        : 0;
+        display                            : flex;
+        align-items                        : center;
+    }
+
+    .aura-header__user:empty {
+        display                            : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Main, Breadcrumbs and Tabs
+ * ----------------------------------------------------------------------------- */
+
+    .aura-main {
+        flex                               : 1;
+        min-height                         : 0;
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .aura-crumbs {
+        display                            : flex;
+        align-items                        : center;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        padding                            : 10px var(--Aura_Gutter) 4px;
+        font-size                          : 14px;
+    }
+
+    .aura-crumbs__link {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 4px;
+        color                              : var(--Aura_TextSecondary);
+        text-decoration                    : none;
+    }
+
+    .aura-crumbs__link:hover {
+        color                              : var(--Aura_Text);
+        text-decoration                    : underline;
+    }
+
+    .aura-crumbs__link strong {
+        color                              : var(--Aura_Text);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-crumbs__chevron {
+        width                              : 16px;
+        height                             : 16px;
+    }
+
+    .aura-crumbs__sep {
+        color                              : var(--Aura_TextFaint);
+        margin                             : 0 2px;
+    }
+
+    .aura-crumbs__code,
+    .aura-crumbs__current {
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-tabs {
+        display                            : flex;
+        align-items                        : flex-end;
+        gap                                : 4px;
+        padding                            : 6px var(--Aura_Gutter) 0;
+        border-bottom                      : 1px solid var(--Aura_Border);
+        overflow-x                         : auto;
+        flex-shrink                        : 0;
+        scrollbar-width                    : thin;
+    }
+
+    .aura-tab {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 8px;
+        height                             : 38px;
+        padding                            : 0 14px;
+        border                             : 1px solid var(--Aura_Border);
+        border-bottom                      : none;
+        border-radius                      : var(--Aura_RadiusSmall) var(--Aura_RadiusSmall) 0 0;
+        background                         : var(--Aura_SurfaceMuted);
+        color                              : var(--Aura_TextSecondary);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+        transition                         : background-color var(--Aura_Fast), color var(--Aura_Fast);
+    }
+
+    .aura-tab:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-tab.is-active {
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Brand);
+        font-weight                        : var(--Aura_FontSemiBold);
+        box-shadow                         : inset 0 3px 0 var(--Aura_Brand);
+    }
+
+    .aura-tab__paper {
+        font-size                          : 11px;
+        font-weight                        : var(--Aura_FontRegular);
+        color                              : var(--Aura_TextFaint);
+        padding                            : 1px 6px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : 10px;
+    }
+
+    .aura-tab--add {
+        background                         : transparent;
+        border-style                       : dashed;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Toolbars, Status Bars and Panels
+ * ----------------------------------------------------------------------------- */
+
+    .aura-toolbar {
+        display                            : flex;
+        align-items                        : center;
+        flex-wrap                          : wrap;
+        gap                                : 12px;
+        padding                            : 10px var(--Aura_Gutter);
+        background                         : var(--Aura_Surface);
+        border-bottom                      : 1px solid var(--Aura_Border);
+        flex-shrink                        : 0;
+    }
+
+    .aura-toolbar__zoom {
+        display                            : inline-flex;
+        gap                                : 2px;
+    }
+
+    .aura-toolbar__status {
+        margin-left                        : auto;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-statusbar {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 18px;
+        padding                            : 6px var(--Aura_Gutter);
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        background                         : var(--Aura_Surface);
+        border-top                         : 1px solid var(--Aura_Border);
+        flex-shrink                        : 0;
+        white-space                        : nowrap;
+        overflow                           : hidden;
+    }
+
+    .aura-statusbar__status {
+        flex                               : 1;
+        min-width                          : 0;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+
+    .aura-statusbar__engine {
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_Brand);
+    }
+
+    .aura-panel {
+        width                              : var(--Aura_PanelWidth);
+        flex-shrink                        : 0;
+        overflow-y                         : auto;
+        background                         : var(--Aura_Surface);
+        border-left                        : 1px solid var(--Aura_Border);
+    }
+
+    .aura-panel__section {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 12px;
+        padding                            : 16px 18px 20px;
+        border-bottom                      : 1px solid var(--Aura_Border);
+    }
+
+    .aura-panel__title {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Heading);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-panel__subtitle {
+        margin                             : 8px 0 0;
+        font-size                          : 13px;
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_TextSecondary);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+
+    .aura-panel__note,
+    .aura-panel__hint {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        line-height                        : 1.45;
+    }
+
+    .aura-panel__note.is-warning {
+        color                              : var(--Aura_Warn);
+        background                         : var(--Aura_WarnBg);
+        padding                            : 8px 10px;
+        border-radius                      : var(--Aura_RadiusSmall);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Buttons
+ * ----------------------------------------------------------------------------- */
+
+    .aura-button {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : 8px;
+        min-height                         : 36px;
+        padding                            : 0 14px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        text-decoration                    : none;
+        cursor                             : pointer;
+        transition                         : background-color var(--Aura_Fast), border-color var(--Aura_Fast);
+    }
+
+    .aura-button:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-button--primary {
+        background                         : var(--Aura_Brand);
+        border-color                       : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+    .aura-button--primary:hover {
+        background                         : var(--Aura_BrandDeep);
+    }
+
+    .aura-button--danger {
+        color                              : var(--Aura_Danger);
+        border-color                       : rgba(179, 38, 30, 0.35);
+        align-self                         : flex-start;
+    }
+
+    .aura-icon-button {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 34px;
+        height                             : 34px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        cursor                             : pointer;
+    }
+
+    .aura-icon-button:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-icon-button--quiet {
+        border-color                       : transparent;
+        width                              : 30px;
+        height                             : 30px;
+    }
+
+    .aura-segmented {
+        display                            : inline-flex;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        overflow                           : hidden;
+    }
+
+    .aura-segmented__item {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 6px;
+        min-height                         : 34px;
+        padding                            : 0 12px;
+        border                             : none;
+        border-right                       : 1px solid var(--Aura_Border);
+        background                         : var(--Aura_Surface);
+        cursor                             : pointer;
+    }
+
+    .aura-segmented__item:last-child {
+        border-right                       : none;
+    }
+
+    .aura-segmented__item:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-segmented__item.is-active {
+        background                         : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Fields and Folds
+ * ----------------------------------------------------------------------------- */
+
+    .aura-field {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 5px;
+        min-width                          : 0;
+    }
+
+    .aura-field__label {
+        font-size                          : var(--Aura_FontSize_Small);
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-field-pair {
+        display                            : grid;
+        grid-template-columns              : 1fr 1fr;
+        gap                                : 10px;
+    }
+
+    .aura-input,
+    .aura-select {
+        width                              : 100%;
+        min-height                         : 36px;
+        padding                            : 7px 10px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+    }
+
+    textarea.aura-input {
+        resize                             : vertical;
+        line-height                        : 1.4;
+    }
+
+    .aura-input--words {
+        min-height                         : 96px;
+    }
+
+    .aura-select--add {
+        min-width                          : 230px;
+        width                              : auto;
+    }
+
+    .aura-check {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        font-size                          : 13px;
+        cursor                             : pointer;
+    }
+
+    .aura-fold {
+        border-bottom                      : 1px solid var(--Aura_Border);
+    }
+
+    .aura-fold__head {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        width                              : 100%;
+        padding                            : 10px 0;
+        border                             : none;
+        background                         : none;
+        font-weight                        : var(--Aura_FontSemiBold);
+        cursor                             : pointer;
+    }
+
+    .aura-fold__chevron {
+        transition                         : transform var(--Aura_Fast);
+        color                              : var(--Aura_TextFaint);
+    }
+
+    .aura-fold.is-open .aura-fold__chevron {
+        transform                          : rotate(180deg);
+    }
+
+    .aura-fold__body {
+        display                            : none;
+        flex-direction                     : column;
+        gap                                : 10px;
+        padding                            : 0 0 14px;
+    }
+
+    .aura-fold.is-open .aura-fold__body {
+        display                            : flex;
+    }
+
+    .aura-revisions {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 6px;
+    }
+
+    .aura-revisions__row {
+        display                            : grid;
+        grid-template-columns              : 44px 92px 1fr 30px;
+        gap                                : 4px;
+        align-items                        : center;
+    }
+
+    .aura-revisions__row .aura-input {
+        min-height                         : 30px;
+        padding                            : 4px 6px;
+        font-size                          : 12px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Dialog, Message and Toasts
+ * ----------------------------------------------------------------------------- */
+
+    .aura-dialog {
+        border                             : none;
+        border-radius                      : var(--Aura_Radius);
+        padding                            : 0;
+        width                              : min(420px, calc(100vw - 32px));
+        box-shadow                         : 0 18px 60px rgba(15, 30, 40, 0.28);
+    }
+
+    .aura-dialog::backdrop {
+        background                         : rgba(15, 30, 40, 0.35);
+    }
+
+    .aura-dialog__body {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 14px;
+        padding                            : 22px 24px;
+    }
+
+    .aura-dialog__title {
+        margin                             : 0;
+        font-size                          : 20px;
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-dialog__actions {
+        display                            : flex;
+        justify-content                    : flex-end;
+        gap                                : 10px;
+        margin-top                         : 4px;
+    }
+
+    .aura-message {
+        margin                             : auto;
+        max-width                          : 520px;
+        padding                            : 40px 24px;
+        text-align                         : center;
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 12px;
+    }
+
+    .aura-message__icon {
+        width                              : 48px;
+        height                             : 48px;
+        color                              : var(--Aura_TextFaint);
+    }
+
+    .aura-message__title {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Title);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-message__text {
+        margin                             : 0 0 8px;
+        color                              : var(--Aura_TextSecondary);
+        line-height                        : 1.5;
+    }
+
+    .aura-toasts {
+        position                           : fixed;
+        left                               : 50%;
+        bottom                             : 24px;
+        transform                          : translateX(-50%);
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 8px;
+        z-index                            : 5000;
+        pointer-events                     : none;
+    }
+
+    .aura-toast {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 14px;
+        max-width                          : min(640px, calc(100vw - 32px));
+        padding                            : 12px 16px;
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+        box-shadow                         : 0 6px 24px rgba(15, 30, 40, 0.25);
+        opacity                            : 0;
+        transform                          : translateY(8px);
+        transition                         : opacity 0.25s ease, transform 0.25s ease;
+        pointer-events                     : auto;
+    }
+
+    .aura-toast.is-visible {
+        opacity                            : 1;
+        transform                          : none;
+    }
+
+    .aura-toast--error {
+        background                         : var(--Aura_Danger);
+    }
+
+    .aura-toast__action {
+        border                             : 1px solid rgba(255, 255, 255, 0.6);
+        border-radius                      : 6px;
+        background                         : transparent;
+        color                              : #ffffff;
+        padding                            : 4px 10px;
+        cursor                             : pointer;
+        white-space                        : nowrap;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Start-Up Spinner (ValeVision 3D's)
+ * ----------------------------------------------------------------------------- */
+
+    .loading-overlay {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        width                              : 100vw;
+        height                             : 100vh;
+        background-color                   : #ffffff;
+        display                            : flex;
+        flex-direction                     : column;
+        justify-content                    : center;
+        align-items                        : center;
+        z-index                            : 4000;                         /* <-- Over the page, under the sign-in */
+        opacity                            : 1;
+        transition                         : opacity 0.5s ease-out;
+    }
+
+    .loading-overlay.hidden {
+        opacity                            : 0;
+        pointer-events                     : none;
+    }
+
+    .loading-spinner {
+        width                              : 80px;
+        height                             : 80px;
+        position                           : relative;
+        margin-bottom                      : 24px;
+    }
+
+    .loading-spinner::before {
+        content                            : '';
+        display                            : block;
+        width                              : 80px;
+        height                             : 80px;
+        border-radius                      : 50%;
+        border                             : 6px solid #e0e0e0;            /* <-- Light grey ring */
+        border-top-color                   : #172b3a;                      /* <-- Vale navy segment */
+        box-sizing                         : border-box;
+        animation                          : spinner-rotate 1s linear infinite;
+    }
+
+    @keyframes spinner-rotate {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 16px;
+        font-weight                        : 400;
+        color                              : #172b3a;
+        letter-spacing                     : 0.5px;
+        text-align                         : center;
+        margin-top                         : 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .loading-spinner::before {
+            animation-duration             : 2.4s;                         /* <-- Slower, never still: it still says "working" */
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

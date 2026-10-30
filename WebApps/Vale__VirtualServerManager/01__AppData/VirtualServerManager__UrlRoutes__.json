@@ -87,6 +87,18 @@
             "Note": "ValeVision Theia video player (API vale@ValeVision__TheiaVideoPlayer on 8005)"
         },
         {
+            "Id": "aura",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "aura",
+            "Target": "Vale__ValeVision__AuraRender",
+            "Entry": "index.html",
+            "ExampleQuery": "project=64135__Holt",
+            "Api": true,
+            "ApiPort": 8006,
+            "Note": "ValeVision AURA, pen and wash drawings round the PainterlyNPR engine; Managers and App Admins only (API vale@ValeVision__AuraRender on 8006, added 30-Oct-2026)"
+        },
+        {
             "Id": "p",
             "Enabled": false,
             "Type": "link",

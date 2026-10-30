@@ -236,6 +236,21 @@
             "DefaultLane": "code"
         },
         {
+            "Id": "aura",
+            "Name": "ValeVision AURA (pen and wash drawings; Managers and App Admins)",
+            "Kind": "web",
+            "Local": "Vale__ValeVision__AuraRender",
+            "Remote": "Vale__ValeVision__AuraRender",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [
+                "*.pt"
+            ],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
+        },
+        {
             "Id": "valespec",
             "Name": "ValeSpec",
             "Kind": "web",

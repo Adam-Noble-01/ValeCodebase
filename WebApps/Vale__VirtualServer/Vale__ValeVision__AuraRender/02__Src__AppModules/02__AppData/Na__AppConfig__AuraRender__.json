@@ -1,0 +1,118 @@
+{
+    "AuraConfig__File__Description"                     : "ValeVision AURA app config: who may open it, the drawing sheets (paper, border and the Vale title column), viewport scales and frames, the engine parameters the 3D Environment shows, annotations and the handwriting, the render queue and saving. Read by the browser (GET api/config, else this file) and by the AURA API. Keys are Area__Group__Setting; a key ending Note says why.",
+    "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
+
+    "AuraConfig__App__Name"                             : "ValeVision AURA",
+    "AuraConfig__App__Version"                          : "0.1.0",
+    "AuraConfig__App__Engine"                           : "PainterlyNPR",
+    "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked and reached only through 02__Src__AppModules/10__System__EngineHost.",
+
+    "AuraConfig__Access__MinimumLevel"                  : "Management",
+    "AuraConfig__Access__MinimumLevelNote"              : "Managers and App Admins only while AURA is new (Adam, 30-Oct-2026): Employees, Affiliates and clients are refused by the page and by every API route, and the Gallery hides the link from them.",
+
+    "AuraConfig__Scene__DemoLabel"                      : "PainterlyNPR demo scene: a brick country cottage in its garden",
+    "AuraConfig__Scene__DemoNote"                       : "Every project opens the engine's demo scene for now. A project's own AURA model arrives with ValeVision Cloud Sync's AURA export (a Painterly Scene Package in the project's ValeVision__AuraRender/Content__AuraScenePackages).",
+
+    "AuraConfig__Sheet__PaperSizes"                     : {
+        "A1"                                            : { "Label": "A1", "WidthMm": 841, "HeightMm": 594 },
+        "A2"                                            : { "Label": "A2", "WidthMm": 594, "HeightMm": 420 },
+        "A3"                                            : { "Label": "A3", "WidthMm": 420, "HeightMm": 297 },
+        "A4"                                            : { "Label": "A4", "WidthMm": 297, "HeightMm": 210 }
+    },
+    "AuraConfig__Sheet__PaperSizesNote"                 : "Listed landscape; portrait swaps width and height.",
+    "AuraConfig__Sheet__DefaultPaperSize"               : "A3",
+    "AuraConfig__Sheet__DefaultOrientation"             : "landscape",
+    "AuraConfig__Sheet__BorderSideMm"                   : 10.5,
+    "AuraConfig__Sheet__BorderEndMm"                    : 8.25,
+    "AuraConfig__Sheet__BorderNote"                     : "The ruled border, from the paper's edge: Side across the long edges' ends (left and right in landscape), End along the long edges (top and bottom). Measured on Vale's A3 layout (10.6 / 8.2 mm); A1 measures within a millimetre.",
+    "AuraConfig__Sheet__LineWidthMm"                    : 0.25,
+
+    "AuraConfig__TitleBlock__Style"                     : "ValeClassic",
+    "AuraConfig__TitleBlock__StyleNote"                 : "Vale's standard drawing page (the RecConcept layouts of Feb-2026 that ValeVision 3D's Create Drawing uses): a 60 x 280.5 mm column, the same size on every sheet, at the bottom right inside the border in landscape, turned 90 degrees clockwise to the bottom left in portrait. A4 is too short for it, so there it is scaled down to fit.",
+    "AuraConfig__TitleBlock__ColumnWidthMm"             : 60,
+    "AuraConfig__TitleBlock__ColumnHeightMm"            : 280.5,
+    "AuraConfig__TitleBlock__FixedCellsImage"           : "01__AppAssets__AuraRender/10__TitleBlocks/TitleBlock__ValeClassic__FixedCells__300dpi__.png",
+    "AuraConfig__TitleBlock__FixedCellsHeightMm"        : 161.5,
+    "AuraConfig__TitleBlock__FixedCellsNote"            : "The logo and Grantham address, the setting-out note and the copyright cell, cut at 300 dpi from Vale's A3 layout: the same physical size on every sheet, so it prints sharp on A1.",
+    "AuraConfig__TitleBlock__LabelSizeMm"               : 2.7,
+    "AuraConfig__TitleBlock__ValueSizeMm"               : 3.4,
+    "AuraConfig__TitleBlock__Cells"                     : [
+        { "Key": "Revisions", "Kind": "Revisions", "X": 0,  "Y": 161.5, "W": 60, "H": 26.2, "HeaderMm": 4.6,
+          "Columns": [ { "Key": "Rev", "Label": "Rev:", "X": 0, "W": 8.2 }, { "Key": "Date", "Label": "Date:", "X": 8.2, "W": 15.6 }, { "Key": "Details", "Label": "Details:", "X": 23.8, "W": 36.2 } ] },
+        { "Key": "Client",    "Label": "Client:",      "X": 0,  "Y": 187.7, "W": 60, "H": 15.0 },
+        { "Key": "Address",   "Label": "Address:",     "X": 0,  "Y": 202.7, "W": 60, "H": 25.9 },
+        { "Key": "Title",     "Label": "Title:",       "X": 0,  "Y": 228.6, "W": 60, "H": 15.8 },
+        { "Key": "Scale",     "Label": "Scale:",       "X": 0,  "Y": 244.4, "W": 30, "H": 10.5 },
+        { "Key": "Date",      "Label": "Date:",        "X": 30, "Y": 244.4, "W": 30, "H": 10.5 },
+        { "Key": "DrawnBy",   "Label": "Drawn By:",    "X": 0,  "Y": 254.9, "W": 30, "H": 10.4 },
+        { "Key": "CheckedBy", "Label": "Checked By:",  "X": 30, "Y": 254.9, "W": 30, "H": 10.4 },
+        { "Key": "DrawingNo", "Label": "Drawing No.",  "X": 0,  "Y": 265.3, "W": 60, "H": 15.2 }
+    ],
+    "AuraConfig__TitleBlock__CellsNote"                 : "Column-local millimetres from the column's top left, measured on Vale's A3 layout (the column's top is 8.2 mm down the sheet).",
+
+    "AuraConfig__Viewport__Scales"                      : [20, 50, 100, 200],
+    "AuraConfig__Viewport__DefaultScale"                : 50,
+    "AuraConfig__Viewport__DefaultPlanScale"            : 100,
+    "AuraConfig__Viewport__DefaultFrameMm"              : { "WidthMm": 180, "HeightMm": 120 },
+    "AuraConfig__Viewport__MinFrameMm"                  : 20,
+    "AuraConfig__Viewport__ScaledFrameNote"             : "A scaled view (an elevation or a plan) is one engine frame: the engine draws on a 300 x 200 mm sheet, so a scaled viewport is at most that size and its pen widths are true millimetres on the paper. A perspective is a picture, scaled to its frame.",
+    "AuraConfig__Viewport__RenderScale"                 : 1,
+    "AuraConfig__Viewport__RenderScaleNote"             : "The engine's pixels per millimetre multiplier for viewport pictures: 1 is 5 px/mm (the engine's screen size), 2 is 10 px/mm for print. Pen widths and grain are millimetres, so 2 is the same drawing, sharper, and about four times slower.",
+    "AuraConfig__Viewport__TitleSizeMm"                 : 4,
+    "AuraConfig__Viewport__TitleGapMm"                  : 3,
+    "AuraConfig__Viewport__OrthoDistanceM"              : 60,
+    "AuraConfig__Viewport__MeasuredCeiling"             : 0.33,
+    "AuraConfig__Viewport__MeasuredCeilingNote"         : "The engine's view profile for a measured drawing: a Natural Pen at most, never a loose one (its MeasuredElevation preset).",
+    "AuraConfig__Viewport__PlanPitchDeg"                : 89.9,
+    "AuraConfig__Viewport__PlanPitchDegNote"            : "Straight down, short of 90 degrees so the engine's camera keeps world up as its reference. 0.1 degrees moves a 10 m roof's ridge 17 mm in the world: 0.2 mm on a 1:100 sheet.",
+    "AuraConfig__Viewport__Elevations"                  : [
+        { "Key": "Front", "Label": "Front Elevation",       "YawDeg": 0 },
+        { "Key": "Right", "Label": "Right Side Elevation",  "YawDeg": 90 },
+        { "Key": "Rear",  "Label": "Rear Elevation",        "YawDeg": 180 },
+        { "Key": "Left",  "Label": "Left Side Elevation",   "YawDeg": -90 }
+    ],
+    "AuraConfig__Viewport__ElevationsNote"              : "Yaw is the engine's: 0 looks at the front (+Z) face, 90 at the right (+X) face as seen from the front.",
+
+    "AuraConfig__Engine__CameraPresets"                 : ["ThreeQuarter", "GardenCorner", "DownThePath", "MeasuredElevation", "ConceptElevation"],
+    "AuraConfig__Engine__ParameterGroups"               : [
+        { "Key": "Light",       "Label": "Light",             "Controls": ["SunAzimuth", "SunAltitude"] },
+        { "Key": "Pen",         "Label": "Pen",               "Controls": ["Discipline", "LineWeight", "Indication"], "Selects": ["InkFamily"] },
+        { "Key": "Wash",        "Label": "Wash",              "Controls": ["WashStrength", "Granulation", "Pooling", "CoffeeRings", "Bleed", "Shadow", "ShadowLines"] },
+        { "Key": "Sky",         "Label": "Sky",               "Controls": ["Sky", "Clouds", "CloudCoverage"] },
+        { "Key": "Paper",       "Label": "Paper and finish",  "Controls": ["Emboss", "InkDry", "Vignette", "Roughness"], "Selects": ["PaperPreset"] }
+    ],
+    "AuraConfig__Engine__ParameterGroupsNote"           : "Each control is the engine's own (80__System__HudOverlay/Na__Interface__Controls__Config.json): its label, range, the state it sets, what it re-renders and its readout. AURA only chooses which to show, here.",
+    "AuraConfig__Engine__LabelOverrides"                : { "Indication": "Material indication", "WashStrength": "Wash strength", "Emboss": "Paper grain" },
+    "AuraConfig__Engine__LabelOverridesNote"            : "Where an engine label leans on its own panel's heading (its \"Amount\" sits under \"Indication\"), AURA's groups say it in full.",
+    "AuraConfig__Engine__Discipline"                    : { "Label": "Drawing discipline", "Min": 0, "Max": 1, "Step": 0.01 },
+    "AuraConfig__Engine__DisciplineNote"                : "The engine's discipline slider has its range in its own panel, not in its controls config: Technical 0, Natural Pen 0.33, Architectural Sketch 0.66, Expressive Concept 1.",
+
+    "AuraConfig__Annotation__DefaultSizeMm"             : 4.5,
+    "AuraConfig__Annotation__Sizes"                     : [3, 3.5, 4.5, 6, 8],
+    "AuraConfig__Annotation__DefaultWidthMm"            : 70,
+    "AuraConfig__Annotation__Inks"                      : [
+        { "Key": "Forest",      "Label": "Forest",        "Colour": "#263b37" },
+        { "Key": "Graphite",    "Label": "Graphite",      "Colour": "#303335" },
+        { "Key": "DrawingBlue", "Label": "Drawing blue",  "Colour": "#304e6b" },
+        { "Key": "Sepia",       "Label": "Sepia",         "Colour": "#87523f" },
+        { "Key": "Navy",        "Label": "Vale navy",     "Colour": "#172b3a" }
+    ],
+    "AuraConfig__Annotation__InksNote"                  : "The Vale Handwriting Studio's own ink presets (Forest is its default), and Vale navy.",
+    "AuraConfig__Annotation__DefaultInk"                : "Forest",
+    "AuraConfig__Annotation__PenWidthMm"                : 0.3,
+
+    "AuraConfig__Handwriting__Hands"                    : [
+        { "Key": "Steady",  "Label": "Steady hand",  "Neatness": 1.1, "Variation": 0.3 },
+        { "Key": "Careful", "Label": "Careful hand", "Neatness": 1.6, "Variation": 0.15 },
+        { "Key": "Quick",   "Label": "Quick hand",   "Neatness": 0.75, "Variation": 0.55 }
+    ],
+    "AuraConfig__Handwriting__HandsNote"                : "Neatness is the model's bias (the studio calls it pen confidence, 0.2 to 2.5); Variation varies slant, baseline and pen weight (0 to 1). The model has no style index: a note's own seed makes it a different hand-written copy.",
+    "AuraConfig__Handwriting__DefaultHand"              : "Steady",
+    "AuraConfig__Handwriting__LineSpacing"              : 1.35,
+    "AuraConfig__Handwriting__MaxChars"                 : 600,
+    "AuraConfig__Handwriting__WhereItRuns"              : "On the user's own machine, never on the server (Adam, 30-Oct-2026: the server is resource constrained). For now the AURA API writes notes only where the engine and a Python with torch are present (a PC running Server__DeveloperTools/ValeDev__LocalServer__.py); the server answers that it cannot, and a note keeps a typed stand-in until it is written. Next: the engine rewritten for WebAssembly, served as static files and kept on the device by AURA's service worker, as PainterlyNPR is heading for WebGPU and WebAssembly.",
+
+    "AuraConfig__Save__AutosaveDelayMs"                 : 2000,
+    "AuraConfig__Save__MaxSheets"                       : 60,
+    "AuraConfig__Save__MaxBytes"                        : 4194304
+}

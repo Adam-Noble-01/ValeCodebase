@@ -1,0 +1,187 @@
+/* =============================================================================
+ * VALEVISION AURA - THE DRAWING SHEETS
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__DrawingSheets__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Drawing Sheet Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The desk, the sheet on it, viewport frames and placeholders,
+ *              notes, selection frames and handles
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - Sizes inside the sheet are paper millimetres (the SVG's own units); the
+ *   handles' sizes are set by the code from the zoom, so they stay the same on
+ *   screen.
+ * - Viewport frames are faint guides on screen only: the printed sheet has none.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Desk and the Sheet
+ * ----------------------------------------------------------------------------- */
+
+    .aura-sheets {
+        flex                               : 1;
+        min-height                         : 0;
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .aura-sheets__body {
+        flex                               : 1;
+        min-height                         : 0;
+        display                            : flex;
+    }
+
+    .aura-sheets__desk {
+        position                           : relative;
+        flex                               : 1;
+        min-width                          : 0;
+        overflow                           : auto;
+        background                         : var(--Aura_Desk);
+        touch-action                       : none;
+    }
+
+    .aura-sheets__desk.is-pan-ready,
+    .aura-sheets__desk.is-panning {
+        cursor                             : grab;
+    }
+
+    .aura-sheets__desk[data-tool="note"],
+    .aura-sheets__desk[data-tool="leader"] {
+        cursor                             : crosshair;
+    }
+
+    .aura-sheet__wrap {
+        display                            : inline-block;
+        min-width                          : 100%;
+        min-height                         : 100%;
+        padding                            : 24px;
+        text-align                         : center;
+    }
+
+    .aura-sheet {
+        display                            : inline-block;
+        vertical-align                     : middle;
+        background                         : #ffffff;
+        box-shadow                         : 0 8px 30px rgba(40, 32, 20, 0.22), 0 1px 3px rgba(40, 32, 20, 0.2);
+        text-align                         : left;
+        user-select                        : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Viewports
+ * ----------------------------------------------------------------------------- */
+
+    .aura-vp {
+        cursor                             : move;
+    }
+
+    .aura-vp__frame {
+        fill                               : none;
+        stroke                             : #9aa6b0;
+        stroke-width                       : 0.25;
+        stroke-dasharray                   : 2 1.5;
+        opacity                            : 0;
+        pointer-events                     : none;
+        transition                         : opacity var(--Aura_Fast);
+    }
+
+    .aura-vp:hover .aura-vp__frame {
+        opacity                            : 1;
+    }
+
+    .aura-vp__placeholder {
+        fill                               : #f4f1ea;
+    }
+
+    .aura-vp__placeholder-text {
+        fill                               : #8a7f6d;
+        font-family                        : var(--Aura_Font);
+        font-style                         : italic;
+    }
+
+    .aura-vp__title {
+        font-family                        : var(--Aura_Font);
+        fill                               : #111111;
+    }
+
+    .aura-vp__scale {
+        fill                               : #444444;
+    }
+
+    .aura-sheets__desk[data-tool="note"] .aura-vp,
+    .aura-sheets__desk[data-tool="leader"] .aura-vp {
+        cursor                             : crosshair;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Notes and Leaders
+ * ----------------------------------------------------------------------------- */
+
+    .aura-note {
+        cursor                             : move;
+    }
+
+    .aura-note__hit {
+        fill                               : transparent;
+    }
+
+    .aura-note__leader-hit {
+        stroke                             : transparent;
+        stroke-width                       : 3;
+        stroke-linecap                     : round;
+    }
+
+    .aura-note__standin {
+        opacity                            : 0.55;                         /* <-- Typed, pale: waiting for the engine to write it */
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Selection
+ * ----------------------------------------------------------------------------- */
+
+    .aura-select-frame {
+        fill                               : none;
+        stroke                             : var(--Aura_Select);
+        stroke-dasharray                   : 4 3;                          /* <-- Paper millimetres; the width is set by the code from the zoom */
+    }
+
+    .aura-handle {
+        fill                               : #ffffff;
+        stroke                             : var(--Aura_Select);
+        cursor                             : pointer;
+    }
+
+    .aura-handle--nw, .aura-handle--se     { cursor: nwse-resize; }
+    .aura-handle--ne, .aura-handle--sw     { cursor: nesw-resize; }
+    .aura-handle--n,  .aura-handle--s      { cursor: ns-resize; }
+    .aura-handle--e,  .aura-handle--w      { cursor: ew-resize; }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Print
+ * ----------------------------------------------------------------------------- */
+
+    @media print {
+        .aura-vp__frame,
+        .aura-sheet__layer--overlay {
+            display                        : none;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

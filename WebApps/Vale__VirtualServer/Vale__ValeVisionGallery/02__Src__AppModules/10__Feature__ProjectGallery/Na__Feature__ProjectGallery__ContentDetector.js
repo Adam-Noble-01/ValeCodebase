@@ -22,6 +22,11 @@
 // 07-Oct-2026: hasVideoContent() for ValeVision Theia. The Gallery API puts
 // videoCount on every project record (the videos staff can watch in Theia).
 //
+// 30-Oct-2026: canUseAura() and canOpenAura() for ValeVision AURA, the pen and
+// wash drawings app: Managers and App Admins only for now (Adam: employees must
+// not see it yet). The card shortcut needs a 3D model too; the project page's
+// button only the level.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -55,6 +60,22 @@
     // ------------------------------------------------------------
     function hasVideoContent(projectData) {
         return !!projectData && Number(projectData.videoCount) > 0;         // <-- From the Gallery API (ValeShared__TheiaVideo__)
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | May This Person Use ValeVision AURA? (Managers and App Admins only, for now)
+    // ------------------------------------------------------------
+    // The shared sign-in's HasLevel('Management') passes AppAdmin and Management
+    // and refuses Employee and Affiliate. AURA and its API check again: hiding the
+    // link is not the lock.
+    // ------------------------------------------------------------
+    function canUseAura() {
+        return !!(window.ValeUserLogin && typeof window.ValeUserLogin.HasLevel === 'function' && window.ValeUserLogin.HasLevel('Management'));
+    }
+
+    function canOpenAura(projectData) {
+        return canUseAura() && has3DModelContent(projectData);              // <-- AURA extends a project's ValeVision 3D model
     }
     // ---------------------------------------------------------------
 

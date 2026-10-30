@@ -1,0 +1,31 @@
+{
+    "PainterlyNPR__InterfaceFolds__Config" : {
+        "PainterlyNPR__InterfaceFolds__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Folds, Info Bubbles and Section Switches",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Where the folds are remembered, the info and eye icons, and what switching a section off does to its controls.",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Folds__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__InterfaceFolds__Config__Folds"    : {
+            "Store" : "PainterlyNPR.Experiment01.Folds"
+        },
+
+        "PainterlyNPR__InterfaceFolds__Config__Icons"    : {
+            "Info" : "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"5.6\" r=\"2.1\" fill=\"currentColor\"/><path d=\"M9.2 10h4.6v8.6h2v2.4H8.4v-2.4h2v-6.2H9.2z\" fill=\"currentColor\"/></svg>",
+            "Eye"  : "<svg viewBox=\"320 392 384 240\" aria-hidden=\"true\"><path d=\"M344 512A193.5 193.5 0 0 1 680 512A193.5 193.5 0 0 1 344 512Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"40\" stroke-linejoin=\"round\"/><path d=\"M497.1 456A58 58 0 1 1 456.9 494A28.6 28.6 0 1 0 497.1 456Z\" fill=\"currentColor\"/><path class=\"PainterlyNPR__Section__Strike\" d=\"M380 610L644 414\" stroke=\"currentColor\" stroke-width=\"40\" stroke-linecap=\"round\"/></svg>"
+        },
+
+        "PainterlyNPR__InterfaceFolds__Config__Sections" : {
+            "Note" : "Off: a control's value while its section is switched off, when 0 would not mean off. Keep: controls a section's eye leaves alone. Skip: controls never switched off.",
+            "Off"  : {
+                "WashStrength" : 0,
+                "Vignette"     : 1,
+                "LineWeight"   : 1
+            },
+            "Keep" : ["ShadowLineWidth", "CloudSize", "CloudHeight", "CloudDrift", "CloudSoftness"],
+            "Skip" : ["SunAzimuth", "SunAltitude", "Discipline"]
+        }
+    }
+}

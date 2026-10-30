@@ -22,6 +22,14 @@
 #   projects NOT available for Aura unless I enable in the project form per
 #   project"). A record without it is off. The Gallery writes it; AURA only
 #   reads it (project_switched_on).
+# - AURA'S OWN SCENES (Adam, 30-Oct-2026: "make a ValeVision Aura Scene I can
+#   access but that isnt visible to anyone else"): folders laid out as projects
+#   in Vale__Projects__MasterLibrary/ValeAuraScenes__Library/<AuraScene__Name>/,
+#   beside the year folders, so the Gallery, ValeVision 3D and Theia never list
+#   them. Each record says who it opens for (auraSceneAudience): Management,
+#   everyone AURA lets in; or Owner, one account (auraSceneOwner, a USR code).
+#   project_folder finds them, so every route checks the audience, and a scene
+#   someone else owns answers as if it did not exist.
 # - A PROJECT'S DRAWING SET is user data in the Projects Master Library:
 #     <project>/ValeVision__AuraRender/UserData__AuraDrawings/<id>__AuraDrawingSet__.json
 #   written through ValeShared__Library__ (the _rev check and a kept revision on
@@ -33,6 +41,11 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.2.0
+# - AURA's own scenes (ValeAuraScenes__Library): project_folder finds them for
+#   their audience only, scene_folders lists them, project_public says which
+#   kind a folder is (project or scene) and who a scene is for.
+#
 # 30-Oct-2026 - Version 1.1.0
 # - project_switched_on: AURA opens only the projects switched on in the
 #   Gallery's Project Editor (auraEnabled).
@@ -48,6 +61,7 @@
 
 import functools
 import json
+import re
 import time
 from pathlib import Path
 
@@ -55,7 +69,8 @@ from flask import jsonify
 
 from ValeShared__Activity__ import Na__Activity__Record
 from ValeShared__Auth__ import NA__AUTH__DEFAULT_RANKS, Na__Auth__CurrentUser, Na__Auth__Level, Na__Auth__Ranks
-from ValeShared__Library__ import Na__Library__DisplayName, Na__Library__Find, Na__Library__ReadJson, Na__Library__Year
+from ValeShared__Library__ import (NA__LIBRARY__DIR, Na__Library__DisplayName, Na__Library__Find, Na__Library__ReadJson,
+                                   Na__Library__Year)
 
 # endregion -------------------------------------------------------------------
 
@@ -73,6 +88,10 @@ CONFIG_FILE              = APP_DIR / '02__Src__AppModules' / '02__AppData' / 'Na
 BUCKET                   = 'ValeVision__AuraRender'                               # <-- AURA's folder in each project
 SWITCH_KEY               = 'auraEnabled'                                          # <-- In the project record, ticked in the Gallery's Project Editor
 DRAWINGS_DIR             = 'UserData__AuraDrawings'
+SCENES_DIR               = 'ValeAuraScenes__Library'                              # <-- AURA's own scenes, beside the year folders: no other app lists them
+SCENE_ID                 = re.compile(r'^AuraScene__[A-Za-z0-9]{1,60}$')
+AUDIENCE_KEY             = 'auraSceneAudience'                                    # <-- In a scene's record: Management (everyone AURA lets in) or Owner
+OWNER_KEY                = 'auraSceneOwner'                                       # <-- The one account an Owner scene opens for (a USR code)
 CONFIG_TTL_S             = 10
 _CONFIG                  = {'at': 0.0, 'value': {}}
 
@@ -162,8 +181,40 @@ def user_code():
 # -----------------------------------------------------------------------------
 
 def project_folder(pid):
-    """The library folder of a project id, or None."""
+    """The library folder of a project id, or of one of AURA's own scenes the signed-in person may open; else None
+    (a scene someone else owns answers as if it did not exist)."""
+    pid = str(pid or '').strip()
+    if SCENE_ID.match(pid):
+        folder = scene_root() / pid
+        if (folder / f'ProjectData__{pid}__.json').is_file() and scene_open_to(project_record(folder), Na__Auth__CurrentUser()):
+            return folder
+        return None
     return Na__Library__Find(pid)
+
+
+def scene_root():
+    """AURA's own scenes: Vale__Projects__MasterLibrary/ValeAuraScenes__Library/<id>/, each laid out as a project."""
+    return NA__LIBRARY__DIR / SCENES_DIR
+
+
+def is_scene(folder):
+    return folder.parent.name == SCENES_DIR
+
+
+def scene_open_to(record, user):
+    """Who a scene opens for: everyone AURA lets in (Management), or its one owner (Owner)."""
+    if str(record.get(AUDIENCE_KEY) or 'Management') == 'Owner':
+        return bool(user) and bool(record.get(OWNER_KEY)) and user.get('code') == str(record.get(OWNER_KEY))
+    return True
+
+
+def scene_folders(user):
+    """The scenes this person may open, in name order."""
+    root = scene_root()
+    if not root.is_dir():
+        return []
+    return [f for f in sorted(root.iterdir()) if f.is_dir() and SCENE_ID.match(f.name)
+            and (f / f'ProjectData__{f.name}__.json').is_file() and scene_open_to(project_record(f), user)]
 
 
 def project_record(folder):
@@ -180,16 +231,20 @@ def project_switched_on(folder):
 
 
 def project_public(folder):
-    """What the page may know about the project: its id, number, name (the Gallery's), year."""
+    """What the page may know about the project: its id, number, name (the Gallery's), year; a scene says who it is for."""
     record = project_record(folder)
+    scene = is_scene(folder)
     return {
         'id'      : folder.name,
+        'kind'    : 'scene' if scene else 'project',
         'code'    : str(record.get('projectCode') or ''),
         'title'   : Na__Library__DisplayName(record, folder.name),
         'name'    : str(record.get('projectName') or folder.name),
         'address' : str(record.get('siteAddress') or record.get('projectAddress') or ''),
         'year'    : Na__Library__Year(folder),
         'type'    : str(record.get('ProjectType') or ''),
+        'audience': str(record.get(AUDIENCE_KEY) or 'Management') if scene else '',
+        'note'    : str(record.get('auraSceneNote') or '') if scene else '',
     }
 
 

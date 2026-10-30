@@ -1,0 +1,6 @@
+{
+    "projectName": "Example Cottage",
+    "auraEnabled": true,
+    "auraSceneAudience": "Management",
+    "auraSceneNote": "The pen and wash engine's demo cottage, for trying AURA's tools. Managers, directors and admins see it."
+}

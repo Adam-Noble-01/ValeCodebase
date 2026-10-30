@@ -1,0 +1,187 @@
+/* =============================================================================
+ * VALEVISION AURA - SCENE INDEX
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__SceneIndex__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Scene Index Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : /aura/ on its own: the grid of cards for the projects switched
+ *              on for AURA and AURA's own scenes (41__Feature__SceneIndex)
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - As ValeVision Theia's project index: a picture over the name and a line
+ *   of facts. A scene with no picture shows the brush; a project with no
+ *   Gallery thumbnail shows the cube. "Only you" sits on a scene nobody else
+ *   can open.
+ *
+ * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.0.0 (AURA 0.5.8)
+ * - Initial build.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Page
+ * -------------------------------------------------------------------------- */
+
+    .aura-index {
+        flex                               : 1;
+        min-height                         : 0;
+        overflow-y                         : auto;
+        display                            : flex;
+        flex-direction                     : column;
+        width                              : 100%;
+        max-width                          : 1240px;
+        margin                             : 0 auto;
+        padding                            : 32px var(--Aura_Gutter) 0;
+        box-sizing                         : border-box;
+    }
+
+    .aura-index__title {
+        margin                             : 0 0 6px;
+        font-size                          : var(--Aura_FontSize_Title);
+        font-weight                        : var(--Aura_FontSemiBold);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-index__lead {
+        margin                             : 0 0 24px;
+        max-width                          : 720px;
+        font-size                          : var(--Aura_FontSize_Text);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-index__grid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(280px, 1fr));
+        gap                                : var(--Aura_Gutter);
+    }
+
+    .aura-index__empty {
+        grid-column                        : 1 / -1;
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Text);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-index__footer {
+        margin-top                         : auto;
+        padding                            : 32px 0 20px;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextFaint);
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | A Card
+ * -------------------------------------------------------------------------- */
+
+    .aura-index__card {
+        display                            : flex;
+        flex-direction                     : column;
+        overflow                           : hidden;
+        background                         : var(--Aura_Surface);
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_Radius);
+        box-shadow                         : var(--Aura_Shadow);
+        color                              : var(--Aura_Text);
+        text-decoration                    : none;
+        transition                         : border-color var(--Aura_Fast), transform var(--Aura_Fast);
+    }
+
+    .aura-index__card:hover {
+        border-color                       : var(--Aura_Select);
+        transform                          : translateY(-2px);
+    }
+
+    .aura-index__card:focus-visible {
+        outline                            : 2px solid var(--Aura_Focus);
+        outline-offset                     : 2px;
+    }
+
+    .aura-index__thumb {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        aspect-ratio                       : 16 / 10;
+        background-color                   : var(--Aura_SurfaceMuted);
+        background-size                    : cover;
+        background-position                : center;
+        color                              : var(--Aura_TextFaint);
+    }
+
+    .aura-index__card--scene .aura-index__thumb {
+        background-color                   : var(--Aura_Stage);
+    }
+
+    .aura-index__thumb-icon svg {
+        width                              : 48px;
+        height                             : 48px;
+    }
+
+    .aura-index__tag {
+        position                           : absolute;
+        top                                : 10px;
+        left                               : 10px;
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 6px;
+        padding                            : 4px 10px 4px 8px;
+        border-radius                      : 999px;
+        background                         : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+        font-size                          : var(--Aura_FontSize_Small);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-index__tag svg {
+        width                              : 14px;
+        height                             : 14px;
+    }
+
+    .aura-index__text {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+        padding                            : 14px 16px 16px;
+    }
+
+    .aura-index__name {
+        font-size                          : var(--Aura_FontSize_Heading);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-index__meta {
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-index__note {
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextFaint);
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Narrow Screens
+ * -------------------------------------------------------------------------- */
+
+    @media (max-width: 640px) {
+        .aura-index {
+            padding                        : 20px 16px 0;
+        }
+
+        .aura-index__grid {
+            grid-template-columns          : 1fr;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------ */

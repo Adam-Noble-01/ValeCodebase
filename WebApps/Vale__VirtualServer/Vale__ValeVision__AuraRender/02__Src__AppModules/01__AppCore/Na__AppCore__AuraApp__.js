@@ -12,16 +12,22 @@
 // CREATED    : 30-Oct-2026
 //
 // DESCRIPTION:
-// - ONE WAY IN: /aura/?project=<library id>, from a project in ValeVision
-//   Gallery, signed in with the shared Vale sign-in. Management and AppAdmin
-//   only for now (Adam, 30-Oct-2026): anyone else is told plainly and sent back
-//   to the Gallery; every API route refuses them too.
+// - THE WAY IN: /aura/?project=<library id>, from a project in ValeVision
+//   Gallery or from a card on /aura/ itself (0.5.8: the projects switched on,
+//   then AURA's own scenes, 41__Feature__SceneIndex), signed in with the shared
+//   Vale sign-in. Management and AppAdmin only for now (Adam, 30-Oct-2026):
+//   anyone else is told plainly and sent back to the Gallery; every API route
+//   refuses them too.
+// - AURA'S OWN SCENES (0.5.8, ids AuraScene__<Name>): Example Cottage and Test,
+//   no project behind them. Their crumbs lead back to /aura/, and they draw the
+//   demo cottage without the "no whitecard" note.
 // - ONLY SWITCHED-ON PROJECTS: a project opens once it is ticked "Available in
 //   ValeVision AURA" in the Gallery's Project Editor. The API refuses the rest
 //   (403, notSwitchedOn) and the page says why.
-// - EVERY PROJECT OPENS THE ENGINE'S DEMO SCENE (the cottage) until ValeVision
-//   Cloud Sync exports a project's own AURA model; the drawing set (sheets,
-//   viewports, notes, the engine's settings, saved views) is the project's own.
+// - A PROJECT DRAWS ITS OWN MODEL (0.5.4: its AURA scene, made from ValeVision
+//   3D's whitecard on its first open), else the engine's demo cottage; the
+//   drawing set (sheets, viewports, notes, the engine's settings, saved views)
+//   is the project's own.
 // - THE ENGINE is booted once, on the 3D Environment's canvas, whichever tab
 //   opens first: the sheets' pictures are drawn by the same engine.
 // - Tabs: the 3D Environment pauses the sheets' render queue while it has the
@@ -30,6 +36,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.5.8
+// - /aura/ on its own shows the scene index (cards like Theia's) instead of
+//   "Open AURA from a project". AURA's own scenes get crumbs back to it, no
+//   ValeVision 3D menu item and no "no whitecard" note.
+//
 // 30-Oct-2026 - Version 0.4.8
 // - Developer tools in the avatar menu (App Admins only): Download a
 //   parameter dump, every setting the page holds in one JSON file
@@ -72,6 +83,7 @@
     import { Na__RefreshGuard__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__RefreshGuard__.js';
     import { Na__History__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__History__.js';
     import { Na__ParameterDump__Download } from './Na__AppCore__ParameterDump__.js';
+    import { Na__SceneIndex__Render } from '../41__Feature__SceneIndex/Na__SceneIndex__Page__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -82,6 +94,8 @@
 
     const Na__Aura__LOGO     = '/AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
     const Na__Aura__GALLERY  = '/project-gallery/';
+    const Na__Aura__HOME     = './';                                             // <-- /aura/ on its own: the scene index
+    const Na__Aura__SCENE_ID = /^AuraScene__/;                                   // <-- AURA's own scenes (no project behind them)
     const Na__Aura__Params   = new URLSearchParams(window.location.search);
 
 // endregion -------------------------------------------------------------------
@@ -133,6 +147,17 @@
         const crumbs = document.getElementById('auraCrumbs');
         if (!crumbs) return;
         Na__Dom__Clear(crumbs);
+        if (project.kind === 'scene') {                                          // <-- AURA's own scene: back to /aura/, not the Gallery
+            const home = Na__Dom__El('a', 'aura-crumbs__link', null, { href: Na__Aura__HOME });
+            home.appendChild(Na__Dom__Icon('back', 'aura-crumbs__chevron'));
+            home.appendChild(Na__Dom__El('strong', null, 'AURA scenes'));
+            crumbs.appendChild(home);
+            crumbs.appendChild(Na__Dom__El('span', 'aura-crumbs__sep', '/'));
+            crumbs.appendChild(Na__Dom__El('span', 'aura-crumbs__current', project.title));
+            if (project.audience === 'Owner') crumbs.appendChild(Na__Dom__El('span', 'aura-crumbs__code', 'Only you'));
+            crumbs.hidden = false;
+            return;
+        }
         const gallery = Na__Dom__El('a', 'aura-crumbs__link', null, { href: Na__Aura__GALLERY });
         gallery.appendChild(Na__Dom__Icon('back', 'aura-crumbs__chevron'));
         gallery.appendChild(Na__Dom__El('strong', null, 'ValeVision Gallery'));
@@ -228,6 +253,7 @@
                     { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             }
             else if (error.status === 403) Na__Aura__Message('Not available', error.message, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
+            else if (error.status === 404 && Na__Aura__SCENE_ID.test(projectId)) Na__Aura__Message('Scene not found', `There is no AURA scene "${projectId}" open to you.`, { label: 'Back to AURA scenes', href: Na__Aura__HOME });
             else if (error.status === 404) Na__Aura__Message('Project not found', `There is no project "${projectId}" in the library.`, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             else Na__Aura__Message('AURA could not open this project', error.message, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             return;
@@ -265,7 +291,9 @@
         Na__Tabs__Mount(document.getElementById('auraTabs'), Na__Aura__ShowTab);
         Na__Tabs__Open(Na__Tabs__FromAddress());
         Na__Aura__Loader.hide();
-        Na__EngineHost__SceneNotes(projectId, scene);                            // <-- A newer whitecard, or no scene: a note once the app is up
+        if (!(project.kind === 'scene' && scene && scene.Reason === 'noWhitecard')) {
+            Na__EngineHost__SceneNotes(projectId, scene);                        // <-- A newer whitecard, or no scene: a note once the app is up (an AURA scene is the cottage on purpose)
+        }
     }
     // ------------------------------------------------------------
 
@@ -286,7 +314,8 @@
             required  : true,
             menuItems : [
                 { label: 'Open ValeVision Gallery', onClick: () => { window.location.href = Na__Aura__GALLERY; } },
-                ...(projectId ? [{ label: 'Open this project in ValeVision 3D', onClick: () => { window.location.href = `/valevision/?project=${encodeURIComponent(projectId)}`; } }] : []),
+                ...(projectId && !Na__Aura__SCENE_ID.test(projectId) ? [{ label: 'Open this project in ValeVision 3D', onClick: () => { window.location.href = `/valevision/?project=${encodeURIComponent(projectId)}`; } }] : []),
+                ...(projectId ? [{ label: 'All AURA scenes', onClick: () => { window.location.href = Na__Aura__HOME; } }] : []),
                 { label: 'Save the drawing set now', minLevel: 'Management', onClick: () => Na__Persistence__Save() },
                 { label: 'Download a parameter dump', adminOnly: true, section: 'Developer tools', onClick: () => Na__ParameterDump__Download() }   // <-- Every setting, one JSON file (0.4.8)
             ],
@@ -299,10 +328,9 @@
                         { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
                     return;
                 }
-                if (!projectId) {
-                    Na__Aura__Message('Open AURA from a project',
-                        'AURA draws a project\'s sheets. Open a project in ValeVision Gallery and choose AURA from it.',
-                        { label: 'Open ValeVision Gallery', href: Na__Aura__GALLERY });
+                if (!projectId) {                                                // <-- /aura/ on its own: the projects switched on, then AURA's own scenes (0.5.8)
+                    Na__Aura__Loader.hide();
+                    await Na__SceneIndex__Render(document.getElementById('auraRoot'));
                     return;
                 }
                 await Na__Aura__OpenProject(projectId);

@@ -1,5 +1,44 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.8, 30-Oct-2026: AURA Scenes on the Landing Page (Example Cottage and Test)
+
+**Asked by Adam:** "make a ValeVision Aura Scene I can access but that isnt visible to anyone else with the cottage scene
+for testing / show aura scenes here like TheiaVideo and on my version and manager director or admin level they have the
+examplke cottage scene, create a third scene too called test which ill use as a destructivce scene for mre experimental
+things". **His calls:** the Example Cottage for managers, directors and admins; Test for him alone; Test starts from the
+demo cottage; the landing page lists the projects switched on, then the scenes.
+
+**Built:**
+- **The landing page** (`/aura/` on its own; `41__Feature__SceneIndex/Na__SceneIndex__Page__.js`,
+  `Na__UiFeature__Styles__SceneIndex__.css`): cards like Theia's project index, in place of "Open AURA from a project".
+  Every project switched on for AURA comes first, with the Gallery's thumbnail, its number, its sheets, when its drawing
+  set was last saved, and a word when it has no whitecard yet. AURA's own scenes follow, with a brush for a picture and
+  "Only you" on one nobody else can open. A card opens `?project=<id>`.
+- **AURA's own scenes** (`Vale__Projects__MasterLibrary/ValeAuraScenes__Library/`, with its README): folders laid out as
+  projects beside the year folders, so the Gallery, ValeVision 3D and Theia never list them.
+  - **Example Cottage** (`AuraScene__ExampleCottage`, audience Management: everyone AURA lets in).
+  - **Test** (`AuraScene__Test`, audience Owner: Adam's account alone).
+  - Each draws the engine's demo cottage into its own drawing set, so wrecking Test never touches the example.
+- **The API:** `GET api/projects` (`AuraRender__Api__Index__` 1.0.0) gives the cards. `AuraRender__Api__Core__` 1.2.0's
+  `project_folder` finds a scene only for its audience, so every route (the project, its drawings, its scene) checks
+  it, and a scene someone else owns answers 404 as if it did not exist. `wsgi.py` 1.3.0 registers the index.
+- **The page** (`Na__AppCore__AuraApp__.js`): a scene's crumbs lead back to **AURA scenes**; it has no "Open this
+  project in ValeVision 3D" item and no "no whitecard" note. The avatar menu gains **All AURA scenes** wherever a
+  project is open. `AuraConfig__App__Version` 0.5.8.
+
+**Checked here (no browser):** in a sandbox library, with Flask's test client:
+- Adam's cards are Thrower, Example Cottage and Test.
+- A manager's are Thrower and Example Cottage, and every Test route answers that manager 404 (the project, its
+  drawings, its scene, a save).
+- An employee is refused (403), and a project not switched on stays off.
+- Adam's save of Test writes Test's own drawing set and leaves the cottage's folder untouched.
+- Both page modules parse.
+
+**Not checked:** a browser (Adam tests).
+
+**Live:** needs `server-api` (Core, Index, wsgi) and then a restart of `vale@ValeVision__AuraRender`, then `aura` (this
+version) and `projects` (the two scene records; their drawing sets are made on the server by the first save).
+
 ## Version 0.5.7, 30-Oct-2026: The Engine's Right-Click Menu and Move Tool in the 3D Environment
 
 **Asked by Adam:** "Update Aura so it has the same right click context menu and options / Update both aura and the NPR

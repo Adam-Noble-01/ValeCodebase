@@ -11,6 +11,7 @@ ValeVision 3D: a Whitecard or MaxModel is carried into AURA and drawn by the AUR
 |---|---|
 | **Managers and App Admins** (the shared Vale sign-in) | `/aura/?project=<library id>`, from ValeVision Gallery, on the projects switched on one by one: the AURA icon on the project's card and **Open in AURA** on its page |
 | **Which projects** | Only those ticked **Available in ValeVision AURA** in the Gallery's Project Editor (`auraEnabled` in the project record; Adam, 30-Oct-2026). Every project is off until ticked. The Gallery shows no shortcut to the rest, and every API route refuses them (403, `notSwitchedOn`) |
+| **AURA's own scenes** (0.5.8) | `/aura/` on its own shows a card for every project switched on, then AURA's own scenes (`Vale__Projects__MasterLibrary/ValeAuraScenes__Library`): **Example Cottage** for managers, directors and App Admins, and **Test** for Adam alone. A scene someone else owns is never listed for them, and every route answers them 404 |
 | **Employees, Affiliates, clients** | Nothing yet (Adam, 30-Oct-2026). The Gallery never shows them the link, the page tells them plainly, and every API route refuses them. One config value opens it later (`AuraConfig__Access__MinimumLevel`) |
 
 ## The Arrangement: One Core Library, Two Wrappers
@@ -73,9 +74,13 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 | `30__System__Annotations` | Handwritten notes and leader notes on the sheet |
 | `31__System__Handwriting` | The handwriting client, the writing style and the technical pens (with their real-size metric), the studio's hand-drawn leader arrows, the WebAssembly engine, and the Python reference it was ported from |
 | `40__Feature__DrawingSet` | The drawing set document, saving it, the refresh guard, and undo and redo (with its key map `Na__Hotkeys__DrawingSet__.json`) |
+| `41__Feature__SceneIndex` | `/aura/` on its own: the cards for the projects switched on and AURA's own scenes (0.5.8) |
 
 ## Using It
 
+- **The landing page** (0.5.8): `/aura/` on its own lists every project switched on for AURA, then
+  AURA's own scenes: **Example Cottage** for managers, directors and admins, and **Test**, Adam's alone,
+  for experiments that may break it. Both draw the engine's demo cottage, each in its own drawing set.
 - **The project's own model** (0.5.4): AURA draws the project's whitecard, not the engine's demo cottage. The first time a
   project opens, AURA copies ValeVision 3D's whitecard GLBs into the project's AURA folder (its scene, the "aura file")
   and draws from that copy, so a later SketchUp sync never changes a finished drawing. When ValeVision 3D has a newer

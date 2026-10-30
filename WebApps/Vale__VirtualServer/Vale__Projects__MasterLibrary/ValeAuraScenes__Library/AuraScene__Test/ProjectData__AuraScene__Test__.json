@@ -1,0 +1,7 @@
+{
+    "projectName": "Test",
+    "auraEnabled": true,
+    "auraSceneAudience": "Owner",
+    "auraSceneOwner": "USR00000001",
+    "auraSceneNote": "Adam's scene for experiments that may break it. Starts from the demo cottage. Nobody else sees it."
+}

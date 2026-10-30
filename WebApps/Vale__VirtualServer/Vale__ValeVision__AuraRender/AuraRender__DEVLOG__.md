@@ -121,7 +121,10 @@ the difference:
     `AuraConfig__Viewport__RedrawSettleMs` (400 ms);
   - meanwhile its last picture stands in, pale (`.aura-vp__picture--stale`), never an empty frame.
 - **The sheet** (`Na__Viewports__Editor__.js` 2.1.0): a scaled picture sits at its own size about the frame's middle, a
-  3D one fits its frame.
+  3D one fits its frame; a redraw that failed says "This view could not be drawn", never a pale stand-in.
+- **Went live early:** another session's push of the shared working folder (17:25:30 UTC) carried this version to
+  production before it was marked ready; the code was complete by then (the repoint was its last step), and the
+  failed-redraw message above came after it.
 
 **Checked:** PainterlyNPR's module test (117 modules, 686 imports) and config test pass. The pin's `--check` passes, and
 the engine's Init is unchanged from v0.8.7. Every AURA module edited parses. AURA's 617 named imports resolve against

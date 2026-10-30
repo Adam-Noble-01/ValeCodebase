@@ -123,8 +123,9 @@
         const inner = Na__Dom__Svg('g', { 'clip-path': `url(#aura-clip-${id})`, class: 'aura-vp__inner' }, g);
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, fill: 'transparent' }, inner);   // <-- Something to press while it draws (clear: the sheet's paper shows through)
 
-        const picture = Na__RenderQueue__Picture(viewport, doc);
         const failure = Na__ViewportEditor__State.failures.get(id);
+        const found = Na__RenderQueue__Picture(viewport, doc);
+        const picture = found && found.stale && failure ? null : found;         // <-- A redraw that failed says so, never a pale stand-in
         if (picture) {
             const image = Na__Dom__Svg('image', {}, inner);
             if (Na__Views__IsScaled(viewport)) {                                // <-- True scale: the picture at its own size about the frame's middle

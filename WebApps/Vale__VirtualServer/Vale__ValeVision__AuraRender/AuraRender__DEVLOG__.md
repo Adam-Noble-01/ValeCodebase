@@ -20,6 +20,10 @@ size they were given.
 **Checked here (no browser):** all 62 of AURA's references to the engine resolve in the new pin; `--check` finds it
 untouched and the same as the repository. **Not checked:** a drop in AURA (Adam tests).
 
+**Live:** committed as 8dbdbf90 and pushed 30-Oct-2026 19:14 UTC (stamp 20261030-191403: 358 added, 4 replaced, nothing
+deleted). On the server: `index.html` names v0.8.14, the worker 2026-10-30-16, the pin's index holds AutoRotate false for 6
+assets and true for 22, the host recomputes the camera; `/aura/` answers 200.
+
 ## Fix, 30-Oct-2026: Assets Dropped at 45 Degrees in the 3D Environment (No App Version of Its Own)
 
 **Reported by Adam:** "Why do the assets insert at a 45° angle? I noticed this with the bench as well ... They insert

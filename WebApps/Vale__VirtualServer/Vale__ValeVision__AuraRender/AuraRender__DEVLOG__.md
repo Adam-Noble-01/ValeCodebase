@@ -59,8 +59,14 @@ loading) and "Oak porch 2400 mm x 1200 mm" (0.2 s) through the API's own path.
 
 **Not yet:** see the README's Not Yet list.
 
-**Deployed (Adam: "Tested, push it live"):** pushed 30-Oct-2026 11:59 UTC (`aura`, `server-api`, `valevisiongallery`,
-`commonassets`; nothing deleted); `vale@ValeVision__AuraRender` enabled on 8006 (Flask only), health 200 and every
-project route 401 signed out. The `/aura/` address goes live with Adam's nginx Apply (tab 03).
+**Live (Adam: "Tested, push it live"):** pushed 30-Oct-2026 11:59 UTC (`aura`, `server-api`, `valevisiongallery`,
+`commonassets`; nothing deleted); `vale@ValeVision__AuraRender` enabled on 8006 (Flask only); Adam applied nginx at
+12:03 UTC (hash `760db8942de3`). Checked through Cloudflare signed out: `/aura/` 200, `api/health` and `api/config` 200,
+the project and handwriting routes 401, the manifest and the Gallery icon 200.
+
+**PainterlyNPR v0.6.0 (another session, same day):** an asset library is being built into the engine, uncommitted. That
+session confirmed it keeps what AURA's host relies on: `Load()` with no arguments, Rendered as the default work mode, no
+new DOM lookups in the render path, `State.Assets` additive, no export renamed, and the scene buffer kept working for a
+host that does not set `Gpu.Buffers.Scene`. Its DEVLOG "Wrappers" line lists what the next sync needs.
 
 (Uncommitted in git, waiting on Adam.)

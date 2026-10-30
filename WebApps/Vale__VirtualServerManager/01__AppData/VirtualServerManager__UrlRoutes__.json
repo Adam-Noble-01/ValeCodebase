@@ -110,8 +110,8 @@
         }
     ],
     "Applied": {
-        "Hash": "7bc76aff4b54",
-        "Utc": "2026-10-28T11:55:28Z",
+        "Hash": "760db8942de3",
+        "Utc": "2026-10-30T12:03:35Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
@@ -120,6 +120,7 @@
             "/project-gallery/": "200",
             "/help/": "200",
             "/theia/": "200",
+            "/aura/": "200",
             "/Server__Api/": "404",
             "/Server__DeveloperTools/": "404",
             "/Server__UserAccountData/": "404",

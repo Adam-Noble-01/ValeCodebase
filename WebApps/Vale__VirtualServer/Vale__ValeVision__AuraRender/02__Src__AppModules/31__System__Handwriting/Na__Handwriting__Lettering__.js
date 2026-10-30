@@ -37,10 +37,21 @@
 //   on the page from the words (the capitals engine needs no model), so the
 //   titles never wait, never stall and never show typed. 'Joined' keeps the
 //   model's hand, through the queue and this device's store, as in 1.0.0.
+// - ONE PEN FOR THE WHOLE SHEET (1.2.0, AURA 0.5.10; Adam: "it all looks like
+//   it was written by the same person with the same pen at the same time"):
+//   the lettering writes as a new note does, the Example Cottage's leader note
+//   being the standard: the Steady hand, capitals, the 0.18 mm M018 and the
+//   note's Forest ink (AuraConfig__Handwriting__Lettering Ink, an
+//   Annotation__Inks key), never a black of its own.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0
+// - The house hand (AURA 0.5.10): the Steady hand, M018 for every entry and
+//   the notes' Forest ink by default (Na__Lettering__Colour); a caller's
+//   Colour still wins.
+//
 // 30-Oct-2026 - Version 1.1.0
 // - Architect's capitals, drawn at once (AURA 0.4.9).
 //
@@ -58,7 +69,7 @@
     import { Na__Dom__Svg } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__HandwritingStyle__Effective, Na__HandwritingStyle__Pens } from './Na__Handwriting__Style__.js';
-    import { Na__Handwriting__QueueRequest, Na__Handwriting__IsCapitals, Na__Handwriting__Letter } from './Na__Handwriting__Client__.js';
+    import { Na__Handwriting__QueueRequest, Na__Handwriting__IsCapitals, Na__Handwriting__Letter, Na__Handwriting__Ink } from './Na__Handwriting__Client__.js';
     import { Na__Layout__REVISION } from './02__Engine__Wasm/Na__HandwritingEngine__Layout__.js';
 
 // endregion -------------------------------------------------------------------
@@ -164,7 +175,7 @@
     function Na__Lettering__Request(text, sizeMm, widthMm) {
         const config = Na__AppConfig__Get('Handwriting__Lettering', {});
         const letters = config.Letters === 'Joined' ? 'Joined' : 'Capitals';
-        const style = Na__HandwritingStyle__Effective({ Annotation__HandKey: config.Hand || 'Careful', Annotation__Style: Object.assign({}, config.Style || {}, { MarginMm: 0 }) });
+        const style = Na__HandwritingStyle__Effective({ Annotation__HandKey: config.Hand || Na__AppConfig__Get('Handwriting__DefaultHand', 'Steady'), Annotation__Style: Object.assign({}, config.Style || {}, { MarginMm: 0 }) });
         return {
             text     : text,
             size     : Math.round(Math.min(12, Math.max(2, sizeMm)) * 100) / 100,
@@ -267,10 +278,19 @@
         const tall = spec.HeightMm && ink.HeightMm > spec.HeightMm ? spec.HeightMm / ink.HeightMm : 1;
         const k = Math.min(1, wide, tall);                                       // <-- Smaller to fit its box, never larger
         const g = Na__Dom__Svg('g', { transform: `translate(${spec.X.toFixed(3)} ${spec.Y.toFixed(3)})${k < 1 ? ` scale(${k.toFixed(4)})` : ''}`,
-                                      fill: 'none', stroke: spec.Colour || config.Colour || '#111111', 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+                                      fill: 'none', stroke: spec.Colour || Na__Lettering__Colour(), 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
                                       class: 'aura-lettering' }, parent);
         ink.Paths.forEach((p) => Na__Dom__Svg('path', { d: p.D, 'stroke-width': ((ink.Relative ? p.W * pen.WidthMm : p.W) / k).toFixed(4) }, g));   // <-- / k: the pen keeps its true width
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Lettering's Ink Colour: the notes' ink (AuraConfig__Handwriting__Lettering Ink, else a new note's)
+    // ------------------------------------------------------------
+    function Na__Lettering__Colour() {
+        const config = Na__AppConfig__Get('Handwriting__Lettering', {});
+        return config.Colour || Na__Handwriting__Ink(config.Ink || Na__AppConfig__Get('Annotation__DefaultInk', 'Forest'));
     }
     // ------------------------------------------------------------
 
@@ -294,6 +314,7 @@
     export {
         Na__Lettering__Draw,
         Na__Lettering__Size,
+        Na__Lettering__Colour,
         Na__Lettering__Request
     };
 

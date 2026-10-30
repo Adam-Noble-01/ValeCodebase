@@ -36,6 +36,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.5.10
+// - One hand for every word on the sheet: the Example Cottage's leader note
+//   is the standard (the Steady hand with StepsPerChar 150 and MinNeatness
+//   0.75, capitals, M018, Forest ink), for new notes, the title block and the
+//   viewport titles (config only here; see the DEVLOG).
+//
 // 30-Oct-2026 - Version 0.5.9
 // - A sun slider is the open scene's (Na__Environment3d__SceneSun__ keeps it):
 //   the engine's settings are not saved again for it.

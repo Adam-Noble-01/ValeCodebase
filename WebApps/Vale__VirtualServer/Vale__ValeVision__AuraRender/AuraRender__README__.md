@@ -173,6 +173,10 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   moment a line, shown line by line as it is written; the first on a device waits while the 15 MB model is fetched,
   once). The model cannot write capitals, so in a joined-up note anything typed in capitals is drawn in capitals.
   The title block's entries and the viewport titles are lettered in capitals too.
+- **One hand for the whole sheet** (0.5.10): every word on the page is written as the Example Cottage's leader note
+  is, so it reads as one person with one pen: the Steady hand, capitals, the 0.18 mm M018 and Forest ink. New notes
+  start that way; the title block's entries and the viewport titles always write that way (a viewport title at a
+  note's 4.5 mm height).
 - **Pens:** a note and its leader are drawn with a STAEDTLER Mars matic 700 technical pen, one width throughout:
   0.13, 0.18 (the default, the lettering pen), 0.25 or 0.35 mm, the same four as PainterlyNPR's linework. The sheet
   is drawn in paper millimetres, so the pen is its true width when the sheet prints at 100% on its own paper; the

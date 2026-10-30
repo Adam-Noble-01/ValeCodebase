@@ -27,12 +27,17 @@
 //   the titleblock and viewports not text"): each entry and revision is
 //   written by the handwriting engine in the lettering hand and pen
 //   (31__System__Handwriting/Na__Handwriting__Lettering__.js), kept on the
-//   device, typed until written; the title and drawing number in the heavier
-//   pen. The labels and Vale's artwork are the printed form and stay printed.
+//   device, typed until written, in the same hand, pen and ink as the notes
+//   (AURA 0.5.10: the Example Cottage's leader note is the standard). The labels and Vale's artwork are the printed form and stay printed.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.5.10)
+// - The entries take the notes' ink (the lettering's colour) instead of
+//   black; the title and drawing number keep the lettering's EmphasisPen,
+//   which is now the same 0.18 mm M018.
+//
 // 30-Oct-2026 - Version 1.1.0 (AURA 0.3.4)
 // - The entries and revisions are handwritten (the lettering module), the
 //   typed words standing in until each is written; the column redraws itself
@@ -146,8 +151,7 @@
             SizeMm   : Na__Lettering__Size(size),
             OneLine  : oneLine,
             PenKey   : emphasis ? lettering.EmphasisPen : lettering.Pen,
-            Colour   : Na__TitleBlock__LINE,
-            Channel  : 'titleblock'
+            Channel  : 'titleblock'                                       // <-- No Colour: the notes' ink, as every word on the sheet (1.2.0)
         }, typed, Na__TitleBlock__Redraw);
     }
     // ------------------------------------------------------------

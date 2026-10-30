@@ -32,6 +32,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.2 (AURA 0.5.10)
+// - A viewport's title is written as a note is: a note's height
+//   (Annotation__DefaultSizeMm), the notes' ink and the same M018 pen.
+//
 // 30-Oct-2026 - Version 2.1.1 (AURA 0.5.9)
 // - A scene made of the 3D Environment's view takes its sun with the camera
 //   and points (Na__EngineHost__EnvironmentSun); a found or made one has its
@@ -89,7 +93,7 @@
     import { Na__Views__IsScaled, Na__Views__Title, Na__Views__ScaleLabel, Na__Views__MaxScaledFrame, Na__Views__Pan, Na__Views__Scene, Na__Views__ScenesUsing } from './Na__Viewports__Views__.js';
     import { Na__RenderQueue__Picture, Na__RenderQueue__Request } from './Na__Viewports__RenderQueue__.js';
     import { Na__ViewportPoints__Place } from './Na__Viewports__ArtDirection__.js';
-    import { Na__Lettering__Draw, Na__Lettering__Size } from '../31__System__Handwriting/Na__Handwriting__Lettering__.js';
+    import { Na__Lettering__Draw } from '../31__System__Handwriting/Na__Handwriting__Lettering__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -179,11 +183,10 @@
                 X        : f.X,
                 Y        : f.Y + f.HeightMm + gap,
                 WidthMm  : Math.max(f.WidthMm, 80),                             // <-- A title may run past a narrow frame, as the typed one did
-                SizeMm   : Na__Lettering__Size(size),
+                SizeMm   : Na__AppConfig__Get('Annotation__DefaultSizeMm', 4.5),   // <-- A note's height: the same hand at the same size (2.1.2)
                 OneLine  : true,
-                PenKey   : Na__AppConfig__Get('Handwriting__Lettering', {}).EmphasisPen,   // <-- The heavier pen: the typed title was bold
-                Colour   : '#111111',
-                Channel  : 'viewports'
+                PenKey   : Na__AppConfig__Get('Handwriting__Lettering', {}).EmphasisPen,   // <-- Where the typed title was bold: the same M018 since AURA 0.5.10
+                Channel  : 'viewports'                                  // <-- No Colour: the notes' ink
             }, typed, () => { if (Na__AppState__Data.tab !== 'environment') Na__Surface__RedrawLayer('viewports'); });
         }
         return g;

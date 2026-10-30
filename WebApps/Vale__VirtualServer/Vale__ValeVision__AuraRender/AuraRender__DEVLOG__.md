@@ -1,5 +1,34 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.10, 30-Oct-2026: One Hand for Every Word on the Sheet
+
+**Asked by Adam:** "Look at the annotation in the demo cottage in Aura. I want you to make the standard leader text always
+match those parameters ... Use that same style in the title block and in the drawing titles as well ... so it all looks
+like it was written by the same person with the same pen at the same time."
+
+**The standard, read from the server's drawing set** (`AuraScene__ExampleCottage`, `_rev` 54, its one leader note
+"Handmade clay plain tiles"): 4.5 mm, Left, 70 mm wide, Forest ink, the Steady hand, Capitals, the M018 pen, and its own
+style `StepsPerChar` 150 and `MinNeatness` 0.75 (everything else the Steady hand's and the studio's defaults:
+Neatness 1.1, Variation 0.3, Tries 4, LineSpacing 1.35, Slant 0.026, Wave 0.022, Tilt 0.18, PenMode Technical).
+
+**Built:**
+- **The Steady hand carries the two settings** (`AuraConfig__Handwriting__Hands`), so a new note (already 4.5 mm, Forest,
+  Steady, Capitals, M018 by default) now writes exactly as the cottage's note with no own style. The cottage note's own
+  style equals its hand's now, so its ink key is unchanged and it is not written again. Any other note on the Steady
+  hand with no own settings of these two takes the standard and is lettered again (capitals: at once, same seed).
+- **The lettering** (`AuraConfig__Handwriting__Lettering`; `Na__Handwriting__Lettering__.js` 1.2.0): the Steady hand
+  instead of the Careful hand, no own `Tries` 8, `EmphasisPen` M018 instead of M025, and `Ink: "Forest"` (an
+  `Annotation__Inks` key, `Na__Lettering__Colour`) instead of `#111111`.
+- **The title block** (`Na__DrawingSheets__TitleBlock__.js` 1.2.0) and **viewport titles** (`Na__Viewports__Editor__.js`
+  2.1.2) no longer pass a black of their own; a viewport title is written at a note's height (`Annotation__DefaultSizeMm`,
+  4.5 mm, was 4.4 mm from the 4 mm typed size). The title block keeps its cell sizes (3.4 mm typed x 1.1 = 3.74 mm), as
+  its 60 mm column is drawn for them. The printed form (labels, lines, Vale's artwork) stays black.
+
+**Checked here:** the four modules parse (`node --check`), the config is valid JSON and both values sit inside their
+controls' ranges. Not run in a browser (Adam tests).
+
+**Live:** `aura` (page only, no API change).
+
 ## Version 0.5.9, 30-Oct-2026: Each Scene Keeps Its Own Sun
 
 **Asked by Adam:** "each scene when saved IS NOT SAVING each of the different scenes' sun location and what this means

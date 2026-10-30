@@ -1,0 +1,264 @@
+{
+    "DrawingSheets__KeyMappings__Description": "The sheet tabs' navigation: every mouse, wheel, keyboard and touch binding that moves a drawing sheet in AURA, in the shape of ValeVision 3D's Layout Editor key map (51__System__LayoutEditor/03__Core__Config/Na__Hotkeys__DrawingTabs__.json), whose navigation it copies. Nothing in the control modules is bound to a fixed button or key: a binding changes here. Each binding carries an Id, a Label and an Enabled flag. The 3D Environment's keys are the engine's (PainterlyNPR 74__Camera__Navigation) and act only on that tab; these act only on a sheet tab.",
+    "DrawingSheets__KeyMappings__SchemaVersion": 1,
+    "DrawingSheets__KeyMappings__Notes": [
+        "Buttons are named Left, Middle and Right (mouse button 0, 1 and 2).",
+        "Modifiers are named Ctrl, Shift, Alt, Meta and Space. Space is the held space bar, tracked by the PC controls module.",
+        "ModifierMatch Exact means the listed modifiers must be the only ones held. ModifierMatch Any ignores modifiers entirely. ModifierMatch CoarseOptional means Exact, except that the coarse step modifier is allowed on top.",
+        "Bindings are tested in list order and the first enabled match wins, so put the more specific binding above the general one.",
+        "RequiresEmptyStage true limits a binding to a press that lands on the grey desk rather than on the paper.",
+        "The Layout Editor keeps its zoom limits and wheel step in its app config; AURA keeps them here, in DrawingSheets__Navigation__Config, so its own app config is left to the app."
+    ],
+    "DrawingSheets__Guards__Config": {
+        "DrawingSheets__Guards__Description": "Elements on the desk that keep their own input: a press on a control is left to the control. AURA's viewports are pictures, not live canvases, so unlike the Layout Editor no canvas is guarded.",
+        "DrawingSheets__Guards__PointerIgnoreSelector": "input, select, button, textarea, [contenteditable=\"true\"]",
+        "DrawingSheets__Guards__WheelIgnoreSelector": "",
+        "DrawingSheets__Guards__ContextMenuKeepSelector": "input, select, button, textarea, [contenteditable=\"true\"]",
+        "DrawingSheets__Guards__PaperSelector": "svg.aura-sheet"
+    },
+    "DrawingSheets__PointerBindings__Config": {
+        "DrawingSheets__PointerBindings__Description": "Mouse and pen drags on the desk. The left button is left to the sheet's tools (select, move, resize, notes, leaders) unless a binding below claims it with a modifier or the empty-desk rule: pan capture on a bare left button would swallow the click before it reached a viewport or a note.",
+        "DrawingSheets__PointerBindings__List": [
+            {
+                "Id": "Pan__MiddleOrRightDrag",
+                "Label": "Pan the sheet (middle or right drag)",
+                "Action": "Nav__Pan",
+                "Enabled": true,
+                "Buttons": [
+                    "Middle",
+                    "Right"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Any",
+                "Note": "The Layout Editor's shipped default."
+            },
+            {
+                "Id": "Pan__SpaceLeftDrag",
+                "Label": "Pan the sheet (hold space, left drag)",
+                "Action": "Nav__Pan",
+                "Enabled": true,
+                "Buttons": [
+                    "Left"
+                ],
+                "Modifiers": [
+                    "Space"
+                ],
+                "ModifierMatch": "Exact",
+                "Note": "The CAD and Illustrator convention. ON here, OFF in the Layout Editor, where Space picks the Select tool; AURA's space bar has no other job, and its sheets panned this way before. Left click still edits while space is up."
+            },
+            {
+                "Id": "Pan__EmptyStageLeftDrag",
+                "Label": "Pan the sheet (left drag on the grey desk)",
+                "Action": "Nav__Pan",
+                "Enabled": false,
+                "Buttons": [
+                    "Left"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Exact",
+                "RequiresEmptyStage": true,
+                "Note": "Only fires when the press lands off the paper, so nothing on the sheet can be grabbed by accident."
+            }
+        ]
+    },
+    "DrawingSheets__WheelBindings__Config": {
+        "DrawingSheets__WheelBindings__Description": "What the wheel does over the desk. A trackpad reports a two-finger scroll as a wheel, so enabling the scroll bindings below and moving zoom onto Ctrl gives a laptop without a middle button a way to move around. A trackpad pinch arrives as Ctrl + wheel, which Zoom__Wheel takes too (Any).",
+        "DrawingSheets__WheelBindings__List": [
+            {
+                "Id": "Zoom__Wheel",
+                "Label": "Zoom about the cursor",
+                "Action": "Nav__ZoomAtCursor",
+                "Enabled": true,
+                "Modifiers": [],
+                "ModifierMatch": "Any",
+                "Note": "The Layout Editor's shipped default."
+            },
+            {
+                "Id": "Zoom__CtrlWheel",
+                "Label": "Zoom about the cursor (ctrl held)",
+                "Action": "Nav__ZoomAtCursor",
+                "Enabled": false,
+                "Modifiers": [
+                    "Ctrl"
+                ],
+                "ModifierMatch": "Exact",
+                "Note": "Pair this with the scroll bindings below and switch Zoom__Wheel off for trackpad behaviour (AURA's sheets worked that way before 0.1.3)."
+            },
+            {
+                "Id": "Scroll__Wheel",
+                "Label": "Scroll the sheet up and down",
+                "Action": "Nav__ScrollVertical",
+                "Enabled": false,
+                "Modifiers": [],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Scroll__ShiftWheel",
+                "Label": "Scroll the sheet left and right",
+                "Action": "Nav__ScrollHorizontal",
+                "Enabled": false,
+                "Modifiers": [
+                    "Shift"
+                ],
+                "ModifierMatch": "Exact"
+            }
+        ]
+    },
+    "DrawingSheets__KeyboardBindings__Config": {
+        "DrawingSheets__KeyboardBindings__Description": "Keys read while a sheet tab is on screen. The Layout Editor ships its zoom keys off because the bare arrows nudge its selection and F is its Offset tool; AURA's sheets have neither, so Fit (F), 100 percent (1) and zoom in and out (+ and -) ship on, matching the toolbar's zoom buttons. The Alt + arrow pans stay off: Alt + Left is the browser's Back. Page Up and Page Down turn the sheets, as in the Layout Editor. V, N, L, Delete and Escape are the workspace's tool keys, not navigation, and stay in its code.",
+        "DrawingSheets__KeyboardBindings__IgnoreWhenTyping": true,
+        "DrawingSheets__KeyboardBindings__CoarseStepModifier": "Shift",
+        "DrawingSheets__KeyboardBindings__PanStepPx": 60,
+        "DrawingSheets__KeyboardBindings__PanCoarseStepPx": 240,
+        "DrawingSheets__KeyboardBindings__ZoomKeyStep": 1.15,
+        "DrawingSheets__KeyboardBindings__List": [
+            {
+                "Id": "Nav__ZoomFit",
+                "Label": "Zoom to fit the sheet",
+                "Action": "Nav__ZoomFit",
+                "Enabled": true,
+                "Keys": [
+                    "f",
+                    "F"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Nav__ZoomActualSize",
+                "Label": "Zoom to 100 percent",
+                "Action": "Nav__ZoomActualSize",
+                "Enabled": true,
+                "Keys": [
+                    "1"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Exact"
+            },
+            {
+                "Id": "Nav__ZoomIn",
+                "Label": "Zoom in",
+                "Action": "Nav__ZoomIn",
+                "Enabled": true,
+                "Keys": [
+                    "+",
+                    "="
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional",
+                "Note": "CoarseOptional: + is Shift and = on a UK keyboard."
+            },
+            {
+                "Id": "Nav__ZoomOut",
+                "Label": "Zoom out",
+                "Action": "Nav__ZoomOut",
+                "Enabled": true,
+                "Keys": [
+                    "-",
+                    "_"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Nav__PanLeft",
+                "Label": "Pan left",
+                "Action": "Nav__PanLeft",
+                "Enabled": false,
+                "Keys": [
+                    "ArrowLeft"
+                ],
+                "Modifiers": [
+                    "Alt"
+                ],
+                "ModifierMatch": "CoarseOptional",
+                "Note": "Off, as in the Layout Editor: Alt + Left is the browser's Back."
+            },
+            {
+                "Id": "Nav__PanRight",
+                "Label": "Pan right",
+                "Action": "Nav__PanRight",
+                "Enabled": false,
+                "Keys": [
+                    "ArrowRight"
+                ],
+                "Modifiers": [
+                    "Alt"
+                ],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Nav__PanUp",
+                "Label": "Pan up",
+                "Action": "Nav__PanUp",
+                "Enabled": false,
+                "Keys": [
+                    "ArrowUp"
+                ],
+                "Modifiers": [
+                    "Alt"
+                ],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Nav__PanDown",
+                "Label": "Pan down",
+                "Action": "Nav__PanDown",
+                "Enabled": false,
+                "Keys": [
+                    "ArrowDown"
+                ],
+                "Modifiers": [
+                    "Alt"
+                ],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Nav__PreviousSheet",
+                "Label": "Open the sheet before this one (Page Up)",
+                "Action": "Nav__PreviousSheet",
+                "Enabled": true,
+                "Keys": [
+                    "PageUp"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Exact",
+                "Note": "Turns the sheets the way the tabs sit. The first sheet is an end, not a loop (the 3D Environment tab is not a sheet): the key is taken there and nothing happens. A held key turns one sheet, not a run of them."
+            },
+            {
+                "Id": "Nav__NextSheet",
+                "Label": "Open the sheet after this one (Page Down)",
+                "Action": "Nav__NextSheet",
+                "Enabled": true,
+                "Keys": [
+                    "PageDown"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Exact"
+            }
+        ]
+    },
+    "DrawingSheets__TouchBindings__Config": {
+        "DrawingSheets__TouchBindings__Description": "Touch gestures on the desk, as the Layout Editor's. Two fingers always navigate, which keeps one finger free to select and drag the sheet's contents. One finger also pans when it lands on the grey desk rather than on the paper. A double tap on the desk fits the sheet.",
+        "DrawingSheets__TouchBindings__OneFingerPanOnStage": true,
+        "DrawingSheets__TouchBindings__OneFingerPanOnPaper": false,
+        "DrawingSheets__TouchBindings__TwoFingerPan": true,
+        "DrawingSheets__TouchBindings__PinchZoom": true,
+        "DrawingSheets__TouchBindings__DoubleTapFit": true,
+        "DrawingSheets__TouchBindings__DoubleTapWindowMs": 320,
+        "DrawingSheets__TouchBindings__DoubleTapSlopPx": 24,
+        "DrawingSheets__TouchBindings__PanStartSlopPx": 6,
+        "DrawingSheets__TouchBindings__PinchStartSlopPx": 8
+    },
+    "DrawingSheets__Navigation__Config": {
+        "DrawingSheets__Navigation__Description": "How far and how fast the sheet moves. Zoom 1 is 3.2 screen pixels to a paper millimetre (the Layout Editor's scale).",
+        "DrawingSheets__Navigation__ZoomMin": 0.15,
+        "DrawingSheets__Navigation__ZoomMax": 12,
+        "DrawingSheets__Navigation__ZoomMaxNote": "The Layout Editor stops a reader at 8 and an author at 64, for vector work. AURA's viewports are pictures drawn at a few pixels to the millimetre, so its ceiling stays at 12 (38 px to the paper millimetre), where it was.",
+        "DrawingSheets__Navigation__ZoomWheelStep": 0.0016,
+        "DrawingSheets__Navigation__ZoomWheelStepNote": "The Layout Editor's: the zoom is multiplied by e^(-deltaY x 0.0016) - about 17 percent a wheel notch. A wheel that reports lines counts 20 pixels a line.",
+        "DrawingSheets__Navigation__FitPaddingPx": 32,
+        "DrawingSheets__Navigation__ZoomSettleMs": 350,
+        "DrawingSheets__Navigation__ZoomSettleMsNote": "As the Layout Editor: a wheel or pinch zoom only rescales the sheet while it is under way, and ZoomSettleMs after the last step the selection handles are drawn again at their screen size. Fit and the zoom buttons settle at once."
+    }
+}

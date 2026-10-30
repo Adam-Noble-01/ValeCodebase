@@ -1,0 +1,408 @@
+{
+    "PainterlyNPR__InterfacePanel__Config" : {
+        "PainterlyNPR__InterfacePanel__Config__Meta"         : {
+            "ConfigLabel"   : "PainterlyNPR - The Panel",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The control panel, as AudioSPACE describes its interface: tabs, groups, folds, range fields, selects and hints, built into the page by PainterlyNPR__Interface__BuildPanel. An item is a Group (a titled block), a Fold (a titled block that folds), a Range (a slider, by its control key), a Select (a menu), a Hint (a line of help), or - for anything with no kind of its own - an Element written out (tag, attributes, children) or a Text.",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Panel__.mjs",
+            "Source"        : "Experiment 01's page (engine 0.4.10), the panel element by element, 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Shell"        : {
+            "Note"     : "The panel the page builds before it wires the interface: the unfold button, the tabs, and one section a tab. A Range takes its label, min, max and step from its control in Na__Interface__Controls__Config.json.",
+            "Before"   : [
+                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Unfold PainterlyNPR__Unfold--panel"], ["data-fold", "Panel"], ["aria-expanded", "false"], ["title", "Show the controls"]], "Children": [{ "Text": "‹ Controls" }] },
+                {
+                    "Tabs"       : [
+                        { "Key": "Paper", "Label": "Paper", "Selected": false },
+                        { "Key": "Scene", "Label": "Scene", "Selected": true },
+                        { "Key": "Pen", "Label": "Pen", "Selected": false },
+                        { "Key": "Wash", "Label": "Wash", "Selected": false },
+                        { "Key": "ArtDirection", "Label": "Art direction", "Selected": false },
+                        { "Key": "Export", "Label": "Export", "Selected": false }
+                    ],
+                    "FoldButton" : {
+                        "Fold"     : "Panel",
+                        "Expanded" : true,
+                        "Title"    : "Fold the controls away - more room for the sheet",
+                        "Text"     : "›"
+                    }
+                }
+            ],
+            "Sections" : ["Paper", "Scene", "Pen", "Wash", "ArtDirection", "Export"]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Scene"        : {
+            "Note"   : "SCENE | Camera and Sun",
+            "Hidden" : false,
+            "Items"  : [
+                {
+                    "Group" : "Camera",
+                    "Items" : [
+                        { "Buttons": [{ "Text": "Three-quarter", "Data": ["camera", "ThreeQuarter"] }, { "Text": "Garden corner", "Data": ["camera", "GardenCorner"] }, { "Text": "Down the path", "Data": ["camera", "DownThePath"] }, { "Text": "Measured elevation · 1:100", "Data": ["camera", "MeasuredElevation"] }, { "Text": "Concept elevation", "Data": ["camera", "ConceptElevation"] }] },
+                        { "Hint": "Drag the sheet to orbit, scroll to zoom - in to the porch, or out past the hedges to the whole garden. While it moves you see the navigation preview - albedo and screen-space edges, at once. A moment after it stops, the drawing refines pass by pass." }
+                    ]
+                },
+                { "Group": "Sun", "Items": [{ "Range": "SunAzimuth" }, { "Range": "SunAltitude" }, { "Hint": "Light here is a decision about where the shadow glaze goes, not a lighting simulation." }] },
+                {
+                    "Group" : "The scene package",
+                    "Items" : [
+                        {
+                            "Element"  : "p",
+                            "Attrs"    : [
+                                ["class", "PainterlyNPR__Hint"]
+                            ],
+                            "Children" : [
+                                { "Text": "A brick cottage of a storey and a half - clay-tiled roof, two dormers, a chimney at each gable, an oak porch, casements under soldier courses - with a flagstone path to a picket gate and another round the gable to a pond, cottage borders, hedges and trees, and fields of trees beyond. Built in code as a SketchUp export would carry it (" },
+                                { "Element": "span", "Attrs": [["id", "PainterlyNPR__App__SceneCounts"]], "Children": [{ "Text": "objects, edges and surfaces" }] },
+                                { "Text": "): objects with stable IDs, material classes and roles; edges held apart from the triangles - hard creases, authored lines (glazing bars, planks, path edges: no geometry at all) and smooth edges, drawn only where they are silhouettes; and surfaces for material indication - the walls, roof and chimneys carry no brick or tile geometry at all. Hover the sheet to read the truth buffers." }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Pen"          : {
+            "Note"   : "PEN | The four levels of pen work, and tone",
+            "Hidden" : true,
+            "Items"  : [
+                {
+                    "Group" : "Pen presets",
+                    "Items" : [
+                        {
+                            "Buttons" : [
+                                { "Text": "Technical", "Data": ["pen-preset", "Technical"] },
+                                { "Text": "Fineliner", "Data": ["pen-preset", "Fineliner"] },
+                                { "Text": "Sketch", "Data": ["pen-preset", "Sketch"] },
+                                { "Text": "Expressive", "Data": ["pen-preset", "Expressive"] },
+                                { "Text": "Hatched", "Data": ["pen-preset", "Hatched"] },
+                                { "Text": "Broad nib", "Data": ["pen-preset", "BroadNib"] }
+                            ],
+                            "Class"   : "PainterlyNPR__ButtonGrid--three"
+                        },
+                        { "Hint": "A preset sets the Drawing Discipline and every slider below. The ×-sliders multiply what the discipline asks for: ×1 is the macro's own reading." }
+                    ]
+                },
+                {
+                    "Group" : "Drawing discipline",
+                    "Items" : [
+                        { "Element": "div", "Attrs": [["class", "PainterlyNPR__Discipline"]], "Children": [{ "Element": "input", "Attrs": [["type", "range"], ["min", "0"], ["max", "1"], ["step", "0.01"], ["data-control", "Discipline"], ["aria-label", "Drawing discipline"]] }, { "Element": "span", "Attrs": [["id", "PainterlyNPR__App__DisciplineMarker"], ["class", "PainterlyNPR__Discipline__Marker"], ["hidden", ""]] }] },
+                        { "Element": "div", "Attrs": [["class", "PainterlyNPR__Discipline__Stops"], ["aria-hidden", "true"]], "Children": [{ "Element": "span", "Children": [{ "Text": "Technical" }] }, { "Element": "span", "Children": [{ "Text": "Natural pen" }] }, { "Element": "span", "Children": [{ "Text": "Sketch" }] }, { "Element": "span", "Children": [{ "Text": "Expressive" }] }] },
+                        { "Element": "p", "Attrs": [["class", "PainterlyNPR__Readout"]], "Children": [{ "Text": "Now " }, { "Element": "output", "Attrs": [["data-readout", "Discipline"]] }] },
+                        { "Element": "p", "Attrs": [["id", "PainterlyNPR__App__DisciplineCeiling"], ["class", "PainterlyNPR__Note"], ["hidden", ""]] },
+                        { "Hint": "One control, many parameters. As it loosens, optional and tertiary lines are simplified away first; only then do the survivors drift, overshoot their corners and overdraw." }
+                    ]
+                },
+                {
+                    "Fold"  : "1 · Which lines exist",
+                    "Open"  : true,
+                    "Items" : [
+                        { "Range": "PenDetail" },
+                        { "Range": "PenLostInLight" },
+                        { "Range": "PenDepthFade" },
+                        { "Range": "PenConstruction" },
+                        { "Range": "PenConstructionMm" },
+                        { "Hint": "Detail moves where simplification starts; lines between lit planes break up first, profiles last; a primary corner can run on as a faint construction line (never in a measured elevation)." }
+                    ]
+                },
+                {
+                    "Fold"  : "2 · Weight and emphasis",
+                    "Open"  : true,
+                    "Items" : [
+                        { "Range": "LineWeight" },
+                        { "Range": "PenContrast" },
+                        { "Range": "PenProfile" },
+                        { "Range": "PenGround" },
+                        { "Range": "PenShadowSide" },
+                        { "Range": "PenInkDensity" },
+                        { "Hint": "Hierarchy is the step between primary, secondary, tertiary and optional widths: 0 draws every line alike. Silhouettes weight the profile lines; the ground line, where walls meet the ground; shadow side, lines with shade on one side." }
+                    ]
+                },
+                {
+                    "Fold"  : "3 · The path",
+                    "Open"  : false,
+                    "Items" : [
+                        { "Range": "PenWobble" },
+                        { "Range": "PenDrift" },
+                        { "Range": "PenTremor" },
+                        { "Range": "PenOvershoot" },
+                        { "Range": "PenMissedJoins" },
+                        { "Range": "PenSearching" },
+                        { "Hint": "Smooth, imperfect deviation - never per-pixel jitter. A measured elevation caps the path at Natural Pen whatever these say, so the centreline stays where the geometry is." },
+                        { "Element": "p", "Attrs": [["id", "PainterlyNPR__App__PathCeiling"], ["class", "PainterlyNPR__Note"], ["hidden", ""]], "Children": [{ "Text": "This view is a measured elevation: the path is held at Natural Pen, construction lines are off and every line is kept - Detail and Lost in light wait for a looser view. Pressure, taper, the nib, hatching and the points still apply." }] }
+                    ]
+                },
+                {
+                    "Fold"  : "4 · The mark",
+                    "Open"  : false,
+                    "Items" : [
+                        { "Range": "PenPressure" },
+                        { "Range": "PenTaper" },
+                        { "Range": "PenDwell" },
+                        { "Range": "PenFlick" },
+                        { "Range": "PenBreaks" },
+                        { "Range": "InkDry" },
+                        { "Range": "PenNibContrast" },
+                        { "Range": "PenNibAngle" },
+                        { "Select": "InkFamily", "By": "data-select", "Label": "Ink family", "Options": [["Sepia", "Sepia"], ["WarmGrey", "Warm grey"], ["PaynesGrey", "Payne's grey"], ["SoftBlack", "Soft black"]] },
+                        { "Hint": "Ink dwell is the dot a pen leaves where it rests on landing; end flick the hook as it leaves. Dry ink skips the paper's valleys. A broad nib draws thin along its edge and full across it." }
+                    ]
+                },
+                {
+                    "Fold"  : "5 · Tone - hatching",
+                    "Open"  : false,
+                    "Items" : [
+                        { "Range": "PenHatchAmount" },
+                        { "Range": "PenHatchAngle" },
+                        { "Range": "PenHatchSpacingMm" },
+                        { "Range": "PenHatchCross" },
+                        { "Range": "PenHatchReach" },
+                        { "Range": "PenHatchLoose" },
+                        { "Hint": "Lines nest: a darker tone adds lines between those already drawn, never moves them, and past the cross-hatch threshold a second family crosses. A Hatch point lays its own direction where it reaches." }
+                    ]
+                },
+                {
+                    "Fold"  : "6 · Vegetation",
+                    "Open"  : true,
+                    "Items" : [
+                        { "Chips": [{ "Text": "Quiet", "Data": ["veg-preset", "Quiet"] }, { "Text": "Natural", "Data": ["veg-preset", "Natural"] }, { "Text": "Leafy", "Data": ["veg-preset", "Leafy"] }, { "Text": "Scribbly", "Data": ["veg-preset", "Scribbly"] }] },
+                        { "Range": "PenVegOutline" },
+                        { "Select": "VegEdge", "By": "data-pen-select", "Label": "Outline hand", "Options": [["Kind", "Each plant's own"], ["Scallop", "Leaf clumps"], ["Loose", "One loose line"], ["Jagged", "Needles"]] },
+                        { "Range": "PenVegClump" },
+                        { "Range": "PenVegSketch" },
+                        { "Range": "PenVegLostInLight" },
+                        { "Range": "PenVegLeaves" },
+                        { "Select": "VegLeafStyle", "By": "data-pen-select", "Label": "Leaf marks", "Options": [["Kind", "Each plant's own"], ["Arcs", "Arcs"], ["Loops", "Loops"], ["Scallops", "Cups"], ["Stipple", "Stipple"]] },
+                        { "Range": "PenVegLeafSize" },
+                        { "Range": "PenVegShade" },
+                        { "Range": "PenVegBranches" },
+                        { "Range": "PenVegTwigs" },
+                        { "Range": "PenVegWeight" },
+                        { "Range": "PenVegWild" },
+                        {
+                            "Hint" : "The impression of a plant, never its mesh: its true silhouette traced from the truth buffers and drawn in a hand - leaf clumps for broadleaves, needles for the yew and lavender - heavier in shade and lost toward the light, with searching passes as it gets sketchier. Leaves and cups gather in the shade, the line where the light turns is drawn inside the mass, and branches and twigs show through the canopy. A Line Control point loosens or weights the plants it reaches; a Detail Suppression point strips their leaves."
+                        }
+                    ]
+                },
+                {
+                    "Fold"  : "7 · Distant trees",
+                    "Open"  : true,
+                    "Items" : [
+                        { "Range": "PenDistantOutline" },
+                        { "Range": "PenDistantBelt" },
+                        { "Range": "PenDistantSketch" },
+                        { "Range": "PenDistantWeight" },
+                        { "Range": "DistantUnfade" },
+                        { "Range": "DistantColour" },
+                        { "Range": "DistantLoose" },
+                        {
+                            "Hint" : "The trees behind the garden: the field trees, hedgerow and bushes in the middle distance, and the belt of trees 160 to 225 m off. Outline scales the middle distance's outlines on top of the Vegetation fold (x1 as it has them); Far belt draws the far belt's silhouette where it meets the sky, in small broken crowns, to indicate trees rather than draw them; Sketchiness adds searching passes to both; Pen weight thickens both. Unfade takes back the aerial perspective that pales and blues them. Colour walks their wash from the colour each was mixed, through sage and olive, to a warm olive; their shade follows it instead of the sky's blue. Looseness lays them as a painter would: brush-loads of uneven strength, back-runs dried to a hard rim, a broken edge, no wet blur into the sky. The eye switches all of it off, back to the soft, pale trees."
+                        }
+                    ]
+                },
+                {
+                    "Group" : "Material indication",
+                    "Items" : [
+                        { "Range": "Indication" },
+                        {
+                            "Hint" : "Brick courses, tile courses, soldier courses and flagstones laid procedurally on the real surfaces at their real gauge - 75 mm a brick course, 100 mm a tile - then drawn only where an illustrator would: at the corners, round the openings, at the base, under the eaves, in a patch or two between, more in shadow than in light. A few units are picked out with a darker touch of wash. Steer it with Indication points on the Art direction tab."
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Wash"         : {
+            "Note"   : "WASH | Wash and Sky",
+            "Hidden" : true,
+            "Items"  : [
+                {
+                    "Group" : "Wash",
+                    "Items" : [
+                        { "Range": "WashStrength" },
+                        { "Range": "Shadow" },
+                        { "Range": "Granulation" },
+                        { "Range": "Pooling" },
+                        { "Range": "CoffeeRings" },
+                        { "Range": "Bleed" },
+                        { "Range": "Wetness" },
+                        { "Range": "Withdraw" },
+                        {
+                            "Hint" : "Edge pooling darkens a soft band inside a hard edge, where pigment settles. Coffee rings is what a puddle of wash does as it dries: the pinned edge pulls its pigment out to a crisp dark rim, starving a paler band just inside, and turned up it leaves ghost rings further in where the puddle paused as it shrank. Only hard, drying edges ring - a wet edge has nothing to pin it - and heavy, pooling pigments ring most."
+                        }
+                    ]
+                },
+                {
+                    "Group" : "Windows",
+                    "Items" : [
+                        { "Range": "ShadowLines" },
+                        { "Range": "ShadowLineWidth" },
+                        { "Hint": "A marker stroke on the glass beside each reveal and glazing bar, and on an external door's leaf beside its reveal, on the side away from the sun - the shade line an illustrator adds by hand. Its width is the shadow the reveal or the bar really casts, so it changes side and width as the sun moves (Scene tab). A wall out of the sun gets none: its glass is already in the shadow glaze." }
+                    ]
+                },
+                {
+                    "Group" : "Kuwahara",
+                    "Items" : [
+                        { "Range": "KuwaharaAmount" },
+                        { "Range": "KuwaharaSky" },
+                        { "Range": "KuwaharaRadius" },
+                        { "Range": "KuwaharaSharpness" },
+                        { "Range": "KuwaharaHardness" },
+                        { "Range": "KuwaharaAnisotropy" },
+                        { "Range": "KuwaharaFlow" },
+                        { "Range": "KuwaharaOverlap" },
+                        { "Range": "KuwaharaPasses" },
+                        { "Element": "p", "Attrs": [["id", "PainterlyNPR__App__KuwaharaNote"], ["class", "PainterlyNPR__Note"], ["hidden", ""]], "Children": [{ "Text": "No Kuwahara: the filter is an ES module (57__Wash__KuwaharaFilter) and loads only when the page is served - run Start__PainterlyNPR__Localhost__8020__.bat at the repo root." }] },
+                        {
+                            "Hint" : "An anisotropic Kuwahara filter on the wash, before the ink goes over it: each patch of colour settles into one stroke's worth - flat inside, following the form at its edge - as a brush lays it. Amount turns it up from off; On the sky is its amount on the sky, kept apart so the sky's own paint can stay as it is. Radius is the patch, on the sheet. Sharpness is how decisively the calmest part of a patch wins (low blurs, high cuts clean); Hardness how small a variation already counts as calm. Anisotropy stretches each patch along the run of the colour (0 round, 1 the published default). Flow smoothing is how far that run is smoothed first; Sector overlap how much the eight sectors share near the centre. Passes filters the result again. It settles only the main watercolour: the flowers, picked bricks and tiles, and the marker's shadow lines are laid over it afterwards, as a painter adds them to a dry wash, and the ink never passes through it."
+                        }
+                    ]
+                },
+                {
+                    "Group" : "Sky",
+                    "Items" : [
+                        { "Range": "Sky" },
+                        { "Range": "Clouds" },
+                        { "Select": "CloudType", "By": "data-select", "Label": "Cloud type", "Options": [["Clear", "Clear sky"], ["FairWeather", "Fair-weather cumulus"], ["Cumulus", "Building cumulus"], ["Stratocumulus", "Stratocumulus"], ["HighPuffs", "High puffs"]] },
+                        { "Range": "CloudCoverage" },
+                        { "Range": "CloudSize" },
+                        { "Range": "CloudHeight" },
+                        { "Range": "CloudDrift" },
+                        { "Range": "CloudUndersides" },
+                        { "Range": "CloudSoftness" },
+                        { "Range": "CloudSimplify" },
+                        { "Range": "CloudCut" },
+                        { "Range": "CloudPool" },
+                        { "Range": "CloudBlooms" },
+                        { "Element": "p", "Attrs": [["id", "PainterlyNPR__App__CloudsNote"], ["class", "PainterlyNPR__Note"], ["hidden", ""]], "Children": [{ "Text": "Painted clouds: the volumetric clouds are ES modules and load only when the page is served - run Start__PainterlyNPR__Localhost__8020__.bat at the repo root." }] },
+                        { "Hint": "Volumetric clouds (63__Atmos__VolumetricClouds): a cloud volume lit by the sun decides where the masses stand and which side is lit. Drift slides the whole sky to compose it; a new seed is a new sky." },
+                        {
+                            "Hint" : "Then they are painted (60__Atmos__SkyAndClouds), as a hand does it. Simplify settles the masses into a few shapes, a Kuwahara filter on the cloud buffer - never on the picture - its size in millimetres, 0 for the volume as it is. The blue is laid round reserved paper with the sky's own recipe; Cut edges is how many crowns are cut hard from dry paper rather than lost into damp, Soft bases how far a lost edge feathers, Edge pooling the dark rim where the blue dried against a cut edge, and Blooms the tide lines and cauliflowers where water crept back. Undersides are one or two flat greys dropped in, never a gradient. Granulation, Edge pooling and Wetness on the Wash group reach the sky too."
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Paper"        : {
+            "Note"   : "PAPER | Sheet and Composition",
+            "Hidden" : true,
+            "Items"  : [
+                {
+                    "Group" : "Paper",
+                    "Items" : [
+                        { "Select": "PaperPreset", "By": "data-select", "Label": "Sheet", "Options": [["ColdPressed", "Cold-pressed (NOT)"], ["HotPressed", "Hot-pressed"], ["Cartridge", "Cartridge"], ["TexturedIvory", "Textured ivory"]] },
+                        { "Range": "Emboss" },
+                        { "Range": "PaintedGrain" },
+                        {
+                            "Hint" : "Pigment settles in the grain's valleys; a dry pen rides its peaks (Pen · Dry ink). Grain relief acts on the whole sheet. Grain in paint multiplies that same relief where there is a wash - ×1 leaves it as it is - because paint hides the relief that bare paper shows; at Grain relief 0 there is nothing to multiply. The grain is defined in millimetres on the sheet, so an export at twice the pixels is the same paper, sharper."
+                        }
+                    ]
+                },
+                { "Group": "Composition", "Items": [{ "Range": "Vignette" }, { "Range": "Roughness" }, { "Hint": "The drawing dissolves into the paper toward the sheet's edges, the foreground first - an irregular field, never a soft circle. Lines go lowest priority first; the building's profiles hold longest." }] }
+            ]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__ArtDirection" : {
+            "Note"   : "ART DIRECTION | Points",
+            "Hidden" : true,
+            "Items"  : [
+                {
+                    "Group" : "Art Direction Points",
+                    "Items" : [
+                        {
+                            "Hint" : "A point is a field over the scene's identities, not a dab of paint. Add one, then click the sheet: it is selected, with its sliders beside it on the sheet - drag the square on its ring to size it. Click any point, or its row below, to edit it; click bare paper to let it go. Delete removes, Ctrl+D or Alt-drag duplicates, H switches it off and on. Dropped on an object, it anchors to it and follows it when the camera moves; it can act on the area, on that object alone, or on its whole material. An Indication point dropped on brick acts on all the brick it reaches: push its Amount right for courses there, left to keep them off."
+                        },
+                        {
+                            "Element"  : "div",
+                            "Attrs"    : [
+                                ["class", "PainterlyNPR__ButtonGrid PainterlyNPR__ButtonGrid--three"]
+                            ],
+                            "Children" : [
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Focus"]], "Children": [{ "Text": "◎ Focus" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Fade"]], "Children": [{ "Text": "○ Fade to paper" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "LineControl"]], "Children": [{ "Text": "✎ Line control" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Indication"]], "Children": [{ "Text": "▦ Indication" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Hatch"]], "Children": [{ "Text": "▨ Hatch" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Suppress"]], "Children": [{ "Text": "⊘ Suppress detail" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "Discipline"]], "Children": [{ "Text": "∿ Discipline" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["class", "PainterlyNPR__Button"], ["data-add-point", "RunOut"], ["title", "Lines run on past the paint where it reaches, as an architect's run off the side of the page"]], "Children": [{ "Text": "⇢ Line run-out" }] }
+                            ]
+                        },
+                        { "Element": "label", "Attrs": [["class", "PainterlyNPR__Toggle"]], "Children": [{ "Element": "input", "Attrs": [["type", "checkbox"], ["data-toggle", "ShowInfluence"]] }, { "Text": " Show influence on the drawing" }] }
+                    ]
+                },
+                { "Element": "div", "Attrs": [["id", "PainterlyNPR__App__PointList"], ["class", "PainterlyNPR__PointList"]] }
+            ]
+        },
+
+        "PainterlyNPR__InterfacePanel__Config__Export"       : {
+            "Note"   : "EXPORT | Stills, Saved Settings and the Settings JSON",
+            "Hidden" : true,
+            "Items"  : [
+                {
+                    "Group" : "Still",
+                    "Items" : [
+                        { "Buttons": [{ "Text": "PNG · 1500 × 1000", "Data": ["export", "1"] }, { "Text": "PNG · 3000 × 2000, 254 dpi", "Data": ["export", "2"] }, { "Text": "The buffer on view", "Data": ["export", "view"] }] },
+                        { "Hint": "The 2× export re-runs every pass at twice the pixels: the same strokes and the same grain, sharper. There is no tiling yet - a GPU without the memory says so and keeps the 1× sheet." }
+                    ]
+                },
+                {
+                    "Element"  : "div",
+                    "Attrs"    : [
+                        ["class", "PainterlyNPR__Group"],
+                        ["id", "PainterlyNPR__App__Saves"]
+                    ],
+                    "Children" : [
+                        { "Element": "h3", "Attrs": [["class", "PainterlyNPR__Group__Title"]], "Children": [{ "Text": "Saved settings" }] },
+                        {
+                            "Element"  : "div",
+                            "Attrs"    : [
+                                ["class", "PainterlyNPR__SaveRow"]
+                            ],
+                            "Children" : [
+                                { "Element": "input", "Attrs": [["type", "text"], ["id", "PainterlyNPR__App__SaveName"], ["class", "PainterlyNPR__SaveRow__Name"], ["placeholder", "Name this set-up"], ["maxlength", "60"], ["spellcheck", "false"], ["autocomplete", "off"], ["aria-label", "Name for the saved settings"]] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["id", "PainterlyNPR__App__SaveButton"], ["class", "PainterlyNPR__Button"]], "Children": [{ "Text": "Save" }] }
+                            ]
+                        },
+                        { "Element": "p", "Attrs": [["id", "PainterlyNPR__App__SaveStatus"], ["class", "PainterlyNPR__SaveStatus"], ["aria-live", "polite"]] },
+                        { "Element": "div", "Attrs": [["data-save-list", "File"]] },
+                        { "Element": "div", "Attrs": [["data-save-list", "Browser"]] },
+                        {
+                            "Element"  : "div",
+                            "Attrs"    : [
+                                ["class", "PainterlyNPR__ButtonRow"]
+                            ],
+                            "Children" : [
+                                { "Element": "button", "Attrs": [["type", "button"], ["id", "PainterlyNPR__App__DownloadSettings"], ["class", "PainterlyNPR__Button"]], "Children": [{ "Text": "Download .json" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["id", "PainterlyNPR__App__OpenSettings"], ["class", "PainterlyNPR__Button"]], "Children": [{ "Text": "Open .json" }] },
+                                { "Element": "input", "Attrs": [["type", "file"], ["id", "PainterlyNPR__App__OpenSettingsFile"], ["accept", ".json,application/json"], ["hidden", ""]] }
+                            ]
+                        },
+                        {
+                            "Hint" : "A save is the whole drawing - camera, sun, pen, wash, sky, paper, points and seed - and Load puts it back exactly. It is kept in this browser and, when the page is served by Start__PainterlyNPR__Localhost__8020__.bat, as <name>.json in the repo's 21__Generated__UserProjects, which git leaves out. Saving a name again replaces it - the server keeps the old file in the folder's history - and Remove moves a file into the folder's bin, after a second click. Ctrl+S saves under the name in the box."
+                        }
+                    ]
+                },
+                {
+                    "Group" : "Settings",
+                    "Items" : [
+                        { "Hint": "Everything this drawing depends on, seed included. Paste a saved copy and apply it to get the same drawing back." },
+                        { "Element": "textarea", "Attrs": [["id", "PainterlyNPR__App__SettingsJson"], ["class", "PainterlyNPR__Json"], ["spellcheck", "false"], ["rows", "12"]] },
+                        {
+                            "Element"  : "div",
+                            "Attrs"    : [
+                                ["class", "PainterlyNPR__ButtonRow"]
+                            ],
+                            "Children" : [
+                                { "Element": "button", "Attrs": [["type", "button"], ["id", "PainterlyNPR__App__ApplyJson"], ["class", "PainterlyNPR__Button"]], "Children": [{ "Text": "Apply" }] },
+                                { "Element": "button", "Attrs": [["type", "button"], ["id", "PainterlyNPR__App__CopyJson"], ["class", "PainterlyNPR__Button"]], "Children": [{ "Text": "Copy" }] }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

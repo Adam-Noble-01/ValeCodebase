@@ -45,14 +45,23 @@
         touch-action                       : none;
     }
 
-    .aura-sheets__desk.is-pan-ready,
-    .aura-sheets__desk.is-panning {
-        cursor                             : grab;
+    .aura-sheets__desk:focus {
+        outline                            : none;                         /* <-- A press gives the desk the keyboard (Controls__Pc): no ring round the desk */
     }
 
     .aura-sheets__desk[data-tool="note"],
     .aura-sheets__desk[data-tool="leader"] {
         cursor                             : crosshair;
+    }
+
+    .aura-sheets__desk.is-pan-ready,
+    .aura-sheets__desk.is-pan-ready[data-tool] {
+        cursor                             : grab;                         /* <-- Space held: a left drag pans, whatever the tool */
+    }
+
+    .aura-sheets__desk.is-panning,
+    .aura-sheets__desk.is-panning[data-tool] {
+        cursor                             : grabbing;
     }
 
     .aura-sheet__wrap {

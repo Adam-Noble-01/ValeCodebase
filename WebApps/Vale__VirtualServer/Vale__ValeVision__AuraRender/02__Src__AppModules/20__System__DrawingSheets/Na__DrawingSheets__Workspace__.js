@@ -6,23 +6,47 @@
 // NAMESPACE  : Na__Workspace
 // MODULE     : Drawing Sheets - Workspace
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : A sheet tab's working space: the tools (select, note, leader),
-//              adding views, zoom, the sheet on its desk, and the panel that shows
-//              the sheet's title block or whatever is selected
+// PURPOSE    : A sheet tab's working space, laid out as ValeVision 3D's Layout
+//              Editor: the sheet's panel on the left, the tools (select, note,
+//              leader, adding views, zoom) over the sheet on its desk, and the
+//              selection's panel on the right; both panels resizable
 // CREATED    : 30-Oct-2026
 //
 // DESCRIPTION:
-// - THE PANEL follows the selection: a viewport's settings, a note's words and
-//   hand, or, with nothing selected, the sheet itself (name, paper, title block
-//   fields, revisions).
+// - THE LEFT PANEL is the sheet itself, in folding sections: Sheet (name,
+//   paper, orientation), Title block, Revisions.
+// - THE RIGHT PANEL follows the selection, in folding sections: Viewport (its
+//   settings), Art direction points (the selected viewport's, edited on its
+//   picture: Na__Viewports__ArtDirection__) and Note (a note's words and hand).
+//   A section with nothing selected for it says how to start.
+// - Sections fold and the panels' inner edges drag them wider or narrower,
+//   each remembered in this browser (Na__AppUtils__Panels__).
 // - KEYS: Delete removes what is selected; Escape lets it go and returns to the
 //   select tool; V, N and L pick the tools. Never while typing in a field.
+// - NAVIGATION is ValeVision 3D's Layout Editor's (Na__DrawingSheets__Navigation__,
+//   the PC and touchscreen controls, Na__Hotkeys__DrawingSheets__.json): the
+//   wheel zooms about the cursor, a middle or right drag (or Space and a left
+//   drag) pans, two fingers pinch and pan, one finger pans from the grey desk,
+//   a double tap on the desk fits; F, 1, + and - zoom, Page Up and Page Down
+//   turn the sheets.
 // - ADD A VIEW: the four elevations and the roof plan to scale, the engine's
 //   perspectives, the 3D Environment's own view, or a saved view.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.3.0)
+// - The Layout Editor's two panels (Adam: "I want the same two panel layout
+//   with dropdown sections etc and 2x resizable panels"): the sheet's sections
+//   on the left, the tools over the sheet, the selection's sections on the
+//   right with the selected viewport's Art direction points.
+//
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.1.3)
+// - The sheet's navigation is the Layout Editor's: its controls attach to the
+//   desk before the surface, the zoom buttons and Fit go through
+//   Na__DrawingSheets__Navigation__, each sheet is fitted the first time it is
+//   shown, and a press on the grey desk only lets the selection go.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -37,11 +61,16 @@
     import { Na__AppState__Data, Na__AppState__On, Na__AppState__Set, Na__AppState__Select, Na__AppState__Touch, Na__AppState__ActiveSheet } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Dom__El, Na__Dom__IconButton, Na__Dom__Clear, Na__Dom__Field, Na__Dom__Select } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__SheetScale, Na__Format__Date } from '../03__AppUtils/Na__AppUtils__Format__.js';
+    import { Na__Panels__Section, Na__Panels__Resizable } from '../03__AppUtils/Na__AppUtils__Panels__.js';
     import { Na__EngineHost__Presets } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__Surface__Mount, Na__Surface__Render, Na__Surface__On, Na__Surface__ZoomBy, Na__Surface__Fit, Na__Surface__RedrawLayer } from './Na__DrawingSheets__Surface__.js';
+    import { Na__Surface__Mount, Na__Surface__Render, Na__Surface__On, Na__Surface__RedrawLayer } from './Na__DrawingSheets__Surface__.js';
+    import { Na__SheetNav__ZoomBy, Na__SheetNav__Fit, Na__SheetNav__FitOnce } from './Na__DrawingSheets__Navigation__.js';
+    import { Na__SheetPc__Attach } from './Na__DrawingSheets__Controls__Pc__.js';
+    import { Na__SheetTouch__Attach } from './Na__DrawingSheets__Controls__TouchScreen__.js';
     import { Na__Tabs__Delete } from './Na__DrawingSheets__Tabs__.js';
     import { Na__ViewportEditor__Mount, Na__ViewportEditor__Add, Na__ViewportEditor__Remove, Na__ViewportEditor__Panel } from '../21__System__Viewports/Na__Viewports__Editor__.js';
     import { Na__RenderQueue__Clear, Na__RenderQueue__OnStatus } from '../21__System__Viewports/Na__Viewports__RenderQueue__.js';
+    import { Na__ViewportPoints__Mount, Na__ViewportPoints__Panel, Na__ViewportPoints__SetOpen } from '../21__System__Viewports/Na__Viewports__ArtDirection__.js';
     import { Na__Annotations__Mount, Na__Annotations__OnPaper, Na__Annotations__Panel, Na__Annotations__Remove } from '../30__System__Annotations/Na__Annotations__Layer__.js';
     import { Na__DrawingSet__Viewport, Na__DrawingSet__Annotation } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
 
@@ -54,7 +83,8 @@
 
     const Na__Workspace__State = {
         root    : null,
-        panel   : null,
+        panel   : null,                          // <-- The right panel: the selection's sections
+        left    : null,                          // <-- The left panel: the sheet's sections
         status  : null,
         tools   : null,
         addView : null,
@@ -140,12 +170,12 @@
         Na__Workspace__RefreshAddView();
 
         const zoom = Na__Dom__El('div', 'aura-toolbar__zoom');
-        const out = Na__Dom__IconButton('zoomOut', 'aura-icon-button', null, 'Zoom out (Ctrl and the wheel zooms about the pointer)');
-        out.addEventListener('click', () => Na__Surface__ZoomBy(1 / 1.25));
-        const fit = Na__Dom__IconButton('fit', 'aura-icon-button', null, 'Fit the sheet');
-        fit.addEventListener('click', () => Na__Surface__Fit());
-        const inn = Na__Dom__IconButton('zoomIn', 'aura-icon-button', null, 'Zoom in');
-        inn.addEventListener('click', () => Na__Surface__ZoomBy(1.25));
+        const out = Na__Dom__IconButton('zoomOut', 'aura-icon-button', null, 'Zoom out (-). The wheel zooms about the pointer; a middle or right drag pans');
+        out.addEventListener('click', () => Na__SheetNav__ZoomBy(1 / 1.25));
+        const fit = Na__Dom__IconButton('fit', 'aura-icon-button', null, 'Fit the sheet (F)');
+        fit.addEventListener('click', () => Na__SheetNav__Fit());
+        const inn = Na__Dom__IconButton('zoomIn', 'aura-icon-button', null, 'Zoom in (+)');
+        inn.addEventListener('click', () => Na__SheetNav__ZoomBy(1.25));
         zoom.appendChild(out); zoom.appendChild(fit); zoom.appendChild(inn);
         bar.appendChild(zoom);
 
@@ -178,7 +208,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Sheet Itself: name, paper, title block, revisions
+    // FUNCTION | The Sheet Itself, in the Left Panel: Sheet, Title block, Revisions
     // ------------------------------------------------------------
     function Na__Workspace__SheetPanel(container, sheet) {
         const changed = (rerender) => {
@@ -186,40 +216,45 @@
             if (rerender) Na__Surface__Render(sheet);
             if (Na__Workspace__State.onSheetChanged) Na__Workspace__State.onSheetChanged(sheet);
         };
-        container.appendChild(Na__Dom__El('h2', 'aura-panel__title', 'Sheet'));
 
+        const main = Na__Panels__Section(container, { id: 'sheet-sheet', title: 'Sheet' });
         const name = Na__Dom__El('input', 'aura-input', null, { type: 'text', maxlength: 80 });
         name.value = sheet.Sheet__Name;
         name.addEventListener('input', () => { sheet.Sheet__Name = name.value || 'Sheet'; changed(false); });
-        container.appendChild(Na__Dom__Field('Name', name));
+        main.body.appendChild(Na__Dom__Field('Name', name));
 
         const paperRow = Na__Dom__El('div', 'aura-field-pair');
         const sizes = Object.keys(Na__AppConfig__Get('Sheet__PaperSizes', {})).map((k) => ({ value: k, label: k }));
         const size = Na__Dom__Select(sizes, sheet.Sheet__PaperSize);
-        size.addEventListener('change', () => { sheet.Sheet__PaperSize = size.value; changed(true); Na__Surface__Fit(); });
+        size.addEventListener('change', () => { sheet.Sheet__PaperSize = size.value; changed(true); Na__SheetNav__Fit(); });
         const turn = Na__Dom__Select([{ value: 'landscape', label: 'Landscape' }, { value: 'portrait', label: 'Portrait' }], sheet.Sheet__Orientation);
-        turn.addEventListener('change', () => { sheet.Sheet__Orientation = turn.value; changed(true); Na__Surface__Fit(); });
+        turn.addEventListener('change', () => { sheet.Sheet__Orientation = turn.value; changed(true); Na__SheetNav__Fit(); });
         paperRow.appendChild(Na__Dom__Field('Paper', size));
         paperRow.appendChild(Na__Dom__Field('Orientation', turn));
-        container.appendChild(paperRow);
+        main.body.appendChild(paperRow);
+        const remove = Na__Dom__IconButton('trash', 'aura-button aura-button--danger', 'Delete sheet');
+        remove.addEventListener('click', () => Na__Tabs__Delete(sheet));
+        main.body.appendChild(remove);
 
-        container.appendChild(Na__Dom__El('h3', 'aura-panel__subtitle', 'Title block'));
-        container.appendChild(Na__Workspace__FieldInput(sheet, 'Client', 'Client'));
-        container.appendChild(Na__Workspace__FieldInput(sheet, 'Address', 'Address', { multiline: true }));
-        container.appendChild(Na__Workspace__FieldInput(sheet, 'Title', 'Title'));
+        const block = Na__Panels__Section(container, { id: 'sheet-title', title: 'Title block' });
+        block.body.appendChild(Na__Workspace__FieldInput(sheet, 'Client', 'Client'));
+        block.body.appendChild(Na__Workspace__FieldInput(sheet, 'Address', 'Address', { multiline: true }));
+        block.body.appendChild(Na__Workspace__FieldInput(sheet, 'Title', 'Title'));
         const auto = Na__Format__SheetScale((sheet.Sheet__Viewports || []).map((v) => v.Viewport__ScaleDenominator), sheet.Sheet__PaperSize);
-        container.appendChild(Na__Workspace__FieldInput(sheet, 'Scale', 'Scale', { placeholder: `${auto} (from the views)` }));
+        block.body.appendChild(Na__Workspace__FieldInput(sheet, 'Scale', 'Scale', { placeholder: `${auto} (from the views)` }));
         const pair1 = Na__Dom__El('div', 'aura-field-pair');
         pair1.appendChild(Na__Workspace__FieldInput(sheet, 'Date', 'Date', { placeholder: Na__Format__Date() }));
         pair1.appendChild(Na__Workspace__FieldInput(sheet, 'DrawingNo', 'Drawing No.'));
-        container.appendChild(pair1);
+        block.body.appendChild(pair1);
         const pair2 = Na__Dom__El('div', 'aura-field-pair');
         pair2.appendChild(Na__Workspace__FieldInput(sheet, 'DrawnBy', 'Drawn by'));
         pair2.appendChild(Na__Workspace__FieldInput(sheet, 'CheckedBy', 'Checked by'));
-        container.appendChild(pair2);
+        block.body.appendChild(pair2);
 
         // Revisions: the newest last, as the title block lists them
-        container.appendChild(Na__Dom__El('h3', 'aura-panel__subtitle', 'Revisions'));
+        const revs = Na__Panels__Section(container, { id: 'sheet-revisions', title: 'Revisions' });
+        const count = (sheet.Sheet__Fields.Revisions || []).length;
+        revs.meta.textContent = count ? String(count) : '';
         const list = Na__Dom__El('div', 'aura-revisions');
         (sheet.Sheet__Fields.Revisions || []).forEach((rev, i) => {
             const row = Na__Dom__El('div', 'aura-revisions__row');
@@ -229,29 +264,38 @@
                 input.addEventListener('input', () => { rev[key] = input.value; Na__AppState__Touch('sheet', sheet.Sheet__Id); Na__Surface__Render(sheet); });
                 row.appendChild(input);
             });
-            const remove = Na__Dom__IconButton('close', 'aura-icon-button aura-icon-button--quiet', null, 'Remove this revision');
-            remove.addEventListener('click', () => { sheet.Sheet__Fields.Revisions.splice(i, 1); changed(true); Na__Workspace__RenderPanel(); });
-            row.appendChild(remove);
+            const drop = Na__Dom__IconButton('close', 'aura-icon-button aura-icon-button--quiet', null, 'Remove this revision');
+            drop.addEventListener('click', () => { sheet.Sheet__Fields.Revisions.splice(i, 1); changed(true); Na__Workspace__RenderSheetPanel(); });
+            row.appendChild(drop);
             list.appendChild(row);
         });
-        container.appendChild(list);
+        revs.body.appendChild(list);
         const add = Na__Dom__IconButton('plus', 'aura-button', 'Add revision');
         add.addEventListener('click', () => {
-            const revs = sheet.Sheet__Fields.Revisions;
-            revs.push({ Rev: String.fromCharCode(65 + Math.min(25, revs.length)), Date: Na__Format__Date(), Details: '' });
+            const all = sheet.Sheet__Fields.Revisions;
+            all.push({ Rev: String.fromCharCode(65 + Math.min(25, all.length)), Date: Na__Format__Date(), Details: '' });
             changed(true);
-            Na__Workspace__RenderPanel();
+            Na__Workspace__RenderSheetPanel();
         });
-        container.appendChild(add);
+        revs.body.appendChild(add);
+    }
 
-        const remove = Na__Dom__IconButton('trash', 'aura-button aura-button--danger', 'Delete sheet');
-        remove.addEventListener('click', () => Na__Tabs__Delete(sheet));
-        container.appendChild(remove);
+    // The left panel drawn again (a new sheet, a revision added or removed)
+    function Na__Workspace__RenderSheetPanel() {
+        const left = Na__Workspace__State.left;
+        const sheet = Na__AppState__ActiveSheet();
+        if (!left) return;
+        Na__Dom__Clear(left);
+        if (sheet) Na__Workspace__SheetPanel(left, sheet);
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Show the Panel for What Is Selected (the sheet when nothing is)
+    // FUNCTION | The Right Panel for What Is Selected: Viewport, Art direction points, Note
+    // ------------------------------------------------------------
+    // Each section always there, folded or open as left; one with nothing
+    // selected for it says how to start. The Art direction points section of a
+    // selected viewport lends it the engine while it is open.
     // ------------------------------------------------------------
     function Na__Workspace__RenderPanel(focusWords) {
         const panel = Na__Workspace__State.panel;
@@ -262,11 +306,19 @@
         const sel = Na__AppState__Data.selection;
         const viewport = sel && sel.kind === 'viewport' ? Na__DrawingSet__Viewport(sheet, sel.id) : null;
         const annotation = sel && sel.kind === 'annotation' ? Na__DrawingSet__Annotation(sheet, sel.id) : null;
-        const body = Na__Dom__El('div', 'aura-panel__section');
-        if (viewport) Na__ViewportEditor__Panel(body, viewport);
-        else if (annotation) Na__Annotations__Panel(body, annotation, focusWords === true);
-        else Na__Workspace__SheetPanel(body, sheet);
-        panel.appendChild(body);
+
+        const vp = Na__Panels__Section(panel, { id: 'sheet-viewport', title: 'Viewport' });
+        if (viewport) Na__ViewportEditor__Panel(vp.body, viewport);
+        else vp.body.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Select a viewport on the sheet, or add one with Add a view over the sheet.'));
+
+        const points = Na__Panels__Section(panel, { id: 'sheet-points', title: 'Art direction points', onToggle: (open) => Na__ViewportPoints__SetOpen(open, viewport) });
+        if (viewport) Na__ViewportPoints__Panel(points, viewport);
+        else points.body.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Select a viewport to edit its art direction points on its picture. A 3D view of a saved view shares the points the 3D Environment gives that view.'));
+
+        const note = Na__Panels__Section(panel, { id: 'sheet-note', title: 'Note' });
+        if (annotation) Na__Annotations__Panel(note.body, annotation, focusWords === true);
+        else note.body.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Select a note, or place one with Note (N) or Leader (L).'));
+        if (annotation && !note.IsOpen()) note.SetOpen(true);                    // <-- A note just placed is written straight away
     }
     // ------------------------------------------------------------
 
@@ -305,21 +357,42 @@
 // REGION | Mount and Show
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | The Two Panels' Grips (the tab's grid reads their widths)
+    // ------------------------------------------------------------
+    function Na__Workspace__WireGrips(root) {
+        const w = Na__AppConfig__Get('Panels__WidthPx', {});
+        [['left', '--aura-sheet-left-width', 'sheet', w.SheetLeft || 280], ['right', '--aura-sheet-right-width', 'selection', w.SheetRight || 320]].forEach(([side, cssVar, label, initial]) => {
+            const grip = root.querySelector(`[data-sheet-grip="${side}"]`);
+            const column = grip && grip.closest('.aura-column');
+            if (!grip || !column) return;
+            Na__Panels__Resizable({ grip, panel: column, host: root, cssVar, side, id: `sheet-${side}`, label, min: w.Min || 240, max: w.Max || 640, initial });
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Workspace in Its Skeleton (index.html), Once
     // ------------------------------------------------------------
     function Na__Workspace__Mount(root, onSheetChanged) {
         const S = Na__Workspace__State;
         S.root = root;
         S.panel = root.querySelector('[data-sheet-panel]');
+        S.left = root.querySelector('[data-sheet-left]');
         S.onSheetChanged = onSheetChanged || null;
         Na__Workspace__BuildToolbar(root.querySelector('[data-sheet-toolbar]'));
-        Na__Surface__Mount(root.querySelector('[data-sheet-desk]'));
+        Na__Workspace__WireGrips(root);
+        const desk = root.querySelector('[data-sheet-desk]');
+        Na__SheetPc__Attach(desk);                                               // <-- Before the surface: a pan is claimed before a tool sees the press
+        Na__SheetTouch__Attach(desk);
+        Na__Surface__Mount(desk);
         Na__ViewportEditor__Mount();
+        Na__ViewportPoints__Mount();
         Na__Annotations__Mount((focusWords) => Na__Workspace__RenderPanel(focusWords));
         Na__Surface__On('paper', (event, mm) => {
             if (Na__AppState__Data.tool === 'select') { Na__AppState__Select(null); return null; }
             return Na__Annotations__OnPaper(event, mm);
         });
+        Na__Surface__On('desk', () => Na__AppState__Select(null));               // <-- The grey round the paper: nothing to place there
         Na__RenderQueue__OnStatus((text) => { if (S.status) S.status.textContent = text; });
         Na__AppState__On('select', () => Na__Workspace__RenderPanel());
         Na__AppState__On('tool', () => Na__Workspace__MarkTool());
@@ -336,7 +409,9 @@
         Na__RenderQueue__Clear();                                                // <-- Another sheet's pictures no longer wait
         Na__AppState__Select(null);
         Na__Surface__Render(sheet);
+        if (sheet) requestAnimationFrame(() => Na__SheetNav__FitOnce(sheet.Sheet__Id));   // <-- The desk has its size once shown
         Na__Workspace__RefreshAddView();
+        Na__Workspace__RenderSheetPanel();
         Na__Workspace__RenderPanel();
         Na__Workspace__MarkTool();
     }

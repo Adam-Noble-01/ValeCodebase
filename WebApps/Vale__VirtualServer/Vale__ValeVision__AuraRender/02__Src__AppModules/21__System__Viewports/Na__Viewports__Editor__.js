@@ -21,10 +21,18 @@
 // - Drag a viewport to move it; drag a handle to resize it; Delete removes it.
 // - The pictures come from the render queue; until one arrives its frame shows
 //   "Drawing in pen and wash".
+// - ART DIRECTION POINTS: a viewport made from the 3D Environment's view saves
+//   that view with its points; the point editor over a viewport's picture
+//   (Na__Viewports__ArtDirection__) follows the frame as it moves and resizes.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
+// - The panel is the right panel's Viewport section (its title is the
+//   section's); the 3D Environment's view is saved with its points; the
+//   overlay lays the point editor back over the picture after every redraw.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -39,12 +47,13 @@
     import { Na__AppState__Data, Na__AppState__Select, Na__AppState__Touch, Na__AppState__On } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Dom__El, Na__Dom__Svg, Na__Dom__Field, Na__Dom__Select, Na__Dom__IconButton } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__Clamp, Na__Format__Round } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__EngineHost__Presets, Na__EngineHost__Camera } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__Presets, Na__EngineHost__Camera, Na__EngineHost__EnvironmentPoints } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__Paper__Solve, Na__Paper__ClampFrame } from '../20__System__DrawingSheets/Na__DrawingSheets__Paper__.js';
     import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import { Na__DrawingSet__NewViewport, Na__DrawingSet__NewSavedView, Na__DrawingSet__Viewport } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
     import { Na__Views__IsScaled, Na__Views__Title, Na__Views__ScaleLabel, Na__Views__MaxScaledFrame, Na__Views__Pan } from './Na__Viewports__Views__.js';
     import { Na__RenderQueue__Picture, Na__RenderQueue__Request } from './Na__Viewports__RenderQueue__.js';
+    import { Na__ViewportPoints__Place } from './Na__Viewports__ArtDirection__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -135,6 +144,7 @@
     function Na__ViewportEditor__DrawLayer(group, sheet) {
         const defs = Na__Dom__Svg('defs', {}, group);
         (sheet.Sheet__Viewports || []).forEach((v) => Na__ViewportEditor__DrawOne(group, defs, v, Na__AppState__Data.doc));
+        Na__ViewportPoints__Place();                                             // <-- A pan or a new scale gives the point editor a new camera
     }
     // ------------------------------------------------------------
 
@@ -142,6 +152,7 @@
     // FUNCTION | The Selected Viewport's Handles (the overlay)
     // ------------------------------------------------------------
     function Na__ViewportEditor__DrawOverlay(group, sheet) {
+        Na__ViewportPoints__Place();                                             // <-- The point editor over a picture follows it
         const viewport = Na__ViewportEditor__Selected(sheet);
         if (!viewport) return;
         const f = viewport.Viewport__FrameMm;
@@ -276,7 +287,7 @@
         if (!sheet || !doc) return null;
         const o = Object.assign({}, options);
         if (o.kind === 'Perspective' && o.live) {
-            const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera);
+            const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera, Na__EngineHost__EnvironmentPoints());
             doc.AuraDrawingSet__SavedViews.push(view);
             o.savedViewId = view.View__Id;
         }
@@ -329,8 +340,7 @@
             if (redrawPicture) Na__ViewportEditor__State.failures.delete(viewport.Viewport__Id);
         };
         const kindLabel = { Elevation: 'Elevation (to scale)', Plan: 'Roof plan (to scale)', Perspective: '3D view' }[viewport.Viewport__Kind];
-        container.appendChild(Na__Dom__El('h2', 'aura-panel__title', 'Viewport'));
-        container.appendChild(Na__Dom__El('p', 'aura-panel__note', kindLabel));
+        container.appendChild(Na__Dom__El('p', 'aura-panel__note', kindLabel));          // <-- Its title is the section's
 
         const title = Na__Dom__El('input', 'aura-input', null, { type: 'text', maxlength: 80, placeholder: Na__Views__Title(Object.assign({}, viewport, { Viewport__Title: '' }), doc) });
         title.value = viewport.Viewport__Title || '';
@@ -377,7 +387,7 @@
             container.appendChild(Na__Dom__Field('View', pick));
             const live = Na__Dom__IconButton('camera', 'aura-button', 'Use the 3D Environment\'s view', 'Save the camera as it is in the 3D Environment and show it here');
             live.addEventListener('click', () => {
-                const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera);
+                const view = Na__DrawingSet__NewSavedView(`View ${doc.AuraDrawingSet__SavedViews.length + 1}`, Na__EngineHost__Camera().Camera, Na__EngineHost__EnvironmentPoints());
                 doc.AuraDrawingSet__SavedViews.push(view);
                 viewport.Viewport__CameraSource = { SavedViewId: view.View__Id };
                 changed(true);

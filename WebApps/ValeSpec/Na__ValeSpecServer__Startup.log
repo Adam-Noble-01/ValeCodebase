@@ -961,3 +961,11 @@
 =============================================================================
 [REQUEST] 29-Oct-2026 - 09:23 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
 [REQUEST] 29-Oct-2026 - 09:23 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 12:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 12:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -

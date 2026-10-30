@@ -26,8 +26,14 @@
 // - THE ENGINE'S INTERFACE MODULES ARE STILL IN ITS GRAPH: its render graph
 //   reports to them (status line, graph nodes, point overlay, view badge).
 //   They are given somewhere to write: Ui.Status is AURA's status line, the
-//   point layer is a detached element, and two hidden stand-ins carry the ids
-//   the view badge looks up.
+//   point layer is a detached element until the 3D Environment hands over its
+//   real one (AttachPoints), and two hidden stand-ins carry the ids the view
+//   badge looks up.
+// - ART DIRECTION POINTS are edited with the engine's own editor (its handles,
+//   rings, node of sliders and list), one set a view: a saved view's, the 3D
+//   Environment's unsaved view's, or a sheet viewport's. A still draws with
+//   its view's points; a viewport being edited on its sheet borrows the live
+//   engine (Borrow, Release).
 // - STILLS (Na__EngineHost__RenderStill) are PainterlyNPR's PNG export, kept in
 //   memory: the camera swapped in, the whole graph run at a scale, the
 //   compositor read back, everything put back. The engine's sheet is 300 x 200
@@ -41,6 +47,30 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.4.0 (AURA 0.3.0)
+// - Art Direction Points (region of that name): the engine's own point
+//   editor (65__ArtDirection__InfluencePoints: its handles, rings and node of
+//   sliders over the drawing, its list) given a real layer and list by AURA,
+//   one set of points a view put in and taken out, placing a point as the
+//   engine's sheet does, its keys, and the live engine lent to a sheet's
+//   viewport while that viewport's points are edited (Borrow, Release).
+// - RenderStill takes a view's points (request.points) and draws without
+//   Show influence; the overlay sits the still out.
+//
+// 30-Oct-2026 - Version 1.3.0 (AURA 0.2.2)
+// - WorkMode and SetWorkMode: the live view's Rendered / Proxy switch, the
+//   engine's own (RenderGraph SetProxy, v0.6.0), for the 3D tab's toggle.
+//
+// 30-Oct-2026 - Version 1.2.0 (AURA 0.2.0)
+// - Synced to PainterlyNPR v0.6.0 (e28fba5). Boot keeps the scene's vertex
+//   buffer as Gpu.Buffers.Scene, as the engine's Init now does; the Assets
+//   drawer Init builds is the engine app's own, not AURA's.
+//
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.1.3)
+// - AttachNavigation: the engine's navigation (PainterlyNPR v0.5.4,
+//   74__Camera__Navigation) on a host element. Needs the engine synced past
+//   v0.5.0: the import is from that new folder.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build against PainterlyNPR v0.5.0 (29bbcf1).
 //
@@ -55,6 +85,7 @@
     import {
         PainterlyNPR__Engine__BASE_PX_PER_MM   as  BASE_PX_PER_MM,
         PainterlyNPR__Engine__ENGINE_VERSION   as  ENGINE_VERSION,
+        PainterlyNPR__Engine__MAX_POINTS       as  MAX_POINTS,
         PainterlyNPR__Engine__SHEET_HEIGHT_MM  as  SHEET_HEIGHT_MM,
         PainterlyNPR__Engine__SHEET_WIDTH_MM   as  SHEET_WIDTH_MM
     } from 'PainterlyNPR/02__AppData/PainterlyNPR__AppData__Engine__.mjs';
@@ -64,6 +95,7 @@
         PainterlyNPR__RenderGraph__Bump,
         PainterlyNPR__RenderGraph__Request,
         PainterlyNPR__RenderGraph__RunAll,
+        PainterlyNPR__RenderGraph__SetProxy,
         PainterlyNPR__RenderGraph__Graph  as  Graph
     } from 'PainterlyNPR/20__System__RenderGraph/PainterlyNPR__RenderGraph__Graph__.mjs';
     import {
@@ -87,6 +119,7 @@
         PainterlyNPR__BoundaryDistance__FS_JFA_INIT  as  FS_JFA_INIT,
         PainterlyNPR__BoundaryDistance__FS_JFA_STEP  as  FS_JFA_STEP
     } from 'PainterlyNPR/24__Pass__DerivedFields/PainterlyNPR__BoundaryDistance__Pass__.mjs';
+    import { PainterlyNPR__MaterialClasses__MATERIAL_CLASSES as MATERIAL_CLASSES } from 'PainterlyNPR/13__Scene__MaterialClasses/PainterlyNPR__MaterialClasses__Table__.mjs';
     import { PainterlyNPR__InkLayer__INK_FAMILIES as INK_FAMILIES } from 'PainterlyNPR/34__Stroke__InkCompositing/PainterlyNPR__InkLayer__InkFamilies__.mjs';
     import {
         PainterlyNPR__InkLayer__FS_LINES   as  FS_LINES,
@@ -99,6 +132,23 @@
     import { PainterlyNPR__Compositor__FS_COMPOSITE as FS_COMPOSITE } from 'PainterlyNPR/56__Paper__Compositor/PainterlyNPR__Compositor__Pass__.mjs';
     import { PainterlyNPR__Kuwahara__Connect } from 'PainterlyNPR/57__Wash__KuwaharaFilter/PainterlyNPR__Kuwahara__Host__.mjs';
     import { PainterlyNPR__SkyClouds__Connect, PainterlyNPR__SkyClouds__WashSource } from 'PainterlyNPR/60__Atmos__SkyAndClouds/PainterlyNPR__SkyClouds__Host__.mjs';
+    import {
+        PainterlyNPR__ArtDirection__AnchorAt,
+        PainterlyNPR__ArtDirection__MakePoint,
+        PainterlyNPR__ArtDirection__INDICATED_MATERIALS  as  INDICATED_MATERIALS,
+        PainterlyNPR__ArtDirection__POINT_TYPES          as  POINT_TYPES
+    } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Points__.mjs';
+    import {
+        PainterlyNPR__Interface__DuplicatePoint,
+        PainterlyNPR__Interface__PointById,
+        PainterlyNPR__Interface__PointChanged,
+        PainterlyNPR__Interface__RemovePoint,
+        PainterlyNPR__Interface__SelectPoint,
+        PainterlyNPR__Interface__SetPointValue,
+        PainterlyNPR__Interface__TogglePoint
+    } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs';
+    import { PainterlyNPR__Interface__RenderPointList } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointList__.mjs';
+    import { PainterlyNPR__Interface__UpdateOverlay } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';
     import { PainterlyNPR__ArtDirection__FS_FIELD as FS_FIELD } from 'PainterlyNPR/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__FieldShader__.mjs';
     import {
         PainterlyNPR__CameraRig__ApplyPreset,
@@ -107,12 +157,15 @@
         PainterlyNPR__CameraRig__Zoom
     } from 'PainterlyNPR/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Camera__.mjs';
     import { PainterlyNPR__CameraRig__CAMERA_PRESETS as CAMERA_PRESETS } from 'PainterlyNPR/70__Camera__ViewTypes/PainterlyNPR__CameraRig__Presets__.mjs';
+    import { PainterlyNPR__Navigation__Attach } from 'PainterlyNPR/74__Camera__Navigation/PainterlyNPR__Navigation__OrbitMode__.mjs';
     import {
         PainterlyNPR__Interface__Get,
         PainterlyNPR__Interface__Set,
         PainterlyNPR__Interface__Ui  as  Ui
     } from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__Dom__.mjs';
     import { PainterlyNPR__Interface__CONTROLS as CONTROLS } from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__Controls__.mjs';
+    import { PainterlyNPR__Interface__SheetMm } from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__CameraControls__.mjs';
+    import { PainterlyNPR__TypeIn__Wire } from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__TypeIn__.mjs';
     import ControlsConfig from 'PainterlyNPR/80__System__HudOverlay/Na__Interface__Controls__Config.json' with { type: 'json' };
     import { PainterlyNPR__PassViewer__FS_VIEW as FS_VIEW } from 'PainterlyNPR/81__Hud__PassViewer/PainterlyNPR__PassViewer__Shader__.mjs';
     import { Na__Format__ParseReadout } from '../03__AppUtils/Na__AppUtils__Format__.js';
@@ -128,8 +181,22 @@
         booted     : false,
         canvas     : null,
         busy       : false,                      // <-- A still is being drawn: the live view waits
-        listeners  : []                          // <-- Told when the engine's settings change: (reason) => {}
+        listeners  : [],                         // <-- Told when the engine's settings change: (reason) => {}
+        onPoints   : null,                       // <-- Told when the points were edited (the 3D Environment saves them)
+        borrowed   : null,                       // <-- While a sheet's viewport has the live engine: what to put back
+        pointsTick : 0,                          // <-- One edited-points call a frame, however many events
+        listHome   : null                        // <-- Where the engine's point list lives when no sheet has borrowed it
     };
+
+    // MODULE CONSTANTS | The Engine's Own Stylesheets for Its Point Editor, in Its Cascade Order
+    // ------------------------------------------------------------
+    // Reached through the import map, so they follow each engine sync.
+    // ------------------------------------------------------------
+    const Na__EngineHost__POINT_STYLES = [
+        'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointHandles__.css',
+        'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointNode__.css',
+        'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointGroups__.css'
+    ];
 
     // MODULE CONSTANTS | The Settings AURA Keeps (everything a render depends on, except the camera and points)
     // ------------------------------------------------------------
@@ -213,6 +280,7 @@
 
             // Vertex arrays: the scene (position, normal, ids), ribbons, debug lines, accent dabs, and an empty one for fullscreen passes
             const scene = gl.createBuffer();
+            Gpu.Buffers.Scene = scene;                                             // <-- As the engine's Init since v0.6.0: a scene rebuilt with placed assets uploads into it
             gl.bindBuffer(gl.ARRAY_BUFFER, scene);
             gl.bufferData(gl.ARRAY_BUFFER, Scene.Vertices, gl.STATIC_DRAW);
             Gpu.Vaos.Scene = gl.createVertexArray();
@@ -327,8 +395,12 @@
 
     // FUNCTION | The Live Camera, a Copy (and the preset it came from, or "Custom")
     // ------------------------------------------------------------
+    // The 3D Environment's, even while a sheet's viewport has borrowed the
+    // engine: "the 3D Environment's view now" means its camera, not the lent one.
+    // ------------------------------------------------------------
     function Na__EngineHost__Camera() {
-        return { Camera: JSON.parse(JSON.stringify(State.Camera)), Preset: State.CameraPreset };
+        const b = Na__EngineHost__State.borrowed;
+        return { Camera: JSON.parse(JSON.stringify(b ? b.Camera : State.Camera)), Preset: b ? b.Preset : State.CameraPreset };
     }
     // ------------------------------------------------------------
 
@@ -366,6 +438,39 @@
 
     function Na__EngineHost__Redraw() {
         PainterlyNPR__RenderGraph__Request('Navigate');                          // <-- The preview at once, refined when still
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Navigate the Live Camera by Hand: { Detach, Home }
+    // ------------------------------------------------------------
+    // The engine's own navigation (PainterlyNPR 74__Camera__Navigation, ValeVision
+    // 3D's orbit mode): drags, the wheel, fingers and keys on the element, each
+    // move a camera bump and the navigation preview. options as the engine's
+    // Attach: Active, OnMove, OnSettle, OnReset and the rest.
+    // ------------------------------------------------------------
+    function Na__EngineHost__AttachNavigation(element, options) {
+        return PainterlyNPR__Navigation__Attach(element, options);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Live View's Work Mode: 'Rendered' or 'Proxy'
+    // ------------------------------------------------------------
+    // The engine's own switch (PainterlyNPR v0.6.0, Graph.Proxy): Proxy keeps the
+    // quick navigation preview and never refines into pen and wash, so the
+    // scene can be worked on without the renderer kicking in; Rendered draws
+    // the pen and wash when the camera rests. Only the live view: a sheet's
+    // still runs the whole graph whatever the mode.
+    // ------------------------------------------------------------
+    function Na__EngineHost__WorkMode() {
+        return Graph.Proxy ? 'Proxy' : 'Rendered';
+    }
+
+    function Na__EngineHost__SetWorkMode(mode) {
+        const proxy = mode === 'Proxy';
+        if (proxy !== !!Graph.Proxy) PainterlyNPR__RenderGraph__SetProxy(proxy);
+        return Na__EngineHost__WorkMode();
     }
     // ------------------------------------------------------------
 
@@ -493,23 +598,354 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Art Direction Points
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Point Types in the Engine's Order ([{ Key, Label, Glyph }]), and How Many a View Holds
+    // ------------------------------------------------------------
+    function Na__EngineHost__PointTypes() {
+        return Object.entries(POINT_TYPES).sort((a, b) => (a[1].Code || 0) - (b[1].Code || 0))
+            .map(([key, type]) => ({ Key: key, Label: type.Label || key, Glyph: type.Glyph || '' }));
+    }
+
+    function Na__EngineHost__MaxPoints() { return MAX_POINTS; }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Engine Points From Saved Ones
+    // ------------------------------------------------------------
+    // Only types the engine knows, each made by the engine's own MakePoint, so a
+    // set saved by an older engine gains any new value at its default. A point
+    // keeps its seed (manifest section 10: stored with the point) and takes a
+    // fresh id: an id only tells the points of one view apart.
+    // ------------------------------------------------------------
+    function Na__EngineHost__MakePoints(points) {
+        return (Array.isArray(points) ? points : [])
+            .filter((p) => p && POINT_TYPES[p.Type] && Array.isArray(p.PaperMm) && p.PaperMm.length === 2)
+            .map((p) => {
+                const options = JSON.parse(JSON.stringify(p));
+                delete options.Id;
+                return PainterlyNPR__ArtDirection__MakePoint(p.Type, Number(p.PaperMm[0]) || 0, Number(p.PaperMm[1]) || 0, options);
+            });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Live Points as Plain Data (what a view keeps), and Their Signature
+    // ------------------------------------------------------------
+    // The signature leaves out the ids, and an object-anchored point's place on
+    // the paper (the engine re-places it whenever the camera moves), so it
+    // changes only when a point is edited.
+    // ------------------------------------------------------------
+    function Na__EngineHost__Points() {
+        return JSON.parse(JSON.stringify(State.Points || []));
+    }
+
+    // The 3D Environment's points, even while a sheet's viewport has borrowed the engine
+    function Na__EngineHost__EnvironmentPoints() {
+        const b = Na__EngineHost__State.borrowed;
+        return JSON.parse(JSON.stringify((b ? b.Points : State.Points) || []));
+    }
+
+    function Na__EngineHost__PointsSignature() {
+        return JSON.stringify((State.Points || []).map((p) => {
+            const copy = Object.assign({}, p);
+            delete copy.Id;
+            if (copy.Anchor === 'Object' && copy.World) delete copy.PaperMm;
+            return copy;
+        }));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a View's Points in the Engine (none selected, nothing armed)
+    // ------------------------------------------------------------
+    function Na__EngineHost__SetPoints(points, quiet) {
+        State.Points = Na__EngineHost__MakePoints(points);
+        Ui.SelectedPointId = null;
+        Ui.Placing = null;
+        PainterlyNPR__RenderGraph__Bump('ArtDirection');
+        Na__EngineHost__RefreshPoints();
+        if (!quiet) PainterlyNPR__RenderGraph__Request('Refine');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Give the Engine's Point Editor Its Places, and Show or Hide It
+    // ------------------------------------------------------------
+    // PainterlyNPR's editor draws its handles, rings and the selected point's
+    // node of sliders into Ui.Points, measuring the drawing from Ui.Canvas (only
+    // ever measured: the engine draws through its WebGL context), and its list
+    // into #PainterlyNPR__App__PointList, one a page (Na__EngineHost__PointList),
+    // which lives in listHome until a sheet borrows it. It shows the handles
+    // while its own Art direction tab is open (Ui.ActiveTab), so AURA sets that
+    // tab while its Art direction points section is open. A point's readouts can
+    // be typed into, as in the engine's own panel. The editor's own stylesheets
+    // are linked once, from the pinned engine.
+    // ------------------------------------------------------------
+    function Na__EngineHost__AttachPoints(layer, element, listHome) {
+        if (layer) Ui.Points = layer;
+        if (element) Ui.Canvas = element;
+        if (listHome) {
+            Na__EngineHost__State.listHome = listHome;
+            listHome.appendChild(Na__EngineHost__PointList());
+        }
+        Na__EngineHost__LinkPointStyles();
+        PainterlyNPR__TypeIn__Wire();                                           // <-- Once: a readout clicked, or Entered, becomes a box to type in
+        Na__EngineHost__RefreshPoints();
+    }
+
+    // The engine's point list: one element a page, moved to wherever points are edited
+    function Na__EngineHost__PointList() {
+        let list = document.getElementById('PainterlyNPR__App__PointList');
+        if (!list) {
+            list = document.createElement('div');
+            list.id = 'PainterlyNPR__App__PointList';
+            list.className = 'PainterlyNPR__PointList';
+        }
+        return list;
+    }
+
+    // HELPER FUNCTION | Link the Engine's Point Editor Stylesheets (once)
+    function Na__EngineHost__LinkPointStyles() {
+        if (document.querySelector('link[data-engine-styles]') || typeof import.meta.resolve !== 'function') return;
+        Na__EngineHost__POINT_STYLES.forEach((specifier) => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = import.meta.resolve(specifier);
+            link.dataset.engineStyles = 'points';
+            document.head.appendChild(link);
+        });
+    }
+
+    function Na__EngineHost__ShowPoints(show) {
+        Ui.ActiveTab = show ? 'ArtDirection' : 'Scene';
+        if (!show) Ui.Placing = null;
+        Na__EngineHost__RefreshPoints();
+    }
+
+    // The list and the handles drawn again: a new view, a resize, a section opened
+    function Na__EngineHost__RefreshPoints() {
+        if (!Na__EngineHost__State.booted) return;
+        if (document.getElementById('PainterlyNPR__App__PointList')) PainterlyNPR__Interface__RenderPointList();
+        Na__EngineHost__RedrawPointOverlay();
+    }
+
+    // The handles alone (the drawing under them moved or was resized)
+    function Na__EngineHost__RedrawPointOverlay() {
+        if (Na__EngineHost__State.booted && Ui.Points && Ui.Canvas) PainterlyNPR__Interface__UpdateOverlay();
+    }
+
+    // Show influence: the compositor tints what each point reaches (never on a sheet)
+    function Na__EngineHost__ShowInfluence(on) {
+        if (on !== undefined) {
+            State.ShowInfluence = !!on;
+            PainterlyNPR__RenderGraph__Bump('Overlay');
+            Na__EngineHost__RefreshPoints();
+            PainterlyNPR__RenderGraph__Request('Refine');
+        }
+        return !!State.ShowInfluence;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Arm a Point Type: the next press on the drawing places it (null disarms)
+    // ------------------------------------------------------------
+    function Na__EngineHost__ArmPoint(type) {
+        Ui.Placing = type && POINT_TYPES[type] ? type : null;
+        return Ui.Placing;
+    }
+
+    function Na__EngineHost__ArmedPoint() { return Ui.Placing || null; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Place the Armed Point Where a Press Fell: { point: { Number, Label } }, { full: true } or null
+    // ------------------------------------------------------------
+    // As PainterlyNPR's own sheet places one (its Wire): dropped on an object it
+    // anchors there and follows it as the camera moves; a Fade stays on the
+    // paper; Line control acts on that object alone; Indication dropped on
+    // brick, tile or paving takes all of that material within its reach. The
+    // point just placed is the one being edited: its sliders hang beside it.
+    // ------------------------------------------------------------
+    function Na__EngineHost__PlacePoint(event) {
+        const type = Ui.Placing;
+        if (!type) return null;
+        Ui.Placing = null;
+        if (State.Points.length >= MAX_POINTS) return { full: true };
+        const [x, y] = PainterlyNPR__Interface__SheetMm(event);
+        const point = PainterlyNPR__ArtDirection__MakePoint(type, x, y, { Anchor: type === 'Fade' ? 'Paper' : 'Object', Target: type === 'LineControl' ? 'Object' : 'Area' });
+        PainterlyNPR__ArtDirection__AnchorAt(point, x, y);
+        const material = MATERIAL_CLASSES[point.MaterialId];
+        if (point.ObjectId < 0) { point.Anchor = 'Paper'; point.Target = 'Area'; }
+        else if (type === 'Indication' && material && INDICATED_MATERIALS.includes(material.Key)) point.Target = 'Material';   // <-- Dropped on brick: all the brick it reaches
+        State.Points.push(point);
+        PainterlyNPR__Interface__SelectPoint(point.Id, true);
+        PainterlyNPR__Interface__PointChanged();
+        Na__EngineHost__PointsEdited();
+        return { point: { Number: State.Points.indexOf(point) + 1, Label: POINT_TYPES[type].Label } };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Selected Point's Keys, as the Engine's Sheet Has Them: true when one was taken
+    // ------------------------------------------------------------
+    // Delete removes it (its neighbour is selected next), Ctrl+D duplicates it,
+    // [ and ] size it (Shift: 10 mm), H switches it off and on, Escape lets it
+    // go. Nothing while no point is selected or one is being placed.
+    // ------------------------------------------------------------
+    function Na__EngineHost__PointKey(e) {
+        const point = PainterlyNPR__Interface__PointById(Ui.SelectedPointId);
+        if (!point || Ui.Placing) return false;
+        const key = (e.key || '').toLowerCase();
+        if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey) PainterlyNPR__Interface__RemovePoint(point.Id);
+        else if (key === 'd' && (e.ctrlKey || e.metaKey) && !e.altKey) PainterlyNPR__Interface__DuplicatePoint(point.Id);
+        else if (['[', ']', '{', '}'].includes(e.key) && !e.ctrlKey && !e.metaKey) {
+            const step = (e.shiftKey ? 10 : 2) * (e.key === '[' || e.key === '{' ? -1 : 1);
+            PainterlyNPR__Interface__SetPointValue(point, 'RadiusMm', Math.min(140, Math.max(10, point.RadiusMm + step)), null);
+        }
+        else if (key === 'h' && !e.ctrlKey && !e.metaKey && !e.altKey) PainterlyNPR__Interface__TogglePoint(point.Id);
+        else if (e.key === 'Escape') PainterlyNPR__Interface__SelectPoint(null);
+        else return false;
+        Na__EngineHost__PointsEdited();
+        return true;
+    }
+
+    function Na__EngineHost__SelectedPoint() { return Ui.SelectedPointId; }
+
+    function Na__EngineHost__DeselectPoint() {
+        if (Ui.SelectedPointId === null) return false;
+        PainterlyNPR__Interface__SelectPoint(null);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hear When the Points Were Edited, and Say So
+    // ------------------------------------------------------------
+    // The engine's editor changes State.Points itself (a drag, a slider, a
+    // remove). Whoever holds the points now - the 3D Environment, or the
+    // sheet's viewport that borrowed the engine - is told once a frame at most,
+    // and compares the signature to decide whether there is anything to save.
+    // ------------------------------------------------------------
+    function Na__EngineHost__OnPointsEdited(fn) {
+        Na__EngineHost__State.onPoints = typeof fn === 'function' ? fn : null;
+    }
+
+    function Na__EngineHost__PointsEdited() {
+        const S = Na__EngineHost__State;
+        if (S.pointsTick) return;
+        S.pointsTick = requestAnimationFrame(() => {
+            S.pointsTick = 0;
+            const fn = S.borrowed ? S.borrowed.OnEdited : S.onPoints;
+            if (fn) { try { fn(); } catch (error) { console.error('[AURA EngineHost] Keeping the points failed:', error); } }
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Lend the Live Engine to a Sheet's Viewport While Its Points Are Edited
+    // ------------------------------------------------------------
+    // One engine a page. While a viewport's points are edited on its sheet, the
+    // live drawing becomes that viewport's: its camera and points in the
+    // engine, the editor's handles over its picture (layer), measured from a
+    // stand-in laid over the picture (element). The engine refines it as it
+    // would the 3D Environment, so a point dropped on the sheet anchors to what
+    // lies under it, and the refined drawing can stand in as the viewport's
+    // picture while it is edited. Always in pen and wash (never Proxy).
+    // Release puts the 3D Environment back as it was.
+    // options: { camera, points, layer, element, onEdited, onRelease }
+    // ------------------------------------------------------------
+    function Na__EngineHost__Borrow(options) {
+        Na__EngineHost__Release();
+        const S = Na__EngineHost__State;
+        S.borrowed = {
+            Camera: State.Camera, Preset: State.CameraPreset, Points: State.Points, Selected: Ui.SelectedPointId,
+            Layer: Ui.Points, Element: Ui.Canvas, ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence, Proxy: !!Graph.Proxy,
+            OnEdited: options.onEdited || null, OnRelease: options.onRelease || null
+        };
+        if (Graph.Proxy) PainterlyNPR__RenderGraph__SetProxy(false);
+        State.Camera = JSON.parse(JSON.stringify(options.camera));
+        State.CameraPreset = 'Custom';
+        State.Points = Na__EngineHost__MakePoints(options.points);
+        State.ShowInfluence = false;
+        Ui.SelectedPointId = null;
+        Ui.Placing = null;
+        Ui.Points = options.layer;
+        Ui.Canvas = options.element;
+        Ui.ActiveTab = 'ArtDirection';
+        PainterlyNPR__RenderGraph__Bump('Camera', 'ArtDirection', 'Overlay');
+        Na__EngineHost__RefreshPoints();
+        PainterlyNPR__RenderGraph__Request('Refine');
+    }
+
+    // The borrowed viewport's camera changed (a pan, a new scale or side)
+    function Na__EngineHost__BorrowCamera(camera) {
+        if (!Na__EngineHost__State.borrowed || !camera) return;
+        State.Camera = JSON.parse(JSON.stringify(camera));
+        PainterlyNPR__RenderGraph__Bump('Camera');
+        PainterlyNPR__RenderGraph__Request('Refine');
+    }
+
+    function Na__EngineHost__Borrowed() { return !!Na__EngineHost__State.borrowed; }
+
+    // The live engine's canvas: its refined drawing is the borrowed viewport's preview
+    function Na__EngineHost__LiveCanvas() { return Na__EngineHost__State.canvas; }
+
+    function Na__EngineHost__Release() {
+        const S = Na__EngineHost__State;
+        const b = S.borrowed;
+        if (!b) return;
+        if (S.pointsTick) {                                                     // <-- An edit not yet told: the viewport hears it before it lets go
+            cancelAnimationFrame(S.pointsTick);
+            S.pointsTick = 0;
+            if (b.OnEdited) { try { b.OnEdited(); } catch (error) { console.error(error); } }
+        }
+        S.borrowed = null;
+        Graph.Token++;                                                           // <-- The viewport's refinement stops at its next pass
+        State.Camera = b.Camera;
+        State.CameraPreset = b.Preset;
+        State.Points = b.Points;
+        State.ShowInfluence = b.Influence;
+        Ui.Points = b.Layer;
+        Ui.Canvas = b.Element;
+        Ui.ActiveTab = b.ActiveTab;
+        Ui.Placing = null;
+        Ui.SelectedPointId = PainterlyNPR__Interface__PointById(b.Selected) ? b.Selected : null;
+        if (b.Proxy) PainterlyNPR__RenderGraph__SetProxy(true);
+        PainterlyNPR__RenderGraph__Bump('Camera', 'ArtDirection', 'Overlay');
+        if (b.OnRelease) { try { b.OnRelease(); } catch (error) { console.error(error); } }
+        const list = Na__EngineHost__PointList();
+        if (S.listHome && list.parentElement !== S.listHome) S.listHome.appendChild(list);   // <-- The list goes home with the points
+        Na__EngineHost__RefreshPoints();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Stills for the Sheets
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Draw One Still: { camera, scale, controls } -> { canvas, widthPx, heightPx, ms }
+    // FUNCTION | Draw One Still: { camera, scale, controls, points } -> { canvas, widthPx, heightPx, ms }
     // ------------------------------------------------------------
     // PainterlyNPR's PNG export, kept in memory. The camera is swapped in and any
     // control overrides set, the whole graph runs at the scale (pixels per mm x
     // scale; every width is millimetres, so the drawing does not change), the
     // compositor is read back, and everything is put back as it was. The live
     // view is not redrawn here: the caller asks for that when it is shown again.
+    // points: the view's own Art Direction Points (copies: an object-anchored
+    // point is re-placed for this camera, the view's own data never). Show
+    // influence never reaches a sheet, and the point overlay sits the still out.
     // ------------------------------------------------------------
     function Na__EngineHost__RenderStill(request) {
         if (!Na__EngineHost__State.booted) throw new Error('The engine has not started.');
         const gl = Gpu.Gl;
         const scale = Math.max(0.25, Math.min(4, Number(request.scale) || 1));
         const started = performance.now();
-        const saved = { Camera: State.Camera, Preset: State.CameraPreset, Controls: [] };
+        const saved = { Camera: State.Camera, Preset: State.CameraPreset, Controls: [], Points: State.Points, Selected: Ui.SelectedPointId,
+                        ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence };
         Na__EngineHost__State.busy = true;
         Graph.Token++;                                                           // <-- A refinement in flight stops at its next pass
         let pixels = null, width = 0, height = 0, failure = null;
@@ -517,6 +953,11 @@
             State.Camera = JSON.parse(JSON.stringify(request.camera));
             State.CameraPreset = 'Custom';
             PainterlyNPR__RenderGraph__Bump('Camera');
+            if (Array.isArray(request.points)) State.Points = Na__EngineHost__MakePoints(request.points);
+            Ui.SelectedPointId = null;
+            Ui.ActiveTab = 'Scene';                                              // <-- The overlay hides itself: the still's points are not the live ones
+            State.ShowInfluence = false;
+            PainterlyNPR__RenderGraph__Bump('ArtDirection', 'Overlay');
             Object.entries(request.controls || {}).forEach(([key, value]) => {
                 const spec = CONTROLS[key];
                 if (!spec) return;
@@ -543,7 +984,11 @@
         saved.Controls.reverse().forEach(({ spec, value }) => { PainterlyNPR__Interface__Set(spec.Path, value); PainterlyNPR__RenderGraph__Bump(...spec.Bump); });
         State.Camera = saved.Camera;
         State.CameraPreset = saved.Preset;
-        PainterlyNPR__RenderGraph__Bump('Camera');
+        State.Points = saved.Points;
+        State.ShowInfluence = saved.Influence;
+        Ui.SelectedPointId = saved.Selected;
+        Ui.ActiveTab = saved.ActiveTab;
+        PainterlyNPR__RenderGraph__Bump('Camera', 'ArtDirection', 'Overlay');
         if (Gpu.Scale !== 1) {
             try { PainterlyNPR__GpuResources__SetScale(1); } catch (error) { console.error(error); }
             PainterlyNPR__RenderGraph__Bump('Size');
@@ -585,6 +1030,9 @@
         Na__EngineHost__Orbit,
         Na__EngineHost__Zoom,
         Na__EngineHost__Redraw,
+        Na__EngineHost__AttachNavigation,
+        Na__EngineHost__WorkMode,
+        Na__EngineHost__SetWorkMode,
         Na__EngineHost__Control,
         Na__EngineHost__SetControl,
         Na__EngineHost__Choices,
@@ -593,6 +1041,31 @@
         Na__EngineHost__Settings,
         Na__EngineHost__ApplySettings,
         Na__EngineHost__OnChange,
+        Na__EngineHost__PointTypes,
+        Na__EngineHost__MaxPoints,
+        Na__EngineHost__Points,
+        Na__EngineHost__EnvironmentPoints,
+        Na__EngineHost__PointsSignature,
+        Na__EngineHost__SetPoints,
+        Na__EngineHost__AttachPoints,
+        Na__EngineHost__PointList,
+        Na__EngineHost__ShowPoints,
+        Na__EngineHost__RefreshPoints,
+        Na__EngineHost__RedrawPointOverlay,
+        Na__EngineHost__ShowInfluence,
+        Na__EngineHost__ArmPoint,
+        Na__EngineHost__ArmedPoint,
+        Na__EngineHost__PlacePoint,
+        Na__EngineHost__PointKey,
+        Na__EngineHost__SelectedPoint,
+        Na__EngineHost__DeselectPoint,
+        Na__EngineHost__OnPointsEdited,
+        Na__EngineHost__PointsEdited,
+        Na__EngineHost__Borrow,
+        Na__EngineHost__BorrowCamera,
+        Na__EngineHost__Borrowed,
+        Na__EngineHost__LiveCanvas,
+        Na__EngineHost__Release,
         Na__EngineHost__RenderStill
     };
 

@@ -42,6 +42,10 @@
 //   breadcrumbs lead back here. The Gallery is signed-in staff only, so only
 //   employees, managers and developers ever see it.
 //
+// 30-Oct-2026 - Version 1.4.0 (ValeVision AURA)
+// - Open in AURA in Project Actions, for Managers and App Admins, on projects
+//   switched on in the Project Editor (ContentDetector canOpenAura).
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -440,7 +444,7 @@
                                         <span className="project-viewer__viewer-action-copied-message">Copied!</span>
                                     )}
                                 </button>
-                                {canUseAura() && (
+                                {canOpenAura(project) && (
                                     <a
                                         className="project-viewer__viewer-action-button project-viewer__viewer-action-button--aura"
                                         href={`/aura/?project=${encodeURIComponent(project.folderId)}`}

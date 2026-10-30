@@ -1,0 +1,180 @@
+/* =============================================================================
+ * VALEVISION AURA - PANELS: COLUMNS, GRIPS AND FOLDING SECTIONS
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__Panels__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Core UI Styles - Panels
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The side panels as ValeVision 3D's Layout Editor has them: columns
+ *              with a 6 px grip on the inner edge, and folding sections
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - A column's width is a custom property on its tab, written by the grip
+ *   (Na__AppUtils__Panels__): --aura-env-panel-width on the 3D Environment,
+ *   --aura-sheet-left-width and --aura-sheet-right-width on the sheets.
+ * - The sheets are three columns: the sheet's panel, the tools over the desk,
+ *   the selection's panel.
+ * - A section's chevron points down while folded and up while open, as the
+ *   parameter groups' do.
+ *
+ * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
+ * - Initial build.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Columns and Grips
+ * ----------------------------------------------------------------------------- */
+
+    .aura-column {
+        position                           : relative;
+        display                            : flex;
+        flex-shrink                        : 0;
+        min-height                         : 0;
+        background                         : var(--Aura_Surface);
+    }
+
+    .aura-column--left {
+        border-right                       : 1px solid var(--Aura_Border);
+    }
+
+    .aura-column--right {
+        border-left                        : 1px solid var(--Aura_Border);
+    }
+
+    #auraEnvironment .aura-column--right {
+        width                              : var(--aura-env-panel-width, var(--Aura_PanelWidth));
+    }
+
+    #auraSheets .aura-column--left {
+        width                              : var(--aura-sheet-left-width, 280px);
+    }
+
+    #auraSheets .aura-column--right {
+        width                              : var(--aura-sheet-right-width, 320px);
+    }
+
+    .aura-column > .aura-panel {
+        flex                               : 1 1 auto;
+        width                              : auto;
+        min-width                          : 0;
+        border-left                        : none;                         /* <-- The column draws the edge */
+        border-right                       : none;
+    }
+
+    .aura-grip {
+        flex                               : 0 0 6px;
+        cursor                             : col-resize;
+        background                         : transparent;
+        transition                         : background var(--Aura_Fast);
+        touch-action                       : none;
+    }
+
+    .aura-grip:hover,
+    .aura-grip:focus-visible {
+        background                         : rgba(47, 111, 159, 0.35);    /* <-- The Layout Editor's blue grip, in AURA's focus blue */
+        outline                            : none;
+    }
+
+    body.aura-is-resizing {
+        cursor                             : col-resize;
+        user-select                        : none;
+    }
+
+    body.aura-is-resizing .aura-env__canvas,
+    body.aura-is-resizing .aura-sheets__desk {
+        pointer-events                     : none;                         /* <-- A drag past the grip never orbits or pans */
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Sheets' Centre: the Tools Over the Desk
+ * ----------------------------------------------------------------------------- */
+
+    .aura-sheets__centre {
+        flex                               : 1;
+        min-width                          : 0;
+        min-height                         : 0;
+        display                            : flex;
+        flex-direction                     : column;
+    }
+
+    .aura-sheets__centre > .aura-sheets__desk {
+        flex                               : 1;
+        min-height                         : 0;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Folding Sections
+ * ----------------------------------------------------------------------------- */
+
+    .aura-section {
+        border-bottom                      : 1px solid var(--Aura_Border);
+    }
+
+    .aura-section__head {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+        width                              : 100%;
+        padding                            : 14px 18px;
+        border                             : none;
+        background                         : none;
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .aura-section__head:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-section__head:focus-visible {
+        outline                            : 2px solid var(--Aura_Focus);
+        outline-offset                     : -2px;
+    }
+
+    .aura-section__title {
+        flex                               : 1;
+        min-width                          : 0;
+        font-size                          : var(--Aura_FontSize_Heading);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+    .aura-section__meta {
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .aura-section__chevron {
+        color                              : var(--Aura_TextFaint);
+        transition                         : transform var(--Aura_Fast);
+    }
+
+    .aura-section:not(.is-folded) .aura-section__chevron {
+        transform                          : rotate(180deg);
+    }
+
+    .aura-section__body {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 12px;
+        padding                            : 0 18px 20px;
+    }
+
+    .aura-section.is-folded .aura-section__body {
+        display                            : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */

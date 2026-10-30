@@ -1,5 +1,27 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.7.0, 30-Oct-2026: AURA Project by Project
+
+**Asked by Adam:** "Make all projects NOT available for Aura unless I enable in the project form per project. I will
+switch on or off the projects available on a project by project basis" (with the menu's Project Editor ringed).
+
+**Changes:**
+- The Project Editor gains **Available in ValeVision AURA**, a tick box under Visible in Gallery, saved with the project
+  as `auraEnabled`. Every project is off until ticked (a record without the field is off, so the library needed no
+  change). Unticking keeps the project's AURA drawings.
+- The Gallery API (1.3.0) writes `auraEnabled` only when it really changes, puts it on every record (true or false),
+  and the activity ledger reads "switched on for AURA" or "switched off for AURA".
+- The AURA icon on a card and **Open in AURA** on the project page now need the switch as well as Management or App
+  Admin (`canOpenAura`, `isSwitchedOnForAura`). The switch replaces the card's 3D model test, and the project page's
+  button no longer shows on every project.
+- AURA's own API refuses a project that is not switched on (AURA 0.1.2), so an old link opens nothing.
+- Files: `Server__Api/Api__ValeVisionGallery/wsgi.py` 1.3.0, `Na__Feature__ProjectEditor__Form.jsx` 1.1.0,
+  `Na__Feature__ProjectGallery__ContentDetector.js`, `Na__Feature__ProjectGallery__Main.jsx` (comments),
+  `Na__Feature__ProjectViewer__Main.jsx` 1.4.0, `Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js` (comment).
+- Live (Adam: "Tested, push it"): pushed between 12:25 and 12:34 UTC; the API's new code ran only after
+  `vale@ValeVisionGallery` was restarted at 12:37:33 UTC. Until then a save kept every field but dropped the tick
+  without an error (Thrower, 12:34 and 12:36): tick it again.
+
 ## Version 1.6.0, 30-Oct-2026: AURA, for Managers and App Admins Only
 
 **Asked by Adam:** "Create a Vale Style app for AURA ... accessed from ValeVision Gallery so projects in gallery can
@@ -12,8 +34,12 @@ Project Aura yet". He chose the shortcut on cards that have a 3D model, plus a b
   clients never see it.
 - A project page's Project Actions gain **Open in AURA** for the same people, on every project (`canUseAura`),
   logged to the activity ledger as `app.switch` to AURA.
-- The icon is AURA's app icon: `AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/
-  Icon__AvailableApps__AuraRender__.svg` (needs the `commonassets` push).
+- The icon is `AppAssets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/
+  Icon__AvailableApps__AuraRender__.svg` (needs the `commonassets` push). Later the same day it became the easel
+  with the orangery painting, vectorised from `Icon__ProjectGallery__ContentIndicatorIcon__WatercolourPainting__2Kpx__.png`
+  and weighted to sit with the 3D and Theia icons at 80 px (61 KB, three fills; the soft floor shadow and wood grain
+  left out, the brush tray emptied and the plinths' brickwork removed so it reads as cleanly as the other icons).
+  The first placeholder was AURA's app icon.
 - Hiding the link is not the lock: AURA's page and its API refuse anyone below Management.
 - Files: `Na__Feature__ProjectGallery__ContentDetector.js`, `Na__Feature__ProjectGallery__Main.jsx`,
   `Na__Feature__ProjectViewer__Main.jsx`, `Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js`

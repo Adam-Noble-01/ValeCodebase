@@ -1,0 +1,70 @@
+{
+    "PainterlyNPR__AssetLibrary__Config" : {
+        "PainterlyNPR__AssetLibrary__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - The Asset Library",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Where the library is, how a plop is made, the generators that build an asset into a scene package (each with its defaults, from the cottage garden's own code), and the catalogue environment the factory draws every asset in.",
+            "ReadBy"        : "02__Src__AppModules/16__Scene__AssetLibrary/PainterlyNPR__AssetLibrary__Placement__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.6.0 (the generators ported from 10__Import__ScenePackage's tree, plant, mound, spire and hedge)"
+        },
+
+        "PainterlyNPR__AssetLibrary__Config__Library" : {
+            "Note"          : "The app reads the library through the local server when it is there (always current), and the index file beside the library when it is not (an installed app, offline, or a plain static server).",
+            "Root"          : "12__Data__AssetLibrary/",
+            "RootNote"      : "From the app's page: a wrapper that ships its own copy of the library points this at it",
+            "IndexFile"     : "PainterlyNPR__AssetLibrary__Index__.json",
+            "Api"           : "/api/assets",
+            "MaxPlaced"     : 120,
+            "MaxPlacedNote" : "Placed assets a drawing holds: each is rebuilt into the scene on every change"
+        },
+
+        "PainterlyNPR__AssetLibrary__Config__Placement" : {
+            "Note"            : "A plop: where it lands, which way it faces and how much it varies. The asset's own Placement section decides Facing, ScaleJitter and NewShapeEachPlop; these are the engine's limits round them.",
+            "ScaleClamp"      : [0.5, 2],
+            "ScaleClampNote"  : "However a plop is scaled, it stays this side of half and twice its size",
+            "GroundY"         : 0,
+            "GroundYNote"     : "Assets stand on the ground plane: the lawn is y = 0 everywhere the garden is"
+        },
+
+        "PainterlyNPR__AssetLibrary__Config__Stage" : {
+            "Note"                : "The catalogue environment the factory renders each asset in: the asset alone at the origin, as authored (its stage seed, no rotation, scale 1), on a disc of lawn, in a fixed light, so every thumbnail is drawn the same way.",
+            "StageVersion"        : "1.0.0",
+            "StageVersionNote"    : "Bump when the stage changes: a thumbnail records the stage it was drawn on",
+            "GroundMaterial"      : "Lawn",
+            "GroundRadiusFactor"  : 1.35,
+            "GroundRadiusFactorNote" : "The disc reaches this many times the asset's own half-spread: a patch of ground under it, paper all round",
+            "GroundMinRadiusM"    : 0.9,
+            "GroundSegments"      : 64,
+            "Footprint"           : [-1000, -1000],
+            "FootprintNote"       : "No building stands on the stage: the wash's darkening round a footprint is measured from a box nothing is near"
+        },
+
+        "PainterlyNPR__AssetLibrary__Config__Generators" : {
+            "Note"       : "Each generator builds one kind of asset from its parameters (metres) and its own seed, exactly as the cottage garden builds its trees, borders and furniture. An asset's DAT names its generator and overrides any of these defaults.",
+            "Generators" : {
+                "Tree"        : { "Note": "A broadleaf tree: a leaning trunk, a crown of lumpy masses (or a dome, wider than tall, as the apple), and branches drawn partly through the canopy",
+                                  "Defaults": { "TrunkHeightM": 3.4, "CrownRadiusM": 3.1, "Masses": 18, "Dome": false, "Branches": 6, "Lean": 0.07, "CanopyMaterial": "TreeFoliage", "TrunkMaterial": "Bark" } },
+                "Conifer"     : { "Note": "A yew-like conifer: a short trunk and a stack of masses narrowing to the top",
+                                  "Defaults": { "TrunkHeightM": 1.2, "TrunkRadiusM": 0.22, "CanopyHeightM": 5.6, "BaseRadiusM": 1.35, "TopRadiusM": 0.32, "Masses": 8, "Stretch": 1.15, "CanopyMaterial": "Conifer", "TrunkMaterial": "Bark" } },
+                "Mound"       : { "Note": "A shrub or a border plant: one crowning mass and a ring of others, domed (the cottage's mound)",
+                                  "Defaults": { "WidthM": 1.2, "HeightM": 0.9, "Masses": 7, "Lump": 0.09 } },
+                "Spire"       : { "Note": "A hollyhock or a foxglove: a leaning stack of small masses, its stem drawn up through them",
+                                  "Defaults": { "HeightM": 1.9, "Lean": 0.08, "Lump": 0.09 } },
+                "Hedge"       : { "Note": "A clipped hedge: masses in a run along its length (x), its face to the front (+z)",
+                                  "Defaults": { "LengthM": 3.6, "CentreHeightM": 0.85, "MinRadiusM": 0.6, "MaxRadiusM": 0.78, "SpacingM": 0.72, "Lump": 0.09 } },
+                "Topiary"     : { "Note": "A clipped cone: masses stacked from a broad base to a point",
+                                  "Defaults": { "HeightM": 1.4, "BaseRadiusM": 0.42, "TopRadiusM": 0.08, "Masses": 7, "Lump": 0.06 } },
+                "Grass"       : { "Note": "An ornamental grass: a low crown and tapering blades leaning with the wind",
+                                  "Defaults": { "Blades": 28, "MinBladeM": 0.45, "MaxBladeM": 0.8, "CrownWidthM": 0.3, "CrownHeightM": 0.27, "WindX": 0.35, "WindZ": 0.15 } },
+                "Reeds"       : { "Note": "Reeds at a margin: a narrow crown and upright blades, drawn as grass is",
+                                  "Defaults": { "HeightM": 1.25, "Blades": 26 } },
+                "Planter"     : { "Note": "A terracotta planter of ornamental grass: a flared pot with a band below its rim, the grass on top",
+                                  "Defaults": { "BaseRadiusM": 0.17, "RimRadiusM": 0.23, "HeightM": 0.45, "Segments": 22, "Blades": 28, "PotMaterial": "Terracotta", "GrassMaterial": "Grass" } },
+                "Bench"       : { "Note": "A timber garden bench: seat, back and four legs, its front to +z",
+                                  "Defaults": { "LengthM": 0.85, "SeatHeightM": 0.45, "SeatDepthM": 0.38, "BackHeightM": 0.82 } },
+                "PicketFence" : { "Note": "A panel of white picket fence: two posts with caps, two rails, pointed pickets at the front",
+                                  "Defaults": { "LengthM": 2.4, "PicketSpacingM": 0.135, "PostHeightM": 1.02 } }
+            }
+        }
+    }
+}

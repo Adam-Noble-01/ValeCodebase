@@ -386,12 +386,13 @@
     // ------------------------------------------------------------
     // One row, inline. The watercolour icon only marks content; the 3D model,
     // AURA and video icons are shortcuts into ValeVision 3D, ValeVision AURA
-    // (Managers and App Admins only, for now) and ValeVision Theia.
+    // (projects switched on in the Project Editor, for Managers and App Admins
+    // only, for now) and ValeVision Theia.
     // ------------------------------------------------------------
     function ContentIndicatorIcons({ project }) {
         const showWatercolorIcon = hasWatercolorContent(project);            // <-- Check if project has watercolor content
         const show3DModelIcon = has3DModelContent(project);                  // <-- Check if project has 3D model content
-        const showAuraIcon = canOpenAura(project);                           // <-- A model, and a Manager or App Admin looking
+        const showAuraIcon = canOpenAura(project);                           // <-- Switched on for AURA, and a Manager or App Admin looking
         const showVideoIcon = hasVideoContent(project);                      // <-- Check if project has ValeVision Theia videos
 
         // Only render container if at least one icon should be shown

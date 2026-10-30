@@ -25,10 +25,18 @@
 //   porch, not the garden) until the view inside it is panned (CentreM).
 // - PROFILE: Measured caps the drawing discipline at the engine's measured
 //   elevation ceiling (a Natural Pen at most); Concept follows the discipline.
+// - ART DIRECTION POINTS are a view's: a 3D viewport of a saved view draws
+//   with that view's points, the same set the 3D Environment edits (Adam,
+//   30-Oct-2026); every other viewport keeps its own.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
+// - PointsOwner, Points and SetPoints (whose points a viewport draws with),
+//   and PictureRect (where the engine's whole sheet lies on the paper, for
+//   the point handles over a viewport).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -166,6 +174,56 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Art Direction Points
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Whose Points a Viewport Draws With: { Kind: 'view' | 'viewport', View, Points }
+    // ------------------------------------------------------------
+    // One set a view (Adam, 30-Oct-2026): a 3D viewport of a saved view draws
+    // with the view's own points, edited in the 3D Environment or on any sheet
+    // that shows it; elevations, the roof plan and preset views keep their own.
+    // ------------------------------------------------------------
+    function Na__Views__PointsOwner(viewport, doc) {
+        const source = viewport.Viewport__CameraSource || {};
+        const saved = viewport.Viewport__Kind === 'Perspective' && source.SavedViewId ? Na__DrawingSet__SavedView(doc, source.SavedViewId) : null;
+        if (saved) return { Kind: 'view', View: saved, Points: saved.View__Points || [] };
+        return { Kind: 'viewport', View: null, Points: viewport.Viewport__Points || [] };
+    }
+
+    function Na__Views__Points(viewport, doc) {
+        return Na__Views__PointsOwner(viewport, doc).Points;
+    }
+
+    // Write a viewport's points to whoever owns them: 'view' or 'viewport'
+    function Na__Views__SetPoints(viewport, doc, points) {
+        const owner = Na__Views__PointsOwner(viewport, doc);
+        if (owner.View) owner.View.View__Points = points;
+        else viewport.Viewport__Points = points;
+        return owner.Kind;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Where the Engine's Whole Sheet Lies on the Paper for a Viewport: { X, Y, WidthMm, HeightMm }
+    // ------------------------------------------------------------
+    // As the viewport draws its picture: a scaled view's still at its true 300 x
+    // 200 mm centred in the frame (the frame shows what lies inside it); a 3D
+    // view's scaled to cover its frame, centred (xMidYMid slice). The point
+    // handles lie over this, in the engine's own sheet millimetres.
+    // ------------------------------------------------------------
+    function Na__Views__PictureRect(viewport) {
+        const f = viewport.Viewport__FrameMm;
+        const s = Na__EngineHost__SheetMm();
+        const cx = f.X + f.WidthMm / 2, cy = f.Y + f.HeightMm / 2;
+        const k = Na__Views__IsScaled(viewport) ? 1 : Math.max(f.WidthMm / s.WidthMm, f.HeightMm / s.HeightMm);
+        return { X: cx - (s.WidthMm * k) / 2, Y: cy - (s.HeightMm * k) / 2, WidthMm: s.WidthMm * k, HeightMm: s.HeightMm * k };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -176,7 +234,11 @@
         Na__Views__ScaleLabel,
         Na__Views__MaxScaledFrame,
         Na__Views__Camera,
-        Na__Views__Pan
+        Na__Views__Pan,
+        Na__Views__PointsOwner,
+        Na__Views__Points,
+        Na__Views__SetPoints,
+        Na__Views__PictureRect
     };
 
 // endregion -------------------------------------------------------------------

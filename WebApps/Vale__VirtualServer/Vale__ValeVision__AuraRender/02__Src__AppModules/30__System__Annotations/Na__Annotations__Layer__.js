@@ -19,14 +19,19 @@
 //   the thing to point at, drag to where the words go, let go. Either opens the
 //   note's words in the panel.
 // - INK: written notes draw the engine's strokes; a note not yet written (new
-//   words, or no engine on this server) shows its words typed, pale, until the
-//   engine writes it. "Write a new copy" gives it a new seed: the same words, a
-//   different hand-written copy.
+//   words, or the engine still loading or unable to run here) shows its words
+//   typed, pale, until the engine writes it. The engine runs in this browser
+//   (31__System__Handwriting). "Write a new copy" gives it a new seed: the same
+//   words, a different hand-written copy.
 // - Select a note to move it; a leader's tip has its own handle.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0
+// - The note panel says when the handwriting engine is being fetched (the
+//   first note on a device waits for its 15 MB model); AURA 0.2.1.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -43,7 +48,7 @@
     import { Na__Format__Seed, Na__Format__Round, Na__Format__Clamp } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import { Na__DrawingSet__NewAnnotation, Na__DrawingSet__Annotation } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
-    import { Na__Handwriting__Hand, Na__Handwriting__Ink, Na__Handwriting__NeedsWriting, Na__Handwriting__Queue, Na__Handwriting__Status } from '../31__System__Handwriting/Na__Handwriting__Client__.js';
+    import { Na__Handwriting__Hand, Na__Handwriting__Ink, Na__Handwriting__Loading, Na__Handwriting__NeedsWriting, Na__Handwriting__Queue, Na__Handwriting__Status } from '../31__System__Handwriting/Na__Handwriting__Client__.js';
     import { Na__PenLeaders__Strokes, Na__PenLeaders__Start } from '../31__System__Handwriting/Na__Handwriting__PenLeaders__.js';
 
 // endregion -------------------------------------------------------------------
@@ -384,7 +389,11 @@
         const state = Na__Dom__El('p', 'aura-panel__note aura-ink-state');
         container.appendChild(state);
         const S = Na__Annotations__State;
-        if (S.writing.has(annotation.Annotation__Id)) state.textContent = 'Writing this note...';
+        if (S.writing.has(annotation.Annotation__Id)) {
+            state.textContent = Na__Handwriting__Loading()
+                ? 'Fetching the handwriting engine (15 MB, once on this device), then writing this note...'
+                : 'Writing this note...';
+        }
         else if (S.failures.has(annotation.Annotation__Id)) {
             state.textContent = `Shown typed: ${S.failures.get(annotation.Annotation__Id)}`;
             state.classList.add('is-warning');

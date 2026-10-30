@@ -24,8 +24,13 @@
 //
 // 30-Oct-2026: canUseAura() and canOpenAura() for ValeVision AURA, the pen and
 // wash drawings app: Managers and App Admins only for now (Adam: employees must
-// not see it yet). The card shortcut needs a 3D model too; the project page's
-// button only the level.
+// not see it yet).
+//
+// 30-Oct-2026 (later): projects are switched on for AURA one by one, in the
+// Project Editor (auraEnabled; Adam: "Make all projects NOT available for Aura
+// unless I enable in the project form per project"). canOpenAura() needs the
+// switch and the level, on the card and the project page alike; the switch
+// replaces the card's old 3D model test.
 //
 // =============================================================================
 
@@ -73,9 +78,20 @@
     function canUseAura() {
         return !!(window.ValeUserLogin && typeof window.ValeUserLogin.HasLevel === 'function' && window.ValeUserLogin.HasLevel('Management'));
     }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Is This Project Switched On for ValeVision AURA? (the Project Editor's tick box)
+    // ------------------------------------------------------------
+    // auraEnabled comes from the Gallery API on every record; a project that
+    // was never ticked has it false. AURA's API refuses the others too.
+    // ------------------------------------------------------------
+    function isSwitchedOnForAura(projectData) {
+        return !!projectData && projectData.auraEnabled === true;
+    }
 
     function canOpenAura(projectData) {
-        return canUseAura() && has3DModelContent(projectData);              // <-- AURA extends a project's ValeVision 3D model
+        return canUseAura() && isSwitchedOnForAura(projectData);            // <-- Switched on in the Project Editor, and a Manager or App Admin looking
     }
     // ---------------------------------------------------------------
 

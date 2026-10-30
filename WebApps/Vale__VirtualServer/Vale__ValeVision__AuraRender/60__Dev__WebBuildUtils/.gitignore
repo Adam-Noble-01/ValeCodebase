@@ -1,0 +1,7 @@
+# The AssemblyScript compiler and binaryen (about 106 MB) are installed here by
+# "npm ci" from package-lock.json, which pins every version and its integrity hash.
+node_modules/
+
+# The parity check's torch reference outputs and the proof sheet (rebuilt by the scripts)
+21__Generated__HandwritingParity/
+__pycache__/

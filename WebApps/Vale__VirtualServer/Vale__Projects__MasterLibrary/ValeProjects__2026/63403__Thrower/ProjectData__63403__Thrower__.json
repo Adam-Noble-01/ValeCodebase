@@ -202,7 +202,6 @@
                     "OrbitHelperCube__Position__PosY": 2057,
                     "OrbitHelperCube__Position__PosZ": -3594
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793179807616,
                 "PresentationMode__Scene__Order": 2,
@@ -240,7 +239,6 @@
                     "OrbitHelperCube__Position__PosY": 1686,
                     "OrbitHelperCube__Position__PosZ": -13060
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793179789916,
                 "PresentationMode__Scene__Order": 3
@@ -273,7 +271,6 @@
                     "OrbitHelperCube__Position__PosY": 7758,
                     "OrbitHelperCube__Position__PosZ": -7894
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793179827796,
                 "PresentationMode__Scene__Order": 4
@@ -306,7 +303,6 @@
                     "OrbitHelperCube__Position__PosY": 7021,
                     "OrbitHelperCube__Position__PosZ": -17188
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793179843063,
                 "PresentationMode__Scene__Order": 5
@@ -351,5 +347,5 @@
             }
         ]
     },
-    "_rev": 7
+    "_rev": 8
 }

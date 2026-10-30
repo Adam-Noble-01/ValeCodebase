@@ -18,7 +18,7 @@ This README never syncs, because `.md` files stay on the PC.
 | `Vale__ValeVisionGallery\` | ValeVision Gallery (route `/project-gallery/`). Its early codename is retired: never use it | Yes |
 | `Vale__ValeSpec\` | ValeSpec (route `/valespec/`) | Yes |
 | `Vale__LanternDesigner\` | Lantern Designer (route `/lantern-designer/`) | Yes |
-| `Vale__ValeVision__AuraRender\` | ValeVision AURA, pen and wash drawings round Adam's PainterlyNPR engine (route `/aura/`, API on 8006; Managers and App Admins only). Its `.py` files (the handwriting engine) and `*.pt` model never sync: that work runs on the user's own machine | Yes |
+| `Vale__ValeVision__AuraRender\` | ValeVision AURA, pen and wash drawings round Adam's PainterlyNPR engine (route `/aura/`, API on 8006; Managers and App Admins only, on projects ticked Available in ValeVision AURA in the Gallery's Project Editor: `auraEnabled` in the project record, off unless ticked). Its `.py` files (the handwriting engine) and `*.pt` model never sync: that work runs on the user's own machine | Yes |
 
 Public routes (short URLs, QR short links) are set in the manager's tab 03, *URL configurator*.
 

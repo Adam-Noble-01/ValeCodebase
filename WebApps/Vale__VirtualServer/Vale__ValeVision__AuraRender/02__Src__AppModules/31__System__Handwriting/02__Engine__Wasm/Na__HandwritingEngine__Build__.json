@@ -1,0 +1,27 @@
+{
+    "HandwritingEngineBuild__Built": "2026-10-30T12:51:57.223Z",
+    "HandwritingEngineBuild__Compiler": "assemblyscript 0.28.20 (binaryen 131.0.0-nightly.20260721)",
+    "HandwritingEngineBuild__Source": "Na__HandwritingEngine__Network__.ts",
+    "HandwritingEngineBuild__SourceSha256": "1b6499093e0986e1ed0f75cd02206e6ba84f411faf921ae41436de9f9e3f5241",
+    "HandwritingEngineBuild__Options": "--optimizeLevel 3 --shrinkLevel 0 --converge --noAssert --runtime stub",
+    "HandwritingEngineBuild__Modules": {
+        "Simd": {
+            "File": "Na__HandwritingEngine__Network__Simd__.wasm",
+            "Options": "--enable simd",
+            "Bytes": 12603,
+            "Sha256": "be7b37976f2ffad44cb1e7154b29a340ea8caf20717897e47ec0d9518de4c9bc",
+            "Imports": [
+                "env.abort"
+            ]
+        },
+        "Scalar": {
+            "File": "Na__HandwritingEngine__Network__Scalar__.wasm",
+            "Options": "",
+            "Bytes": 12553,
+            "Sha256": "092177735d03fb14bc1aeae9bcbeaa0203e239036e8813857eb61dcf7caccc1e",
+            "Imports": [
+                "env.abort"
+            ]
+        }
+    }
+}

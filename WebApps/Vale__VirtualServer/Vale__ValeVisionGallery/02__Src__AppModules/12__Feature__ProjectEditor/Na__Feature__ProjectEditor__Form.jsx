@@ -12,7 +12,8 @@
 // DESCRIPTION:
 // - Edits projectName, projectCode, projectNameAlias (display name),
 //   productionData (input, designer, concept artist, notes), scheduleData
-//   (times, dates, time adjustments) and gallery visibility.
+//   (times, dates, time adjustments), gallery visibility and whether the
+//   project is available in ValeVision AURA (auraEnabled: off unless ticked).
 // - Saves through the Gallery API to the Projects Master Library on the
 //   server (Management permission). The API writes only these fields, so
 //   ValeVision 3D's data in the same record is never touched, keeps a revision
@@ -24,6 +25,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0
+// - Available in ValeVision AURA: a tick box under Visible in Gallery, saved
+//   with the project as auraEnabled. Every project is off until ticked (Adam:
+//   "Make all projects NOT available for Aura unless I enable in the project
+//   form per project").
+//
 // 22-Oct-2026 - Version 1.0.1
 // - Display Name Alias help text: ValeVision Theia shows the alias too (the
 //   server names projects by one rule, Na__Library__DisplayName).
@@ -131,7 +138,8 @@
             timeTaken           : project.scheduleData?.timeTaken !== undefined && project.scheduleData?.timeTaken !== null ? String(project.scheduleData.timeTaken) : '',     // <-- Time taken field (convert number to string)
             dateReceived        : project.scheduleData?.dateReceived || '',  // <-- Date received field
             dateFulfilled       : project.scheduleData?.dateFulfilled || '', // <-- Date fulfilled field
-            enabled             : project.enabled !== false                  // <-- Gallery visibility field (masterConfig-owned)
+            enabled             : project.enabled !== false,                 // <-- Gallery visibility field (masterConfig-owned)
+            auraEnabled         : project.auraEnabled === true               // <-- ValeVision AURA: off unless ticked here
         });
 
         const [timeAdjustments, setTimeAdjustments] = React.useState(            // <-- Advanced Time Data offset fields
@@ -328,6 +336,7 @@
             };
 
             delete updatedProject.sketchUpModel;                             // <-- Legacy SketchUp URL system: never write it back
+            updatedProject.auraEnabled = formData.auraEnabled;               // <-- The API writes it only when it changed
 
             if (formData.conceptArtist !== '') {
                 updatedProject.productionData.conceptArtist = formData.conceptArtist.trim();
@@ -570,6 +579,26 @@
                     </label>
                     <span className="editor-form__help-text">
                         Unchecking this hides the project from the public gallery without deleting any data
+                    </span>
+                </div>
+
+                {/* VALEVISION AURA FIELD | Off unless ticked, project by project */}
+                <div className="editor-form__field editor-form__field--checkbox">
+                    <label className="editor-form__checkbox-label" htmlFor="auraEnabled">
+                        <input
+                            type="checkbox"
+                            id="auraEnabled"
+                            className="editor-form__checkbox"
+                            checked={formData.auraEnabled}
+                            onChange={(e) => handleInputChange('auraEnabled', e.target.checked)}
+                            disabled={isSaving || showRenameConfirm}
+                        />
+                        Available in ValeVision AURA
+                    </label>
+                    <span className="editor-form__help-text">
+                        Off unless ticked. When ticked, Managers and App Admins get the AURA shortcut on this project's
+                        card and page, and AURA opens it. Employees do not see AURA yet. Unticking keeps the project's
+                        AURA drawings.
                     </span>
                 </div>
 

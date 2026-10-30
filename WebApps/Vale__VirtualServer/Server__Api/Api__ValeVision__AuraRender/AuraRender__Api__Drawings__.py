@@ -19,17 +19,24 @@
 #   previous copy as a revision in the project (ValeShared__Library__ WriteJson).
 # - A PROJECT IS NAMED IN THE GALLERY, never here (its Display Name Alias, else
 #   its projectName).
+# - A PROJECT OPENS ONLY WHEN SWITCHED ON in the Gallery's Project Editor
+#   (auraEnabled). Every project route answers the rest 403 with notSwitchedOn,
+#   so the page can say why; nothing of theirs is read or written.
 #
 # ROUTES:
 #   GET  /api/health
 #   GET  /api/config                          the app's config (public: no data in it)
-#   GET  /api/projects/<id>                   the project's id, number, name (Management)
-#   GET  /api/projects/<id>/drawings          the drawing set and its _rev, or null (Management)
-#   PUT  /api/projects/<id>/drawings          the whole set, with the _rev it was loaded at (Management)
+#   GET  /api/projects/<id>                   the project's id, number, name (Management, switched on)
+#   GET  /api/projects/<id>/drawings          the drawing set and its _rev, or null (Management, switched on)
+#   PUT  /api/projects/<id>/drawings          the whole set, with the _rev it was loaded at (Management, switched on)
 #
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.1.0
+# - Projects not switched on for AURA in the Gallery's Project Editor are refused
+#   (403, notSwitchedOn): _open_project replaces _project_or_404.
+#
 # 30-Oct-2026 - Version 1.0.0
 # - Initial build.
 #
@@ -65,10 +72,15 @@ MAX_SHEETS               = 60
 # REGION | Helpers
 # -----------------------------------------------------------------------------
 
-def _project_or_404(pid):
+def _open_project(pid):
+    """The project's folder, or the refusal: 404 when the library has no such project, 403 when
+    it is not switched on for AURA (the Gallery's Project Editor)."""
     folder = aura_core.project_folder(pid)
     if not folder:
         return None, aura_core.fail(f'no project {pid!r}', 404)
+    if not aura_core.project_switched_on(folder):
+        return None, aura_core.fail('This project is not switched on for ValeVision AURA. Projects are switched on '
+                                    'one at a time, in ValeVision Gallery\'s Project Editor.', 403, notSwitchedOn=True)
     return folder, None
 
 
@@ -119,7 +131,7 @@ def client_config():
 @aura_drawings_api.get('/api/projects/<pid>')
 @aura_core.require_access
 def project(pid):
-    folder, missing = _project_or_404(pid)
+    folder, missing = _open_project(pid)
     if missing:
         return missing
     response = jsonify({'ok': True, 'project': aura_core.project_public(folder)})
@@ -130,7 +142,7 @@ def project(pid):
 @aura_drawings_api.get('/api/projects/<pid>/drawings')
 @aura_core.require_access
 def read_drawings(pid):
-    folder, missing = _project_or_404(pid)
+    folder, missing = _open_project(pid)
     if missing:
         return missing
     try:
@@ -146,7 +158,7 @@ def read_drawings(pid):
 @aura_drawings_api.put('/api/projects/<pid>/drawings')
 @aura_core.require_access
 def save_drawings(pid):
-    folder, missing = _project_or_404(pid)
+    folder, missing = _open_project(pid)
     if missing:
         return missing
     if (request.content_length or 0) > aura_core.max_bytes():

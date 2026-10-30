@@ -7,7 +7,8 @@
 # MODULE     : Api__ValeVision__AuraRender
 # AUTHOR     : Adam Noble - Noble Architecture
 # PURPOSE    : The Flask app behind https://app.valegardenhouses.com/aura/api/ -
-#              projects' AURA drawing sets, and (on a PC only) the handwriting
+#              projects' AURA drawing sets, and the handwriting model for the
+#              browser's engine
 # CREATED    : 30-Oct-2026
 #
 # DESCRIPTION:
@@ -15,10 +16,11 @@
 #   ApiPort in the URL Configurator: 8006; systemd's vale@ValeVision__AuraRender
 #   binds it). Locally, Server__DeveloperTools/ValeDev__LocalServer__.py mounts it
 #   under /aura/api/ the same way.
-# - LIGHT ON THE SERVER: it reads and writes small JSON files and nothing else.
-#   The drawing is done by the PainterlyNPR engine in the user's browser, and the
-#   handwriting on the user's PC (AuraRender__Api__Handwriting__): the server is
-#   resource constrained (Adam, 30-Oct-2026).
+# - LIGHT ON THE SERVER: it reads and writes small JSON files and sends files,
+#   nothing else. The drawing is done by the PainterlyNPR engine in the user's
+#   browser, and so is the handwriting (WebAssembly; AuraRender__Api__Handwriting__
+#   only hands over its model, once per device): the server is resource
+#   constrained (Adam, 30-Oct-2026).
 # - Management and AppAdmin only (AuraRender__Api__Core__ require_access).
 # - The shared sign-in is mounted at /api/accounts (ValeShared__Accounts__), and
 #   the activity route at /api/activity (ValeShared__Activity__).
@@ -26,7 +28,7 @@
 # ENVIRONMENT (see the skill's flask-services.md):
 #   VALE_ROOT         the mirror root (/srv/vale)          VALE_SECRET_KEY   the shared session key
 #   VALE_PORT         8006 on the server                    VALE_DEV=1        local development only
-#   AURA_HANDWRITING_PYTHON   a Python with torch, for the handwriting (a PC only; never set on the server)
+#   VALE_ACCEL_REDIRECT=1     optional on the server: nginx streams the handwriting weights (else Flask sends them)
 #
 # RUN LOCALLY (on its own):
 #   set VALE_DEV=1 && python wsgi.py        ->  http://127.0.0.1:8006/api/health
@@ -34,6 +36,11 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.2.0
+# - The handwriting moved into the browser (AURA 0.2.1): handwriting/status and
+#   handwriting/write (the PC's Python) are retired; handwriting/model and
+#   handwriting/weights/<sha256> hand the model to the WebAssembly engine.
+#
 # 30-Oct-2026 - Version 1.0.0
 # - First build: config, project, drawing sets (read, save with _rev and kept
 #   revisions), handwriting status and write (PC only).

@@ -16948,3 +16948,11 @@ ConnectionAbortedError: [WinError 10053] An established connection was aborted b
 [REQUEST] 29-Oct-2026 - 18:02 | 127.0.0.1 | "PUT /api/data/timecard HTTP/1.1" 200 -
 [REQUEST] 30-Oct-2026 - 08:04 | 127.0.0.1 | "PUT /api/data/timecard HTTP/1.1" 200 -
 [REQUEST] 30-Oct-2026 - 08:04 | 127.0.0.1 | "PUT /api/data/timecard HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 12:57 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 12:57 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:36 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:36 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:51 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 30-Oct-2026 - 13:51 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__512x512.png HTTP/1.1" 200 -

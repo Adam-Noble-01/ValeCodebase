@@ -2,7 +2,7 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "30-Oct-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.5.0/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.6.0/02__Src__AppModules/"
     },
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js"

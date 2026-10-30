@@ -21,7 +21,12 @@ DESCRIPTION:
 - The Gallery owns these ProjectData fields and saves only them, so it can
   never overwrite ValeVision 3D's data in the same file: projectName,
   projectCode, projectNameAlias, productionData, scheduleData, description,
-  enabled. Saves carry the "_rev" the page loaded; a newer file answers 409.
+  enabled, auraEnabled. Saves carry the "_rev" the page loaded; a newer file
+  answers 409.
+- ValeVision AURA, project by project: auraEnabled is true only on projects
+  ticked "Available in ValeVision AURA" in the Project Editor; a record without
+  it is off. Every record carries it (true or false) for the AURA shortcuts, and
+  AURA's own API refuses a project that is not switched on.
 - Projects are never renamed, moved or deleted from the Gallery: a library
   folder is shared by every app.
 - ValeVision Theia videos: every record carries videoCount (the card's video
@@ -45,6 +50,12 @@ RUN (server): gunicorn --bind 127.0.0.1:${VALE_PORT} wsgi:app   (systemd vale@Va
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+30-Oct-2026 - Version 1.3.0
+- auraEnabled: ValeVision AURA is switched on project by project in the Project
+  Editor (Adam: "Make all projects NOT available for Aura unless I enable in the
+  project form per project"). Off unless switched on; saved with the project; the
+  ledger reads "switched on for AURA" or "switched off for AURA".
+
 22-Oct-2026 - Version 1.2.1
 - displayName comes from Na__Library__DisplayName (ValeShared__Library__ 1.3.0),
   the same rule ValeVision Theia names projects by. No change to what is shown.
@@ -104,6 +115,7 @@ NA__GALLERY__EDITABLE             = ("projectName", "projectCode", "projectNameA
 NA__GALLERY__FIELD_WORDS          = {"projectName": "name", "projectCode": "code", "projectNameAlias": "display name",
                                      "productionData": "production data", "scheduleData": "schedule",
                                      "description": "description"}     # <-- How a save reads in the activity ledger
+NA__GALLERY__AURA                 = "auraEnabled"                               # <-- ValeVision AURA: off unless switched on in the Project Editor
 NA__GALLERY__LIST_KEYS            = ("projectName", "projectCode", "projectNameAlias", "ProjectType", "description",
                                      "productionData", "scheduleData", "images", "thumbnailImage", "enabled",
                                      "valeVision_ModelUrls", "valeVision_ModelUrl", "projectDate", "_rev")
@@ -140,6 +152,7 @@ def Na__Gallery__Record(pid: str, folder: Path, data: dict, light: bool) -> dict
     has_glb = bool(Na__Gallery__Files(folder, NA__GALLERY__GLB)) or bool(data.get("valeVision_ModelUrls") or data.get("valeVision_ModelUrl"))
     out["hasGlb"] = out["hasGlb_R2"] = has_glb                                 # <-- hasGlb_R2 kept for the old carousel gate
     out["enabled"] = data.get("enabled", True) is not False
+    out[NA__GALLERY__AURA] = data.get(NA__GALLERY__AURA) is True               # <-- A record without it is off
     out["_rev"] = int(data.get("_rev", 0) or 0)
     theia = Na__Theia__Summary(folder, data) if Na__Theia__HasVideos(folder) else {"count": 0, "videos": []}
     out["videoCount"] = theia["count"]                                         # <-- ValeVision Theia videos staff can watch
@@ -219,6 +232,10 @@ def Na__Gallery__Save(pid):
     for k in NA__GALLERY__EDITABLE:
         if k in posted:
             data[k] = posted[k]
+    aura = posted.get(NA__GALLERY__AURA)
+    if isinstance(aura, bool) and aura != (data.get(NA__GALLERY__AURA) is True):  # <-- Only a real change: a missing key is off
+        data[NA__GALLERY__AURA] = aura
+        changed.append("switched on for AURA" if aura else "switched off for AURA")
     if not (data.get("projectNameAlias") or "").strip():
         data.pop("projectNameAlias", None)
     try:

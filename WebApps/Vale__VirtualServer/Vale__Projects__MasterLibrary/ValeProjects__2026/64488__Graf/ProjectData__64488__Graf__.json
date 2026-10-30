@@ -164,7 +164,7 @@
             "FogPlane__Config__PlaneB__NormalZ": 1
         }
     },
-    "_rev": 3,
+    "_rev": 5,
     "PresentationMode__SavedCameraScenes": {
         "PresentationMode__SavedCameraScenes__Enabled": true,
         "PresentationMode__SavedCameraScenes__Source": "SketchUpCameraData",
@@ -244,7 +244,7 @@
             },
             {
                 "PresentationMode__Scene__Id": "Scene_003",
-                "PresentationMode__Scene__Name": "Scene 3",
+                "PresentationMode__Scene__Name": "Closer View",
                 "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
                 "PresentationMode__Scene__LensMm": 40,
                 "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
@@ -270,14 +270,13 @@
                     "OrbitHelperCube__Position__PosY": 1623,
                     "OrbitHelperCube__Position__PosZ": -3827
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793265793448,
                 "PresentationMode__Scene__Order": 3
             },
             {
                 "PresentationMode__Scene__Id": "Scene_004",
-                "PresentationMode__Scene__Name": "Scene 4",
+                "PresentationMode__Scene__Name": "Birds-eye View",
                 "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
                 "PresentationMode__Scene__LensMm": 40,
                 "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
@@ -303,7 +302,6 @@
                     "OrbitHelperCube__Position__PosY": 7760,
                     "OrbitHelperCube__Position__PosZ": -3548
                 },
-                "PresentationMode__Scene__NavigationMode": "fly",
                 "PresentationMode__Scene__GroupId": "Group_001",
                 "PresentationMode__Scene__ThumbnailVersion": 1793265803752,
                 "PresentationMode__Scene__Order": 4

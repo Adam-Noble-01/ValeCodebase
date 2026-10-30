@@ -3,12 +3,17 @@
     "AuraConfig__File__UpdatedDate"                     : "30-Oct-2026",
 
     "AuraConfig__App__Name"                             : "ValeVision AURA",
-    "AuraConfig__App__Version"                          : "0.1.1",
+    "AuraConfig__App__Version"                          : "0.2.1",
     "AuraConfig__App__Engine"                           : "PainterlyNPR",
     "AuraConfig__App__EngineNote"                       : "AURA's core library: Adam's PainterlyNPR pen and wash renderer, pinned in 04__Lib__CoreEngine__VersionLocked and reached only through 02__Src__AppModules/10__System__EngineHost.",
 
     "AuraConfig__Access__MinimumLevel"                  : "Management",
     "AuraConfig__Access__MinimumLevelNote"              : "Managers and App Admins only while AURA is new (Adam, 30-Oct-2026): Employees, Affiliates and clients are refused by the page and by every API route, and the Gallery hides the link from them.",
+    "AuraConfig__Access__ProjectSwitchNote"             : "Projects too, one by one (Adam, 30-Oct-2026): a project opens only when ticked Available in ValeVision AURA in the Gallery's Project Editor (auraEnabled in its ProjectData, written by the Gallery API). A record without it is off; the Gallery shows no shortcut and every AURA project route refuses it (403, notSwitchedOn).",
+
+    "AuraConfig__Panels__WidthPx"                       : { "Min": 240, "Max": 640, "Environment": 340, "SheetLeft": 280, "SheetRight": 320 },
+    "AuraConfig__Panels__WidthPxNote"                   : "The side panels' widths in screen pixels: dragged at their inner edge (ValeVision 3D's Layout Editor grip) between Min and Max, and kept in this browser; Environment is the 3D Environment's panel, SheetLeft and SheetRight the sheets' two panels. Their sections fold and are remembered too.",
+    "AuraConfig__ArtDirection__Note"                    : "Art direction points are PainterlyNPR's own (its 65__ArtDirection__InfluencePoints: types, defaults, the editor), one set a view (Adam, 30-Oct-2026): a saved view's (shared by every sheet viewport that shows it), the 3D Environment's unsaved view's, and each other viewport's own. A view holds the engine's MaxPoints (8).",
 
     "AuraConfig__Scene__DemoLabel"                      : "PainterlyNPR demo scene: a brick country cottage in its garden",
     "AuraConfig__Scene__DemoNote"                       : "Every project opens the engine's demo scene for now. A project's own AURA model arrives with ValeVision Cloud Sync's AURA export (a Painterly Scene Package in the project's ValeVision__AuraRender/Content__AuraScenePackages).",
@@ -110,7 +115,8 @@
     "AuraConfig__Handwriting__DefaultHand"              : "Steady",
     "AuraConfig__Handwriting__LineSpacing"              : 1.35,
     "AuraConfig__Handwriting__MaxChars"                 : 600,
-    "AuraConfig__Handwriting__WhereItRuns"              : "On the user's own machine, never on the server (Adam, 30-Oct-2026: the server is resource constrained). For now the AURA API writes notes only where the engine and a Python with torch are present (a PC running Server__DeveloperTools/ValeDev__LocalServer__.py); the server answers that it cannot, and a note keeps a typed stand-in until it is written. Next: the engine rewritten for WebAssembly, served as static files and kept on the device by AURA's service worker, as PainterlyNPR is heading for WebGPU and WebAssembly.",
+    "AuraConfig__Handwriting__WhereItRuns"              : "In the browser, on the user's own machine, never on the server (Adam, 30-Oct-2026: the server is resource constrained; \"Refactor the Handwriting tool from python to WASM\"): the studio's Graves model in WebAssembly (31__System__Handwriting/02__Engine__Wasm), in a Web Worker. The AURA API only hands over its model (api/handwriting/model and api/handwriting/weights/<sha256>, Managers and App Admins only), which the worker keeps on the device after the first note. A note shows a typed stand-in only until it is written, or where the engine cannot run.",
+    "AuraConfig__Handwriting__ModelNote"                : "The Vale Handwriting Studio's checkpoint (X-rayLaser/pytorch-handwriting-synthesis-toolkit at 899e9432, Epoch_46), its 32-bit weights as they are (15 MB; Adam, 30-Oct-2026: \"32-bit, 15 MB\"). Trained on IAM-OnDB, an evaluation asset: served to signed-in staff only, never committed. Rebuilt by 60__Dev__WebBuildUtils/AuraRender__BuildUtil__HandwritingWeights__.py into Server__Api/Api__ValeVision__AuraRender/Content__AuraHandwritingModel.",
 
     "AuraConfig__Save__AutosaveDelayMs"                 : 2000,
     "AuraConfig__Save__MaxSheets"                       : 60,

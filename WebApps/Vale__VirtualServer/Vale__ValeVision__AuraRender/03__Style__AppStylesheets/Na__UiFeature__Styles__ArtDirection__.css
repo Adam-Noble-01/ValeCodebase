@@ -1,0 +1,377 @@
+/* =============================================================================
+ * VALEVISION AURA - ART DIRECTION POINTS
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__ArtDirection__.css
+ * NAMESPACE  : ValeVision AURA
+ * MODULE     : Art Direction Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : PainterlyNPR's point editor at home in AURA: the engine's own
+ *              stylesheets draw the handles, rings, the node and the cards;
+ *              this gives them the engine's colours and lays out the rest
+ * CREATED    : 30-Oct-2026
+ *
+ * DESCRIPTION:
+ * - THE ENGINE'S STYLESHEETS (65__ArtDirection__InfluencePoints: PointHandles,
+ *   PointNode, PointGroups) are linked by the engine host from the pinned
+ *   engine, after this file. They read the engine's palette variables, which
+ *   live in PainterlyNPR's own app stylesheets (not in the pinned library):
+ *   they are set here, from PainterlyNPR's Variables, value for value.
+ * - The list's general classes (fields, hints, icon buttons, chips, the
+ *   Advanced fold, typed readouts) are styled by the engine's panel stylesheet,
+ *   which AURA does not take: they are given AURA's look here, inside the list.
+ * - The layer over a sheet's viewport is placed by Na__Viewports__ArtDirection__.
+ *
+ * DEVELOPMENT LOG:
+ * 30-Oct-2026 - Version 1.0.0 (AURA 0.3.0)
+ * - Initial build.
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Engine's Palette (PainterlyNPR__CoreUi__Styles__Variables__.css)
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        --PainterlyNPR_Cream               : #FAF7F0;
+        --PainterlyNPR_Ink                 : #2B2A28;
+        --PainterlyNPR_InkSoft             : #5A554E;
+        --PainterlyNPR_InkFaint            : #8C857A;
+        --PainterlyNPR_InkGhost            : #B9B1A4;
+        --PainterlyNPR_Rule                : rgba(43, 42, 40, 0.12);
+        --PainterlyNPR_Terracotta          : #BC6540;                     /* <-- Fade to paper */
+        --PainterlyNPR_Slate               : #5F7A91;                     /* <-- Focus, selection */
+        --PainterlyNPR_Ochre               : #B58A3A;                     /* <-- Line control */
+        --PainterlyNPR_Brick               : #9A4A35;                     /* <-- Material indication */
+        --PainterlyNPR_FontStack           : var(--Aura_Font);
+        --PainterlyNPR_FontMono            : 'Cascadia Mono', Consolas, 'SF Mono', ui-monospace, monospace;
+        --PainterlyNPR_LetterSpacingLabel  : 0.07em;
+        --PainterlyNPR_RadiusSmall         : 7px;
+        --PainterlyNPR_Transition          : 140ms ease;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Over the Drawing: the 3D Environment and a Sheet's Viewport
+ * ----------------------------------------------------------------------------- */
+
+    .aura-env__sheet {
+        position                           : relative;                     /* <-- The engine's layer covers the canvas exactly (inset 0) */
+        flex-shrink                        : 0;
+        line-height                        : 0;
+    }
+
+    .aura-env__sheet.is-placing .aura-env__canvas {
+        cursor                             : crosshair;
+    }
+
+    .aura-sheet__wrap {
+        position                           : relative;                     /* <-- The viewport's stand-in and layer are placed in it */
+    }
+
+    .aura-vp-points__stand {
+        position                           : absolute;
+        z-index                            : 2;
+        pointer-events                     : none;                         /* <-- Only while a point type is armed */
+    }
+
+    .aura-vp-points__stand.is-placing {
+        pointer-events                     : auto;
+        cursor                             : crosshair;
+        outline                            : 1px dashed rgba(23, 43, 58, 0.45);
+        outline-offset                     : -1px;
+    }
+
+    .aura-vp-points__layer.PainterlyNPR__PointLayer {
+        z-index                            : 3;
+        line-height                        : normal;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Section: Whose Points, the Types, Show Influence
+ * ----------------------------------------------------------------------------- */
+
+    .aura-points__owner {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        line-height                        : 1.45;
+    }
+
+    .aura-points__types {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(132px, 1fr));
+        gap                                : 6px;
+    }
+
+    .aura-points__type {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        min-width                          : 0;
+        padding                            : 7px 10px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 13px;
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .aura-points__type:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-points__type.is-active {
+        background                         : var(--Aura_Brand);
+        border-color                       : var(--Aura_Brand);
+        color                              : var(--Aura_OnBrand);
+    }
+
+    .aura-points__glyph {
+        flex                               : 0 0 18px;
+        text-align                         : center;
+        font-size                          : 15px;
+        line-height                        : 1;
+    }
+
+    .aura-points__label {
+        min-width                          : 0;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Engine's List in AURA's Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* The cards' base, as the engine's panel stylesheet lays it: :where() keeps
+       it at the engine's own weight, so the engine's PointNode rules (compact
+       padding, the selected card's colour and shadow, hover) still win. */
+
+    .aura-points:empty {
+        display                            : none;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointList {
+        display                            : grid;
+        gap                                : 4px;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointCard {
+        --PainterlyNPR_PointColour         : var(--PainterlyNPR_Slate);
+        border                             : 1px solid var(--PainterlyNPR_Rule);
+        border-left                        : 3px solid var(--PainterlyNPR_PointColour);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : #FFFDF8;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointCard[data-type="Fade"]        { --PainterlyNPR_PointColour: var(--PainterlyNPR_Terracotta); }
+    :where(.aura-points) .PainterlyNPR__PointCard[data-type="LineControl"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_Ochre); }
+    :where(.aura-points) .PainterlyNPR__PointCard[data-type="Indication"]  { --PainterlyNPR_PointColour: var(--PainterlyNPR_Brick); }
+
+    :where(.aura-points) .PainterlyNPR__PointCard__Head {
+        display                            : flex;
+        gap                                : 7px;
+        font-size                          : 13px;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointCard__Glyph {
+        color                              : var(--PainterlyNPR_PointColour);
+        font-size                          : 15px;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointCard__Meta {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        color                              : var(--Aura_TextSecondary);
+        font-size                          : 11px;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+    }
+
+    :where(.aura-points) .PainterlyNPR__PointCard__Body {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 8px;
+    }
+
+    .aura-points .PainterlyNPR__Field {
+        display                            : grid;
+        grid-template-columns              : minmax(0, 1fr) auto;
+        align-items                        : center;
+        gap                                : 4px 10px;
+        min-width                          : 0;
+        font-size                          : 13px;
+    }
+
+    .aura-points .PainterlyNPR__Field__Label {
+        min-width                          : 0;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+    }
+
+    .aura-points .PainterlyNPR__Field input[type="range"] {
+        grid-column                        : 1 / -1;
+        grid-row                           : 2;
+        width                              : 100%;
+        accent-color                       : var(--Aura_Brand);
+    }
+
+    .aura-points .PainterlyNPR__Field select {
+        grid-column                        : 1 / -1;
+        width                              : 100%;
+        min-width                          : 0;
+        padding                            : 5px 8px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 13px;
+    }
+
+    .aura-points .PainterlyNPR__Field output {
+        font-size                          : 12px;
+        color                              : var(--Aura_TextSecondary);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .aura-points .PainterlyNPR__Hint {
+        margin                             : 0;
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_TextSecondary);
+        line-height                        : 1.45;
+    }
+
+    :where(.aura-points) .PainterlyNPR__IconButton {
+        flex                               : 0 0 auto;
+        width                              : 26px;
+        height                             : 26px;
+        padding                            : 0;
+        border                             : none;
+        border-radius                      : 6px;
+        background                         : none;
+        color                              : var(--Aura_TextSecondary);
+        font-size                          : 16px;
+        line-height                        : 1;
+        cursor                             : pointer;
+    }
+
+    :where(.aura-points) .PainterlyNPR__IconButton:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-points .PainterlyNPR__ChipRow {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+    }
+
+    .aura-points .PainterlyNPR__Chip {
+        padding                            : 3px 10px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : 999px;
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .aura-points .PainterlyNPR__Chip:hover {
+        background                         : var(--Aura_SurfaceHover);
+    }
+
+    .aura-points .PainterlyNPR__PointCard__Advanced > summary {
+        font-size                          : 12px;
+        color                              : var(--Aura_TextSecondary);
+        cursor                             : pointer;
+    }
+
+    .aura-points .PainterlyNPR__PointCard__Advanced[open] {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 8px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Typed Readouts (the engine's TypeIn, in the list and the node)
+ * ----------------------------------------------------------------------------- */
+
+    output.PainterlyNPR__TypeIn__Readout {
+        padding                            : 0 4px;
+        border-radius                      : 3px;
+        cursor                             : text;
+    }
+
+    output.PainterlyNPR__TypeIn__Readout:hover {
+        background                         : var(--Aura_SurfaceHover);
+        color                              : var(--Aura_Text);
+    }
+
+    .PainterlyNPR__TypeIn__Field {
+        width                              : 84px;
+        padding                            : 1px 6px;
+        border                             : 1px solid var(--Aura_Focus);
+        border-radius                      : 3px;
+        background                         : var(--Aura_Surface);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-size                          : 12px;
+        font-variant-numeric               : tabular-nums;
+        text-align                         : right;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Saved Views With Their Points
+ * ----------------------------------------------------------------------------- */
+
+    .aura-views__name {
+        display                            : flex;
+        align-items                        : baseline;
+        gap                                : 8px;
+    }
+
+    .aura-views__label {
+        flex                               : 1;
+        min-width                          : 0;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        white-space                        : nowrap;
+    }
+
+    .aura-views__count {
+        flex-shrink                        : 0;
+        font-size                          : 12px;
+        color                              : var(--Aura_TextSecondary);
+    }
+
+    .aura-views__row.is-active .aura-views__name {
+        background                         : var(--Aura_ActiveBg);
+        box-shadow                         : inset 3px 0 0 var(--Aura_Brand);
+        font-weight                        : var(--Aura_FontSemiBold);
+    }
+
+/* endregion ------------------------------------------------------------------- */

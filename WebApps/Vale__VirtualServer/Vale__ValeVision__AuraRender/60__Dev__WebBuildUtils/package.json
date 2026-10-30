@@ -1,0 +1,14 @@
+{
+    "name": "aura-render-build-utils",
+    "private": true,
+    "description": "ValeVision AURA's development tools: the AssemblyScript compiler that builds the handwriting engine's WebAssembly (AuraRender__BuildUtil__HandwritingWasm__.mjs). On this PC only: the Server Manager's web excludes skip 60__Dev__*/, node_modules/ and package files.",
+    "license": "UNLICENSED",
+    "type": "module",
+    "scripts": {
+        "build:handwriting": "node AuraRender__BuildUtil__HandwritingWasm__.mjs",
+        "check:handwriting": "node AuraRender__BuildUtil__HandwritingParity__.mjs"
+    },
+    "devDependencies": {
+        "assemblyscript": "0.28.20"
+    }
+}

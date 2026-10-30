@@ -16,6 +16,9 @@
 //   Gallery, signed in with the shared Vale sign-in. Management and AppAdmin
 //   only for now (Adam, 30-Oct-2026): anyone else is told plainly and sent back
 //   to the Gallery; every API route refuses them too.
+// - ONLY SWITCHED-ON PROJECTS: a project opens once it is ticked "Available in
+//   ValeVision AURA" in the Gallery's Project Editor. The API refuses the rest
+//   (403, notSwitchedOn) and the page says why.
 // - EVERY PROJECT OPENS THE ENGINE'S DEMO SCENE (the cottage) until ValeVision
 //   Cloud Sync exports a project's own AURA model; the drawing set (sheets,
 //   viewports, notes, the engine's settings, saved views) is the project's own.
@@ -27,6 +30,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.2.2
+// - The refresh guard starts with the saving (Na__DrawingSet__RefreshGuard__).
+//
+// 30-Oct-2026 - Version 0.1.2
+// - A project that is not switched on for AURA gets its own message (Not
+//   switched on for AURA) instead of the API's bare refusal.
+//
 // 30-Oct-2026 - Version 0.1.0
 // - First build: the 3D Environment, A1 to A4 sheets in Vale's drawing page,
 //   elevation, roof plan and 3D viewports, handwritten notes and leaders.
@@ -48,6 +58,7 @@
     import { Na__Workspace__Mount, Na__Workspace__Show } from '../20__System__DrawingSheets/Na__DrawingSheets__Workspace__.js';
     import { Na__RenderQueue__Pause } from '../21__System__Viewports/Na__Viewports__RenderQueue__.js';
     import { Na__Persistence__Load, Na__Persistence__Start, Na__Persistence__Save } from '../40__Feature__DrawingSet/Na__DrawingSet__Persistence__.js';
+    import { Na__RefreshGuard__Start } from '../40__Feature__DrawingSet/Na__DrawingSet__RefreshGuard__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -173,7 +184,12 @@
         try {
             project = (await Na__Api__Get(`projects/${encodeURIComponent(projectId)}`)).project;
         } catch (error) {
-            if (error.status === 403) Na__Aura__Message('Not available', error.message, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
+            if (error.status === 403 && error.data && error.data.notSwitchedOn) {
+                Na__Aura__Message('Not switched on for AURA',
+                    'Projects open in AURA one at a time, once they are ticked "Available in ValeVision AURA" in ValeVision Gallery\'s Project Editor.',
+                    { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
+            }
+            else if (error.status === 403) Na__Aura__Message('Not available', error.message, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             else if (error.status === 404) Na__Aura__Message('Project not found', `There is no project "${projectId}" in the library.`, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             else Na__Aura__Message('AURA could not open this project', error.message, { label: 'Back to ValeVision Gallery', href: Na__Aura__GALLERY });
             return;
@@ -201,6 +217,7 @@
         Na__Environment3d__Mount(document.getElementById('auraEnvironment'), canvas);
         Na__Workspace__Mount(document.getElementById('auraSheets'), () => Na__Tabs__Render());
         Na__Persistence__Start(Na__Aura__SaveState);
+        Na__RefreshGuard__Start();                                               // <-- Ctrl + R and F5 ask first: save, cancel, or abandon (0.2.2)
         document.getElementById('auraTabs').hidden = false;
         Na__Tabs__Mount(document.getElementById('auraTabs'), Na__Aura__ShowTab);
         Na__Tabs__Open(Na__Tabs__FromAddress());

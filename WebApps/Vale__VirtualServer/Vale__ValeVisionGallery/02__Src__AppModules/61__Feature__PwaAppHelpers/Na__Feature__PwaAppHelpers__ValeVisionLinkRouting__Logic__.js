@@ -47,9 +47,9 @@
     // HELPER FUNCTION | ValeVision AURA URL for a Project
     // ------------------------------------------------------------
     // /aura/?project=<library project id>: the project's pen and wash drawings.
-    // Managers and App Admins only for now (Adam, 30-Oct-2026): the Gallery
-    // shows the link to them alone (ContentDetector canOpenAura), and AURA and
-    // its API refuse everyone else.
+    // Managers and App Admins only for now (Adam, 30-Oct-2026), on projects
+    // switched on in the Project Editor: the Gallery shows the link to them
+    // alone (ContentDetector canOpenAura), and AURA and its API refuse the rest.
     // ------------------------------------------------------------
     function Na__Feature__PwaAppHelpers__BuildAuraProjectUrl(projectId) {
         const safeId = encodeURIComponent(String(projectId || '').trim());

@@ -5,7 +5,8 @@ one folder per version, each byte for byte as it was at a commit of PainterlyNPR
 
 | # | Folder | Engine | Version | Commit | Entry AURA uses |
 |---|--------|--------|---------|--------|-----------------|
-| 01 | `01__CoreLib__PainterlyNPR__v0.5.0` | PainterlyNPR | 0.5.0 | 29bbcf1 | `02__Src__AppModules/` through the import map's `PainterlyNPR/` prefix |
+| 01 | `01__CoreLib__PainterlyNPR__v0.5.0` | PainterlyNPR | 0.5.0 | 29bbcf1 | None since AURA 0.2.0: kept until Adam has checked v0.6.0, then removed by hand |
+| 01 | `01__CoreLib__PainterlyNPR__v0.6.0` | PainterlyNPR | 0.6.0 | e28fba5 | `02__Src__AppModules/` through the import map's `PainterlyNPR/` prefix |
 
 ## Rules
 

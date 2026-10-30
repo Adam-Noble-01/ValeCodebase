@@ -17,6 +17,11 @@
 #   admin access, not employees, yet"). The level comes from the app config
 #   (AuraConfig__Access__MinimumLevel), so opening AURA to Employees later is
 #   one value. Every project route is decorated with Na__Auth__Require(LEVEL).
+# - WHICH PROJECTS: only those switched on in ValeVision Gallery's Project Editor
+#   (auraEnabled true in the project record; Adam, 30-Oct-2026: "Make all
+#   projects NOT available for Aura unless I enable in the project form per
+#   project"). A record without it is off. The Gallery writes it; AURA only
+#   reads it (project_switched_on).
 # - A PROJECT'S DRAWING SET is user data in the Projects Master Library:
 #     <project>/ValeVision__AuraRender/UserData__AuraDrawings/<id>__AuraDrawingSet__.json
 #   written through ValeShared__Library__ (the _rev check and a kept revision on
@@ -28,6 +33,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 30-Oct-2026 - Version 1.1.0
+# - project_switched_on: AURA opens only the projects switched on in the
+#   Gallery's Project Editor (auraEnabled).
+#
 # 30-Oct-2026 - Version 1.0.0
 # - Initial build.
 #
@@ -62,6 +71,7 @@ MIRROR_ROOT              = Path(__file__).resolve().parents[2]                  
 APP_DIR                  = MIRROR_ROOT / 'Vale__ValeVision__AuraRender'
 CONFIG_FILE              = APP_DIR / '02__Src__AppModules' / '02__AppData' / 'Na__AppConfig__AuraRender__.json'
 BUCKET                   = 'ValeVision__AuraRender'                               # <-- AURA's folder in each project
+SWITCH_KEY               = 'auraEnabled'                                          # <-- In the project record, ticked in the Gallery's Project Editor
 DRAWINGS_DIR             = 'UserData__AuraDrawings'
 CONFIG_TTL_S             = 10
 _CONFIG                  = {'at': 0.0, 'value': {}}
@@ -162,6 +172,11 @@ def project_record(folder):
         return Na__Library__ReadJson(folder / f'ProjectData__{folder.name}__.json') or {}
     except (OSError, ValueError):
         return {}
+
+
+def project_switched_on(folder):
+    """True only when the project is ticked "Available in ValeVision AURA" in the Gallery's Project Editor."""
+    return project_record(folder).get(SWITCH_KEY) is True
 
 
 def project_public(folder):

@@ -1,0 +1,237 @@
+{
+    "HandwritingModel__Format": "Na__HandwritingModel__Graves__f32le__1",
+    "HandwritingModel__Name": "Graves handwriting synthesis (X-rayLaser/pytorch-handwriting-synthesis-toolkit)",
+    "HandwritingModel__Checkpoint": "Epoch_46",
+    "HandwritingModel__Commit": "899e9432dfe0998ba2ef31582d11c2d5f24a5185",
+    "HandwritingModel__SourceSha256": "34e3d0abbef3331f0ac76155048ce4b4f12301f91681d3335a423a2e0462ec2f",
+    "HandwritingModel__File": "AuraRender__HandwritingModel__Epoch46__Weights__.bin",
+    "HandwritingModel__Floats": 3773360,
+    "HandwritingModel__Bytes": 15093440,
+    "HandwritingModel__Sha256": "9aa8892455fc2a3675373452232907ee0b045a33a88bafc3fd8ba4cbe90c4fac",
+    "HandwritingModel__Charset": " !\"#%'()+,-./0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZ[abcdefghijklmnopqrstuvwxyz",
+    "HandwritingModel__Mu": [
+        8.217162132263184,
+        0.1212363988161087,
+        0.0
+    ],
+    "HandwritingModel__Std": [
+        42.34926223754883,
+        37.07347869873047,
+        1.0
+    ],
+    "HandwritingModel__Shape": {
+        "Input": 3,
+        "Hidden": 400,
+        "Alphabet": 80,
+        "WindowGaussians": 10,
+        "WindowOut": 32,
+        "Mixtures": 20,
+        "MixtureOut": 128
+    },
+    "HandwritingModel__Layout": [
+        {
+            "Name": "lstm1.W_xh",
+            "Offset": 0,
+            "Shape": [
+                483,
+                1600
+            ]
+        },
+        {
+            "Name": "lstm1.W_ci",
+            "Offset": 772800,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.b_i",
+            "Offset": 773200,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.W_cf",
+            "Offset": 773600,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.b_f",
+            "Offset": 774000,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.b_c",
+            "Offset": 774400,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.W_co",
+            "Offset": 774800,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm1.b_o",
+            "Offset": 775200,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "window.W",
+            "Offset": 775600,
+            "Shape": [
+                400,
+                32
+            ]
+        },
+        {
+            "Name": "window.b",
+            "Offset": 788400,
+            "Shape": [
+                32
+            ]
+        },
+        {
+            "Name": "lstm2.W_xh",
+            "Offset": 788432,
+            "Shape": [
+                883,
+                1600
+            ]
+        },
+        {
+            "Name": "lstm2.W_ci",
+            "Offset": 2201232,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.b_i",
+            "Offset": 2201632,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.W_cf",
+            "Offset": 2202032,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.b_f",
+            "Offset": 2202432,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.b_c",
+            "Offset": 2202832,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.W_co",
+            "Offset": 2203232,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm2.b_o",
+            "Offset": 2203632,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.W_xh",
+            "Offset": 2204032,
+            "Shape": [
+                883,
+                1600
+            ]
+        },
+        {
+            "Name": "lstm3.W_ci",
+            "Offset": 3616832,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.b_i",
+            "Offset": 3617232,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.W_cf",
+            "Offset": 3617632,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.b_f",
+            "Offset": 3618032,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.b_c",
+            "Offset": 3618432,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.W_co",
+            "Offset": 3618832,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "lstm3.b_o",
+            "Offset": 3619232,
+            "Shape": [
+                400
+            ]
+        },
+        {
+            "Name": "mixture.W",
+            "Offset": 3619632,
+            "Shape": [
+                1200,
+                128
+            ]
+        },
+        {
+            "Name": "mixture.b",
+            "Offset": 3773232,
+            "Shape": [
+                128
+            ]
+        }
+    ],
+    "HandwritingModel__RightsNote": "Trained by the toolkit's author on IAM-OnDB: an evaluation asset (the Vale Handwriting Studio's README). Served only to signed-in Vale Managers and App Admins through the AURA API; never committed to git (ValeCodebase is public) and never placed where nginx serves files.",
+    "HandwritingModel__Built": "30-Oct-2026 12:46 UTC",
+    "HandwritingModel__BuiltBy": "Vale__ValeVision__AuraRender/60__Dev__WebBuildUtils/AuraRender__BuildUtil__HandwritingWeights__.py"
+}

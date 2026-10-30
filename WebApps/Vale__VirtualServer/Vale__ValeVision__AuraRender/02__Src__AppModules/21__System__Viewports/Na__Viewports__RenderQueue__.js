@@ -15,15 +15,21 @@
 //   runs its whole render graph (Na__EngineHost__RenderStill), so the queue
 //   draws them in turn, with a breath between for the page to repaint.
 // - A PICTURE IS KEPT BY WHAT MADE IT: the engine's version, its settings, the
-//   camera, the profile and the scale. Change any and the key changes, so the
-//   next look at the sheet draws it again; until then the old picture shows.
-// - The queue pauses while the 3D Environment is open: its live drawing has
-//   the engine.
+//   camera, the view's Art Direction Points, the profile and the scale. Change
+//   any and the key changes, so the next look at the sheet draws it again.
+// - The queue pauses while the 3D Environment is open (its live drawing has
+//   the engine), and while a viewport's points are edited on its sheet (that
+//   viewport has it). Meanwhile the edited viewport shows a PREVIEW: the live
+//   engine's drawing of it (SetPreview), until its still is drawn again.
 // - Pictures are WebP in memory (object URLs), about forty kept.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
+// - The view's points are in the key and go to the still (Na__Views__Points);
+//   a viewport can show a preview while its points are edited (SetPreview).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -37,7 +43,7 @@
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__EngineHost__RenderStill, Na__EngineHost__Settings, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__Views__Camera } from './Na__Viewports__Views__.js';
+    import { Na__Views__Camera, Na__Views__Points } from './Na__Viewports__Views__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -50,7 +56,8 @@
 
     const Na__RenderQueue__State = {
         cache    : new Map(),                    // <-- key -> { url, widthPx, heightPx, ms }; the newest last
-        waiting  : [],                           // <-- [{ key, camera, scale, callbacks }]
+        previews : new Map(),                    // <-- viewport id -> { url, owned }: shown instead while its points are edited
+        waiting  : [],                           // <-- [{ key, camera, points, scale, callbacks }]
         current  : '',                           // <-- The key being drawn now
         running  : false,
         paused   : false,
@@ -68,11 +75,28 @@
     // ------------------------------------------------------------
     function Na__RenderQueue__Key(viewport, doc) {
         const camera = Na__Views__Camera(viewport, doc);
+        const points = Na__Views__Points(viewport, doc).map((p) => { const copy = Object.assign({}, p); delete copy.Id; return copy; });   // <-- Ids only tell points apart
         return {
             camera,
+            points,
             scale : Na__AppConfig__Get('Viewport__RenderScale', 1),
-            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, r: Na__AppConfig__Get('Viewport__RenderScale', 1) })
+            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: Na__AppConfig__Get('Viewport__RenderScale', 1) })
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show a Preview in a Viewport While Its Points Are Edited (null: its still again)
+    // ------------------------------------------------------------
+    // owned: the preview's object URL is this queue's to let go of (a still
+    // already kept in the cache is lent, never revoked here).
+    // ------------------------------------------------------------
+    function Na__RenderQueue__SetPreview(viewportId, url, owned) {
+        const previews = Na__RenderQueue__State.previews;
+        const old = previews.get(viewportId);
+        if (old && old.owned && old.url !== url) URL.revokeObjectURL(old.url);
+        if (url) previews.set(viewportId, { url, owned: !!owned });
+        else previews.delete(viewportId);
     }
     // ------------------------------------------------------------
 
@@ -95,6 +119,8 @@
     // FUNCTION | The Picture for a Viewport Now, if There Is One (else null; Request draws it)
     // ------------------------------------------------------------
     function Na__RenderQueue__Picture(viewport, doc) {
+        const preview = Na__RenderQueue__State.previews.get(viewport.Viewport__Id);
+        if (preview) return { url: preview.url, preview: true };
         const { key } = Na__RenderQueue__Key(viewport, doc);
         return Na__RenderQueue__State.cache.get(key) || null;
     }
@@ -160,12 +186,12 @@
                 const job = S.waiting[0];
                 if (S.onStatus) S.onStatus(`Drawing view ${done + 1} of ${done + S.waiting.length} in pen and wash...`);
                 await new Promise((resolve) => setTimeout(resolve, 30));        // <-- A breath: the page repaints between stills
-                if (S.waiting[0] !== job) continue;                             // <-- Cleared while it waited
+                if (S.paused || S.waiting[0] !== job) continue;                 // <-- Cleared, or paused (a viewport borrowed the engine), while it waited
                 S.waiting.shift();
                 S.current = job.key;
                 let picture = null, failure = null;
                 try {
-                    const still = Na__EngineHost__RenderStill({ camera: job.camera, scale: job.scale });
+                    const still = Na__EngineHost__RenderStill({ camera: job.camera, scale: job.scale, points: job.points });
                     const blob = await new Promise((resolve) => still.canvas.toBlob(resolve, 'image/webp', 0.92));
                     if (!blob) throw new Error('The picture could not be encoded.');
                     picture = { url: URL.createObjectURL(blob), widthPx: still.widthPx, heightPx: still.heightPx, ms: still.ms };
@@ -194,6 +220,7 @@
 
     export {
         Na__RenderQueue__Picture,
+        Na__RenderQueue__SetPreview,
         Na__RenderQueue__Request,
         Na__RenderQueue__Clear,
         Na__RenderQueue__Pause,

@@ -1,0 +1,130 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - PEN
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__Pen__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - Pen
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The Pen tab: folding groups, presets and hatch points
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: PEN.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * PEN | Folding Groups, Presets, Hatch Points
+ * ----------------------------------------------------------------------------- */
+
+    /* TABS | A long panel must never squeeze the tab row: it keeps its height */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Tabs {
+        flex-shrink                        :  0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLDS | A group that opens and closes - complex control, well named (manifest section 03) */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Fold > summary {
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  space-between;
+        margin-bottom                      :  0;
+        list-style                         :  none;
+        cursor                             :  pointer;
+        user-select                        :  none;
+    }
+
+    .PainterlyNPR__Fold > summary::-webkit-details-marker {
+        display                            :  none;
+    }
+
+    .PainterlyNPR__Fold > summary::after {
+        content                            :  '+';
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  14px;
+        font-weight                        :  400;
+        letter-spacing                     :  0;
+    }
+
+    .PainterlyNPR__Fold[open] > summary {
+        margin-bottom                      :  9px;
+    }
+
+    .PainterlyNPR__Fold[open] > summary::after {
+        content                            :  '−';
+    }
+
+    .PainterlyNPR__Fold > summary:hover {
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PRESETS | The active Pen preset, and a point card's quick presets */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__ChipRow {
+        display                            :  flex;
+        flex-wrap                          :  wrap;
+        gap                                :  5px;
+        margin                             :  6px 0 4px;
+    }
+
+    .PainterlyNPR__ChipRow .PainterlyNPR__Chip {
+        padding                            :  2px 9px;
+        font-size                          :  10.5px;
+    }
+
+    .PainterlyNPR__PointCard__Advanced > summary {
+        margin                             :  4px 0 2px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+        cursor                             :  pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HATCH POINTS | Stripes in the ring at the hatch's angle, and a knob to turn it */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Handle[data-type="Hatch"]    { --PainterlyNPR_PointColour: #7A5FA3; }
+    .PainterlyNPR__Handle[data-type="Suppress"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_InkFaint); }
+    .PainterlyNPR__Handle[data-type="Discipline"] { --PainterlyNPR_PointColour: #8C6A3C; }
+    .PainterlyNPR__Handle[data-type="RunOut"]   { --PainterlyNPR_PointColour: #3E7470; }   /* <-- Line run-out: an ink teal */
+    .PainterlyNPR__PointCard[data-type="Hatch"]    { --PainterlyNPR_PointColour: #7A5FA3; }
+    .PainterlyNPR__PointCard[data-type="Suppress"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_InkFaint); }
+    .PainterlyNPR__PointCard[data-type="Discipline"] { --PainterlyNPR_PointColour: #8C6A3C; }
+    .PainterlyNPR__PointCard[data-type="RunOut"]   { --PainterlyNPR_PointColour: #3E7470; }
+
+    .PainterlyNPR__Handle__Ring--stripes {
+        opacity                            :  0.9;
+    }
+
+    .PainterlyNPR__Handle__Knob {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        width                              :  14px;
+        height                             :  14px;
+        margin                             :  -7px 0 0 -7px;
+        padding                            :  0;
+        border                             :  2px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Cream);
+        cursor                             :  grab;
+        pointer-events                     :  auto;
+        box-shadow                         :  0 1px 4px rgba(43, 42, 40, 0.25);
+    }
+
+    .PainterlyNPR__Handle__Knob:active {
+        cursor                             :  grabbing;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

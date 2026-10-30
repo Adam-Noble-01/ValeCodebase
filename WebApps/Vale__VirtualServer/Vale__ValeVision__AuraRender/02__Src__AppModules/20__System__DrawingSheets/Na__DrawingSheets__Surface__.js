@@ -8,28 +8,35 @@
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : The open sheet as one SVG in paper millimetres: the paper, the
 //              border and the Vale title column, with layers the viewports and the
-//              annotations draw into; zoom, pan, and the pointer passed to whoever
+//              annotations draw into; its zoom, and the pointer passed to whoever
 //              owns what was pressed
 // CREATED    : 30-Oct-2026
 //
 // DESCRIPTION:
 // - ONE SVG, viewBox in paper millimetres, shown at 3.2 px/mm times the zoom
-//   (the Layout Editor's screen scale) inside a scrolling desk. Fit puts the
-//   whole sheet in view.
+//   (the Layout Editor's screen scale) inside a scrolling desk.
 // - LAYERS, bottom to top: paper and border, viewports, annotations, the title
 //   column, and the overlay (selection handles). A module adds its layer with
 //   Na__Surface__AddLayer and is asked to draw it on every Na__Surface__Render.
 // - THE POINTER: whatever is pressed carries data-hit ("viewport",
 //   "annotation", "handle") and an id; the owner registered with Na__Surface__On
 //   answers with a drag ({ move(mm, e), end(mm, e) }) or nothing. A press on
-//   bare paper goes to "paper". Pressing the middle button, or holding Space,
-//   pans the desk instead.
-// - ZOOM: Ctrl + wheel about the pointer, or the zoom buttons. The plain wheel
-//   scrolls the desk.
+//   bare paper goes to "paper", a press on the grey desk to "desk".
+// - NAVIGATION IS NOT HERE: the Layout Editor's, ported (Navigation, the PC
+//   and touchscreen controls, the key map). They listen on the desk first; a
+//   press they take arrives here with preventDefault, and while a pan or a
+//   pinch holds the sheet (SetSuppressed) no press is a tool's.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.1.3)
+// - Zoom, fit, the middle-button and Space pans and the wheel moved out to the
+//   Layout Editor's navigation (Na__DrawingSheets__Navigation__ and its two
+//   control modules). This module keeps the zoom value (GetZoom, SetZoom) and
+//   gains SetSuppressed, a "desk" press for the grey round the paper, and a
+//   second finger that is never a tool's.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -42,7 +49,6 @@
 
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Dom__Svg, Na__Dom__Clear } from '../03__AppUtils/Na__AppUtils__Dom__.js';
-    import { Na__Format__Clamp } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__Paper__Solve } from './Na__DrawingSheets__Paper__.js';
     import { Na__TitleBlock__Draw } from './Na__DrawingSheets__TitleBlock__.js';
 
@@ -54,23 +60,20 @@
 // -----------------------------------------------------------------------------
 
     const Na__Surface__PX_PER_MM = 3.2;                                         // <-- On screen at zoom 1 (ValeVision 3D's Layout Editor)
-    const Na__Surface__ZOOM_MIN  = 0.1;
-    const Na__Surface__ZOOM_MAX  = 12;
 
     const Na__Surface__State = {
-        desk      : null,                        // <-- The scrolling host
-        svg       : null,
-        sheet     : null,
-        solve     : null,
-        zoom      : 1,
-        fitted    : {},                          // <-- sheet id -> true once fitted on first show
-        layers    : [],                          // <-- [{ name, draw(group, sheet, solve), group }]
-        overlays  : [],                          // <-- draw(group, sheet, solve): selection handles, on top of everything
-        overlay   : null,
-        handlers  : {},                          // <-- hit kind ('handle:<owner>' for handles) -> (event, mm, element) => drag | null
-        drag      : null,
-        panning   : null,
-        spaceDown : false
+        desk       : null,                       // <-- The scrolling host
+        svg        : null,
+        sheet      : null,
+        solve      : null,
+        zoom       : 1,
+        layers     : [],                         // <-- [{ name, draw(group, sheet, solve), group }]
+        overlays   : [],                         // <-- draw(group, sheet, solve): selection handles, on top of everything
+        overlay    : null,
+        handlers   : {},                         // <-- hit kind ('handle:<owner>' for handles) -> (event, mm, element) => drag | null
+        drag       : null,
+        lastMm     : null,                       // <-- Where the drag last was: a suppressed drag ends there
+        suppressed : false                       // <-- A pan or a pinch holds the sheet: no press is a tool's
     };
 
 // endregion -------------------------------------------------------------------
@@ -160,11 +163,6 @@
         Na__TitleBlock__Draw(title, sheet, solve);
         S.overlay = Na__Dom__Svg('g', { class: 'aura-sheet__layer aura-sheet__layer--overlay' }, S.svg);
         Na__Surface__RedrawOverlay();
-
-        if (!S.fitted[sheet.Sheet__Id]) {
-            S.fitted[sheet.Sheet__Id] = true;
-            requestAnimationFrame(() => Na__Surface__Fit());
-        }
     }
     // ------------------------------------------------------------
 
@@ -184,7 +182,7 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Zoom and Pan
+// REGION | Zoom
 // -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Size the SVG for the Zoom
@@ -200,42 +198,25 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Zoom To a Value, Keeping a Point of the Desk Still (the pointer, or the centre)
+    // FUNCTION | The Zoom Now, and Setting It (Na__DrawingSheets__Navigation__ clamps and keeps the point still)
     // ------------------------------------------------------------
-    function Na__Surface__ZoomTo(zoom, clientX, clientY) {
-        const S = Na__Surface__State;
-        if (!S.solve) return;
-        const desk = S.desk;
-        const rect = desk.getBoundingClientRect();
-        const cx = clientX === undefined ? rect.left + rect.width / 2 : clientX;
-        const cy = clientY === undefined ? rect.top + rect.height / 2 : clientY;
-        const before = Na__Surface__ClientToMm(cx, cy);
-        S.zoom = Na__Format__Clamp(zoom, Na__Surface__ZOOM_MIN, Na__Surface__ZOOM_MAX);
-        Na__Surface__ApplyZoom();
-        const svgRect = S.svg.getBoundingClientRect();
-        const k = Na__Surface__PX_PER_MM * S.zoom;
-        desk.scrollLeft += (svgRect.left + before.X * k) - cx;
-        desk.scrollTop += (svgRect.top + before.Y * k) - cy;
+    function Na__Surface__GetZoom() {
+        return Na__Surface__State.zoom;
     }
 
-    function Na__Surface__ZoomBy(factor) {
-        Na__Surface__ZoomTo(Na__Surface__State.zoom * factor);
+    function Na__Surface__SetZoom(zoom) {
+        if (!Number.isFinite(zoom) || zoom <= 0) return;
+        Na__Surface__State.zoom = zoom;
+        Na__Surface__ApplyZoom();
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Fit the Whole Sheet in the Desk
+    // FUNCTION | The Elements Navigation Moves: { desk, svg, solve }
     // ------------------------------------------------------------
-    function Na__Surface__Fit() {
+    function Na__Surface__Elements() {
         const S = Na__Surface__State;
-        if (!S.solve || !S.desk) return;
-        const pad = 48;
-        const fit = Math.min((S.desk.clientWidth - pad) / (S.solve.Paper.WidthMm * Na__Surface__PX_PER_MM),
-                             (S.desk.clientHeight - pad) / (S.solve.Paper.HeightMm * Na__Surface__PX_PER_MM));
-        S.zoom = Na__Format__Clamp(fit > 0 ? fit : 1, Na__Surface__ZOOM_MIN, Na__Surface__ZOOM_MAX);
-        Na__Surface__ApplyZoom();
-        S.desk.scrollLeft = (S.desk.scrollWidth - S.desk.clientWidth) / 2;
-        S.desk.scrollTop = (S.desk.scrollHeight - S.desk.clientHeight) / 2;
+        return { desk: S.desk, svg: S.svg, solve: S.solve };
     }
     // ------------------------------------------------------------
 
@@ -248,8 +229,9 @@
 
     // FUNCTION | Say Who Answers a Press on a Kind of Thing
     // ------------------------------------------------------------
-    // kind: 'viewport', 'annotation', 'handle' or 'paper'. handler(event, mm,
-    // element) returns a drag ({ move(mm, event), end(mm, event) }) or nothing.
+    // kind: 'viewport', 'annotation', 'handle', 'paper' or 'desk' (the grey
+    // round the paper). handler(event, mm, element) returns a drag
+    // ({ move(mm, event), end(mm, event) }) or nothing.
     // ------------------------------------------------------------
     function Na__Surface__On(kind, handler) {
         Na__Surface__State.handlers[kind] = handler;
@@ -257,22 +239,38 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Wire the Desk: presses, drags, desk panning and the zoom wheel
+    // FUNCTION | Hold the Sheet's Tools Off While a Pan or a Pinch Has It
+    // ------------------------------------------------------------
+    // Raised by the navigation's controls for the length of a pan that took the
+    // left button and of any two-finger gesture. A drag already under way (the
+    // first finger of a pinch) ends where it last was, so nothing is left half
+    // moved.
+    // ------------------------------------------------------------
+    function Na__Surface__SetSuppressed(flag) {
+        const S = Na__Surface__State;
+        S.suppressed = !!flag;
+        if (!S.suppressed || !S.drag) return;
+        const drag = S.drag;
+        S.drag = null;
+        if (drag.end) drag.end(S.lastMm || { X: 0, Y: 0 }, null);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Wire the Desk: presses and drags (navigation is the controls')
     // ------------------------------------------------------------
     function Na__Surface__Wire() {
         const S = Na__Surface__State;
         const desk = S.desk;
         desk.addEventListener('pointerdown', (e) => {
-            if (!S.sheet) return;
-            if (e.button === 1 || (e.button === 0 && S.spaceDown)) {
-                S.panning = { x: e.clientX, y: e.clientY, left: desk.scrollLeft, top: desk.scrollTop };
-                desk.setPointerCapture(e.pointerId);
-                desk.classList.add('is-panning');
-                e.preventDefault();
+            if (!S.sheet || e.button !== 0 || !e.isPrimary) return;                // <-- A second finger is the navigation's, never a tool's
+            if (e.defaultPrevented || S.suppressed) return;                       // <-- A pan took this press
+            if (!S.svg.contains(e.target)) {                                      // <-- The grey desk: nothing to place or move there
+                if (S.handlers.desk) S.handlers.desk(e);
                 return;
             }
-            if (e.button !== 0) return;
             const mm = Na__Surface__ClientToMm(e.clientX, e.clientY);
+            S.lastMm = mm;
             const hit = e.target.closest ? e.target.closest('[data-hit]') : null;
             let kind = hit ? hit.getAttribute('data-hit') : 'paper';
             if (kind === 'handle') kind = `handle:${hit.getAttribute('data-owner') || ''}`;
@@ -286,18 +284,12 @@
             }
         });
         desk.addEventListener('pointermove', (e) => {
-            if (S.panning) {
-                desk.scrollLeft = S.panning.left - (e.clientX - S.panning.x);
-                desk.scrollTop = S.panning.top - (e.clientY - S.panning.y);
-                return;
-            }
-            if (S.drag && S.drag.move) S.drag.move(Na__Surface__ClientToMm(e.clientX, e.clientY), e);
+            if (!S.drag || !e.isPrimary) return;
+            S.lastMm = Na__Surface__ClientToMm(e.clientX, e.clientY);
+            if (S.drag.move) S.drag.move(S.lastMm, e);
         });
         const end = (e) => {
-            if (S.panning) {
-                S.panning = null;
-                desk.classList.remove('is-panning');
-            }
+            if (!e.isPrimary) return;
             if (S.drag) {
                 const drag = S.drag;
                 S.drag = null;
@@ -307,20 +299,6 @@
         };
         desk.addEventListener('pointerup', end);
         desk.addEventListener('pointercancel', end);
-        desk.addEventListener('wheel', (e) => {
-            if (!e.ctrlKey || !S.sheet) return;                                   // <-- The plain wheel scrolls the desk
-            e.preventDefault();
-            Na__Surface__ZoomTo(S.zoom * Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY);
-        }, { passive: false });
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName || '')) {
-                S.spaceDown = true;
-                desk.classList.add('is-pan-ready');
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') { S.spaceDown = false; desk.classList.remove('is-pan-ready'); }
-        });
     }
     // ------------------------------------------------------------
 
@@ -371,8 +349,10 @@
         Na__Surface__On,
         Na__Surface__ClientToMm,
         Na__Surface__PxPerMm,
-        Na__Surface__ZoomBy,
-        Na__Surface__Fit,
+        Na__Surface__GetZoom,
+        Na__Surface__SetZoom,
+        Na__Surface__Elements,
+        Na__Surface__SetSuppressed,
         Na__Surface__Current
     };
 

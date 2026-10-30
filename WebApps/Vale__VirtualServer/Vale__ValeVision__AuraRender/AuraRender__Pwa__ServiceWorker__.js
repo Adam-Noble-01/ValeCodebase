@@ -14,25 +14,29 @@
      version lives at its own path, so a cached file is never out of date; a new
      version is a new path. This is where AURA's heavy work lives on the user's
      own machine (Adam, 30-Oct-2026: the server is resource constrained), and
-     where the WebAssembly handwriting engine and PainterlyNPR's WebGPU and
-     WebAssembly builds will be kept the same way.
+     where PainterlyNPR's WebGPU and WebAssembly builds will be kept the same way.
    - AURA's own files and the shared assets: network first, the cached copy only
-     when offline (ValeVision 3D's rule).
-   - Never cached here: api/ (sign-in, projects, drawing sets, handwriting), the
-     Projects Master Library, and anything that is not a GET.
+     when offline (ValeVision 3D's rule). The handwriting engine's WebAssembly
+     (31__System__Handwriting/02__Engine__Wasm, 13 KB) is one of them.
+   - THE HANDWRITING MODEL (15 MB, from api/handwriting/weights/<sha256>) is kept
+     by the handwriting engine's own worker in aura-pen-<hash> caches, which this
+     worker never deletes: an app update does not fetch the model again.
+   - Never cached here: api/ (sign-in, projects, drawing sets, the handwriting
+     model's manifest), the Projects Master Library, and anything that is not a GET.
 
    ============================================================================= */
 
-var AURA_VERSION = '2026-10-30-2';                                               // <-- Bump with every engine sync (a re-sync of the same version too)
+var AURA_VERSION = '2026-10-30-4';                                               // <-- Bump with every engine sync (a re-sync of the same version too)
 var AURA_SHELL   = 'aura-shell-' + AURA_VERSION;
 var AURA_ENGINE  = 'aura-engine-' + AURA_VERSION;                                // <-- Kept until the next version of this worker
+var AURA_PEN     = 'aura-pen-';                                                  // <-- The handwriting model's caches: its worker keeps the current one
 
 self.addEventListener('install', function() { self.skipWaiting(); });
 
 self.addEventListener('activate', function(event) {
     event.waitUntil(caches.keys().then(function(keys) {
         return Promise.all(keys.filter(function(k) {
-            return k.indexOf('aura-') === 0 && k !== AURA_SHELL && k !== AURA_ENGINE;
+            return k.indexOf('aura-') === 0 && k !== AURA_SHELL && k !== AURA_ENGINE && k.indexOf(AURA_PEN) !== 0;
         }).map(function(k) { return caches.delete(k); }));
     }).then(function() { return self.clients.claim(); }));
 });

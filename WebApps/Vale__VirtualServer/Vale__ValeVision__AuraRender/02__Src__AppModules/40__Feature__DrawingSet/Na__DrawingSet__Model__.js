@@ -23,10 +23,21 @@
 // - A NEW PROJECT starts with one A1 demo sheet: the four elevations at 1:50,
 //   the roof plan at 1:100 and the engine's three-quarter view, so the whole
 //   chain (engine, viewports, title block) shows at once.
+// - ART DIRECTION POINTS are kept a set a view, as PainterlyNPR makes them
+//   (its point objects, as plain data): View__Points on a saved view (shared
+//   by every sheet viewport that shows it), Viewport__Points on any other
+//   viewport, and AuraDrawingSet__Engine.WorkingPoints for the 3D
+//   Environment's view while it is not a saved one (inside Engine, beside the
+//   settings: the AURA API takes only the four root keys it knows).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0 (AURA 0.3.0)
+// - Art Direction Points: View__Points, Viewport__Points and
+//   AuraDrawingSet__Engine.WorkingPoints; NewSavedView takes the points,
+//   Normalise keeps only point records it can read (Na__DrawingSet__CleanPoints).
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -110,7 +121,8 @@
             Viewport__CameraSource     : kind === 'Perspective' ? (o.savedViewId ? { SavedViewId: o.savedViewId } : { Preset: o.preset || 'ThreeQuarter' }) : null,
             Viewport__Profile          : kind === 'Perspective' ? 'Concept' : (o.profile || 'Measured'),
             Viewport__Title            : String(o.title || ''),
-            Viewport__ShowTitle        : o.showTitle !== false
+            Viewport__ShowTitle        : o.showTitle !== false,
+            Viewport__Points           : Na__DrawingSet__CleanPoints(o.points)     // <-- Its own Art Direction Points (a saved view's viewport draws with the view's)
         };
     }
     // ------------------------------------------------------------
@@ -139,14 +151,39 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | A Saved 3D View: a name and the engine's camera
+    // FUNCTION | A Saved 3D View: a name, the engine's camera and its Art Direction Points
     // ------------------------------------------------------------
-    function Na__DrawingSet__NewSavedView(name, camera) {
+    function Na__DrawingSet__NewSavedView(name, camera, points) {
         return {
             View__Id     : Na__Format__Id('View'),
             View__Name   : String(name || 'Saved view').slice(0, 60),
-            View__Camera : JSON.parse(JSON.stringify(camera))
+            View__Camera : JSON.parse(JSON.stringify(camera)),
+            View__Points : Na__DrawingSet__CleanPoints(points)
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Set of Art Direction Points as Plain Data (only records the engine can read)
+    // ------------------------------------------------------------
+    // The engine checks each type again when it takes them (its MakePoint),
+    // so a type a later engine drops is left out there, never here.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__CleanPoints(points) {
+        return (Array.isArray(points) ? points : [])
+            .filter((p) => p && typeof p === 'object' && typeof p.Type === 'string' && Array.isArray(p.PaperMm) && p.PaperMm.length === 2)
+            .map((p) => JSON.parse(JSON.stringify(p)));
+    }
+
+    // The 3D Environment's unsaved view's points, and keeping them (inside Engine, beside the settings)
+    function Na__DrawingSet__WorkingPoints(doc) {
+        return (doc && doc.AuraDrawingSet__Engine && doc.AuraDrawingSet__Engine.WorkingPoints) || [];
+    }
+
+    function Na__DrawingSet__SetWorkingPoints(doc, points) {
+        if (!doc) return;
+        doc.AuraDrawingSet__Engine = doc.AuraDrawingSet__Engine || { Settings: null };
+        doc.AuraDrawingSet__Engine.WorkingPoints = Na__DrawingSet__CleanPoints(points);
     }
     // ------------------------------------------------------------
 
@@ -169,7 +206,7 @@
                 UpdatedIso    : now,
                 CreatedBy     : user ? user.code : ''
             },
-            AuraDrawingSet__Engine     : { Settings: null },                     // <-- null: the engine's own starting state
+            AuraDrawingSet__Engine     : { Settings: null, WorkingPoints: [] },  // <-- Settings null: the engine's own starting state. WorkingPoints: the 3D Environment's while its view is not a saved one
             AuraDrawingSet__SavedViews : [],
             AuraDrawingSet__Sheets     : []
         };
@@ -220,6 +257,8 @@
         d.AuraDrawingSet__Meta = Object.assign({ SchemaVersion: Na__DrawingSet__SCHEMA_VERSION, ProjectId: project ? project.id : '' }, d.AuraDrawingSet__Meta || {});
         d.AuraDrawingSet__Engine = Object.assign({ Settings: null }, d.AuraDrawingSet__Engine || {});
         d.AuraDrawingSet__SavedViews = Array.isArray(d.AuraDrawingSet__SavedViews) ? d.AuraDrawingSet__SavedViews.filter((v) => v && v.View__Id && v.View__Camera) : [];
+        d.AuraDrawingSet__SavedViews.forEach((v) => { v.View__Points = Na__DrawingSet__CleanPoints(v.View__Points); });
+        d.AuraDrawingSet__Engine.WorkingPoints = Na__DrawingSet__CleanPoints(d.AuraDrawingSet__Engine.WorkingPoints);
         const sizes = Na__AppConfig__Get('Sheet__PaperSizes', {});
         const minFrame = Na__AppConfig__Get('Viewport__MinFrameMm', 20);
         d.AuraDrawingSet__Sheets = (Array.isArray(d.AuraDrawingSet__Sheets) ? d.AuraDrawingSet__Sheets : []).filter((s) => s && s.Sheet__Id).map((s) => {
@@ -240,6 +279,7 @@
                         HeightMm : Math.max(minFrame, Number(f.HeightMm) || minFrame)
                     };
                     if (v.Viewport__Kind !== 'Perspective') v.Viewport__ScaleDenominator = Na__Format__Clamp(Number(v.Viewport__ScaleDenominator) || 50, 1, 5000);
+                    v.Viewport__Points = Na__DrawingSet__CleanPoints(v.Viewport__Points);
                     return v;
                 });
             sheet.Sheet__Annotations = (Array.isArray(s.Sheet__Annotations) ? s.Sheet__Annotations : [])
@@ -293,6 +333,9 @@
         Na__DrawingSet__NewViewport,
         Na__DrawingSet__NewAnnotation,
         Na__DrawingSet__NewSavedView,
+        Na__DrawingSet__CleanPoints,
+        Na__DrawingSet__WorkingPoints,
+        Na__DrawingSet__SetWorkingPoints,
         Na__DrawingSet__Normalise,
         Na__DrawingSet__Sheet,
         Na__DrawingSet__Viewport,

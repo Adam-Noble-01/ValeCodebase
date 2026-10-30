@@ -1,0 +1,394 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - ASSET DRAWER
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__AssetDrawer__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - AssetDrawer
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The pull-out Assets drawer left of the sheet, its cards, the ghost
+ *              a dragged card leaves, and the marker where it will land
+ * CREATED    : 30-Oct-2026 (v0.6.0)
+ *
+ * DESCRIPTION:
+ * - Imported last by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css:
+ *   it gives the main grid a third column on the left - a slim tab while the
+ *   drawer is folded, the drawer's width while it is out - and places the
+ *   stage, the meta strip and the panel in theirs.
+ * - Quiet as the panel is: warm paper and ink, one accent (slate) for what is
+ *   chosen and for the drop marker.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | A Column for the Drawer
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Main {
+        grid-template-columns              :  var(--PainterlyNPR_DrawerTab) minmax(0, 1fr) var(--PainterlyNPR_PanelWidth);
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Main {
+        grid-template-columns              :  var(--PainterlyNPR_DrawerTab) minmax(0, 1fr) 34px;
+    }
+
+    .PainterlyNPR--assetsOpen .PainterlyNPR__Main {
+        grid-template-columns              :  var(--PainterlyNPR_DrawerWidth) minmax(0, 1fr) var(--PainterlyNPR_PanelWidth);
+    }
+
+    .PainterlyNPR--assetsOpen.PainterlyNPR--foldPanel .PainterlyNPR__Main {
+        grid-template-columns              :  var(--PainterlyNPR_DrawerWidth) minmax(0, 1fr) 34px;
+    }
+
+    .PainterlyNPR__AssetDrawer {
+        grid-column                        :  1;
+        grid-row                           :  1 / -1;                        /* <-- Beside the sheet, its full height */
+    }
+
+    .PainterlyNPR__Stage {
+        grid-column                        :  2;
+    }
+
+    .PainterlyNPR__Meta {
+        grid-column                        :  3;
+        grid-row                           :  1;
+    }
+
+    .PainterlyNPR__Panel {
+        grid-column                        :  3;
+        grid-row                           :  2;
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Panel {
+        grid-row                           :  1 / -1;                        /* <-- Folded, the strip runs the full height: the meta strip is hidden */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * DRAWER | The Tab, the Body, the Filters
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__AssetDrawer {
+        display                            :  flex;
+        flex-direction                     :  column;
+        min-width                          :  0;
+        min-height                         :  0;
+        margin-bottom                      :  8px;
+    }
+
+    /* Folded: a slim tab down the desk's edge, as the folded panel is on the right */
+    .PainterlyNPR__AssetDrawer__Tab {
+        flex                               :  1 1 auto;
+        padding                            :  12px 0;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_Radius);
+        background                         :  rgba(250, 247, 240, 0.55);
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  12px;
+        font-weight                        :  600;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        writing-mode                       :  vertical-rl;
+        text-orientation                   :  mixed;
+        cursor                             :  pointer;
+        transition                         :  background var(--PainterlyNPR_Transition), color var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__AssetDrawer__Tab:hover {
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__AssetDrawer__Body {
+        display                            :  none;
+        flex                               :  1 1 auto;
+        flex-direction                     :  column;
+        gap                                :  8px;
+        min-height                         :  0;
+        padding                            :  10px 10px 0;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_Radius);
+        background                         :  var(--PainterlyNPR_Cream);
+        overflow                           :  hidden;
+    }
+
+    .PainterlyNPR--assetsOpen .PainterlyNPR__AssetDrawer__Tab {
+        display                            :  none;
+    }
+
+    .PainterlyNPR--assetsOpen .PainterlyNPR__AssetDrawer__Body {
+        display                            :  flex;
+    }
+
+    .PainterlyNPR__AssetDrawer__Head {
+        display                            :  flex;
+        align-items                        :  baseline;
+        gap                                :  8px;
+    }
+
+    .PainterlyNPR__AssetDrawer__Title {
+        margin                             :  0;
+        font-family                        :  var(--PainterlyNPR_FontSerif);
+        font-size                          :  16px;
+        font-weight                        :  600;
+    }
+
+    .PainterlyNPR__AssetDrawer__Count {
+        flex                               :  1 1 auto;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__AssetDrawer__Search {
+        width                              :  100%;
+        padding                            :  6px 9px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+    }
+
+    .PainterlyNPR__AssetDrawer .PainterlyNPR__ChipRow {
+        margin                             :  0;
+    }
+
+    .PainterlyNPR__AssetDrawer__Show {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  5px;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__AssetDrawer__Show span {
+        margin-right                       :  2px;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * CARDS | The Library's Assets, Two to a Row
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__AssetDrawer__Grid {
+        flex                               :  1 1 auto;
+        min-height                         :  120px;
+        display                            :  grid;
+        grid-template-columns              :  1fr 1fr;
+        align-content                      :  start;
+        gap                                :  8px;
+        padding                            :  2px 2px 8px;
+        overflow-y                         :  auto;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+        touch-action                       :  pan-y;                        /* <-- A finger scrolls the cards up and down; across, it carries one to the sheet */
+    }
+
+    .PainterlyNPR__AssetCard {
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  3px;
+        padding                            :  5px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        cursor                             :  grab;
+        user-select                        :  none;
+        transition                         :  border-color var(--PainterlyNPR_Transition), box-shadow var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__AssetCard:hover {
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+        box-shadow                         :  0 1px 3px rgba(60, 48, 36, 0.12);
+    }
+
+    .PainterlyNPR__AssetCard__Thumb {
+        aspect-ratio                       :  1 / 1;
+        border-radius                      :  4px;
+        background                         :  var(--PainterlyNPR_Paper);
+        overflow                           :  hidden;
+    }
+
+    .PainterlyNPR__AssetCard__Thumb img {
+        display                            :  block;
+        width                              :  100%;
+        height                             :  100%;
+        object-fit                         :  cover;
+        pointer-events                     :  none;
+    }
+
+    .PainterlyNPR__AssetCard__Thumb--none {
+        display                            :  grid;
+        place-items                        :  center;
+        color                              :  var(--PainterlyNPR_InkGhost);
+        font-size                          :  10.5px;
+        text-align                         :  center;
+    }
+
+    .PainterlyNPR__AssetCard__Name {
+        color                              :  var(--PainterlyNPR_Ink);
+        font-size                          :  11.5px;
+        font-weight                        :  600;
+        line-height                        :  1.25;
+    }
+
+    .PainterlyNPR__AssetCard__Meta {
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  9.5px;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * PLACED AND PICTURES | The Drawing's Plops, and the Factory
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__AssetDrawer__Section {
+        flex                               :  none;
+        padding                            :  9px 0;
+        border-top                         :  1px solid var(--PainterlyNPR_Rule);
+        border-bottom                      :  0;
+    }
+
+    .PainterlyNPR__AssetDrawer__Section .PainterlyNPR__Group__Title {
+        margin-bottom                      :  6px;
+    }
+
+    .PainterlyNPR__AssetDrawer__Placed {
+        max-height                         :  150px;
+        margin                             :  0;
+        padding                            :  0;
+        list-style                         :  none;
+        overflow-y                         :  auto;
+    }
+
+    .PainterlyNPR__AssetDrawer__Placed li {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  4px;
+        padding                            :  2px 0;
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__AssetDrawer__PlacedName {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+
+    .PainterlyNPR__AssetDrawer__PlacedTools {
+        display                            :  inline-flex;
+        flex                               :  none;
+    }
+
+    .PainterlyNPR__AssetDrawer__PlacedEmpty {
+        color                              :  var(--PainterlyNPR_InkFaint);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * DROP | The Ghost Under the Pointer, and Where the Asset Will Stand
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__AssetDrop__Ghost {
+        position                           :  fixed;
+        top                                :  0;
+        left                               :  0;
+        z-index                            :  60;
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  2px;
+        padding                            :  4px;
+        border                             :  1px solid var(--PainterlyNPR_Slate);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  rgba(255, 253, 248, 0.92);
+        box-shadow                         :  0 6px 18px rgba(60, 48, 36, 0.22);
+        color                              :  var(--PainterlyNPR_Ink);
+        font-size                          :  10px;
+        font-weight                        :  600;
+        pointer-events                     :  none;
+    }
+
+    .PainterlyNPR__AssetDrop__Ghost .PainterlyNPR__AssetCard__Thumb {
+        width                              :  100%;
+    }
+
+    .PainterlyNPR__AssetDrop__Marker {
+        position                           :  absolute;
+        inset                              :  0;
+        width                              :  100%;
+        height                             :  100%;
+        pointer-events                     :  none;
+        overflow                           :  visible;
+    }
+
+    .PainterlyNPR__AssetDrop__Ring {
+        fill                               :  rgba(95, 122, 145, 0.16);
+        stroke                             :  var(--PainterlyNPR_Slate);
+        stroke-width                       :  2;
+        stroke-dasharray                   :  7 5;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__AssetDrop__Height {
+        stroke                             :  var(--PainterlyNPR_Slate);
+        stroke-width                       :  2;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__AssetDrop__Foot {
+        fill                               :  var(--PainterlyNPR_Slate);
+    }
+
+    .PainterlyNPR--draggingAsset,
+    .PainterlyNPR--draggingAsset * {
+        cursor                             :  grabbing !important;          /* <-- Whatever the pointer crosses while a card is carried */
+    }
+
+    .PainterlyNPR--placingAsset .PainterlyNPR__Sheet {
+        cursor                             :  crosshair;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESPONSIVE | One Column - the drawer's tab is a bar over the sheet
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 1100px) {
+        .PainterlyNPR__Main,
+        .PainterlyNPR--foldPanel .PainterlyNPR__Main,
+        .PainterlyNPR--assetsOpen .PainterlyNPR__Main,
+        .PainterlyNPR--assetsOpen.PainterlyNPR--foldPanel .PainterlyNPR__Main {
+            grid-template-columns          :  minmax(0, 1fr);
+        }
+
+        .PainterlyNPR__AssetDrawer,
+        .PainterlyNPR__Stage,
+        .PainterlyNPR__Meta,
+        .PainterlyNPR__Panel,
+        .PainterlyNPR--foldPanel .PainterlyNPR__Panel {
+            grid-column                    :  auto;
+            grid-row                       :  auto;
+        }
+
+        .PainterlyNPR__AssetDrawer__Tab {
+            writing-mode                   :  horizontal-tb;
+            padding                        :  9px 0;
+        }
+
+        .PainterlyNPR--assetsOpen .PainterlyNPR__AssetDrawer__Body {
+            max-height                     :  70vh;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

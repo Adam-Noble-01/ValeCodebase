@@ -18,11 +18,17 @@
 //   copy as a revision in the project (ValeShared__Library__ WriteJson).
 // - SOMEONE ELSE SAVED FIRST (409): nothing is overwritten. The page says so and
 //   offers to load theirs; this page's edits stay on screen until then.
+// - SWITCHED OFF WHILE OPEN (403, notSwitchedOn: the project was unticked in the
+//   Gallery's Project Editor): saving stops and the page says so, once.
 // - Leaving with unsaved edits asks first (the browser's own question).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.1.0
+// - A project switched off for AURA while open stops saving, as a 409 does,
+//   instead of failing again on every edit.
+//
 // 30-Oct-2026 - Version 1.0.0
 // - Initial build.
 //
@@ -50,7 +56,7 @@
         timer     : 0,
         saving    : false,
         again     : false,                       // <-- An edit arrived while saving: save once more after
-        conflict  : false,                       // <-- Someone else saved first: saving stops until reloaded
+        conflict  : false,                       // <-- Someone else saved first, or the project was switched off: saving stops until reloaded
         onState   : null                         // <-- (text, kind) => {}: the header's save state
     };
 
@@ -126,6 +132,13 @@
                     error : true,
                     ms    : 15000,
                     action: { label: 'Load theirs', onClick: () => window.location.reload() }
+                });
+            } else if (error.status === 403 && error.data && error.data.notSwitchedOn) {
+                S.conflict = true;                                           // <-- Unticked in the Project Editor: no point trying again
+                Na__Persistence__Say('Not saved: switched off for AURA', 'error');
+                Na__Toast__Show('This project was switched off for AURA in ValeVision Gallery while you were working. Your changes are still on screen but are not saved.', {
+                    error : true,
+                    ms    : 15000
                 });
             } else {
                 Na__Persistence__Say('Not saved', 'error');

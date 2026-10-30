@@ -1,0 +1,6 @@
+# The handwriting model's weights never go in git (ValeCodebase is public): they were
+# trained on IAM-OnDB, an evaluation asset. Rebuild them on a new machine with
+# Vale__ValeVision__AuraRender/60__Dev__WebBuildUtils/AuraRender__BuildUtil__HandwritingWeights__.py
+# The manifest beside them (layout, SHA-256, no weights) is committed.
+*.bin
+*.tmp

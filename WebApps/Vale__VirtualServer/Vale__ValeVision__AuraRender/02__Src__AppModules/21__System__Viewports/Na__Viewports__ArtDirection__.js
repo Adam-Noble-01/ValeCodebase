@@ -33,6 +33,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.0.2 (AURA 0.5.9)
+// - The borrowed engine draws with the viewport's scene's own sun
+//   (Na__Views__Sun), so its preview matches its still.
+//
 // 30-Oct-2026 - Version 1.0.1 (AURA 0.5.0)
 // - Words only: the points are the viewport's scene's.
 //
@@ -57,7 +61,7 @@
     } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__Surface__Current, Na__Surface__Elements, Na__Surface__RedrawLayer } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import { Na__DrawingSet__Viewport, Na__DrawingSet__CleanPoints } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
-    import { Na__Views__Camera, Na__Views__PointsOwner, Na__Views__Points, Na__Views__SetPoints, Na__Views__PictureRect } from './Na__Viewports__Views__.js';
+    import { Na__Views__Camera, Na__Views__PointsOwner, Na__Views__Points, Na__Views__SetPoints, Na__Views__Sun, Na__Views__PictureRect } from './Na__Viewports__Views__.js';
     import { Na__RenderQueue__Picture, Na__RenderQueue__SetPreview, Na__RenderQueue__Pause } from './Na__Viewports__RenderQueue__.js';
 
 // endregion -------------------------------------------------------------------
@@ -169,7 +173,7 @@
         const picture = Na__RenderQueue__Picture(viewport, doc);
         if (picture && !picture.preview) Na__RenderQueue__SetPreview(viewport.Viewport__Id, picture.url, false);   // <-- The still stands in until the points change
         Na__EngineHost__Borrow({
-            camera, points: Na__Views__Points(viewport, doc), layer: S.layer, element: S.stand,
+            camera, points: Na__Views__Points(viewport, doc), sun: Na__Views__Sun(viewport, doc), layer: S.layer, element: S.stand,
             onEdited  : () => Na__ViewportPoints__Keep(),
             onRelease : () => Na__ViewportPoints__Cleanup()
         });

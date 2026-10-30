@@ -51,6 +51,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.2.0 (AURA 0.5.9)
+// - Sun: the sun a viewport draws with, its scene's own (View__Sun), else the
+//   drawing set's working sun, in the engine's form.
+//
 // 30-Oct-2026 - Version 2.1.0 (AURA 0.5.6)
 // - The cut: SceneNormal, CutM, SetCut, ApplyCut (SceneCamera and Camera stand
 //   the eye at it) and ScaledCentre (UpdateScene keeps a scaled scene's centre
@@ -90,7 +94,7 @@
     import { Na__EngineHost__SheetMm, Na__EngineHost__BuildingBounds, Na__EngineHost__PresetCamera } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import {
         Na__DrawingSet__Scene, Na__DrawingSet__CameraToJson, Na__DrawingSet__CameraFromJson, Na__DrawingSet__CleanPoints,
-        Na__DrawingSet__DefaultScale
+        Na__DrawingSet__DefaultScale, Na__DrawingSet__SunToEngine, Na__DrawingSet__WorkingSun
     } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
 
 // endregion -------------------------------------------------------------------
@@ -401,6 +405,19 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Sun a Viewport Draws With: { Azimuth, Altitude } (the engine's form), or null
+    // ------------------------------------------------------------
+    // Its scene's own (View__Sun, AURA 0.5.9), shared by every viewport showing
+    // it, else the working sun; null only before either is known (the engine's
+    // own is drawn).
+    // ------------------------------------------------------------
+    function Na__Views__Sun(viewport, doc) {
+        const scene = Na__Views__Scene(viewport, doc);
+        return Na__DrawingSet__SunToEngine(scene && scene.View__Sun) || Na__DrawingSet__SunToEngine(Na__DrawingSet__WorkingSun(doc));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Where the Engine's Whole Sheet Lies on the Paper for a Viewport: { X, Y, WidthMm, HeightMm }
     // ------------------------------------------------------------
     // As the viewport draws its picture: a scaled view's still at its true size
@@ -447,6 +464,7 @@
         Na__Views__PointsOwner,
         Na__Views__Points,
         Na__Views__SetPoints,
+        Na__Views__Sun,
         Na__Views__PictureRect
     };
 

@@ -57,6 +57,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.2.0 (AURA 0.5.9)
+// - Each scene keeps its own sun (Na__Environment3d__SceneSun__, mounted at
+//   the head of the Parameters before the Art Direction section opens the
+//   first one): + Add Scene and Duplicate carry the sun with the scene.
+//
 // 30-Oct-2026 - Version 2.1.0 (AURA 0.5.6)
 // - A third section, Cameras (Adam: "Add a Cameras tab"): the lens and the
 //   elevation planes, whose layer is mounted over the canvas under the points.
@@ -131,7 +136,7 @@
         Na__EngineHost__Presets, Na__EngineHost__ApplyPreset, Na__EngineHost__SetCamera, Na__EngineHost__Camera,
         Na__EngineHost__AttachNavigation, Na__EngineHost__NewSeed, Na__EngineHost__Redraw, Na__EngineHost__SceneCounts,
         Na__EngineHost__WorkMode, Na__EngineHost__SetWorkMode, Na__EngineHost__Points, Na__EngineHost__RefreshPoints,
-        Na__EngineHost__Borrowed
+        Na__EngineHost__Borrowed, Na__EngineHost__Sun
     } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__EngineHost__AttachAssets, Na__EngineHost__AssetsTap, Na__EngineHost__AssetsAway } from '../10__System__EngineHost/Na__EngineHost__Assets__.js';
     import { Na__DrawingSet__NewScene, Na__DrawingSet__SceneName, Na__DrawingSet__Scene } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
@@ -140,6 +145,7 @@
         Na__Views__ApplyCut, Na__Views__ScaledCentre
     } from '../21__System__Viewports/Na__Viewports__Views__.js';
     import { Na__Parameters__Build, Na__Parameters__Sync } from './Na__Environment3d__Parameters__.js';
+    import { Na__SceneSun3d__Mount } from './Na__Environment3d__SceneSun__.js';
     import { Na__Cameras__Build, Na__Cameras__SetOpen, Na__Cameras__Sync } from './Na__Environment3d__Cameras__.js';
     import { Na__DrawingPlanes__Mount, Na__DrawingPlanes__Redraw } from './Na__Environment3d__DrawingPlanes__.js';
     import {
@@ -317,8 +323,8 @@
         const name = Na__DrawingSet__SceneName(doc, `Scene ${(doc.AuraDrawingSet__SavedViews || []).length + 1}`);
         const scene = Na__Views__IsScaled(open)
             ? Na__DrawingSet__NewScene({ name, kind: open.View__Kind, side: open.View__Side, centre: Na__Views__ScaledCentre(open, camera.Target),
-                                         cut: open.View__CutM, points: Na__EngineHost__Points() })
-            : Na__DrawingSet__NewScene({ name, kind: 'Perspective', camera, points: Na__EngineHost__Points() });
+                                         cut: open.View__CutM, points: Na__EngineHost__Points(), sun: Na__EngineHost__Sun() })
+            : Na__DrawingSet__NewScene({ name, kind: 'Perspective', camera, points: Na__EngineHost__Points(), sun: Na__EngineHost__Sun() });
         doc.AuraDrawingSet__SavedViews.push(scene);
         Na__ArtDirection3d__Adopt(scene);
         Na__AppState__Touch('views');
@@ -445,7 +451,7 @@
         Na__ArtDirection3d__Keep();
         const copy = Na__DrawingSet__NewScene({
             name: Na__DrawingSet__SceneName(doc, scene.View__Name), kind: scene.View__Kind, side: scene.View__Side, camera: scene.View__Camera,
-            preset: scene.View__Preset, centre: scene.View__CentreM, cut: scene.View__CutM, points: scene.View__Points
+            preset: scene.View__Preset, centre: scene.View__CentreM, cut: scene.View__CutM, points: scene.View__Points, sun: scene.View__Sun
         });
         const list = doc.AuraDrawingSet__SavedViews;
         list.splice(list.indexOf(scene) + 1, 0, copy);
@@ -651,6 +657,7 @@
         const holder = Na__Dom__El('div', 'aura-params');
         params.body.appendChild(holder);
         Na__Parameters__Build(holder);
+        Na__SceneSun3d__Mount(params.body, () => Na__Environment3d__OpenScene());   // <-- Each scene's own sun (0.5.9); before the points' section opens the first
 
         const points = Na__Panels__Section(panel, { id: 'env-points', title: 'Art direction points', icon: 'ArtDirectionPoints', onToggle: (open) => Na__ArtDirection3d__SetOpen(open) });
         Na__ArtDirection3d__Mount(points, sheetWrap, canvas, () => Na__Environment3d__MarkScene());

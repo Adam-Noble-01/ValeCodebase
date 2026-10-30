@@ -53,10 +53,27 @@
 //   (AuraDrawingSet__Engine.SheetMm). It became A3 at PainterlyNPR 0.8.3, so
 //   a set from another sheet, or naming none, has its points moved onto
 //   today's when it loads (FitToSheet, with the engine's own refit).
+// - THE SUN IS A SCENE'S (View__Sun, AURA 0.5.9; Adam: "several different sun
+//   positions on elevations ... that complement each shot"): { Sun__AzimuthDeg,
+//   Sun__AltitudeDeg }, shared by every viewport showing the scene, as its
+//   points are. AuraDrawingSet__Engine.WorkingSun is the 3D Environment's while
+//   no scene is open. The engine's settings no longer carry it: a set saved
+//   with one sun for all (Settings.Sun) gives it to every scene and to the
+//   working sun when it loads, so nothing drawn before changes, and drops it.
+//   null: the engine's own sun, until the 3D Environment fills it in.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.6.0 (AURA 0.5.9)
+// - The sun is a scene's: View__Sun on every scene (NewScene takes sun),
+//   AuraDrawingSet__Engine.WorkingSun, Na__DrawingSet__CleanSun,
+//   Na__DrawingSet__SunToEngine, Na__DrawingSet__WorkingSun and
+//   Na__DrawingSet__SetWorkingSun. Normalise moves an older set's one sun
+//   (Settings.Sun) onto every scene and the working sun. FindOrMakeScene
+//   shares a scene whatever its sun when none is asked for, and a scene it
+//   makes starts with the working sun.
+//
 // 30-Oct-2026 - Version 1.5.0 (AURA 0.5.6)
 // - A scaled scene's cut, View__CutM (its drawing plane, metres along the
 //   plane's normal; null: not cut): NewScene takes it as cut, Normalise keeps
@@ -186,13 +203,15 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | A New Scene: { name, kind, side, camera, preset, centre, cut, points }
+    // FUNCTION | A New Scene: { name, kind, side, camera, preset, centre, cut, points, sun }
     // ------------------------------------------------------------
     // camera: the engine's object or the file's form. A 3D scene with no camera
     // starts from an engine preset (View__Preset, ThreeQuarter unless named),
     // read from the engine when it is drawn, never copied here. A scaled
     // scene's centre is null until it is moved: centred on the building. Its
     // cut (View__CutM, AURA 0.5.6) is null until its plane is moved: not cut.
+    // Its sun (View__Sun, AURA 0.5.9), in the engine's form or the file's, is
+    // null until one is given (the 3D Environment fills it with the engine's).
     // ------------------------------------------------------------
     function Na__DrawingSet__NewScene(options) {
         const o = options || {};
@@ -208,7 +227,8 @@
             View__Preset  : kind === 'Perspective' && !camera ? String(o.preset || 'ThreeQuarter') : null,
             View__CentreM : kind !== 'Perspective' ? Na__DrawingSet__Point3(o.centre) : null,
             View__CutM    : kind !== 'Perspective' && Number.isFinite(cut) ? Math.round(cut * 1000) / 1000 : null,   // <-- Metres along the plane's normal from the world origin; null: not cut
-            View__Points  : Na__DrawingSet__CleanPoints(o.points)
+            View__Points  : Na__DrawingSet__CleanPoints(o.points),
+            View__Sun     : Na__DrawingSet__CleanSun(o.sun)                     // <-- Its own sun, { Sun__AzimuthDeg, Sun__AltitudeDeg }, or null
         };
     }
 
@@ -235,14 +255,18 @@
     // Just like it: the same kind, side, centre, preset and camera, and no
     // points of its own to keep apart. How the demo sheet, an older document's
     // viewports and a new viewport from the sheet's "Add a view" find theirs.
+    // A sun asked for must match too; none asked for, any scene's will do, and
+    // a scene made here starts with the working sun.
     // ------------------------------------------------------------
     function Na__DrawingSet__FindOrMakeScene(doc, options) {
         const made = Na__DrawingSet__NewScene(options);
         const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         const found = made.View__Points.length ? null : (doc.AuraDrawingSet__SavedViews || []).find((v) =>
             v.View__Kind === made.View__Kind && v.View__Side === made.View__Side && v.View__Preset === made.View__Preset
-            && same(v.View__CentreM, made.View__CentreM) && same(v.View__Camera, made.View__Camera) && same(v.View__CutM ?? null, made.View__CutM));
+            && same(v.View__CentreM, made.View__CentreM) && same(v.View__Camera, made.View__Camera) && same(v.View__CutM ?? null, made.View__CutM)
+            && (!made.View__Sun || same(v.View__Sun, made.View__Sun)));
         if (found) return found;
+        if (!made.View__Sun) made.View__Sun = Na__DrawingSet__WorkingSun(doc);
         made.View__Name = Na__DrawingSet__SceneName(doc, made.View__Name);
         doc.AuraDrawingSet__SavedViews = doc.AuraDrawingSet__SavedViews || [];
         doc.AuraDrawingSet__SavedViews.push(made);
@@ -363,6 +387,40 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | A Sun as the File Keeps It: { Sun__AzimuthDeg, Sun__AltitudeDeg }, or null
+    // ------------------------------------------------------------
+    // Takes the file's form or the engine's ({ Azimuth, Altitude }, degrees).
+    // The engine's ranges are its sliders', applied where it takes the sun
+    // (Na__EngineHost__SetSun), never guessed here.
+    // ------------------------------------------------------------
+    function Na__DrawingSet__CleanSun(sun) {
+        if (!sun || typeof sun !== 'object') return null;
+        const azimuth  = Number(sun.Sun__AzimuthDeg !== undefined ? sun.Sun__AzimuthDeg : sun.Azimuth);
+        const altitude = Number(sun.Sun__AltitudeDeg !== undefined ? sun.Sun__AltitudeDeg : sun.Altitude);
+        if (!Number.isFinite(azimuth) || !Number.isFinite(altitude)) return null;
+        const r = (x) => Math.round(x * 100) / 100;
+        return { Sun__AzimuthDeg: r(azimuth), Sun__AltitudeDeg: r(altitude) };
+    }
+
+    // The engine's form ({ Azimuth, Altitude }) of a sun in either form, or null
+    function Na__DrawingSet__SunToEngine(sun) {
+        const clean = Na__DrawingSet__CleanSun(sun);
+        return clean ? { Azimuth: clean.Sun__AzimuthDeg, Altitude: clean.Sun__AltitudeDeg } : null;
+    }
+
+    // The 3D Environment's sun while no scene is open, and keeping it (inside Engine, beside the working points)
+    function Na__DrawingSet__WorkingSun(doc) {
+        return Na__DrawingSet__CleanSun(doc && doc.AuraDrawingSet__Engine && doc.AuraDrawingSet__Engine.WorkingSun);
+    }
+
+    function Na__DrawingSet__SetWorkingSun(doc, sun) {
+        if (!doc) return;
+        doc.AuraDrawingSet__Engine = doc.AuraDrawingSet__Engine || { Settings: null };
+        doc.AuraDrawingSet__Engine.WorkingSun = Na__DrawingSet__CleanSun(sun);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -382,7 +440,7 @@
                 UpdatedIso    : now,
                 CreatedBy     : user ? user.code : ''
             },
-            AuraDrawingSet__Engine     : { Settings: null, WorkingPoints: [] },  // <-- Settings null: the engine's own starting state. WorkingPoints: the 3D Environment's while no scene is open
+            AuraDrawingSet__Engine     : { Settings: null, WorkingPoints: [], WorkingSun: null },   // <-- Settings null: the engine's own starting state. WorkingPoints and WorkingSun: the 3D Environment's while no scene is open
             AuraDrawingSet__SavedViews : [],                                     // <-- The scenes
             AuraDrawingSet__Sheets     : []
         };
@@ -435,11 +493,16 @@
         const d = (doc && typeof doc === 'object') ? doc : {};
         d.AuraDrawingSet__Meta = Object.assign({ SchemaVersion: Na__DrawingSet__SCHEMA_VERSION, ProjectId: project ? project.id : '' }, d.AuraDrawingSet__Meta || {});
         d.AuraDrawingSet__Engine = Object.assign({ Settings: null }, d.AuraDrawingSet__Engine || {});
+        const settings = d.AuraDrawingSet__Engine.Settings && typeof d.AuraDrawingSet__Engine.Settings === 'object' ? d.AuraDrawingSet__Engine.Settings : null;
+        const oneSun = settings ? Na__DrawingSet__CleanSun(settings.Sun) : null;   // <-- A set from before 0.5.9: one sun for every scene
+        if (settings) delete settings.Sun;                                      // <-- The scenes' now: the engine's settings no longer carry it
+        d.AuraDrawingSet__Engine.WorkingSun = Na__DrawingSet__CleanSun(d.AuraDrawingSet__Engine.WorkingSun) || oneSun;
         d.AuraDrawingSet__SavedViews = (Array.isArray(d.AuraDrawingSet__SavedViews) ? d.AuraDrawingSet__SavedViews : [])
             .filter((v) => v && v.View__Id)
             .map((v) => {
                 const kind = Na__DrawingSet__VIEWPORT_KINDS.includes(v.View__Kind) ? v.View__Kind : 'Perspective';   // <-- A saved view from before scenes was 3D
-                const scene = Na__DrawingSet__NewScene({ name: v.View__Name, kind, side: v.View__Side, camera: v.View__Camera, preset: v.View__Preset, centre: v.View__CentreM, cut: v.View__CutM, points: v.View__Points });
+                const scene = Na__DrawingSet__NewScene({ name: v.View__Name, kind, side: v.View__Side, camera: v.View__Camera, preset: v.View__Preset, centre: v.View__CentreM, cut: v.View__CutM, points: v.View__Points,
+                                                         sun: v.View__Sun || oneSun });
                 scene.View__Id = v.View__Id;
                 return Object.assign(v, scene);                                  // <-- The engine's camera object from before 0.4.4 moves across with it
             });
@@ -588,6 +651,10 @@
         Na__DrawingSet__CleanPoints,
         Na__DrawingSet__WorkingPoints,
         Na__DrawingSet__SetWorkingPoints,
+        Na__DrawingSet__CleanSun,
+        Na__DrawingSet__SunToEngine,
+        Na__DrawingSet__WorkingSun,
+        Na__DrawingSet__SetWorkingSun,
         Na__DrawingSet__Normalise,
         Na__DrawingSet__FitToSheet,
         Na__DrawingSet__Sheet,

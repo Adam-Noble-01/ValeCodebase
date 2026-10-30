@@ -35,6 +35,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.0 (AURA 0.5.9)
+// - The scene's sun follows the same owner (Na__Environment3d__SceneSun__):
+//   UseScene and Retake set the scene's sun (or the working sun) in the
+//   engine, Adopt gives the scene the sun on the drawing, LeaveScene keeps it
+//   as the working sun, and Mount starts on the working sun.
+//
 // 30-Oct-2026 - Version 2.0.0 (AURA 0.5.0)
 // - Scenes: the owner is a scene (UseScene, LeaveScene, Owner, Adopt) or the
 //   working set; the scene stays open while the camera moves (FollowCamera,
@@ -69,6 +75,7 @@
     } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__DrawingSet__Scene, Na__DrawingSet__WorkingPoints, Na__DrawingSet__SetWorkingPoints } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
     import { Na__Views__ScenesUsing } from '../21__System__Viewports/Na__Viewports__Views__.js';
+    import { Na__SceneSun3d__Use, Na__SceneSun3d__Keep } from './Na__Environment3d__SceneSun__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -164,6 +171,7 @@
         Na__ArtDirection3d__Arm(null);
         S.owner = scene ? scene.View__Id : null;
         Na__EngineHost__SetPoints(scene ? scene.View__Points : Na__DrawingSet__WorkingPoints(doc), false);
+        Na__SceneSun3d__Use(scene, false);                                      // <-- Its own sun too (AURA 0.5.9)
         S.signature = Na__EngineHost__PointsSignature();
         Na__ArtDirection3d__ShowOwner();
     }
@@ -181,6 +189,8 @@
         Na__ArtDirection3d__Keep();
         S.owner = null;
         Na__DrawingSet__SetWorkingPoints(doc, Na__EngineHost__Points());
+        Na__SceneSun3d__Keep(null, false);                                      // <-- Its sun stays on the drawing too: the working sun's now
+        Na__SceneSun3d__Use(null, false);                                       // <-- (the sliders' owner line follows)
         S.signature = Na__EngineHost__PointsSignature();
         Na__AppState__Touch('points');
         Na__ArtDirection3d__ShowOwner();
@@ -198,6 +208,8 @@
     function Na__ArtDirection3d__Adopt(scene) {
         const S = Na__ArtDirection3d__State;
         S.owner = scene ? scene.View__Id : null;
+        Na__SceneSun3d__Keep(scene, false);                                     // <-- It takes the sun on the drawing (part of the step that made or updated it)
+        Na__SceneSun3d__Use(scene, false);
         S.signature = Na__EngineHost__PointsSignature();
         Na__ArtDirection3d__ShowOwner();
     }
@@ -350,6 +362,7 @@
 
         const doc = Na__AppState__Data.doc;
         Na__EngineHost__SetPoints(Na__DrawingSet__WorkingPoints(doc), true);
+        Na__SceneSun3d__Use(null, true);                                        // <-- The working sun, as the working points
         S.signature = Na__EngineHost__PointsSignature();
         Na__ArtDirection3d__ShowOwner();
         Na__ArtDirection3d__SetOpen(section.IsOpen());
@@ -366,6 +379,7 @@
         if (!doc || !S.section || Na__EngineHost__Borrowed()) return;
         const scene = Na__ArtDirection3d__OwnerScene();
         Na__EngineHost__SetPoints(scene ? scene.View__Points : Na__DrawingSet__WorkingPoints(doc), Na__AppState__Data.tab !== 'environment');
+        Na__SceneSun3d__Use(scene, Na__AppState__Data.tab !== 'environment');  // <-- An undo of a sun slider brings that sun back
         S.signature = Na__EngineHost__PointsSignature();
         Na__ArtDirection3d__ShowOwner();
     }

@@ -15,8 +15,9 @@
 //   runs its whole render graph (Na__EngineHost__RenderStill), so the queue
 //   draws them in turn, with a breath between for the page to repaint.
 // - A PICTURE IS KEPT BY WHAT MADE IT: the engine's version, its settings, the
-//   camera, the view's Art Direction Points, the profile and the scale. Change
-//   any and the key changes, so the next look at the sheet draws it again.
+//   camera, the view's Art Direction Points, its scene's sun, the profile and
+//   the scale. Change any and the key changes, so the next look at the sheet
+//   draws it again. A sun moved for one scene redraws only its viewports.
 // - The queue pauses while the 3D Environment is open (its live drawing has
 //   the engine), and while a viewport's points are edited on its sheet (that
 //   viewport has it). Meanwhile the edited viewport shows a PREVIEW: the live
@@ -39,6 +40,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.4.0 (AURA 0.5.9)
+// - Each still is drawn with its scene's own sun (Na__Views__Sun, the
+//   request's sun), which is in its key; the engine's settings no longer
+//   carry the sun, so one scene's light never redraws another's viewports.
+//
 // 30-Oct-2026 - Version 1.3.0 (AURA 0.5.5)
 // - Pictures drawn for their frame (frameMm, scaled) and kept as PNG within a
 //   memory budget; one waiting picture a viewport, its last one standing in.
@@ -64,7 +70,7 @@
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__EngineHost__RenderStill, Na__EngineHost__FitsFrames, Na__EngineHost__Settings, Na__EngineHost__SheetMm, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
-    import { Na__Views__Camera, Na__Views__IsScaled, Na__Views__Points } from './Na__Viewports__Views__.js';
+    import { Na__Views__Camera, Na__Views__IsScaled, Na__Views__Points, Na__Views__Sun } from './Na__Viewports__Views__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -99,6 +105,7 @@
     function Na__RenderQueue__Key(viewport, doc) {
         const camera = Na__Views__Camera(viewport, doc);
         const points = Na__Views__Points(viewport, doc).map((p) => { const copy = Object.assign({}, p); delete copy.Id; return copy; });   // <-- Ids only tell points apart
+        const sun = Na__Views__Sun(viewport, doc);                               // <-- Its scene's own (0.5.9)
         const scale = Na__RenderQueue__Scale();
         const scaled = Na__Views__IsScaled(viewport);
         const f = viewport.Viewport__FrameMm || {};
@@ -109,11 +116,12 @@
             id    : viewport.Viewport__Id,
             camera,
             points,
+            sun,
             scale,
             frameMm,
             scaled,
             frame,
-            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, r: scale, f: frame })
+            key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, u: sun, r: scale, f: frame })
         };
     }
     // ------------------------------------------------------------
@@ -276,7 +284,7 @@
                 let picture = null, failure = null;
                 try {
                     let still;
-                    const request = { camera: job.camera, scale: job.scale, points: job.points, frameMm: job.frameMm, scaled: job.scaled };
+                    const request = { camera: job.camera, scale: job.scale, points: job.points, sun: job.sun, frameMm: job.frameMm, scaled: job.scaled };
                     try {
                         still = Na__EngineHost__RenderStill(request);
                     } catch (error) {

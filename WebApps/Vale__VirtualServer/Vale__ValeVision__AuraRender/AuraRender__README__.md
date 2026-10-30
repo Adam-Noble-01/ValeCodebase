@@ -141,6 +141,10 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   drag it, Alt-drag a copy, Delete, Ctrl+D, [ and ] to size, H to switch off, Escape to let go. Opening a scene loads
   its points and edits save into it, while the camera moves too; with no scene open they wait for Add Scene. A scene
   holds 8.
+- **Each scene keeps its own sun** (0.5.9). Opening a scene's tab sets its sun, and the Light sliders (Direction,
+  Height) save into that scene, so each elevation and view can have the light that suits it; every viewport showing
+  the scene draws with it. The line at the head of Parameters says whose sun the sliders set. With no scene open the
+  sun is the working sun, and Add Scene takes it.
 - **Sheets:** ValeVision 3D's Layout Editor layout: the sheet on the left (Sheet, Title block, Revisions), the tools
   over the sheet, the selection on the right (Viewport, Art direction points, Note), both panels resizable.
   **New sheet** (A1, A2, A3 or A4, landscape or portrait). The sheet is the pictures' own paper (0.3.3): the drawing

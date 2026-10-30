@@ -1,5 +1,51 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.9, 30-Oct-2026: Each Scene Keeps Its Own Sun
+
+**Asked by Adam:** "each scene when saved IS NOT SAVING each of the different scenes' sun location and what this means
+is different elevations. Some are really dark, some are really light, because the sun position is currently being set
+and saved as a global data point. Every single scene in the JSON file needs to have its sun position savable and a
+robust pathway that saves per scene, per project. Then each viewport loads that data per scene, per project, so you
+can set several different sun positions on elevations, for example, that complement each shot."
+
+**Why it was wrong:** the sun was one of the engine's settings (`AuraDrawingSet__Engine.Settings.Sun`), one for the
+whole drawing set, so a sun that lit the front elevation well left the rear in shadow, and moving it moved every
+viewport's.
+
+**Built** (nothing in the engine changed; PainterlyNPR stays pinned at v0.8.10):
+- **The drawing set** (`Na__DrawingSet__Model__` 1.6.0): every scene has `View__Sun`,
+  `{ Sun__AzimuthDeg, Sun__AltitudeDeg }`, as it has its camera and points; `AuraDrawingSet__Engine.WorkingSun` is the
+  3D Environment's while no scene is open. No new root keys, so the AURA API takes it as it is.
+- **Older drawing sets:** when one loads, its one sun (`Settings.Sun`) goes to every scene without its own and to the
+  working sun, then leaves the settings. Nothing drawn before changes until a scene's sun is moved. A set that never
+  saved a sun gives its scenes the engine's own when the 3D Environment opens.
+- **The engine host** (`Na__EngineHost__PainterlyNpr__` 1.9.0): `Sun` is out of the settings AURA keeps. `Sun`,
+  `SetSun` (kept within the sliders' ranges), `EnvironmentSun` and `IsSunControl`. A still draws with its scene's sun
+  (`request.sun`) and a viewport borrowing the engine with its own (`options.sun`); both are put back after. A sun
+  slider tells the listeners `'sun'`, and the app's settings listener leaves it to the scene.
+- **The 3D Environment** (`Na__Environment3d__SceneSun__` 1.0.0, new): the sun follows the same owner as the points.
+  - Opening a scene's tab sets its sun, and the Light sliders follow.
+  - Moving a sun slider saves into the open scene (one step in the history, saved with the set).
+  - Add Scene, Duplicate and a viewport made from the live view carry the sun.
+  - Leaving a scene (a preset picked, or the scene deleted) keeps its sun on the drawing as the working sun.
+  - Undo and redo bring a scene's sun back.
+  - A line at the head of Parameters says whose sun the sliders set.
+- **The sheets** (`Na__Viewports__Views__` 2.2.0 `Sun`, `Na__Viewports__RenderQueue__` 1.4.0): a viewport's picture is
+  drawn with its scene's sun and keyed by it, so moving one scene's sun redraws only that scene's viewports. A
+  viewport whose points are edited on its sheet previews with its own sun (`Na__Viewports__ArtDirection__` 1.0.2).
+- `AuraConfig__App__Version` 0.5.9. The worker's token is unchanged: AURA's own files are network first.
+
+**Checked here (no browser):** every changed module parses as an ES module (Node 22). In Node, the drawing-set model:
+- An older set's one sun went to a scene without its own and to the working sun, and left the settings.
+- A scene with its own sun kept it.
+- A scene made for a new viewport started with the working sun, and an existing one was still found and shared.
+- A save and reload left every scene's sun as it was.
+
+**Not checked:** a browser (Adam tests). Try: open the Front Elevation tab and move the sun, open the Rear and move it
+differently, then a sheet showing both (each its own light); undo a sun move; reload and check both suns are kept.
+
+**Live:** `aura` only (no API change). (Uncommitted, waiting on Adam.)
+
 ## Version 0.5.8, 30-Oct-2026: AURA Scenes on the Landing Page (Example Cottage and Test)
 
 **Asked by Adam:** "make a ValeVision Aura Scene I can access but that isnt visible to anyone else with the cottage scene

@@ -57,10 +57,21 @@
 //   to stand over the same part of the drawing on today's.
 // - ONE ENGINE A PAGE: its state, GPU and camera are module singletons, so the
 //   3D Environment and every viewport share it, one render at a time.
+// - THE SUN IS A SCENE'S, NOT A SETTING (AURA 0.5.9): Settings leaves it out,
+//   so one scene's sun never moves another's. Sun and SetSun read and set the
+//   live one (the 3D Environment keeps it in its open scene); a still draws
+//   with its scene's (request.sun) and a borrowing viewport with its own
+//   (options.sun), each put back after. A sun slider tells the listeners
+//   'sun', every other control 'control'.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.9.0 (AURA 0.5.9)
+// - The sun is a scene's: 'Sun' leaves the settings AURA keeps; Sun, SetSun,
+//   EnvironmentSun and IsSunControl; RenderStill takes request.sun and Borrow options.sun,
+//   both put back after; SetControl tells the listeners 'sun' for a sun slider.
+//
 // 30-Oct-2026 - Version 1.8.0 (AURA 0.5.5)
 // - RenderStill takes the viewport's frame (frameMm, scaled) and draws the
 //   picture at its true size on the paper: the region the frame shows, the
@@ -245,9 +256,12 @@
         'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Styles__PointGroups__.css'
     ];
 
-    // MODULE CONSTANTS | The Settings AURA Keeps (everything a render depends on, except the camera and points)
+    // MODULE CONSTANTS | The Settings AURA Keeps (everything a render depends on, except the camera, points and sun)
     // ------------------------------------------------------------
-    const Na__EngineHost__SETTING_KEYS = ['Seed', 'Sun', 'Discipline', 'InkFamily', 'LineWeight', 'Pen', 'PenPreset', 'Wash', 'Sky',
+    // The sun is each scene's (View__Sun, AURA 0.5.9), as the camera and the
+    // points are: kept here it was one sun for every elevation.
+    // ------------------------------------------------------------
+    const Na__EngineHost__SETTING_KEYS = ['Seed', 'Discipline', 'InkFamily', 'LineWeight', 'Pen', 'PenPreset', 'Wash', 'Sky',
                                           'Kuwahara', 'Indication', 'Paper', 'Composition'];
     const Na__EngineHost__ALL_INPUTS  = ['Seed', 'Sun', 'Discipline', 'Lines', 'Indication', 'ShadowLines', 'Wash', 'Sky', 'Paper',
                                           'Finish', 'Composition', 'ArtDirection', 'Kuwahara'];
@@ -615,7 +629,42 @@
         if (spec.Path[0] === 'Pen') State.PenPreset = 'Custom';
         PainterlyNPR__RenderGraph__Bump(...spec.Bump);
         PainterlyNPR__RenderGraph__Request(spec.Bump.includes('Sun') ? 'Navigate' : 'Refine');
-        Na__EngineHost__Notify('control');
+        Na__EngineHost__Notify(Na__EngineHost__IsSunControl(key) ? 'sun' : 'control');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Sun: is this control one of its sliders; the live sun; setting it
+    // ------------------------------------------------------------
+    // The engine's form, { Azimuth, Altitude } in degrees. SetSun keeps each
+    // within its slider's range (the engine's controls config) and tells no
+    // listener: it is a scene being opened, not an edit. quiet: dirtied only,
+    // the drawing not asked for (the 3D Environment is not on view).
+    // ------------------------------------------------------------
+    function Na__EngineHost__IsSunControl(key) {
+        const spec = CONTROLS[key];
+        return !!(spec && spec.Bump.includes('Sun'));
+    }
+
+    function Na__EngineHost__Sun() {
+        return State.Sun ? { Azimuth: State.Sun.Azimuth, Altitude: State.Sun.Altitude } : null;
+    }
+
+    function Na__EngineHost__SetSun(sun, quiet) {
+        if (!State.Sun || !sun) return false;
+        const range = (key, value) => {
+            const raw = Na__EngineHost__CONTROL_SPECS[key] || {};
+            const v = Number(value);
+            return Math.max(raw.Min !== undefined ? raw.Min : -Infinity, Math.min(raw.Max !== undefined ? raw.Max : Infinity, v));
+        };
+        if (!Number.isFinite(Number(sun.Azimuth)) || !Number.isFinite(Number(sun.Altitude))) return false;
+        const azimuth = range('SunAzimuth', sun.Azimuth), altitude = range('SunAltitude', sun.Altitude);
+        if (State.Sun.Azimuth === azimuth && State.Sun.Altitude === altitude) return false;
+        State.Sun.Azimuth = azimuth;
+        State.Sun.Altitude = altitude;
+        PainterlyNPR__RenderGraph__Bump('Sun');
+        if (!quiet) PainterlyNPR__RenderGraph__Request('Navigate');             // <-- As the sun sliders ask: the quick preview, then the refined drawing
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -750,6 +799,12 @@
     function Na__EngineHost__EnvironmentPoints() {
         const b = Na__EngineHost__State.borrowed;
         return JSON.parse(JSON.stringify((b ? b.Points : State.Points) || []));
+    }
+
+    // The 3D Environment's sun, even while a sheet's viewport has borrowed the engine (with its own scene's)
+    function Na__EngineHost__EnvironmentSun() {
+        const b = Na__EngineHost__State.borrowed;
+        return b ? (b.Sun ? Object.assign({}, b.Sun) : null) : Na__EngineHost__Sun();
     }
 
     function Na__EngineHost__PointsSignature() {
@@ -967,12 +1022,13 @@
         S.borrowed = {
             Camera: State.Camera, Preset: State.CameraPreset, Points: State.Points, Selected: Ui.SelectedPointId,
             Layer: Ui.Points, Element: Ui.Canvas, ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence, Proxy: !!Graph.Proxy,
-            OnEdited: options.onEdited || null, OnRelease: options.onRelease || null
+            Sun: Na__EngineHost__Sun(), OnEdited: options.onEdited || null, OnRelease: options.onRelease || null
         };
         if (Graph.Proxy) PainterlyNPR__RenderGraph__SetProxy(false);
         State.Camera = JSON.parse(JSON.stringify(options.camera));
         State.CameraPreset = 'Custom';
         State.Points = Na__EngineHost__MakePoints(options.points);
+        if (options.sun) Na__EngineHost__SetSun(options.sun, true);             // <-- The viewport's scene's sun, put back on Release
         State.ShowInfluence = false;
         Ui.SelectedPointId = null;
         Ui.Placing = null;
@@ -1012,6 +1068,7 @@
         State.CameraPreset = b.Preset;
         State.Points = b.Points;
         State.ShowInfluence = b.Influence;
+        Na__EngineHost__SetSun(b.Sun, true);
         Ui.Points = b.Layer;
         Ui.Canvas = b.Element;
         Ui.ActiveTab = b.ActiveTab;
@@ -1130,7 +1187,7 @@
         const camera = fit ? Na__EngineHost__WidenCamera(request.camera, fit.Picture) : null;
         if (!camera) fit = null;                                                 // <-- A camera that cannot widen: the whole sheet, as before
         const saved = { Camera: State.Camera, Preset: State.CameraPreset, Controls: [], Points: State.Points, Selected: Ui.SelectedPointId,
-                        ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence };
+                        ActiveTab: Ui.ActiveTab, Influence: !!State.ShowInfluence, Sun: Na__EngineHost__Sun() };
         Na__EngineHost__State.busy = true;
         Graph.Token++;                                                           // <-- A refinement in flight stops at its next pass
         let pixels = null, width = 0, height = 0, failure = null;
@@ -1139,6 +1196,7 @@
             State.CameraPreset = 'Custom';
             PainterlyNPR__RenderGraph__Bump('Camera');
             if (Array.isArray(request.points)) State.Points = Na__EngineHost__MakePoints(fit && fit.Picture < 1 ? Na__EngineHost__ShrinkPoints(request.points, fit.Picture) : request.points);
+            if (request.sun) Na__EngineHost__SetSun(request.sun, true);         // <-- Its scene's own sun (View__Sun), put back after
             Ui.SelectedPointId = null;
             Ui.ActiveTab = 'Scene';                                              // <-- The overlay hides itself: the still's points are not the live ones
             State.ShowInfluence = false;
@@ -1187,6 +1245,7 @@
         State.CameraPreset = saved.Preset;
         State.Points = saved.Points;
         State.ShowInfluence = saved.Influence;
+        Na__EngineHost__SetSun(saved.Sun, true);
         Ui.SelectedPointId = saved.Selected;
         Ui.ActiveTab = saved.ActiveTab;
         PainterlyNPR__RenderGraph__Bump('Camera', 'ArtDirection', 'Overlay');
@@ -1240,6 +1299,10 @@
         Na__EngineHost__SetWorkMode,
         Na__EngineHost__Control,
         Na__EngineHost__SetControl,
+        Na__EngineHost__IsSunControl,
+        Na__EngineHost__Sun,
+        Na__EngineHost__SetSun,
+        Na__EngineHost__EnvironmentSun,
         Na__EngineHost__Choices,
         Na__EngineHost__SetChoice,
         Na__EngineHost__NewSeed,

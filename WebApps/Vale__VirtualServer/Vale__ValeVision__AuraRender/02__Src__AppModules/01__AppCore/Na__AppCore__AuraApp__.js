@@ -36,6 +36,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 0.5.9
+// - A sun slider is the open scene's (Na__Environment3d__SceneSun__ keeps it):
+//   the engine's settings are not saved again for it.
+//
 // 30-Oct-2026 - Version 0.5.8
 // - /aura/ on its own shows the scene index (cards like Theia's) instead of
 //   "Open AURA from a project". AURA's own scenes get crumbs back to it, no
@@ -273,7 +277,8 @@
             return;
         }
         document.getElementById('auraEngineVersion').textContent = `PainterlyNPR v${Na__EngineHost__Version()}`;
-        Na__EngineHost__OnChange(() => {
+        Na__EngineHost__OnChange((reason) => {
+            if (reason === 'sun') return;                                        // <-- The open scene's, kept by Na__Environment3d__SceneSun__ (0.5.9)
             d.doc.AuraDrawingSet__Engine.Settings = Na__EngineHost__Settings();
             Na__AppState__Touch('engine');
         });

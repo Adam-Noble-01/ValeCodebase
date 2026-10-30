@@ -32,6 +32,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 2.1.1 (AURA 0.5.9)
+// - A scene made of the 3D Environment's view takes its sun with the camera
+//   and points (Na__EngineHost__EnvironmentSun); a found or made one has its
+//   own, or the working sun (Na__DrawingSet__FindOrMakeScene).
+//
 // 30-Oct-2026 - Version 2.1.0 (AURA 0.5.5)
 // - A picture drawn for its frame (the render queue's showMm): a scaled one at
 //   its own size about the frame's middle, a perspective fitting the frame.
@@ -74,7 +79,7 @@
     import { Na__AppState__Data, Na__AppState__Select, Na__AppState__Touch, Na__AppState__On } from '../01__AppCore/Na__AppCore__AppState__.js';
     import { Na__Dom__El, Na__Dom__Svg, Na__Dom__Field, Na__Dom__Select, Na__Dom__IconButton } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Format__Clamp, Na__Format__Round } from '../03__AppUtils/Na__AppUtils__Format__.js';
-    import { Na__EngineHost__Presets, Na__EngineHost__Camera, Na__EngineHost__EnvironmentPoints, Na__EngineHost__SheetMm } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__Presets, Na__EngineHost__Camera, Na__EngineHost__EnvironmentPoints, Na__EngineHost__EnvironmentSun, Na__EngineHost__SheetMm } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import { Na__Paper__Solve, Na__Paper__ClampFrame } from '../20__System__DrawingSheets/Na__DrawingSheets__Paper__.js';
     import { Na__Surface__AddLayer, Na__Surface__AddOverlay, Na__Surface__On, Na__Surface__RedrawLayer, Na__Surface__RedrawOverlay, Na__Surface__PxPerMm } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import {
@@ -360,7 +365,8 @@
         const named = (doc.AuraDrawingSet__SavedViews || []).find((v) => v.View__Id === o.sceneId);
         if (named) return named;
         if (o.live) {
-            const scene = Na__DrawingSet__NewScene({ name: Na__DrawingSet__SceneName(doc, 'Scene'), kind: 'Perspective', camera: Na__EngineHost__Camera().Camera, points: Na__EngineHost__EnvironmentPoints() });
+            const scene = Na__DrawingSet__NewScene({ name: Na__DrawingSet__SceneName(doc, 'Scene'), kind: 'Perspective', camera: Na__EngineHost__Camera().Camera, points: Na__EngineHost__EnvironmentPoints(),
+                                                     sun: Na__EngineHost__EnvironmentSun() });
             doc.AuraDrawingSet__SavedViews.push(scene);
             Na__AppState__Touch('views');
             return scene;

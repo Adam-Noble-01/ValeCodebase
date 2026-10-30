@@ -30,6 +30,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Oct-2026 - Version 1.0.1 (AURA 0.5.9)
+// - A sun slider tells the host's listeners 'sun' (the open scene keeps it),
+//   every other control 'control' (the drawing set's settings).
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.3.3)
 // - Initial build: the panel's sections, the control keys, menus, pen and
 //   vegetation presets, and the sheets' paper as a tile of the engine's bare
@@ -49,7 +53,7 @@
     import * as EnginePaper from 'PainterlyNPR/55__Paper__Model/PainterlyNPR__Paper__Pass__.mjs';                          // <-- Namespace: Tone (Page whiteness) since v0.8.5
     import { PainterlyNPR__AppCore__State as State } from 'PainterlyNPR/01__AppCore/PainterlyNPR__AppCore__State__.mjs';
     import { PainterlyNPR__Paper__PAPER_PRESETS as PAPER_PRESETS } from 'PainterlyNPR/55__Paper__Model/PainterlyNPR__Paper__Presets__.mjs';
-    import { Na__EngineHost__Choices, Na__EngineHost__SetChoice, Na__EngineHost__SetControl, Na__EngineHost__Notify, Na__EngineHost__Ready } from './Na__EngineHost__PainterlyNpr__.js';
+    import { Na__EngineHost__Choices, Na__EngineHost__SetChoice, Na__EngineHost__SetControl, Na__EngineHost__IsSunControl, Na__EngineHost__Notify, Na__EngineHost__Ready } from './Na__EngineHost__PainterlyNpr__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -135,7 +139,7 @@
     function Na__EnginePanel__SetControl(key, value) {
         const set = EngineControls.PainterlyNPR__Interface__SetControl;
         if (typeof set !== 'function') { Na__EngineHost__SetControl(key, value); return; }
-        if (set(key, value)) Na__EngineHost__Notify('control');
+        if (set(key, value)) Na__EngineHost__Notify(Na__EngineHost__IsSunControl(key) ? 'sun' : 'control');   // <-- The sun is the open scene's (AURA 0.5.9)
     }
     // ------------------------------------------------------------
 

@@ -16,9 +16,12 @@
                 "ProjectData__*.json",
                 "ValeVision3D/Content__3dModel__GlbFiles/",
                 "ValeVision3D/Content__3dModel__AppGenerated/",
-                "ValeVision3D/Content__SitePlanData/"
+                "ValeVision3D/Content__SitePlanData/",
+                "ValeVision__AuraRender/Content__AuraScene__ModelFiles/",
+                "ValeVision__AuraRender/Content__AuraScene__AssetFiles/",
+                "ValeVision__AuraRender/Content__AuraScenePackages/"
             ],
-            "Note": "ValeVision 3D (URL from the email to Shane)"
+            "Note": "ValeVision 3D (URL from the email to Shane). Since 30-Oct-2026 its library-access also guards AURA's scene content (the copies of a project's whitecard GLBs, its stored library assets, its SketchUp scene packages): signed-in staff only, as for the GLBs they are copied from, until AURA's own API answers library-access"
         },
         {
             "Id": "valespec",
@@ -110,8 +113,8 @@
         }
     ],
     "Applied": {
-        "Hash": "760db8942de3",
-        "Utc": "2026-10-30T12:03:35Z",
+        "Hash": "607291531112",
+        "Utc": "2026-10-30T16:18:29Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
@@ -128,6 +131,9 @@
             "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__3dModel__GlbFiles/GateCheck.bin": "401",
             "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__3dModel__AppGenerated/GateCheck.bin": "401",
             "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision3D/Content__SitePlanData/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision__AuraRender/Content__AuraScene__ModelFiles/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision__AuraRender/Content__AuraScene__AssetFiles/GateCheck.bin": "401",
+            "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision__AuraRender/Content__AuraScenePackages/GateCheck.bin": "401",
             "/Vale__Projects__MasterLibrary/ValeProjects__0000/0000__GateCheck/ValeVision__TheiaVideo/Content__VideoFiles/GateCheck.bin": "401"
         }
     }

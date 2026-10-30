@@ -1,0 +1,155 @@
+{
+    "$schema"     : "https://json-schema.org/draft/2020-12/schema",
+    "$id"         : "AuraRender__Schema__AuraScene__1.0.0__.json",
+    "title"       : "ValeVision AURA - The AURA Scene 1.0.0",
+    "description" : "A project's AURA scene (the 'aura file'): the model files AURA draws, copied into the project from ValeVision 3D's whitecard (method one) or, later, a SketchUp Painterly Scene Package (method two); the engine objects made from them; and the library assets stored in the project. One per project, <project>/ValeVision__AuraRender/UserData__AuraScene/<id>__AuraScene__.json, written by the AURA API (user data: collected to the PC, never pushed, never web-served). Placed assets and given materials are the drawing set's (AuraDrawingSet__Engine.Settings.Assets and .Materials, PainterlyNPR's own records); a material's '#Id' is this file's Object__Id. The folder, the lanes and the rules: AuraRender__SCHEMA__AuraScene__.md. Codified 30-Oct-2026.",
+    "type"        : "object",
+    "required"    : ["AuraScene__Meta", "AuraScene__Source", "AuraScene__ModelPlacement", "AuraScene__ModelFiles", "AuraScene__Objects", "AuraScene__AssetFiles"],
+    "additionalProperties" : false,
+    "properties"  : {
+        "AuraScene__Meta"           : { "$ref": "#/$defs/Meta" },
+        "AuraScene__Source"         : { "$ref": "#/$defs/Source" },
+        "AuraScene__ModelPlacement" : { "$ref": "#/$defs/ModelPlacement" },
+        "AuraScene__ModelFiles"     : { "type": "array", "items": { "$ref": "#/$defs/ModelFile" }, "description": "Every model file copied in, in the order the scene is built" },
+        "AuraScene__Objects"        : { "type": "array", "items": { "$ref": "#/$defs/Object" }, "description": "The engine objects made from the Draw model files: every mesh node, in file order then node order. Ids never move" },
+        "AuraScene__AssetFiles"     : { "type": "array", "items": { "$ref": "#/$defs/AssetFile" }, "description": "The library assets stored in the project: one record per asset, however many placements use it" },
+        "_rev"                      : { "type": "integer", "minimum": 0, "description": "Written by the library writer (ValeShared__Library__ Na__Library__WriteJson) on every save: the 'someone else saved first' check" }
+    },
+    "$defs" : {
+        "Iso"      : { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$", "description": "UTC, ISO 8601" },
+        "UserCode" : { "type": "string", "pattern": "^USR[0-9]{8}$", "description": "ValeUser__UniqueCode" },
+        "Sha256"   : { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "Vec3"     : { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "Word"     : { "type": "string", "pattern": "^[A-Z][A-Za-z]*$" },
+
+        "Meta" : {
+            "type"     : "object",
+            "required" : ["SchemaVersion", "Schema", "ProjectId", "CreatedIso", "UpdatedIso", "CreatedBy", "UpdatedBy"],
+            "additionalProperties" : false,
+            "properties" : {
+                "SchemaVersion" : { "const": "1.0.0" },
+                "Schema"        : { "const": "05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json", "description": "This contract, in AURA's app folder" },
+                "ProjectId"     : { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,120}$", "description": "The library folder's name: <code>__<Name>" },
+                "CreatedIso"    : { "$ref": "#/$defs/Iso" },
+                "UpdatedIso"    : { "$ref": "#/$defs/Iso" },
+                "CreatedBy"     : { "$ref": "#/$defs/UserCode" },
+                "UpdatedBy"     : { "$ref": "#/$defs/UserCode" },
+                "Description"   : { "type": "string" },
+                "Note"          : { "type": "string", "description": "Anything a person should know about this scene" }
+            }
+        },
+
+        "Source" : {
+            "type"     : "object",
+            "required" : ["Method", "Folder", "ListKey", "ListedFiles", "Unlisted", "Missing", "SketchUpModelName", "ImportNumber", "ImportedIso", "ImportedBy", "History"],
+            "additionalProperties" : false,
+            "properties" : {
+                "Method"            : { "enum": ["ValeVision3dWhitecard", "SketchUpScenePackage"], "description": "ValeVision3dWhitecard: copies of ValeVision 3D's whitecard GLBs (method one). SketchUpScenePackage: ValeVision Cloud Sync's AURA export, read from Content__AuraScenePackages (method two, not built yet)" },
+                "Folder"            : { "type": "string", "description": "Where the model files were copied from, relative to the project: ValeVision3D/Content__3dModel__GlbFiles for method one" },
+                "ListKey"           : { "type": ["string", "null"], "description": "The project record's list the folder was checked against: valeVision_ModelUrls for method one" },
+                "ListedFiles"       : { "type": "integer", "minimum": 0 },
+                "Unlisted"          : { "type": "array", "items": { "type": "string" }, "description": "In the folder but not in the list: copied all the same" },
+                "Missing"           : { "type": "array", "items": { "type": "string" }, "description": "In the list but not in the folder" },
+                "SketchUpModelName" : { "type": ["string", "null"], "description": "The SketchUp model the whitecard came from (the record's ValeVison3D__SketchUpCameraData.model_name)" },
+                "ImportNumber"      : { "type": "integer", "minimum": 1, "description": "1 for the first import, raised by each re-import" },
+                "ImportedIso"       : { "$ref": "#/$defs/Iso" },
+                "ImportedBy"        : { "$ref": "#/$defs/UserCode" },
+                "History"           : { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Import" } }
+            }
+        },
+
+        "Import" : {
+            "type"     : "object",
+            "required" : ["Import__Number", "Import__Iso", "Import__By", "Import__Files", "Import__Bytes", "Import__ArchivedAs"],
+            "additionalProperties" : false,
+            "properties" : {
+                "Import__Number"     : { "type": "integer", "minimum": 1 },
+                "Import__Iso"        : { "$ref": "#/$defs/Iso" },
+                "Import__By"         : { "$ref": "#/$defs/UserCode" },
+                "Import__Files"      : { "type": "integer", "minimum": 0 },
+                "Import__Bytes"      : { "type": "integer", "minimum": 0 },
+                "Import__ArchivedAs" : { "type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*__AuraArchivedModelFiles__Import-[0-9]{2,}__[0-9]{2}-[A-Z][a-z]{2}-[0-9]{4}__\\.zip$", "description": "The zip in Content__AuraScene__ModelFiles/00__Archive this import's files went into when the next import replaced them; null while they are current. Only the newest zip is kept, so an older entry names a zip that has gone" }
+            }
+        },
+
+        "ModelPlacement" : {
+            "type"     : "object",
+            "required" : ["OffsetM", "RotationDeg", "FrontFacing", "CentredOn"],
+            "additionalProperties" : false,
+            "properties" : {
+                "OffsetM"     : { "$ref": "#/$defs/Vec3", "description": "Metres, added after the turn" },
+                "RotationDeg" : { "type": "number", "description": "About +Y, right-handed, applied first. A whitecard needs none: SketchUp's Front (-green) is already +Z" },
+                "FrontFacing" : { "const": "+Z", "description": "The engine's front: the elevations are named from it" },
+                "CentredOn"   : { "enum": ["Focal", "Architecture", "Manual"], "description": "What the import put on the origin: the Focal model files' footprint, else the Architecture ones; Manual once set by hand. Changing the placement moves the building under every saved view" },
+                "Note"        : { "type": "string" }
+            }
+        },
+
+        "ModelFile" : {
+            "type"     : "object",
+            "required" : ["ModelFile__Id", "ModelFile__FileName", "ModelFile__Group", "ModelFile__Variant", "ModelFile__Kind", "ModelFile__Use", "ModelFile__Twin", "ModelFile__Role", "ModelFile__ShowByDefault", "ModelFile__Bytes", "ModelFile__Sha256", "ModelFile__SourceModifiedIso", "ModelFile__Generator", "ModelFile__Nodes", "ModelFile__BoundsM"],
+            "additionalProperties" : false,
+            "properties" : {
+                "ModelFile__Id"                : { "type": "string", "pattern": "^[A-Za-z0-9-]+(__[A-Za-z0-9-]+)*$", "description": "The file name without the project's short name, 'TrueVision' and a leading number: the same after a re-import, so objects keep their file" },
+                "ModelFile__FileName"          : { "type": "string", "pattern": "__(Mesh|Linework)Model__\\.glb$", "description": "The copy's name: its source's, byte for byte, in Content__AuraScene__ModelFiles" },
+                "ModelFile__Group"             : { "type": "string" },
+                "ModelFile__Variant"           : { "type": ["string", "null"] },
+                "ModelFile__Kind"              : { "enum": ["Mesh", "Linework"] },
+                "ModelFile__Use"               : { "enum": ["Draw", "SourceLinework", "Ignore"], "description": "Draw: its mesh nodes become objects. SourceLinework: SketchUp's own edges, kept for the engine's source linework (not built yet). Ignore: never drawn (ValeVision 3D's orbit helper cube)" },
+                "ModelFile__UseNote"           : { "type": "string" },
+                "ModelFile__Twin"              : { "type": ["string", "null"], "description": "The ModelFile__Id of its mesh or linework partner" },
+                "ModelFile__Role"              : { "type": ["string", "null"], "pattern": "^[A-Z][A-Za-z]*$", "description": "Its objects' starting role; null for a file that is not drawn" },
+                "ModelFile__ShowByDefault"     : { "type": "boolean" },
+                "ModelFile__Bytes"             : { "type": "integer", "minimum": 0 },
+                "ModelFile__Sha256"            : { "$ref": "#/$defs/Sha256", "description": "The copy's, which is the source's: a different hash in ValeVision 3D means a newer whitecard" },
+                "ModelFile__SourceModifiedIso" : { "$ref": "#/$defs/Iso" },
+                "ModelFile__Generator"         : { "type": ["string", "null"], "description": "The GLB's asset.generator" },
+                "ModelFile__Nodes"             : { "type": "integer", "minimum": 0 },
+                "ModelFile__BoundsM"           : {
+                    "type"     : "object",
+                    "required" : ["Min", "Max"],
+                    "additionalProperties" : false,
+                    "properties" : { "Min": { "$ref": "#/$defs/Vec3" }, "Max": { "$ref": "#/$defs/Vec3" } },
+                    "description" : "The file's contents in its own metres (+Y up), node transforms applied"
+                }
+            }
+        },
+
+        "Object" : {
+            "type"     : "object",
+            "required" : ["Object__Id", "Object__Name", "Object__ModelFile", "Object__Node", "Object__Mesh", "Object__PersistentId", "Object__Category", "Object__Material", "Object__Role"],
+            "additionalProperties" : false,
+            "properties" : {
+                "Object__Id"           : { "type": "integer", "minimum": 1, "description": "The engine's Scene.Objects Id, '#Id' in a material assignment: from 1, never renumbered or reused. A re-import keeps an existing node's Id and gives a new node the next free one" },
+                "Object__Name"         : { "type": "string" },
+                "Object__ModelFile"    : { "type": "string", "description": "Its model file's ModelFile__Id" },
+                "Object__Node"         : { "type": "string", "description": "The GLB node's name: how a re-import finds it again" },
+                "Object__Mesh"         : { "type": "integer", "minimum": 0, "description": "The GLB mesh it draws: objects of one file with the same mesh are one shape, instanced" },
+                "Object__PersistentId" : { "type": ["integer", "null"], "minimum": 0, "description": "SketchUp's persistent id, from an instanced component's node name (..._ID32059153): the second way a re-import finds it" },
+                "Object__Category"     : { "$ref": "#/$defs/Word", "description": "The engine's category (Wall, Roof, Opening, Porch, Ground, ...): its pens and indication follow it" },
+                "Object__Material"     : { "allOf": [{ "$ref": "#/$defs/Word" }, { "not": { "const": "Sky" } }], "description": "A material class Key (13__Scene__MaterialClasses), never Sky: the import's starting class, before any assignment in the drawing set" },
+                "Object__Role"         : { "$ref": "#/$defs/Word", "description": "The engine's role (Architecture, Focal, Ground, Planting, Furniture, Context, Water, Boundary)" },
+                "Object__Missing"      : { "type": "boolean", "description": "Set by a re-import when the node has gone: the object stays, so its Id is never reused" }
+            }
+        },
+
+        "AssetFile" : {
+            "type"     : "object",
+            "required" : ["AssetFile__AssetId", "AssetFile__Name", "AssetFile__GlbFile", "AssetFile__DatFile", "AssetFile__LibraryFolder", "AssetFile__LibraryVersion", "AssetFile__Instanced", "AssetFile__GlbBytes", "AssetFile__GlbSha256", "AssetFile__CopiedIso", "AssetFile__CopiedBy"],
+            "additionalProperties" : false,
+            "properties" : {
+                "AssetFile__AssetId"        : { "type": "string", "pattern": "^NPR_[0-9]{2}_[0-9]{4}$" },
+                "AssetFile__Name"           : { "type": "string", "description": "The asset's DisplayName" },
+                "AssetFile__GlbFile"        : { "type": "string", "pattern": "^NPR_[0-9]{2}_[0-9]{4}__MOD__.+__\\.glb$", "description": "The library's MOD file name, in Content__AuraScene__AssetFiles" },
+                "AssetFile__DatFile"        : { "type": "string", "pattern": "^NPR_[0-9]{2}_[0-9]{4}__DAT__.+__\\.json$", "description": "The library's DAT file name, beside it: the record as it was when copied" },
+                "AssetFile__LibraryFolder"  : { "type": "string", "pattern": "^[0-9]{2}__[A-Za-z]+/NPR_[0-9]{2}_[0-9]{4}__.+__$", "description": "Its folder in 12__Data__AssetLibrary" },
+                "AssetFile__LibraryVersion" : { "type": "string", "pattern": "^PainterlyNPR v[0-9]+\\.[0-9]+\\.[0-9]+$", "description": "The pinned engine and library it was copied from" },
+                "AssetFile__Instanced"      : { "type": "boolean", "description": "true: every placement draws this one shape. false: each placement grows its own shape from its seed, from the same copy (the DAT's NewShapeEachPlop)" },
+                "AssetFile__GlbBytes"       : { "type": "integer", "minimum": 0 },
+                "AssetFile__GlbSha256"      : { "$ref": "#/$defs/Sha256" },
+                "AssetFile__CopiedIso"      : { "$ref": "#/$defs/Iso" },
+                "AssetFile__CopiedBy"       : { "$ref": "#/$defs/UserCode" }
+            }
+        }
+    }
+}

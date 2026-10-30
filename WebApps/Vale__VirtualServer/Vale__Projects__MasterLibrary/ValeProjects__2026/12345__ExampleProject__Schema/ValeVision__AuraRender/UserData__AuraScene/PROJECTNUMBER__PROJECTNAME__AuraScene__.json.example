@@ -1,0 +1,217 @@
+{
+    "AuraScene__Meta"           : {
+        "SchemaVersion" : "1.0.0",
+        "Schema"        : "05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json",
+        "ProjectId"     : "63403__Thrower",
+        "CreatedIso"    : "2026-10-30T14:50:00.000Z",
+        "UpdatedIso"    : "2026-10-30T14:58:00.000Z",
+        "CreatedBy"     : "USR00000001",
+        "UpdatedBy"     : "USR00000001",
+        "Description"   : "ValeVision AURA's scene for one project (the 'aura file'), schema 1.0.0 (05__Contracts__JsonSchemas/AuraRender__Schema__AuraScene__1.0.0__.json in AURA's app folder; the rules: AuraRender__SCHEMA__AuraScene__.md). Written by the AURA API into <project>/ValeVision__AuraRender/UserData__AuraScene/<id>__AuraScene__.json: the import (method one copies ValeVision 3D's whitecard GLBs into Content__AuraScene__ModelFiles), a re-import (the replaced set zipped into its 00__Archive, one zip kept), and each library asset stored the first time it is placed (its MOD .glb and DAT .json into Content__AuraScene__AssetFiles, instanced where it can be). User data: written on the server, collected to the PC, never pushed, never web-served; every save keeps the previous copy in ProjectData__Revisions. Placed assets and given materials are the drawing set's (AuraDrawingSet__Engine.Settings.Assets and .Materials); a material's #Id is Object__Id here. World metres are the engine's: +Y up, the front of the building facing +Z.",
+        "Note"          : "Abridged from Thrower, the first AURA scene (63403__Thrower: 7 model files, 17 objects; built 30-Oct-2026, no assets placed yet). Here: 5 model files, objects 1 to 5 (4 and 5 are two instances of one column shape, Object__Mesh 1), and 2 stored assets to show the record: one instanced (the bench) and one that grows its own shape each placement (the oak)."
+    },
+    "AuraScene__Source"         : {
+        "Method"            : "ValeVision3dWhitecard",
+        "Folder"            : "ValeVision3D/Content__3dModel__GlbFiles",
+        "ListKey"           : "valeVision_ModelUrls",
+        "ListedFiles"       : 7,
+        "Unlisted"          : [],
+        "Missing"           : [],
+        "SketchUpModelName" : "Thrower__WhiteCardModel__0.5.0__",
+        "ImportNumber"      : 1,
+        "ImportedIso"       : "2026-10-30T14:50:00.000Z",
+        "ImportedBy"        : "USR00000001",
+        "History"           : [
+            {
+                "Import__Number"     : 1,
+                "Import__Iso"        : "2026-10-30T14:50:00.000Z",
+                "Import__By"         : "USR00000001",
+                "Import__Files"      : 7,
+                "Import__Bytes"      : 2307120,
+                "Import__ArchivedAs" : null
+            }
+        ]
+    },
+    "AuraScene__ModelPlacement" : {
+        "OffsetM"     : [-14.131, 0.0, 13.015],
+        "RotationDeg" : 0.0,
+        "FrontFacing" : "+Z",
+        "CentredOn"   : "Focal",
+        "Note"        : "One transform for every model file, applied before the engine builds the scene: turn about +Y by RotationDeg, then move by OffsetM (metres). The whitecard GLBs are already metres with +Y up (TrueVision3D GLB Builder), and SketchUp's Front (-green) is +Z, the engine's front, so a whitecard needs no turn. The import centres the Focal model files' footprint on the origin (the engine's camera presets look there) and leaves the ground level alone. Set once: changing it later moves the building under every saved view."
+    },
+    "AuraScene__ModelFiles"     : [
+        {
+            "ModelFile__Id"                : "OrbitHelperCube__MeshModel",
+            "ModelFile__FileName"          : "Thrower__01__OrbitHelperCube__MeshModel__.glb",
+            "ModelFile__Group"             : "OrbitHelperCube",
+            "ModelFile__Variant"           : null,
+            "ModelFile__Kind"              : "Mesh",
+            "ModelFile__Use"               : "Ignore",
+            "ModelFile__UseNote"           : "ValeVision 3D's orbit helper cube: never drawn",
+            "ModelFile__Twin"              : null,
+            "ModelFile__Role"              : null,
+            "ModelFile__ShowByDefault"     : false,
+            "ModelFile__Bytes"             : 2260,
+            "ModelFile__Sha256"            : "eb8aa0f797cc5fbd9688815618ddafdfffe532e862e463a46fb6cab76888bcad",
+            "ModelFile__SourceModifiedIso" : "2026-07-28T12:51:21.000Z",
+            "ModelFile__Generator"         : "TrueVision3D GLB Builder v2.0.0",
+            "ModelFile__Nodes"             : 1,
+            "ModelFile__BoundsM"           : { "Min": [7.0, 1.395, -10.0], "Max": [8.0, 2.395, -9.0] }
+        },
+        {
+            "ModelFile__Id"                : "LandscapeEnvironment__MeshModel",
+            "ModelFile__FileName"          : "Thrower__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+            "ModelFile__Group"             : "LandscapeEnvironment",
+            "ModelFile__Variant"           : null,
+            "ModelFile__Kind"              : "Mesh",
+            "ModelFile__Use"               : "Draw",
+            "ModelFile__Twin"              : "LandscapeEnvironment__LineworkModel",
+            "ModelFile__Role"              : "Ground",
+            "ModelFile__ShowByDefault"     : true,
+            "ModelFile__Bytes"             : 4004,
+            "ModelFile__Sha256"            : "95f7007c3e74f3e4abf75d5b914ed2396d7a6fc4aceb41485eb5e56bf30a4606",
+            "ModelFile__SourceModifiedIso" : "2026-07-28T12:51:21.000Z",
+            "ModelFile__Generator"         : "TrueVision3D GLB Builder v2.0.0",
+            "ModelFile__Nodes"             : 1,
+            "ModelFile__BoundsM"           : { "Min": [-27.806, -9.917, -68.945], "Max": [71.96, 0.325, 31.055] }
+        },
+        {
+            "ModelFile__Id"                : "MainBuildingModel__Existing__MeshModel",
+            "ModelFile__FileName"          : "Thrower__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+            "ModelFile__Group"             : "MainBuildingModel",
+            "ModelFile__Variant"           : "Existing",
+            "ModelFile__Kind"              : "Mesh",
+            "ModelFile__Use"               : "Draw",
+            "ModelFile__Twin"              : "MainBuildingModel__Existing__LineworkModel",
+            "ModelFile__Role"              : "Architecture",
+            "ModelFile__ShowByDefault"     : true,
+            "ModelFile__Bytes"             : 77176,
+            "ModelFile__Sha256"            : "29b99160d8a2ca43394b3ded332606610ccdd7eda28736687167e1e9e2b574b9",
+            "ModelFile__SourceModifiedIso" : "2026-07-28T12:51:21.000Z",
+            "ModelFile__Generator"         : "TrueVision3D GLB Builder v2.0.0",
+            "ModelFile__Nodes"             : 1,
+            "ModelFile__BoundsM"           : { "Min": [-10.535, -0.16, -38.675], "Max": [21.81, 9.078, -8.625] }
+        },
+        {
+            "ModelFile__Id"                : "MainBuildingModel__Proposed__LineworkModel",
+            "ModelFile__FileName"          : "Thrower__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+            "ModelFile__Group"             : "MainBuildingModel",
+            "ModelFile__Variant"           : "Proposed",
+            "ModelFile__Kind"              : "Linework",
+            "ModelFile__Use"               : "SourceLinework",
+            "ModelFile__UseNote"           : "SketchUp's own edges for the mesh twin's objects: kept for the engine's source linework (14__Scene__SourceLinework, not built yet); the engine finds its own lines from the mesh",
+            "ModelFile__Twin"              : "MainBuildingModel__Proposed__MeshModel",
+            "ModelFile__Role"              : null,
+            "ModelFile__ShowByDefault"     : false,
+            "ModelFile__Bytes"             : 964052,
+            "ModelFile__Sha256"            : "e45fa87234752e429470fa1030f00bf8a7177ca062b6ec78a5c3f3c1930c6cc1",
+            "ModelFile__SourceModifiedIso" : "2026-07-28T12:51:22.000Z",
+            "ModelFile__Generator"         : "TrueVision3D GLB Builder Linework v1.5.0",
+            "ModelFile__Nodes"             : 15,
+            "ModelFile__BoundsM"           : { "Min": [9.565, -0.1, -16.77], "Max": [18.697, 5.16, -9.26] }
+        },
+        {
+            "ModelFile__Id"                : "MainBuildingModel__Proposed__MeshModel",
+            "ModelFile__FileName"          : "Thrower__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+            "ModelFile__Group"             : "MainBuildingModel",
+            "ModelFile__Variant"           : "Proposed",
+            "ModelFile__Kind"              : "Mesh",
+            "ModelFile__Use"               : "Draw",
+            "ModelFile__Twin"              : "MainBuildingModel__Proposed__LineworkModel",
+            "ModelFile__Role"              : "Focal",
+            "ModelFile__ShowByDefault"     : true,
+            "ModelFile__Bytes"             : 1077684,
+            "ModelFile__Sha256"            : "06527481c129571bcd706fcaf83f8b1f2d504cd22f8af1fdbeda1ac57303a534",
+            "ModelFile__SourceModifiedIso" : "2026-07-28T12:51:22.000Z",
+            "ModelFile__Generator"         : "TrueVision3D GLB Builder v2.0.0",
+            "ModelFile__Nodes"             : 15,
+            "ModelFile__BoundsM"           : { "Min": [9.565, -0.1, -16.77], "Max": [18.697, 5.491, -9.26] }
+        }
+    ],
+    "AuraScene__Objects"        : [
+        {
+            "Object__Id"           : 1,
+            "Object__Name"         : "Landscape",
+            "Object__ModelFile"    : "LandscapeEnvironment__MeshModel",
+            "Object__Node"         : "07__Landscape::Default",
+            "Object__Mesh"         : 0,
+            "Object__PersistentId" : null,
+            "Object__Category"     : "Ground",
+            "Object__Material"     : "Lawn",
+            "Object__Role"         : "Ground"
+        },
+        {
+            "Object__Id"           : 2,
+            "Object__Name"         : "Existing building",
+            "Object__ModelFile"    : "MainBuildingModel__Existing__MeshModel",
+            "Object__Node"         : "10__ExistingBuilding::Default",
+            "Object__Mesh"         : 0,
+            "Object__PersistentId" : null,
+            "Object__Category"     : "Wall",
+            "Object__Material"     : "Brick",
+            "Object__Role"         : "Architecture"
+        },
+        {
+            "Object__Id"           : 3,
+            "Object__Name"         : "Proposed building",
+            "Object__ModelFile"    : "MainBuildingModel__Proposed__MeshModel",
+            "Object__Node"         : "20__ProposedBuilding::Default",
+            "Object__Mesh"         : 0,
+            "Object__PersistentId" : null,
+            "Object__Category"     : "Wall",
+            "Object__Material"     : "Joinery",
+            "Object__Role"         : "Focal"
+        },
+        {
+            "Object__Id"           : 4,
+            "Object__Name"         : "Column StopChamfer Basic Inline w140mm, ID32059153",
+            "Object__ModelFile"    : "MainBuildingModel__Proposed__MeshModel",
+            "Object__Node"         : "10_2001__Column__StopChamfer__Basic__Inline__w140mm___4_ID32059153",
+            "Object__Mesh"         : 1,
+            "Object__PersistentId" : 32059153,
+            "Object__Category"     : "Porch",
+            "Object__Material"     : "Timber",
+            "Object__Role"         : "Focal"
+        },
+        {
+            "Object__Id"           : 5,
+            "Object__Name"         : "Column StopChamfer Basic Inline w140mm, ID32032174",
+            "Object__ModelFile"    : "MainBuildingModel__Proposed__MeshModel",
+            "Object__Node"         : "10_2001__Column__StopChamfer__Basic__Inline__w140mm___4_ID32032174",
+            "Object__Mesh"         : 1,
+            "Object__PersistentId" : 32032174,
+            "Object__Category"     : "Porch",
+            "Object__Material"     : "Timber",
+            "Object__Role"         : "Focal"
+        }
+    ],
+    "AuraScene__AssetFiles"     : [
+        {
+            "AssetFile__AssetId"        : "NPR_07_0021",
+            "AssetFile__Name"           : "Mature oak",
+            "AssetFile__GlbFile"        : "NPR_07_0021__MOD__VegetationElements__Trees__MatureOak__Var-01__.glb",
+            "AssetFile__DatFile"        : "NPR_07_0021__DAT__VegetationElements__Trees__MatureOak__Var-01__.json",
+            "AssetFile__LibraryFolder"  : "07__VegetationElements/NPR_07_0021__Trees__MatureOak__Var-01__",
+            "AssetFile__LibraryVersion" : "PainterlyNPR v0.6.0",
+            "AssetFile__Instanced"      : false,
+            "AssetFile__GlbBytes"       : 418860,
+            "AssetFile__GlbSha256"      : "c344fe76ab59d3d6106142fcd0b2febb2b6a52fb90a255f722971ce931c0b8b3",
+            "AssetFile__CopiedIso"      : "2026-10-30T14:58:00.000Z",
+            "AssetFile__CopiedBy"       : "USR00000001"
+        },
+        {
+            "AssetFile__AssetId"        : "NPR_25_0001",
+            "AssetFile__Name"           : "Garden bench",
+            "AssetFile__GlbFile"        : "NPR_25_0001__MOD__GardenFurniture__Seating__GardenBench__Var-01__.glb",
+            "AssetFile__DatFile"        : "NPR_25_0001__DAT__GardenFurniture__Seating__GardenBench__Var-01__.json",
+            "AssetFile__LibraryFolder"  : "25__GardenFurniture/NPR_25_0001__Seating__GardenBench__Var-01__",
+            "AssetFile__LibraryVersion" : "PainterlyNPR v0.6.0",
+            "AssetFile__Instanced"      : true,
+            "AssetFile__GlbBytes"       : 6600,
+            "AssetFile__GlbSha256"      : "1f525a8c8ce7987354b1887b7eb251361c6dfeb313c4d2ecb145b9c66917c2cd",
+            "AssetFile__CopiedIso"      : "2026-10-30T14:58:00.000Z",
+            "AssetFile__CopiedBy"       : "USR00000001"
+        }
+    ],
+    "_rev"                      : 2
+}

@@ -1,0 +1,109 @@
+/* =============================================================================
+ * PAINTERLYNPR - CORE UI | STYLES - FALLBACK AND RESPONSIVE
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__CoreUi__Styles__Responsive__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : CoreUi - Styles - Responsive
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The card shown without WebGL 2, and narrow windows: the page scrolls and the panel drops below
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: FALLBACK, RESPONSIVE.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * FALLBACK | No WebGL 2
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Fallback {
+        position                           :  fixed;
+        inset                              :  0;
+        display                            :  grid;
+        place-items                        :  center;
+        padding                            :  var(--PainterlyNPR_Gutter);
+        background                         :  rgba(231, 225, 214, 0.94);
+        z-index                            :  20;
+    }
+
+    .PainterlyNPR__Fallback__Card {
+        max-width                          :  460px;
+        padding                            :  22px 24px;
+        border-radius                      :  var(--PainterlyNPR_Radius);
+        background                         :  var(--PainterlyNPR_Cream);
+        box-shadow                         :  var(--PainterlyNPR_SheetShadow);
+    }
+
+    .PainterlyNPR__Fallback__Card h2 {
+        margin                             :  0 0 8px;
+        font-family                        :  var(--PainterlyNPR_FontSerif);
+        font-size                          :  19px;
+    }
+
+    .PainterlyNPR__Fallback__Card p {
+        margin                             :  6px 0 0;
+        color                              :  var(--PainterlyNPR_InkSoft);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESPONSIVE | Narrow Windows - the page scrolls, the panel drops below
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 1100px) {
+        html,
+        body {
+            height                         :  auto;
+        }
+
+        .PainterlyNPR {
+            height                         :  auto;
+            overflow                       :  visible;
+        }
+
+        .PainterlyNPR__Main {
+            grid-template-columns          :  minmax(0, 1fr);
+            grid-template-rows             :  none;
+        }
+
+        .PainterlyNPR__Stage {
+            grid-row                       :  auto;                        /* <-- One column: the sheet, then the meta strip, then the panel */
+        }
+
+        .PainterlyNPR__Desk {
+            container-type                 :  inline-size;
+            grid-template-rows             :  auto;
+        }
+
+        .PainterlyNPR__Sheet {
+            width                          :  100cqw;
+        }
+
+        .PainterlyNPR__Panel {
+            max-height                     :  none;
+        }
+
+        .PainterlyNPR__Hover {
+            display                        :  none;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .PainterlyNPR__Field {
+            grid-template-columns          :  86px minmax(0, 1fr) 52px;
+        }
+
+        .PainterlyNPR__ButtonGrid--three {
+            grid-template-columns          :  1fr;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

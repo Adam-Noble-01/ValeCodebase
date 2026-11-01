@@ -1,0 +1,127 @@
+{
+    "PainterlyNPR__TechnicalPens__Config" : {
+        "PainterlyNPR__TechnicalPens__Config__Meta"           : {
+            "ConfigLabel"   : "PainterlyNPR - Technical Pens: the Four Calibrated Line Widths",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The one place a pen width is decided. Four STAEDTLER Mars matic 700 tubular-nib pens, absolute widths on the finished printed sheet; which pen each part of the scene takes, the strongest that applies winning; what the Drawing Discipline and art direction may and may not do to a pen; and the technical and variable width modes.",
+            "ReadBy"        : "02__Src__AppModules/32__Line__ClassAndPriority/PainterlyNPR__TechnicalPens__Tiers__.mjs",
+            "Source"        : "Adam's specification, 08__Data__StrokeLibrary/PainterlyNPR__PenPresets__PointWeights__.md (393df31), built 30-Oct-2026 for v0.8.0"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Pens"           : {
+            "Note"             : "The pens, lightest first. WidthMm is the line's final width on the printed sheet - never an addition to the base, never multiplied by a preset. Tier is the pen's place in the order (0 the base). The same keys, names and widths as ValeVision AURA's annotation pens.",
+            "Order"            : ["M013", "M018", "M025", "M035"],
+            "Pens"             : {
+                "M013" : {
+                    "Tier"    : 0,
+                    "Name"    : "Base lines",
+                    "Label"   : "0.13 mm",
+                    "Pen"     : "STAEDTLER Mars matic 700 M013",
+                    "WidthMm" : 0.13,
+                    "Use"     : "The foundation: every visible eligible line, vegetation, leaves, branches, grass, material patterns, hatching and fine linework"
+                },
+                "M018" : {
+                    "Tier"    : 1,
+                    "Name"    : "Minor features",
+                    "Label"   : "0.18 mm",
+                    "Pen"     : "STAEDTLER Mars matic 700 M018",
+                    "WidthMm" : 0.18,
+                    "Use"     : "Windows, doors, fences, joinery, glazing bars, smaller fittings and lettering"
+                },
+                "M025" : {
+                    "Tier"    : 2,
+                    "Name"    : "Structural lines",
+                    "Label"   : "0.25 mm",
+                    "Pen"     : "STAEDTLER Mars matic 700 M025",
+                    "WidthMm" : 0.25,
+                    "Use"     : "Walls, roofs, structural boundaries and significant architectural features"
+                },
+                "M035" : {
+                    "Tier"    : 3,
+                    "Name"    : "Profile lines",
+                    "Label"   : "0.35 mm",
+                    "Pen"     : "STAEDTLER Mars matic 700 M035",
+                    "WidthMm" : 0.35,
+                    "Use"     : "Dominant silhouettes, building outlines, the ground line and important object profiles"
+                }
+            },
+            "BasePen"          : "M013",
+            "BasePenNote"      : "Every eligible stroke is drawn with it in the base buffer, whatever pen it is drawn with on the sheet",
+            "LetteringPen"     : "M018",
+            "LetteringPenNote" : "Stroke-built lettering (38__Line__Lettering) is drawn with it"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Semantics"      : {
+            "Note"             : "Which pen a line of the scene takes, from what it belongs to: the object's Category, then a Material within it, then its Role, which only ever raises the profile pen. Pen is the line's own; Profile the pen its silhouette runs take (a much farther surface beside them); Ground the pen of the line where it meets the ground. Material indication, organic grammars, hatching, construction lines and the distant belt are base marks and never come here.",
+            "Categories"       : {
+                "Wall"      : { "Pen": "M025", "Profile": "M035", "Ground": "M035" },
+                "Roof"      : { "Pen": "M025", "Profile": "M035", "Materials": { "Terracotta": { "Pen": "M018", "Profile": "M025" } } },
+                "Porch"     : { "Pen": "M018", "Profile": "M025", "Materials": { "ClayTile": { "Pen": "M025", "Profile": "M035" } } },
+                "Opening"   : { "Pen": "M018" },
+                "Dressing"  : { "Pen": "M018" },
+                "Rainwater" : { "Pen": "M018" },
+                "Boundary"  : { "Pen": "M018" },
+                "Furniture" : { "Pen": "M018" },
+                "Hardscape" : { "Pen": "M013" },
+                "Ground"    : { "Pen": "M013" },
+                "Water"     : { "Pen": "M013" },
+                "Planting"  : { "Pen": "M013" },
+                "Context"   : { "Pen": "M013" }
+            },
+            "CategoriesNotes"  : {
+                "Wall"      : "A wall's edges are structural; its silhouette and its ground line are the building's outline",
+                "Roof"      : "Roof slopes, verges, ridges, dormers and chimney stacks; the pots on the stacks are fittings",
+                "Porch"     : "The oak frame is joinery, its outline a significant feature; its tiled roof is a roof",
+                "Opening"   : "Windows, doors and their joinery, the opening's own outline included",
+                "Hardscape" : "Paths, kerbs, the road: landscape linework, the base pen"
+            },
+            "Roles"            : {
+                "Focal" : { "Profile": "M035" }
+            },
+            "RolesNote"        : "The drawing's subject: its profile is an important object profile. A role raises a pen, never lowers one",
+            "Default"          : { "Pen": "M013" },
+            "DefaultNote"      : "A category this table does not name draws with the base pen until someone names it: ordinary lines are 0.13 mm unless assigned a heavier pen",
+            "PatternClass"     : 3,
+            "PatternClassNote" : "An Authored line of this class or lower priority (3: Optional) drawn on a face - a plank joint, boarding - is a surface pattern: the base pen. A thin member's two arrises drawn as one line (a glazing bar's pair) is not: it keeps its element's pen"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Promotions"     : {
+            "Note"             : "When a run of a line is its element's silhouette or ground line, and the Pen's sliders that once weighted them. In the technical mode a slider no longer multiplies a width: above its neutral value it lets the promotion happen, at or below it it does not. Every pen preset leaves them above.",
+            "ProfileShare"     : 0.5,
+            "ProfileShareNote" : "A run is a silhouette when more than this share of its samples has a much farther surface beside it",
+            "ShadeShare"       : 0.4,
+            "ShadeShareNote"   : "A run has shade on one side when more than this share of its samples has",
+            "GroundHeightM"    : 0.06,
+            "GroundHeightMNote": "A straight hard edge lower than this is where the element meets the ground",
+            "ProfileAbove"     : 1,
+            "ProfileAboveNote" : "Pen -> Silhouettes above x1: profile runs take their element's profile pen",
+            "GroundAbove"      : 1,
+            "GroundAboveNote"  : "Pen -> Ground line above x1: ground lines take their element's ground pen",
+            "ShadeInk"         : 0.6,
+            "ShadeInkNote"     : "Pen -> Shadow side, in the technical mode: a line with shade on one side is weighted in ink, not width - its ink x (1 + this x the slider), at most full"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Simplification" : {
+            "Note"                   : "The Drawing Discipline's simplification (Keep, the shortest line, the Pen's Detail) and Lost in light never take a visible line away now: the line keeps its base pen and loses only a heavier one. Only occlusion, the paper (presence), a retired or unseen edge and a Detail suppression point take a line away. Off, a simplified or lit line keeps its heavier pen too.",
+            "KeepDemotes"            : true,
+            "LostInLightDemotes"     : true,
+            "LitShare"               : 0.5,
+            "LitShareNote"           : "A fragment more than this share lit on both sides (the old lost-in-light test, point by point) is drawn with the base pen"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Points"         : {
+            "Note"       : "Art direction moves a line between the four pens, never off them. A point's weight (a Focus point's touch heavier, a Line Control point's Weight and Emphasis) is counted in pen steps - each pen is about 1.39 times the last - and a step is taken once the weight is StepAt of the way to the next pen: a Focus point (x1.2) leaves the pen alone, a Line Control point at its x0.75 goes down one. Marks (indication, plants, hatching) keep the base pen; there a point's weight is ink.",
+            "StepAt"     : 0.75,
+            "StepAtNote" : "0.5 would round to the nearest pen; 0.75 keeps a touch heavier on its pen"
+        },
+
+        "PainterlyNPR__TechnicalPens__Config__Modes"          : {
+            "Note"         : "Technical pens, the default: every stroke is drawn at exactly its pen's width; the presets, pressure and art direction change behaviour - ink, path, taper, breaks - never the width. Variable is the explicitly non-technical mode: pressure, the broad nib, line weight, the hierarchy, silhouette, ground and shadow-side weights and point weights modulate the pens' widths, never below the base pen. A preset never changes the mode.",
+            "Default"      : "Technical",
+            "Modes"        : {
+                "Technical" : { "Label": "Technical pens" },
+                "Variable"  : { "Label": "Variable (non-technical)" }
+            }
+        }
+    }
+}

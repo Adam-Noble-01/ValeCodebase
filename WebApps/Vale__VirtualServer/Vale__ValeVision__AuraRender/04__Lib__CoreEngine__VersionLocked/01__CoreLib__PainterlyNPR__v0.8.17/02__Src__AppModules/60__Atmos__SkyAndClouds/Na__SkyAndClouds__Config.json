@@ -1,0 +1,28 @@
+{
+    "Name": "PainterlyNPR - Sky and Clouds",
+    "Version": "1.1.0",
+    "CloudPaint": {
+        "Undersides": 0.6,
+        "SoftnessMm": 1.4,
+        "Reserve": 0.95,
+        "RaggedMm": 0.45,
+        "WanderMm": 1.2,
+        "Pool": 0.8,
+        "Crispness": 0.75,
+        "Blooms": 0.8,
+        "DryEdge": 0.6,
+        "FadeStartKm": 6,
+        "FadeEndKm": 36
+    },
+    "Ranges": {
+        "Undersides": { "Min": 0,    "Max": 1.5, "Step": 0.01 },
+        "SoftnessMm": { "Min": 0,    "Max": 4,   "Step": 0.05 },
+        "Reserve":    { "Min": 0,    "Max": 1,   "Step": 0.01 },
+        "RaggedMm":   { "Min": 0,    "Max": 2,   "Step": 0.05 },
+        "WanderMm":   { "Min": 0,    "Max": 4,   "Step": 0.05 },
+        "Pool":       { "Min": 0,    "Max": 2,   "Step": 0.01 },
+        "Crispness":  { "Min": 0,    "Max": 1,   "Step": 0.01 },
+        "Blooms":     { "Min": 0,    "Max": 2,   "Step": 0.01 },
+        "DryEdge":    { "Min": 0,    "Max": 1,   "Step": 0.01 }
+    }
+}

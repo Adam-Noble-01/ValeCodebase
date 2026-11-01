@@ -1,0 +1,92 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - RESIZE
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__Resize__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - Resize
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The drag handles in the gutters either side of the sheet
+ * CREATED    : 30-Oct-2026 (v0.7.3)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css, after the asset drawer.
+ * - The handles are added to the stage by PainterlyNPR__Interface__Resize__.mjs;
+ *   each sits centred in the gutter beside it, a hair line until hovered.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESIZE | The Handles in the Gutters
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Stage {
+        position                           :  relative;                     /* <-- The handles hang off its sides */
+    }
+
+    .PainterlyNPR__Resize {
+        position                           :  absolute;
+        top                                :  0;
+        bottom                             :  8px;
+        z-index                            :  6;
+        width                              :  12px;
+        cursor                             :  col-resize;
+        touch-action                       :  none;                         /* <-- A finger drags the edge, not the page */
+    }
+
+    .PainterlyNPR__Resize--drawer {
+        left                               :  calc(var(--PainterlyNPR_Gutter) / -2 - 6px);
+    }
+
+    .PainterlyNPR__Resize--panel {
+        right                              :  calc(var(--PainterlyNPR_Gutter) / -2 - 6px);
+    }
+
+    /* The line: faint at rest, the focus slate when held */
+    .PainterlyNPR__Resize::after {
+        content                            :  '';
+        position                           :  absolute;
+        top                                :  12px;
+        bottom                             :  12px;
+        left                               :  5px;
+        width                              :  2px;
+        border-radius                      :  1px;
+        background                         :  transparent;
+        transition                         :  background var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Resize:hover::after,
+    .PainterlyNPR__Resize:focus-visible::after {
+        background                         :  var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__Resize:active::after,
+    .PainterlyNPR--resizing .PainterlyNPR__Resize:hover::after {
+        background                         :  var(--PainterlyNPR_Slate);
+    }
+
+    .PainterlyNPR__Resize:focus-visible {
+        outline                            :  none;                         /* <-- The line shows the focus */
+    }
+
+    /* While dragging: the cursor everywhere, no text selected on the way */
+    .PainterlyNPR--resizing,
+    .PainterlyNPR--resizing * {
+        cursor                             :  col-resize !important;
+        user-select                        :  none !important;
+    }
+
+    /* Only where there is a column to size */
+    .PainterlyNPR:not(.PainterlyNPR--assetsOpen) .PainterlyNPR__Resize--drawer,
+    .PainterlyNPR--foldPanel .PainterlyNPR__Resize--panel {
+        display                            :  none;
+    }
+
+    @media (max-width: 1100px) {
+        .PainterlyNPR__Resize {
+            display                        :  none;                         /* <-- One column: nothing beside the sheet to size */
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

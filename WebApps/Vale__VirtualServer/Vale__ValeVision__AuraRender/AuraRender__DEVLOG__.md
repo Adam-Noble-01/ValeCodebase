@@ -1,5 +1,30 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 01-Nov-2026: PainterlyNPR v0.8.17, the Composition Starts at 70% and 10% (No App Version of Its Own)
+
+**Asked by Adam:** "Across all of the apps (the Vale Aura app, the SketchUp plugin, and the test environment), make sure
+this is the default setting. For the composition" (Painted area 70%, Edge irregularity 10%), then "Commit, sync, push".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.17 at 306332a, pinned as
+`01__CoreLib__PainterlyNPR__v0.8.17` from the commit (426 files; its lock says WorkingTreeClean true). The import map
+(`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.16; the worker's cache version
+2026-11-01-01; the README's engine row.
+
+**What it brings AURA:** the engine's starting state now has the composition at a painted area of 70% (`Vignette` 0.7)
+and an edge irregularity of 10% (`Roughness` 0.1), 62% and 64% before. A new drawing set starts from it; a drawing set
+already saved keeps the composition it was saved with (the host puts `Composition` back with its settings). AURA holds no
+default of its own, so nothing in its code changed.
+
+**Checked here (no browser):** `--check`: every pin untouched and v0.8.17 the same as the repository; the engine's AppCore
+Init the same as v0.8.16's (one hash), so the host needs no change; all 49 engine references in AURA's modules resolve in
+the new pin; only three engine files differ from v0.8.16 (the state config, the main config's version, the worker's
+token); the pin's `DefaultState` Composition is 0.7 and 0.1.
+
+**Not yet live:** the `aura` push could not run from this PC: its Server Manager mirrors
+`D:\10_CoreLib__ValeCodebase\WebApps\Vale__VirtualServer`, which is not on this PC, and its ssh-agent service is off. On
+the PC that has that folder: `git pull`, then `engine compare aura` (expect the v0.8.17 folder added, `index.html`, the
+import map record, the worker, the README and this DEVLOG replaced, nothing deleted) and `engine push aura --yes`.
+
 ## Engine Sync, 30-Oct-2026: PainterlyNPR v0.8.16, the Paint Scale and Window Shadow Lines (No App Version of Its Own)
 
 **Asked by Adam:** "Commit and sync", for PainterlyNPR's paint scale and window shadow lines on project models.

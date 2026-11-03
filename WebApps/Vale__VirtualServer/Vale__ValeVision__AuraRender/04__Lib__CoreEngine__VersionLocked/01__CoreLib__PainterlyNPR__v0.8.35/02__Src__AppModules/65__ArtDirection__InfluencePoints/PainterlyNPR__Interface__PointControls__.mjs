@@ -1,0 +1,437 @@
+/* =============================================================================
+   PAINTERLYNPR - ART DIRECTION | INFLUENCE POINTS - CONTROLS
+   =============================================================================
+
+   FILE       : PainterlyNPR__Interface__PointControls__.mjs
+   NAMESPACE  : PainterlyNPR
+   MODULE     : ArtDirection - InfluencePoints - Controls
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : A point's contextual controls, and every edit to one: select, set
+                a value, remove, duplicate, copy and paste, switch off
+   CREATED    : 30-Oct-2026 (v0.5.0)
+
+   DESCRIPTION:
+   - Three to six controls a point shows (manifest section 10); the rest wait
+     under Advanced.
+
+   ---------------------------------------------------------------------------
+
+   PORT NOTE:
+   - Ported from : Experiment 01
+                   (80__Experiments__RenderPrototypes/01__Experiment__PenAndWashMockup),
+                   engine 0.4.10 - region Interface
+   - Ported on   : 30-Oct-2026 (v0.5.0)
+   - Parity      : the application draws the sheet the experiment draws, pixel for
+                   pixel
+                   (60__Dev__WebBuildUtils/PainterlyNPR__Test__AppParity__Browser__.py)
+   - Divergences : none in what it draws; what the experiment shared in one
+                   closure is imported and exported here
+
+   ============================================================================= */
+
+import PointControlsConfig from './Na__ArtDirection__PointControls__Config.json' with { type: 'json' };
+import { PainterlyNPR__ConfigAccess__Section } from '../03__AppUtils/PainterlyNPR__AppUtils__ConfigAccess__.mjs';
+import { PainterlyNPR__AppCore__State as State } from '../01__AppCore/PainterlyNPR__AppCore__State__.mjs';
+import {
+    PainterlyNPR__Engine__MAX_POINTS       as  MAX_POINTS,
+    PainterlyNPR__Engine__SHEET_HEIGHT_MM  as  SHEET_HEIGHT_MM,
+    PainterlyNPR__Engine__SHEET_WIDTH_MM   as  SHEET_WIDTH_MM,
+} from '../02__AppData/PainterlyNPR__AppData__Engine__.mjs';
+import { PainterlyNPR__Maths__Clamp as Clamp } from '../03__AppUtils/PainterlyNPR__AppUtils__Maths__.mjs';
+import { PainterlyNPR__SeededRandom__MintSeed } from '../03__AppUtils/PainterlyNPR__AppUtils__SeededRandom__.mjs';
+import { PainterlyNPR__ScenePackage__Scene as Scene } from '../10__Import__ScenePackage/PainterlyNPR__ScenePackage__Build__.mjs';
+import { PainterlyNPR__MaterialClasses__MATERIAL_CLASSES as MATERIAL_CLASSES } from '../13__Scene__MaterialClasses/PainterlyNPR__MaterialClasses__Table__.mjs';
+import {
+    PainterlyNPR__RenderGraph__Bump,
+    PainterlyNPR__RenderGraph__Request,
+} from '../20__System__RenderGraph/PainterlyNPR__RenderGraph__Graph__.mjs';
+import { PainterlyNPR__StrokeSynthesis__DisciplineAt } from '../35__Line__DrawingDiscipline/PainterlyNPR__StrokeSynthesis__DisciplineMacro__.mjs';
+import {
+    PainterlyNPR__ArtDirection__AnchorAt,
+    PainterlyNPR__ArtDirection__MakePoint,
+    PainterlyNPR__ArtDirection__POINT_GROUPS  as  POINT_GROUPS,
+    PainterlyNPR__ArtDirection__POINT_TYPES   as  POINT_TYPES,
+} from './PainterlyNPR__ArtDirection__Points__.mjs';
+import { PainterlyNPR__Interface__RenderPointList } from './PainterlyNPR__Interface__PointList__.mjs';
+import { PainterlyNPR__Interface__UpdateOverlay } from './PainterlyNPR__Interface__PointOverlay__.mjs';
+import {
+    PainterlyNPR__Interface__Status,
+    PainterlyNPR__Interface__Query     as  $,
+    PainterlyNPR__Interface__QueryAll  as  $$,
+    PainterlyNPR__Interface__Ui        as  Ui,
+} from '../80__System__HudOverlay/PainterlyNPR__Interface__Dom__.mjs';
+import { PainterlyNPR__Interface__RowFrom } from '../80__System__HudOverlay/PainterlyNPR__Interface__Formats__.mjs';
+import { PainterlyNPR__Interface__UpdateSettingsJson } from '../85__System__ProjectPersistence/PainterlyNPR__Interface__SettingsJson__.mjs';
+
+// =============================================================================
+// REGION | Influence Points - Controls
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// REGION | Config
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | The Config - Na__ArtDirection__PointControls__Config.json
+    // ------------------------------------------------------------
+    // Each section a copy, every key read below checked as it is taken.
+    const POINT_CONFIG  =  PainterlyNPR__ConfigAccess__Section(PointControlsConfig, 'PainterlyNPR__PointControls__Config', 'Points', ['Controls', 'Shape', 'Selects', 'Advanced', 'Hints', 'Dice']);
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | The Readouts No Format Writes - the discipline's name, a Material point's words
+    // ------------------------------------------------------------
+    const POINT_SPECIALS  =  Object.freeze({
+        DisciplineNameAndValue  :  v => `${PainterlyNPR__StrokeSynthesis__DisciplineAt(v).Name} · ${v.toFixed(2)}`,
+        IndicationText          :  PainterlyNPR__Interface__IndicationText,
+        MaterialSeedText        :  PainterlyNPR__Interface__MaterialSeedText,
+    });
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Interface
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | A Point's Contextual Controls - [key, label, min, max, step, format]
+    // ------------------------------------------------------------
+    // Three to six controls a point shows (manifest section 10); the rest wait
+    // under Advanced. A Line Control point carries the manifest's six - weight,
+    // pressure, wobble, break-up, silhouette emphasis, overdraw - with looseness
+    // and strength one fold down. The field holds a weight up to 2.
+    const POINT_CONTROLS  =  Object.fromEntries(Object.entries(POINT_CONFIG.Controls).map(([type, rows]) => [type, rows.map(row => PainterlyNPR__Interface__RowFrom(row, POINT_SPECIALS))]));
+    const POINT_SHAPE  =  POINT_CONFIG.Shape.map(row => PainterlyNPR__Interface__RowFrom(row, POINT_SPECIALS));   // <-- Every point can be an ellipse
+    const POINT_SELECTS  =  POINT_CONFIG.Selects;                            // <-- [key, label, [[value, text]]]: menus in the open card, saved with the point
+    const POINT_ADVANCED  =  Object.fromEntries(Object.entries(POINT_CONFIG.Advanced).map(([type, rows]) => [type, rows === 'PointShape'
+        ? POINT_SHAPE                                                        // <-- The same rows, as Experiment 01 shared them
+        : rows.flatMap(row => row === 'PointShape' ? POINT_SHAPE : [PainterlyNPR__Interface__RowFrom(row, POINT_SPECIALS)])]));
+    const POINT_HINTS  =  POINT_CONFIG.Hints;
+    const POINT_DICE   =  POINT_CONFIG.Dice;                                 // <-- The row with a dice beside its slider, and the dice
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Points - find, number, name, and what every edit to one does
+    // ------------------------------------------------------------
+    // A point's number is its place in the list, shown on its handle and its
+    // row alike, so the one on the sheet and the one in the panel are plainly
+    // the same point.
+    function PainterlyNPR__Interface__PointById(id) { return State.Points.find(p => p.Id === id) || null; }
+    function PainterlyNPR__Interface__PointNumber(point) { return State.Points.indexOf(point) + 1; }
+    function PainterlyNPR__Interface__PointSpec(type, key) { return [...POINT_CONTROLS[type], ...(POINT_ADVANCED[type] || [])].find(s => s[0] === key); }
+
+    function PainterlyNPR__Interface__PointTargetText(point) {
+        const object  =  Scene.ObjectById.get(point.ObjectId);
+        if (point.Target === 'Object' && object) return object.Name;
+        if (point.Target === 'Material' && point.MaterialId >= 0) return `All ${MATERIAL_CLASSES[point.MaterialId].Label.toLowerCase()}`;
+        return 'The area';
+    }
+
+    function PainterlyNPR__Interface__PointChanged() {
+        PainterlyNPR__RenderGraph__Bump('ArtDirection');
+        PainterlyNPR__Interface__UpdateSettingsJson();
+        PainterlyNPR__RenderGraph__Request('Refine');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Select a Point - its row opens, its node shows its sliders
+    // ------------------------------------------------------------
+    // One point is edited at a time, as in a U-Point editor: the selected
+    // point's ring, knobs and sliders show on the sheet; its row is the only one
+    // open in the panel, scrolled into view - so a point just placed is the
+    // point being edited, wherever it falls in the list.
+    function PainterlyNPR__Interface__SelectPoint(id, reveal) {
+        Ui.SelectedPointId  =  PainterlyNPR__Interface__PointById(id) ? id : null;
+        PainterlyNPR__Interface__RenderPointList();
+        PainterlyNPR__Interface__UpdateOverlay();
+        if (!reveal || Ui.SelectedPointId === null) return;
+        const card  =  $(`.PainterlyNPR__PointCard[data-point-id="${Ui.SelectedPointId}"]`);
+        if (card && card.offsetParent) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set One of a Point's Values - from the node, the row or a knob
+    // ------------------------------------------------------------
+    // Every control bound to the point is brought into step except the one being
+    // dragged, so the node's sliders and the row's never disagree.
+    function PainterlyNPR__Interface__SetPointValue(point, key, value, source) {
+        point[key]  =  value;
+        PainterlyNPR__Interface__RefreshPointInputs(point, source);
+        PainterlyNPR__Interface__UpdateOverlay();
+        PainterlyNPR__Interface__PointChanged();
+    }
+
+    function PainterlyNPR__Interface__RefreshPointInputs(point, source) {
+        for (const input of $$(`[data-for-point="${point.Id}"][data-point-key]`)) {
+            const key  =  input.dataset.pointKey;
+            if (input !== source) input.value = point[key];
+            const spec    =  PainterlyNPR__Interface__PointSpec(point.Type, key);
+            const output  =  input.parentElement.querySelector('output');
+            if (spec && output) output.textContent = spec[5](point[key], point);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Remove, Duplicate and Switch a Point Off
+    // ------------------------------------------------------------
+    // Removing the selected point selects its neighbour, so Delete can clear a
+    // run of points. A duplicate is a new point - its own Id and so its own
+    // seed - placed just beside its source and listed after it; Alt-drag drops
+    // it where the drag ends. A point switched off keeps its settings but leaves
+    // the field, so a variation can be compared without being lost.
+    function PainterlyNPR__Interface__RemovePoint(id) {
+        const index  =  State.Points.findIndex(p => p.Id === id);
+        if (index < 0) return;
+        State.Points.splice(index, 1);
+        Ui.KnobSide.delete(id);
+        if (Ui.SelectedPointId === id) {
+            const next  =  State.Points[Math.min(index, State.Points.length - 1)];
+            Ui.SelectedPointId  =  next ? next.Id : null;
+        }
+        PainterlyNPR__Interface__RenderPointList();
+        PainterlyNPR__Interface__UpdateOverlay();
+        PainterlyNPR__Interface__PointChanged();
+    }
+
+    function PainterlyNPR__Interface__DuplicatePoint(id, offset) {
+        const source  =  PainterlyNPR__Interface__PointById(id);
+        if (!source) return null;
+        if (State.Points.length >= MAX_POINTS) { PainterlyNPR__Interface__Status(`The field holds ${MAX_POINTS} points at most.`); return null; }
+        const options  =  JSON.parse(JSON.stringify(source));
+        delete options.Id;
+        delete options.Seed;
+        const step   =  offset === false ? 0 : 8;
+        const x      =  Clamp(source.PaperMm[0] + step, 0, SHEET_WIDTH_MM), y = Clamp(source.PaperMm[1] - step, 0, SHEET_HEIGHT_MM);
+        const point  =  PainterlyNPR__ArtDirection__MakePoint(source.Type, x, y, Object.assign(options, { PaperMm: [x, y] }));
+        if (step) PainterlyNPR__ArtDirection__AnchorAt(point, x, y);
+        State.Points.splice(State.Points.indexOf(source) + 1, 0, point);
+        PainterlyNPR__Interface__EchoPoint(source.Id);
+        PainterlyNPR__Interface__SelectPoint(point.Id, true);
+        PainterlyNPR__Interface__PointChanged();
+        return point;
+    }
+
+    function PainterlyNPR__Interface__TogglePoint(id) {
+        const point  =  PainterlyNPR__Interface__PointById(id);
+        if (!point) return;
+        point.Enabled  =  point.Enabled === false;
+        PainterlyNPR__Interface__RenderPointList();
+        PainterlyNPR__Interface__UpdateOverlay();
+        PainterlyNPR__Interface__PointChanged();
+    }
+
+    // What a point acts on, stepped through what it can reach
+    function PainterlyNPR__Interface__CycleTarget(point) {
+        const order  =  ['Area', 'Object', 'Material'].filter(t => t === 'Area' || (t === 'Object' ? Scene.ObjectById.has(point.ObjectId) : point.MaterialId >= 0));
+        point.Target  =  order[(order.indexOf(point.Target) + 1) % order.length];
+        PainterlyNPR__Interface__RenderPointList();
+        PainterlyNPR__Interface__UpdateOverlay();
+        PainterlyNPR__Interface__PointChanged();
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Copy and Paste, and Always Show
+    // ------------------------------------------------------------
+    const POINT_CLIPBOARD_STORE  =  'PainterlyNPR__PointClipboard';         // <-- This browser's storage: a copy reaches another scene, view or project
+    const POINT_ALWAYS_STORE     =  'PainterlyNPR__PointsAlwaysShow';       // <-- This viewer's preference, never the drawing's
+    const POINT_PASTE_STEP_MM    =  8;                                      // <-- A paste lands this far on from the point before it, as a duplicate does
+    const POINT_ECHO_MS          =  2000;                                   // <-- How long the old point stays on the sheet beside its copy (the stylesheet's fade matches it)
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Copy and Paste a Point - Ctrl+C and Ctrl+V
+    // ------------------------------------------------------------
+    // A paste is a new point, as a duplicate is (its own Id and seed), selected
+    // and listed last, just beside the point it came from: the one copied, then
+    // each paste beside the last. What it acts on is found again from what lies
+    // under it: the object it was copied from may not be in this drawing.
+    // PastePoint returns false when nothing has been copied, so the key is left
+    // to the browser.
+    let PointCopied     =  null;                                            // <-- Holds the copy too, for when storage is refused
+    let PointBeforeId   =  null;                                            // <-- The point the next paste lands beside and shows, if it is in this drawing
+    let PointPastedAt   =  null;                                            // <-- Where the last paste went, for when that point is not
+    let PointsAlwaysOn  =  null;
+
+    function PainterlyNPR__Interface__CopyPoint(id) {
+        const source  =  PainterlyNPR__Interface__PointById(id);
+        if (!source) return false;
+        PointCopied    =  JSON.parse(JSON.stringify(source));
+        delete PointCopied.Id;
+        delete PointCopied.Seed;
+        PointBeforeId  =  source.Id;
+        PointPastedAt  =  null;
+        try { localStorage.setItem(POINT_CLIPBOARD_STORE, JSON.stringify(PointCopied)); }
+        catch (error) { /* Kept in PointCopied for this page */ }
+        PainterlyNPR__Interface__Status(`Point ${PainterlyNPR__Interface__PointNumber(source)} copied. Ctrl+V pastes it.`);
+        return true;
+    }
+
+    // The old point stays on the sheet a moment beside its copy, though only the
+    // edited point shows: the clear cue that it was copied, not moved
+    function PainterlyNPR__Interface__EchoPoint(id) {
+        Ui.PointEchoId  =  id;
+        clearTimeout(Ui.PointEchoTimer);
+        Ui.PointEchoTimer  =  setTimeout(() => {
+            Ui.PointEchoId  =  null;
+            if (Ui.Points && Ui.Canvas) PainterlyNPR__Interface__UpdateOverlay();
+        }, POINT_ECHO_MS);
+    }
+
+    function PainterlyNPR__Interface__ReadCopiedPoint() {
+        try { return JSON.parse(localStorage.getItem(POINT_CLIPBOARD_STORE) || 'null') || PointCopied; }
+        catch (error) { return PointCopied; }
+    }
+
+    function PainterlyNPR__Interface__PastePoint() {
+        const copied  =  PainterlyNPR__Interface__ReadCopiedPoint();
+        if (!copied || !POINT_TYPES[copied.Type]) return false;
+        if (State.Points.length >= MAX_POINTS) { PainterlyNPR__Interface__Status(`The field holds ${MAX_POINTS} points at most.`); return null; }
+        const before  =  PainterlyNPR__Interface__PointById(PointBeforeId);
+        const last   =  before ? before.PaperMm : (PointPastedAt || copied.PaperMm);   // <-- The point as it stands now: a camera move may have carried it
+        const x      =  Clamp(last[0] + POINT_PASTE_STEP_MM, 0, SHEET_WIDTH_MM);
+        const y      =  Clamp(last[1] - POINT_PASTE_STEP_MM, 0, SHEET_HEIGHT_MM);
+        const point  =  PainterlyNPR__ArtDirection__MakePoint(copied.Type, x, y, Object.assign({}, copied, { PaperMm: [x, y], World: null, ObjectId: -1, MaterialId: -1, Visible: true }));
+        PainterlyNPR__ArtDirection__AnchorAt(point, x, y);
+        if (point.ObjectId < 0) { point.Anchor = 'Paper'; point.Target = 'Area'; }
+        State.Points.push(point);
+        PointPastedAt  =  [x, y];
+        PointBeforeId  =  point.Id;
+        if (before) PainterlyNPR__Interface__EchoPoint(before.Id);
+        PainterlyNPR__Interface__SelectPoint(point.Id, true);
+        PainterlyNPR__Interface__PointChanged();
+        PainterlyNPR__Interface__Status(`Point ${PainterlyNPR__Interface__PointNumber(point)} pasted.`);
+        return point;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Add Buttons - each group under its heading, a rule between
+    // ------------------------------------------------------------
+    // Built from the config's Groups, so a button's words are the point's own
+    // Label everywhere. A wrapper passes its own element and binds the buttons
+    // returned (each names its type in data-add-point), so every version of the
+    // app offers the same buttons (AURA's host; SketchUp's windows run this page).
+    function PainterlyNPR__Interface__BuildPointTypes(element) {
+        const host  =  element || $('#PainterlyNPR__App__PointTypes');
+        if (!host) return [];
+        host.innerHTML  =  '';
+        POINT_GROUPS.forEach((group, index) => {
+            if (index) host.appendChild(document.createElement('hr')).className = 'PainterlyNPR__PointTypes__Rule';
+            const head  =  host.appendChild(document.createElement('p'));
+            head.className    =  'PainterlyNPR__PointTypes__Head';
+            head.textContent  =  group.Label;
+            const grid  =  host.appendChild(document.createElement('div'));
+            grid.className  =  'PainterlyNPR__PointTypes__Grid';
+            for (const key of group.Types) {
+                const button  =  grid.appendChild(document.createElement('button'));
+                button.type             =  'button';
+                button.className        =  'PainterlyNPR__Button PainterlyNPR__PointTypes__Button';
+                button.dataset.addPoint =  key;
+                button.title            =  POINT_TYPES[key].Title || POINT_TYPES[key].Label;   // <-- The whole name, should a narrow panel cut it short
+                const glyph  =  button.appendChild(document.createElement('span'));
+                glyph.className    =  'PainterlyNPR__PointTypes__Glyph';
+                glyph.textContent  =  POINT_TYPES[key].Glyph;
+                const label  =  button.appendChild(document.createElement('span'));
+                label.className    =  'PainterlyNPR__PointTypes__Label';
+                label.textContent  =  POINT_TYPES[key].Label;
+            }
+        });
+        return [...host.querySelectorAll('[data-add-point]')];
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Always Show Every Point - off: only the point being edited shows
+    // ------------------------------------------------------------
+    function PainterlyNPR__Interface__PointsAlwaysShow() {
+        if (PointsAlwaysOn === null) {
+            try { PointsAlwaysOn = localStorage.getItem(POINT_ALWAYS_STORE) === 'On'; }
+            catch (error) { PointsAlwaysOn = false; }
+        }
+        return PointsAlwaysOn;
+    }
+
+    function PainterlyNPR__Interface__SetPointsAlwaysShow(on) {
+        PointsAlwaysOn  =  !!on;
+        try { localStorage.setItem(POINT_ALWAYS_STORE, PointsAlwaysOn ? 'On' : 'Off'); }
+        catch (error) { /* For this page only */ }
+        PainterlyNPR__Interface__UpdateOverlay();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Material Point's Seed - the number, the dice, and what its readout says
+    // ------------------------------------------------------------
+    // The dice rolls a new number and brings the slider back to the middle; the
+    // slider cycles 10 either side of it. A roll stays well clear of 0, which is
+    // the material as drawn. Adam: "Add A Dice in the material art point that
+    // rerolls the seed for the material so you can quickly cycle differing variations".
+    function PainterlyNPR__Interface__RollPointSeed(point) {
+        point[POINT_DICE.Base]  =  11 + PainterlyNPR__SeededRandom__MintSeed() % 99989;
+        point[POINT_DICE.Key]   =  0;
+        PainterlyNPR__Interface__RefreshPointInputs(point, null);
+        PainterlyNPR__Interface__UpdateOverlay();
+        PainterlyNPR__Interface__PointChanged();
+    }
+
+    function PainterlyNPR__Interface__MaterialSeedText(v, point) {
+        return String((point && point[POINT_DICE.Base] || 0) + v);
+    }
+
+    function PainterlyNPR__Interface__PointDiceButton(key) {
+        return key === POINT_DICE.Key ? `<button type="button" class="PainterlyNPR__Dice" data-point-dice title="Roll a new seed: another variation of this material where the point holds">${POINT_DICE.Icon}</button>` : '';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Material Point's Amount in Words
+    // ------------------------------------------------------------
+    function PainterlyNPR__Interface__IndicationText(v) {
+        if (Math.abs(v) < 0.005) return 'neutral';
+        return v > 0 ? `express ${Math.round(v * 100)}%` : `suppress ${Math.round(-v * 100)}%`;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | What Other Modules Read - under their three-stage names
+    // ------------------------------------------------------------
+    export {
+        PainterlyNPR__Interface__BuildPointTypes,
+        PainterlyNPR__Interface__CopyPoint,
+        PainterlyNPR__Interface__CycleTarget,
+        PainterlyNPR__Interface__DuplicatePoint,
+        PainterlyNPR__Interface__PastePoint,
+        PainterlyNPR__Interface__PointById,
+        PainterlyNPR__Interface__PointChanged,
+        PainterlyNPR__Interface__PointDiceButton,
+        PainterlyNPR__Interface__PointNumber,
+        PainterlyNPR__Interface__PointTargetText,
+        PainterlyNPR__Interface__PointsAlwaysShow,
+        PainterlyNPR__Interface__RefreshPointInputs,
+        PainterlyNPR__Interface__RemovePoint,
+        PainterlyNPR__Interface__RollPointSeed,
+        PainterlyNPR__Interface__SelectPoint,
+        PainterlyNPR__Interface__SetPointValue,
+        PainterlyNPR__Interface__SetPointsAlwaysShow,
+        PainterlyNPR__Interface__TogglePoint,
+        POINT_ADVANCED  as  PainterlyNPR__Interface__POINT_ADVANCED,
+        POINT_CONTROLS  as  PainterlyNPR__Interface__POINT_CONTROLS,
+        POINT_DICE      as  PainterlyNPR__Interface__POINT_DICE,
+        POINT_HINTS     as  PainterlyNPR__Interface__POINT_HINTS,
+        POINT_SELECTS   as  PainterlyNPR__Interface__POINT_SELECTS,
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

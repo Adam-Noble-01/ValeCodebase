@@ -1,0 +1,18 @@
+{
+    "PainterlyNPR__MaterialIndicationViews__Config" : {
+        "PainterlyNPR__MaterialIndicationViews__Config__Meta"  : {
+            "ConfigLabel"   : "PainterlyNPR - Material Indication - the Indication View's Colours",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "What the Indication buffer view draws: every joint the pattern lays, and the ones the drawing keeps.",
+            "ReadBy"        : "02__Src__AppModules/36__Line__MaterialIndication/PainterlyNPR__MaterialIndication__Pass__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__MaterialIndicationViews__Config__Debug" : {
+            "Laid"     : [0.6, 0.57, 0.53, 0.4],
+            "LaidNote" : "Every joint the pattern lays, for the Indication view",
+            "Kept"     : [0.62, 0.27, 0.2, 1],
+            "KeptNote" : "The ones the drawing keeps"
+        }
+    }
+}

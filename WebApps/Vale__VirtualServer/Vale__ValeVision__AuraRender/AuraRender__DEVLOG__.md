@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.35, the Plants in Terracotta and in Grey (No App Version of Its Own)
+
+**Asked by Adam:** "Good work, add variations with terracotta pots and also the grey color pots like this", with a drawing of an orangery, then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.35 at c0fb28c, pinned as `01__CoreLib__PainterlyNPR__v0.8.35` from the commit (516 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.34, the worker's cache version 2026-11-03-11, the README's engine row.
+
+**What it brings AURA:** ten new assets in the Assets drawer. The ball standard in a terracotta bowl and a grey bowl (`NPR_07_2032`, `NPR_07_2033`, Vegetation, Topiary), and the four potted plants in terracotta (`NPR_25_1021` to `1024`) and in grey (`NPR_25_1031` to `1034`, Garden furniture, Planters And Pots). The grey is `Slate`, the class the lead planter is painted in. AURA draws them through the engine alone.
+
+**No code in this pin:** the two pins compared file by file, the 40 new files are those ten assets, and what changed is only the library's index and README, the engine's version and its worker's token, and the lock. Init and every module are the same, so nothing already drawn can change.
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: the R rotate tool and the rounded object margins.
+
+**Not pushed.** Not run in a browser through AURA: Adam tests it.
+
 ## Version 0.5.26, 03-Nov-2026: A Dragged Scene Tab Feels Right
 
 **Asked by Adam**, of 0.5.25's tabs: "dragging feels cumbersome, there needs to be better visual feedback it feels clunky".

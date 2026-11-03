@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.29, Materials Hold at Low Angles (No App Version of Its Own)
+
+**Asked by Adam:** "Make the viewing angle for the drawn elements such as material textures avaible if the view is more oblique, currently the cutoff if too early ... see the ground slabs? / same is true with walls though", then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.29 at ccdb328, pinned as `01__CoreLib__PainterlyNPR__v0.8.29` from the commit (433 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.28, the worker's cache version 2026-11-03-06, the README's engine row.
+
+**What it brings AURA:** paving draws its slabs from a low camera, down to about 3 degrees above the ground, where it was thinning from about 12. Brick and tile hold on a wall or roof until about 83 degrees off square, where they were thinning from about 72, and a turned surface keeps its courses and thins its upright joints and accents so it does not clog. Stonework's own rule on a turned wall is unchanged.
+
+**A look change on every project, at low views only.** A raised view barely moves.
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: its v0.8.30 ground cut and v0.8.31 point names. So this tree's version 0.5.16, also uncommitted, is not in this commit and still waits on v0.8.31.
+
+**Checked here (no browser):** the sync's `--check`, and the two pins compared file by file: only the expected engine files differ, so Init and every module AURA reaches are as in v0.8.28. Thrower and the demo cottage were driven in headless Edge at the engine (its DEVLOG). Not run in a browser through AURA: Adam tests it. Not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.28, Stonework's Darker Washes (No App Version of Its Own)
 
 **Asked by Adam:** "Our stonework washes feel too bright vs the reference see?", then "Commit and sync".

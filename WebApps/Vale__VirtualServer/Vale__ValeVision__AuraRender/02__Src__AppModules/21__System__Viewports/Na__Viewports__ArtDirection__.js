@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.0.4
+// - The engine's own add buttons (BuildPointTypes), its groups and look.
+//
 // 03-Nov-2026 - Version 1.0.3
 // - Ctrl+C and Ctrl+V (the engine's, through PointKey); a slider with the focus
 //   no longer stops the point's keys.
@@ -58,7 +61,7 @@
     import { Na__Dom__El } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Toast__Show } from '../03__AppUtils/Na__AppUtils__Toast__.js';
     import {
-        Na__EngineHost__Ready, Na__EngineHost__Busy, Na__EngineHost__PointTypes, Na__EngineHost__MaxPoints, Na__EngineHost__Points,
+        Na__EngineHost__Ready, Na__EngineHost__Busy, Na__EngineHost__BuildPointTypes, Na__EngineHost__MaxPoints, Na__EngineHost__Points,
         Na__EngineHost__PointsSignature, Na__EngineHost__PointList, Na__EngineHost__RefreshPoints, Na__EngineHost__RedrawPointOverlay,
         Na__EngineHost__ArmPoint, Na__EngineHost__ArmedPoint, Na__EngineHost__PlacePoint, Na__EngineHost__PointKey, Na__EngineHost__DeselectPoint,
         Na__EngineHost__Borrow, Na__EngineHost__BorrowCamera, Na__EngineHost__Borrowed, Na__EngineHost__Release, Na__EngineHost__LiveCanvas
@@ -368,15 +371,13 @@
             ? `The points of the scene "${owner.View.View__Name}": the 3D Environment edits the same set, and every viewport showing it draws with them.`
             : 'This viewport\'s scene is gone: pick one in its panel before adding points.'));
 
-        const types = Na__Dom__El('div', 'aura-points__types', null, { role: 'group', 'aria-label': 'Add an art direction point' });
-        S.typeButtons = Na__EngineHost__PointTypes().map((t) => {
-            const b = Na__Dom__El('button', 'aura-points__type', null, { type: 'button', 'aria-pressed': 'false', dataset: { pointType: t.Key },
-                                                                         title: `Add ${t.Label.toLowerCase()}: press, then click the picture where it should act` });
-            b.appendChild(Na__Dom__El('span', 'aura-points__glyph', t.Glyph, { 'aria-hidden': 'true' }));
-            b.appendChild(Na__Dom__El('span', 'aura-points__label', t.Label));
-            b.addEventListener('click', () => Na__ViewportPoints__Arm(Na__EngineHost__ArmedPoint() === t.Key ? null : t.Key));
-            types.appendChild(b);
-            return b;
+        const types = Na__Dom__El('div', 'aura-points__groups', null, { role: 'group', 'aria-label': 'Add an art direction point' });
+        S.typeButtons = Na__EngineHost__BuildPointTypes(types);
+        S.typeButtons.forEach((b) => {
+            const key = b.dataset.addPoint;
+            b.dataset.pointType = key;
+            b.setAttribute('aria-pressed', 'false');
+            b.addEventListener('click', () => Na__ViewportPoints__Arm(Na__EngineHost__ArmedPoint() === key ? null : key));
         });
         body.appendChild(types);
 

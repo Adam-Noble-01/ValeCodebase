@@ -101,50 +101,28 @@
         line-height                        : 1.45;
     }
 
-    .aura-points__types {
-        display                            : grid;
-        grid-template-columns              : repeat(auto-fill, minmax(132px, 1fr));
-        gap                                : 6px;
-    }
-
-    .aura-points__type {
-        display                            : flex;
-        align-items                        : center;
-        gap                                : 8px;
-        min-width                          : 0;
-        padding                            : 7px 10px;
+    /* The engine's add buttons (65's stylesheet lays them out): AURA's colours only */
+    .aura-points__groups .PainterlyNPR__PointTypes__Button {
         border                             : 1px solid var(--Aura_Border);
         border-radius                      : var(--Aura_RadiusSmall);
         background                         : var(--Aura_Surface);
         color                              : var(--Aura_Text);
-        font                               : inherit;
-        font-size                          : 13px;
-        text-align                         : left;
+        font-family                        : inherit;
         cursor                             : pointer;
     }
 
-    .aura-points__type:hover {
+    .aura-points__groups .PainterlyNPR__PointTypes__Button:hover {
         background                         : var(--Aura_SurfaceHover);
     }
 
-    .aura-points__type.is-active {
+    .aura-points__groups .PainterlyNPR__PointTypes__Button.is-active {
         background                         : var(--Aura_Brand);
         border-color                       : var(--Aura_Brand);
         color                              : var(--Aura_OnBrand);
     }
 
-    .aura-points__glyph {
-        flex                               : 0 0 18px;
-        text-align                         : center;
-        font-size                          : 15px;
-        line-height                        : 1;
-    }
-
-    .aura-points__label {
-        min-width                          : 0;
-        overflow                           : hidden;
-        text-overflow                      : ellipsis;
-        white-space                        : nowrap;
+    .aura-points__groups .PainterlyNPR__PointTypes__Button.is-active .PainterlyNPR__PointTypes__Glyph {
+        color                              : inherit;
     }
 
 /* endregion ------------------------------------------------------------------- */

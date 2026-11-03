@@ -1,5 +1,15 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.16, 03-Nov-2026: The Art Direction Points' New Names, Under Groups
+
+**Asked by Adam:** "Change the name in both the code, notes etc for these / Focus - Becomes - Painted Area / Fade To Paper - Becomes - Negative Space / Then add categories and hr between / Painted Area / ◎ Focus / ○ Fade to paper / ⇢ Linework run-out / Drawing Expression / ▦ Material Expression / ✎ Linework control / ⊘ Suppress detail / ∿ Linework Discipline / Lighting & Shadow / ▨ Shadow Hatching / Ensure this is reflected in all 3 places, standlone UI, SketchUp Plugin UI and the AURA Verion"
+
+**The names and groups are PainterlyNPR v0.8.31's** (`Na__ArtDirection__Config.json`), not copied here. Adam: "ensure same is used accross all app versions aura and sketchup version", so **AURA now uses the engine's own buttons**, not its own: `Na__EngineHost__PainterlyNpr__.js` 1.12.0 adds `Na__EngineHost__BuildPointTypes`, calling the engine's `BuildPointTypes` by name through the module's namespace; `Na__Environment3d__ArtDirection__.js` 2.3.0 and `Na__Viewports__ArtDirection__.js` 1.0.4 pass it their place and bind what it returns. `Na__UiFeature__Styles__ArtDirection__.css` keeps only AURA's colours on those buttons: AURA's own grid, button, glyph and label rules are gone, since 65's stylesheet lays them out. Each button's tooltip is now the engine's, not "press, then click". The README's list of types.
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.31 at c3de289, pinned as `01__CoreLib__PainterlyNPR__v0.8.31` from the commit (435 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.29; the worker's cache version 2026-11-03-07; the README's engine row. This pin also carries v0.8.30's work.
+
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; every engine reference and imported name in AURA's modules resolves in the new pin; `node --check` on the three modules. Not run in a browser: Adam tests it. Committed at Adam's word, "Commit and sync"; not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.29, Materials Hold at Low Angles (No App Version of Its Own)
 
 **Asked by Adam:** "Make the viewing angle for the drawn elements such as material textures avaible if the view is more oblique, currently the cutoff if too early ... see the ground slabs? / same is true with walls though", then "Commit and sync".
@@ -12,7 +22,9 @@
 
 **Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: its v0.8.30 ground cut and v0.8.31 point names. So this tree's version 0.5.16, also uncommitted, is not in this commit and still waits on v0.8.31.
 
-**Checked here (no browser):** the sync's `--check`, and the two pins compared file by file: only the expected engine files differ, so Init and every module AURA reaches are as in v0.8.28. Thrower and the demo cottage were driven in headless Edge at the engine (its DEVLOG). Not run in a browser through AURA: Adam tests it. Not pushed.
+**Checked here (no browser):** the sync's `--check`, and the two pins compared file by file: only the expected engine files differ, so Init and every module AURA reaches are as in v0.8.28. Thrower and the demo cottage were driven in headless Edge at the engine (its DEVLOG). Not run in a browser through AURA: Adam tests it.
+
+**Not live:** on GitHub, not on the server. An `aura` push sends the working folder, so it would also carry version 0.5.16's five uncommitted files, and a scope cannot send `index.html` alone. Held at Adam's word, "Hold for v0.8.31": it goes live with that sync, whose pin carries this change.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.28, Stonework's Darker Washes (No App Version of Its Own)
 

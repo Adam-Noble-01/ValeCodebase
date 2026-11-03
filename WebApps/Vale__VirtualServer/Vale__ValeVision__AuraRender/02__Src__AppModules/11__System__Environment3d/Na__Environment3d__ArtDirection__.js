@@ -35,6 +35,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.3.0
+// - The engine's own add buttons (BuildPointTypes), its groups and look.
+//
 // 03-Nov-2026 - Version 2.2.0
 // - Ctrl+C and Ctrl+V (the engine's, through PointKey); a slider with the focus
 //   no longer stops the point's keys, as on the engine's own sheet.
@@ -71,7 +74,7 @@
     import { Na__Dom__El } from '../03__AppUtils/Na__AppUtils__Dom__.js';
     import { Na__Toast__Show } from '../03__AppUtils/Na__AppUtils__Toast__.js';
     import {
-        Na__EngineHost__PointTypes, Na__EngineHost__MaxPoints, Na__EngineHost__Points, Na__EngineHost__PointsSignature,
+        Na__EngineHost__BuildPointTypes, Na__EngineHost__MaxPoints, Na__EngineHost__Points, Na__EngineHost__PointsSignature,
         Na__EngineHost__SetPoints, Na__EngineHost__AttachPoints, Na__EngineHost__ShowPoints, Na__EngineHost__RefreshPoints,
         Na__EngineHost__ShowInfluence, Na__EngineHost__ArmPoint, Na__EngineHost__ArmedPoint, Na__EngineHost__PlacePoint,
         Na__EngineHost__PointKey, Na__EngineHost__DeselectPoint, Na__EngineHost__OnPointsEdited, Na__EngineHost__PointsEdited,
@@ -326,16 +329,14 @@
         S.ownerLine = Na__Dom__El('p', 'aura-points__owner');
         body.appendChild(S.ownerLine);
 
-        // A button a point type: press it, then click the drawing
-        const types = Na__Dom__El('div', 'aura-points__types', null, { role: 'group', 'aria-label': 'Add an art direction point' });
-        S.typeButtons = Na__EngineHost__PointTypes().map((t) => {
-            const b = Na__Dom__El('button', 'aura-points__type', null, { type: 'button', 'aria-pressed': 'false', dataset: { pointType: t.Key },
-                                                                         title: `Add ${t.Label.toLowerCase()}: press, then click the drawing where it should act` });
-            b.appendChild(Na__Dom__El('span', 'aura-points__glyph', t.Glyph, { 'aria-hidden': 'true' }));
-            b.appendChild(Na__Dom__El('span', 'aura-points__label', t.Label));
-            b.addEventListener('click', () => Na__ArtDirection3d__Arm(Na__EngineHost__ArmedPoint() === t.Key ? null : t.Key));
-            types.appendChild(b);
-            return b;
+        // The engine's buttons, one a point type: press it, then click the drawing
+        const types = Na__Dom__El('div', 'aura-points__groups', null, { role: 'group', 'aria-label': 'Add an art direction point' });
+        S.typeButtons = Na__EngineHost__BuildPointTypes(types);
+        S.typeButtons.forEach((b) => {
+            const key = b.dataset.addPoint;
+            b.dataset.pointType = key;
+            b.setAttribute('aria-pressed', 'false');
+            b.addEventListener('click', () => Na__ArtDirection3d__Arm(Na__EngineHost__ArmedPoint() === key ? null : key));
         });
         body.appendChild(types);
 

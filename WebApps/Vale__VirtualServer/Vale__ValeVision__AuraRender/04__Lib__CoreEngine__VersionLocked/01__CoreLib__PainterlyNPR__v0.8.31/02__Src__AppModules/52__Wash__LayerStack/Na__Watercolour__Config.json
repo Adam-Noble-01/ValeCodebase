@@ -1,0 +1,25 @@
+{
+    "PainterlyNPR__Watercolour__Config" : {
+        "PainterlyNPR__Watercolour__Config__Meta"         : {
+            "ConfigLabel"   : "PainterlyNPR - Watercolour - the Distant Trees' Colours",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Pen -> 7 · Distant trees -> Colour: 0 is each material's own recipe; the stops walk toward sage, olive and warm olive.",
+            "ReadBy"        : "02__Src__AppModules/52__Wash__LayerStack/PainterlyNPR__Watercolour__Pass__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__Watercolour__Config__DistantTrees" : {
+            "Colours"      : [
+                { "At": 0.35, "A": "#A2B596", "B": "#A9B8A8" },
+                { "At": 0.7, "A": "#97A876", "B": "#A3AE90" },
+                { "At": 1, "A": "#A6A271", "B": "#AAA48A" }
+            ],
+            "ColoursNote"  : "Pen -> 7 · Distant trees -> Colour: 0 is each material's own recipe",
+            "ColoursNotes" : {
+                "0" : "Sage: reached by 0.35, walked toward from the recipe below it",
+                "1" : "Olive",
+                "2" : "Warm olive, toward ochre"
+            }
+        }
+    }
+}

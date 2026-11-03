@@ -1,0 +1,29 @@
+{
+    "Name": "PainterlyNPR - Kuwahara Filter",
+    "Version": "1.0.0",
+    "Defaults": {
+        "Amount": 1.0,
+        "RadiusMm": 1.2,
+        "Sharpness": 8,
+        "Hardness": 255,
+        "Anisotropy": 1.0,
+        "Overlap": 0.33,
+        "Falloff": 3.125,
+        "TensorSigmaMm": 0.4,
+        "Passes": 1,
+        "VarianceWeights": [1, 1, 1, 0],
+        "MaxReachTexels": 32
+    },
+    "Ranges": {
+        "Amount":         { "Min": 0,    "Max": 1,    "Step": 0.01 },
+        "RadiusMm":       { "Min": 0,    "Max": 8,    "Step": 0.05 },
+        "Sharpness":      { "Min": 1,    "Max": 18,   "Step": 0.5 },
+        "Hardness":       { "Min": 10,   "Max": 4000, "Step": 5 },
+        "Anisotropy":     { "Min": 0,    "Max": 4,    "Step": 0.05 },
+        "Overlap":        { "Min": 0.05, "Max": 1,    "Step": 0.01 },
+        "Falloff":        { "Min": 0.5,  "Max": 8,    "Step": 0.05 },
+        "TensorSigmaMm":  { "Min": 0.05, "Max": 3,    "Step": 0.05 },
+        "Passes":         { "Min": 1,    "Max": 4,    "Step": 1 },
+        "MaxReachTexels": { "Min": 4,    "Max": 48,   "Step": 1 }
+    }
+}

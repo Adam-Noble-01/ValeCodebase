@@ -2,9 +2,9 @@
     "AuraRender__CoreEngine__ImportMap__Description" : "The record of AURA's import map: the one prefix AURA's code imports the core library through. index.html's inline <script type=\"importmap\"> must say the same; change both together when a new engine version is synced in (60__Dev__WebBuildUtils/AuraRender__BuildUtil__SyncCoreEngine__.py).",
     "AuraRender__CoreEngine__ImportMap__UpdatedDate" : "03-Nov-2026",
     "AuraRender__CoreEngine__ImportMap__Imports"     : {
-        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.29/02__Src__AppModules/"
+        "PainterlyNPR/" : "./04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.31/02__Src__AppModules/"
     },
-    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.29 at ccdb328 (materials holding at low angles, on top of v0.8.28's Stonework washes in a duller earth, v0.8.27's material depictions and painted swatches, v0.8.26's points and paving, v0.8.25's Stonework and v0.8.23's Assets drawer), copied from the commit. Moved here from v0.8.28 on 03-Nov-2026.",
+    "AuraRender__CoreEngine__ImportMap__ImportsNote" : "PainterlyNPR v0.8.31 at c3de289 (the art direction points renamed and grouped, with one set of add buttons, on top of v0.8.30's ground cut in the engine). A new version goes into a new folder; this map moves when AURA has been checked against it",
     "AuraRender__CoreEngine__ImportMap__ImportedBy"  : [
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js",
         "02__Src__AppModules/10__System__EngineHost/Na__EngineHost__Panel__.js",

@@ -52,7 +52,7 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 | Part | Where |
 |---|---|
 | The page (static, plain ES modules, no build step) | this folder, served by nginx at `/aura/` |
-| The core engine (PainterlyNPR v0.8.29 at ccdb328; copied from the commit) | `04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.29/`, reached as `PainterlyNPR/...` through the import map; its libraries and stylesheets beside its modules |
+| The core engine (PainterlyNPR v0.8.31 at c3de289; copied from the commit) | `04__Lib__CoreEngine__VersionLocked/01__CoreLib__PainterlyNPR__v0.8.31/`, reached as `PainterlyNPR/...` through the import map; its libraries and stylesheets beside its modules |
 | The API (Flask) | `Server__Api\Api__ValeVision__AuraRender\wsgi.py`, proxied at `/aura/api/` (systemd `vale@ValeVision__AuraRender`, port 8006) |
 | Config (read by the page through `api/config` and by the API) | `02__Src__AppModules/02__AppData/Na__AppConfig__AuraRender__.json` |
 | A project's drawing set | `Vale__Projects__MasterLibrary\ValeProjects__<year>\<id>\ValeVision__AuraRender\UserData__AuraDrawings\<id>__AuraDrawingSet__.json` (user data: the API only); schema: the `.example` in the schema project |
@@ -135,8 +135,9 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   and a panel's inner edge drags it wider or narrower (double-click puts it back); both are remembered in this browser.
   The 3D Environment's sections and its parameter sections (Paper and finish, Light, Pen, Wash, Sky) carry line icons,
   `01__AppAssets__AuraRender/UiIcons__MenuIcons__PanelSections` (house ink, the app's own glyph weight).
-- **Art direction points** are PainterlyNPR's own, one set a view. Press a type (Focus, Fade to paper, Line control,
-  Indication, Hatch, Detail suppression, Drawing discipline, Line run-out), then click the drawing where it should
+- **Art direction points** are PainterlyNPR's own, one set a view. Press a type (Painted Area: Painted Area, Negative Space,
+  Linework run-out; Drawing Expression: Material Expression, Linework control, Suppress detail, Linework Discipline;
+  Lighting & Shadow: Shadow Hatching), then click the drawing where it should
   act: dropped on an object it anchors there and follows it. Click a point to edit it: its sliders hang beside it;
   drag it, Alt-drag a copy, Delete, Ctrl+D, [ and ] to size, H to switch off, Escape to let go. Opening a scene loads
   its points and edits save into it, while the camera moves too; with no scene open they wait for Add Scene. A scene

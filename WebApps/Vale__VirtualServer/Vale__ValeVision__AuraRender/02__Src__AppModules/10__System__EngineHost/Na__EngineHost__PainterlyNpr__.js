@@ -75,6 +75,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.12.0
+// - BuildPointTypes: the engine's own add buttons, in AURA's panels (PainterlyNPR
+//   0.8.31), reached by name through the module's namespace.
+//
 // 03-Nov-2026 - Version 1.11.0
 // - PointKey: Ctrl+C and Ctrl+V copy and paste a point, through the engine's
 //   PointClipboardKey (PainterlyNPR 0.8.26), reached by name through the
@@ -221,6 +225,7 @@
         PainterlyNPR__Interface__SetPointValue,
         PainterlyNPR__Interface__TogglePoint
     } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs';
+    import * as PainterlyNPR__PointControls from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs';   // <-- BuildPointTypes (0.8.31 on) by name at call time: an older pin still loads
     import { PainterlyNPR__Interface__RenderPointList } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointList__.mjs';
     import { PainterlyNPR__Interface__UpdateOverlay } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';
     import * as PainterlyNPR__PointOverlay from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';   // <-- PointClipboardKey (0.8.26 on) by name at call time: an older pin still loads
@@ -783,6 +788,23 @@
             .map(([key, type]) => ({ Key: key, Label: type.Label || key, Glyph: type.Glyph || '' }));
     }
 
+    // The engine's own add buttons in AURA's panel, so they are the same in every
+    // version of the app: its groups, headings, rules and stylesheet. Returns the
+    // buttons for the caller to bind. By name through the module's namespace: an
+    // older pin has no builder, and gets plain buttons until it is synced.
+    function Na__EngineHost__BuildPointTypes(element) {
+        const build = PainterlyNPR__PointControls.PainterlyNPR__Interface__BuildPointTypes;
+        if (build) return build(element);
+        return Na__EngineHost__PointTypes().map((t) => {
+            const button = element.appendChild(document.createElement('button'));
+            button.type = 'button';
+            button.className = 'PainterlyNPR__PointTypes__Button';
+            button.dataset.addPoint = t.Key;
+            button.textContent = `${t.Glyph} ${t.Label}`;
+            return button;
+        });
+    }
+
     function Na__EngineHost__MaxPoints() { return MAX_POINTS; }
     // ------------------------------------------------------------
 
@@ -944,8 +966,8 @@
     // FUNCTION | Place the Armed Point Where a Press Fell: { point: { Number, Label } }, { full: true } or null
     // ------------------------------------------------------------
     // As PainterlyNPR's own sheet places one (its Wire): dropped on an object it
-    // anchors there and follows it as the camera moves; a Fade stays on the
-    // paper; Line control acts on that object alone; Indication dropped on
+    // anchors there and follows it as the camera moves; a Negative Space stays on the
+    // paper; Linework control acts on that object alone; Material Expression dropped on
     // brick, tile or paving takes all of that material within its reach. The
     // point just placed is the one being edited: its sliders hang beside it.
     // ------------------------------------------------------------
@@ -1376,6 +1398,7 @@
         Na__EngineHost__OnChange,
         Na__EngineHost__Notify,
         Na__EngineHost__PointTypes,
+        Na__EngineHost__BuildPointTypes,
         Na__EngineHost__MaxPoints,
         Na__EngineHost__Points,
         Na__EngineHost__EnvironmentPoints,

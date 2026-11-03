@@ -1,5 +1,21 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.38, Round Forms Held to Their Rims (No App Version of Its Own)
+
+**Asked by Adam:** "Around rounded objects there is way too much white margin / There should be a sobel type profile line effect like we use in ValeVision3D but then this is used to generate lines around smoother objects which then help create the bounds as anything straight renders great and draw realistically, but rounded forms like this dont reciev proper edges or bounds for to contain the wash layers", then, on seeing the previews, "Add a little whitespace back ... add a little, but not uniform, say a little on the edges opoosite to the shadow side and also ramdonly of some areas etc", and: "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.38 at 924f7fc, pinned as `01__CoreLib__PainterlyNPR__v0.8.38` from the commit (540 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.37, the worker's cache version 2026-11-03-14, the README's engine row.
+
+**What it brings AURA:** every round thing in a drawing: a ball, a bowl, a stem, a downpipe, a chimney pot, a finial. The engine finds where it ends on its truth buffers and draws a real pen line there if the model has none, and the washes run up to that line with no white margin, a little paper left on the side the sun is on and in a few gaps round it. Straight edges are as they were. The Wash section gains Round forms and ... paper left, the Pen section Round profiles, through the engine's panel config. Every drawing set draws with them: its saved `Wash` and `Pen` lack the new keys, and the merge keeps what the engine starts with.
+
+**AURA's own code is unchanged:** Init's hash is the same, and the new pass makes its own program on first use, so the host's copy of Boot needs nothing; its target comes with `SetScale`. All 50 engine references resolve in the new pin.
+
+**Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: the demo cottage's hashes are the Standalone's at the three perspective presets (`5bdadc66`, `0051462c`, `3fa1aac0`), and the pass's program and target were made. The two elevation presets differ, as they should: this host never asks for the sheet's ground cut. Not yet looked at in AURA with a project's drawing set and a viewport's paint scale; the engine's own checks are in its DEVLOG, on Thrower's model in the Standalone.
+
+**The Assets drawer's pictures** were drawn before this and show the old white margins until the factory has run and the engine is synced again. A session for that is under way.
+
+**Live:** not pushed. It waits on Adam's word.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.37, R Turns a Placed Asset, and a Turned Plant Keeps Its Proxy's Shape (No App Version of Its Own)
 
 **Asked by Adam:** "The rotation of the drawing does not seem to match the proxy / Add a Rotation tool (R) key so i can test, tool should function like m key does for move", then, with a picture of this menu at v0.8.36: "You didnt add it to aura".

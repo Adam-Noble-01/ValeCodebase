@@ -1,0 +1,25 @@
+{
+    "PainterlyNPR__ContextMenu__Config" : {
+        "PainterlyNPR__ContextMenu__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - The Right-Click Menu",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The app's own right-click menu, in place of the browser's: when a right press counts as a click, and how the menu sits on the page.",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__ContextMenu__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.7.0"
+        },
+
+        "PainterlyNPR__ContextMenu__Config__Menu" : {
+            "Note"              : "The right button pans the sheet: a right press that moved further than SlopPx was a pan, and opens no menu at its end. Text fields keep the browser's own menu, for copy and paste.",
+            "SlopPx"            : 4,
+            "SlopPxNote"        : "A touch more than the navigation's 3 px, so a press the navigation took for a click is a click here too",
+            "MouseWindowMs"     : 600,
+            "MouseWindowMsNote" : "A menu event this soon after a right release is the mouse's; later, the keyboard's (the menu key or Shift + F10), opened at the focused element",
+            "EdgePx"            : 6,
+            "EdgePxNote"        : "The menu keeps this far inside the window, flipping to the other side of the pointer when it would not fit",
+            "MaxHeightPx"       : 620,
+            "MaxHeightPxNote"   : "A placed asset's whole menu fits; a longer one (the materials) scrolls. Never taller than the window",
+            "SubmenuDelayMs"    : 120,
+            "SubmenuDelayMsNote": "Hovering an item with more opens its submenu after this long, so a pointer crossing the menu does not open every one it passes"
+        }
+    }
+}

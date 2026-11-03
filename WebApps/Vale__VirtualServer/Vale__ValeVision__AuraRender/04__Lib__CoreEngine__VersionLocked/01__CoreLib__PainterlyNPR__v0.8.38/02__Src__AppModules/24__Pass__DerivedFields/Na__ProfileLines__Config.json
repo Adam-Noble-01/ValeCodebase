@@ -1,0 +1,74 @@
+{
+    "PainterlyNPR__ProfileLines__Config" : {
+        "PainterlyNPR__ProfileLines__Config__Meta"      : {
+            "ConfigLabel"   : "PainterlyNPR - Profile Lines: Round Forms Found on the Truth Buffers",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Where a round thing ends on the sheet: a ball, a bowl, a stem, a downpipe. Straight things have edge records and draw well; a round thing's soft edges have none, so its line and the bound of its wash are found on the truth buffers, as ValeVision 3D's profile lines are, and traced into real pen strokes.",
+            "ReadBy"        : "02__Src__AppModules/24__Pass__DerivedFields/PainterlyNPR__ProfileLines__Pass__.mjs, 02__Src__AppModules/30__Line__CandidateCollection/PainterlyNPR__LineCandidates__ProfileLines__.mjs",
+            "Source"        : "Adam, 03-Nov-2026, v0.8.38: \"There should be a sobel type profile line effect like we use in ValeVision3D but then this is used to generate lines around smoother objects which then help create the bounds\""
+        },
+
+        "PainterlyNPR__ProfileLines__Config__Detection" : {
+            "Note"              : "What makes a pixel the rim of a round form. A surface smooth shaded all the way in (what SketchUp softens: its normals turn across each facet) is round wherever it stands in front of something. A flat shaded one must also pass the Sobel over the normals, face away near the rim, and turn gently toward the eye going in.",
+            "EdgeMin"           : 0.2,
+            "EdgeMinNote"       : "The Sobel over the normals, for a flat shaded form: the change in the unit normal across the edge. 0.2 is about 11 degrees. ValeVision 3D draws from about 0.6; the tests after this one do the rest of its work here",
+            "StepM"             : 0.02,
+            "StepMNote"         : "A step in depth within one object, beyond its surface's own slope. The line visibility test's own 2 cm",
+            "ContactM"          : 0.4,
+            "ContactShare"      : 0.004,
+            "ContactNote"       : "A round thing against a flat one of another object is the form even where the flat one is a little nearer: seen from above, the ground just under a bowl's belly is nearer than the belly (L265). Metres, plus this share of the depth",
+            "LimbFacing"        : 0.8,
+            "LimbFacingNote"    : "How squarely a flat shaded rim may face the eye: 1 square on, 0 edge on. An eight-sided pipe's outer facets stand at 0.38 to 0.71",
+            "CornerDot"         : 0.5,
+            "CornerDotNote"     : "A flat shaded form's rim facet and the probe's must turn less than this toward each other (the cosine: 60 degrees): a square corner on the way in is a post, a picket or a barge board, whose edges have records and keep their white. A chamfer passes this but turns only once, and a third look finds it flat",
+            "TurnMin"           : 0.04,
+            "TurnMinNote"       : "How much more squarely the surface faces the eye at the second probe than at its rim. A flat wall seen at any angle turns not at all",
+            "ProbeMm"           : [0.3, 0.8],
+            "ProbeMinPx"        : [1.5, 3],
+            "ProbeNote"         : "How far in from the rim the two probes look, in the paint's millimetres, never under these pixels"
+        },
+
+        "PainterlyNPR__ProfileLines__Config__Classes"   : {
+            "Note"       : "Material classes the geometry need not be asked about. Always: a plant's silhouette bounds its wash, whatever its normals do, since a flat leaf's are square on (a wall's are too). Never: what keeps its wet looseness at every edge.",
+            "Always"     : ["Foliage", "Lavender", "Hedge", "Conifer", "ClippedBox", "Bark"],
+            "AlwaysNote" : "Plants with a line of their own round them, and stems: their wash is held to it",
+            "Never"      : ["Sky", "Lawn", "Grass", "TreeFoliage", "MidTrees", "DistantTrees", "Water", "OliveFoliage", "Lilac", "DarkLeaf", "DeepLeaf", "SapLeaf"],
+            "NeverNote"  : "A tree's canopy runs wet into what is behind it and leaves no white: the Bleed is its looseness. And the loose leaves and flowers are shapes of wash with no line to hold them to: held, they come out as perfect balls. Their recipes' Withdraw below 0 takes the white from round them instead"
+        },
+
+        "PainterlyNPR__ProfileLines__Config__Trace"     : {
+            "Note"          : "The rim traced into a pen stroke: a line with a true vector path through the same pen as every other, never pixels laid on the picture. Only where no line is drawn already, and never on a plant: plants are drawn by grammar (manifest section 07), their lines their own.",
+            "GapMm"         : 0.5,
+            "GapMmNote"     : "A rim this broken is still one line",
+            "SmoothMm"      : 0.45,
+            "SmoothMmNote"  : "The traced line is smoothed along itself over this: pixels have a grid's noise, and a pen does not (L263)",
+            "StraightMm"    : 0.14,
+            "StraightMmNote": "A run this close to its chord is drawn as one straight line: a downpipe's side",
+            "MinMm"         : 1.5,
+            "MinMmNote"     : "A shorter run is a corner of something else",
+            "CoverMm"       : 0.35,
+            "CoverMmNote"   : "A rim within this (to twice this) of a line already drawn from the scene's records is that line",
+            "MaxPen"        : "M018",
+            "MaxPenNote"    : "What it belongs to decides its pen (32), up to this: a round fitting's line in a building's one bucket is a fitting's, never the wall's 0.25 or 0.35 mm",
+            "NoLineCategories" : ["Planting", "Ground"],
+            "NoLineRoles"   : ["Ground"]
+        },
+
+        "PainterlyNPR__ProfileLines__Config__Wash"      : {
+            "Note"         : "What the wash does at a round form's rim. The rim is the bound the wash is held to: no neighbour's white sliver, no fade to paper, and no bleed past it beyond a hand's looseness.",
+            "LooseMm"      : 0.18,
+            "LooseMmNote"  : "How far past the rim a wash may still stray, in the paint's millimetres: exactly on the line reads as a computer's fill",
+            "FeatherMm"    : 0.12,
+            "FeatherMinPx" : 1.2,
+            "FeatherNote"  : "Two washes meeting at a rim go half and half over this, or their edge stairs at the pixels. The paint's millimetres, never under these pixels",
+            "PoolKept"     : 0.25,
+            "PoolKeptNote" : "How much of its edge pooling and coffee ring a wash keeps where it runs up to another at a rim: there is no puddle's edge there, and left whole every outline carries a dark halo",
+            "PaperMm"      : [0.24, 0.16],
+            "PaperMmNote"  : "The paper a hand leaves at a rim, at its widest, in the paint's millimetres: on the side the sun is on (the form's own wash, a third of it the wash beside), and in the gaps that open anywhere round it. Adam: 'add a little, but not uniform'. Wash: ... paper left multiplies them",
+            "ReachPx"      : 2,
+            "ReachPxNote"  : "How far beyond the looseness a wash's edge looks for the rim it is held by",
+            "EdgeSeekMm"   : 2,
+            "EdgeSeekMmNote": "Further from its edge than this a wash does not ask: nothing it does reaches so far"
+        }
+    }
+}

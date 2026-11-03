@@ -1,0 +1,138 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - ZOOM AND FOLDS
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__ZoomAndFolds__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - ZoomAndFolds
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The camera's zoom under the sheet, and the panel and the render graph folding away
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: ZOOM BAR, FOLDS.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * ZOOM BAR | The Camera's Zoom, Under the Sheet
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__ZoomBar {
+        display                            :  inline-flex;
+        align-items                        :  center;
+        gap                                :  4px;
+        flex                               :  0 0 auto;
+        white-space                        :  nowrap;
+    }
+
+    /* Fingers need bigger targets than a mouse */
+    @media (pointer: coarse) {
+        .PainterlyNPR__ZoomBar .PainterlyNPR__Button {
+            min-width                      :  38px;
+            min-height                     :  34px;
+            font-size                      :  16px;
+        }
+    }
+
+    .PainterlyNPR__ZoomBar output {
+        min-width                          :  3.4em;
+        text-align                         :  center;
+        font-variant-numeric               :  tabular-nums;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * FOLDS | The Panel and the Render Graph Fold Away - more room for the sheet
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__FoldButton {
+        flex                               :  none;
+        padding                            :  4px 9px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  12px;
+        line-height                        :  1;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__FoldButton:hover {
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__Graph__Head .PainterlyNPR__FoldButton--graph {
+        order                              :  3;
+        margin-left                        :  auto;
+        align-self                         :  center;
+    }
+
+    /* The panel folded: a slim strip with the way back */
+    .PainterlyNPR__Unfold {
+        display                            :  none;
+        border                             :  0;
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  12px;
+        font-weight                        :  600;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__Unfold:hover {
+        color                              :  var(--PainterlyNPR_Ink);
+        background                         :  rgba(231, 225, 214, 0.45);
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Main {
+        grid-template-columns              :  minmax(0, 1fr) 34px;
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Panel > :not(.PainterlyNPR__Unfold) {
+        display                            :  none;
+    }
+
+    .PainterlyNPR--foldPanel .PainterlyNPR__Unfold--panel {
+        display                            :  block;
+        flex                               :  1 1 auto;
+        padding                            :  12px 0;
+        writing-mode                       :  vertical-rl;
+        text-orientation                   :  mixed;
+    }
+
+    /* The graph folded: its title bar only */
+    .PainterlyNPR--foldGraph .PainterlyNPR__Graph {
+        padding-top                        :  6px;
+        padding-bottom                     :  6px;
+    }
+
+    .PainterlyNPR--foldGraph .PainterlyNPR__Graph__Head {
+        margin-bottom                      :  0;
+    }
+
+    .PainterlyNPR--foldGraph .PainterlyNPR__Graph__Lede,
+    .PainterlyNPR--foldGraph .PainterlyNPR__Graph__Nodes,
+    .PainterlyNPR--foldGraph .PainterlyNPR__ViewChips {
+        display                            :  none;
+    }
+
+    /* One column: the folded panel is a bar under the sheet, not a strip beside it */
+    @media (max-width: 1100px) {
+        .PainterlyNPR--foldPanel .PainterlyNPR__Main {
+            grid-template-columns          :  minmax(0, 1fr);
+        }
+
+        .PainterlyNPR--foldPanel .PainterlyNPR__Unfold--panel {
+            writing-mode                   :  horizontal-tb;
+            padding                        :  10px 0;
+        }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

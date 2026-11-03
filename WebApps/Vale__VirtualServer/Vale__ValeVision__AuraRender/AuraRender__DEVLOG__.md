@@ -28,7 +28,7 @@
 
 **Tested** on the files only: the script's `--check` (v0.8.40 at 2214cd5, 552 files untouched, the repository the same as the newest copy), and every file the pin's index and register name is in the pin, 50 assets all stamped 0.8.40, 37 classes. Not opened in AURA, in a browser or signed in. `--check` also reports the old pin v0.8.17 as 288 files changed or missing, as it did before this sync; that is not this work.
 
-**Not pushed:** Adam's word was commit and sync. The server still has this folder at 243da99.
+**Live:** this folder on the server since 17:02:00 UTC, stamp 20261103-170158, at Adam's words, "ensure all pushed to both vale server and GH" and "Yes, tell it", by a push of the folder alone (`--scope`, +0 ~486 -0, of which 113 differ by content), so the v0.8.41 sync then open in the tree stayed out. 617a8e44 is on GitHub, by a push the session that wrote this did not make. Checked signed out: the live import map names v0.8.40, its lock says v0.8.40 at 2214cd5, `WorkingTreeClean` true, the sampled cards, index, register, shader and model equal the pin's, and the live index lists 50 assets all stamped 0.8.40. A compare afterwards lists nothing of this folder. The worker's token on the server is still 2026-11-03-16 and goes up with the next push of `aura`; until then a browser holding the old pin refreshes the changed files by the deploy stamp's list (`ValeShared__AppUpdate__`), by its design, not tested here. Not yet looked at signed in.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40, Two Topiary Bushes in a Border (No App Version of Its Own)
 

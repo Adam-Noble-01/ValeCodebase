@@ -1,0 +1,25 @@
+{
+    "PainterlyNPR__SkyCloudsHost__Config" : {
+        "PainterlyNPR__SkyCloudsHost__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - The Clouds in the Render Graph - the Masses",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How the Kuwahara filter (57) simplifies the volumetric clouds' buffer into masses before the wash paints them.",
+            "ReadBy"        : "02__Src__AppModules/60__Atmos__SkyAndClouds/PainterlyNPR__SkyClouds__Host__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__SkyCloudsHost__Config__Masses" : {
+            "Masses"      : {
+                "Scale"         : 0.25,
+                "Passes"        : 3,
+                "Sharpness"     : 8,
+                "TensorSigmaMm" : 1.6,
+                "Variance"      : [1, 1, 1, 0]
+            },
+            "MassesNotes" : {
+                "Scale"    : "of the sheet, while simplified; the module's own half otherwise",
+                "Variance" : "coverage, light and height decide; distance only follows"
+            }
+        }
+    }
+}

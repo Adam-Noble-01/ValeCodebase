@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.33, a Ball Standard in a Red Bowl (No App Version of Its Own)
+
+**Asked by Adam:** "Load your NPR Skill / Build this potted plant asset", with an orangery's pots ringed in red, then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.33 at 45855d4, pinned as `01__CoreLib__PainterlyNPR__v0.8.33` from the commit (453 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.32, the worker's cache version 2026-11-03-09, the README's engine row.
+
+**What it brings AURA:** a new asset in the Assets drawer, Ball standard in a red bowl (`NPR_07_2031`): a ball clipped smooth, a corkscrew round a clear stem, a low red bowl with its lit side left white, and underplanting of olive washes, dark leaves and lilac with strap leaves in pen over them. Five new material classes in the Materials tab: Red glazed pot, Clipped box, Olive foliage, Lilac flowers and Dark leaves. AURA draws them through the engine alone: the classes, the wash's paper-left channel and the pen come with the pin.
+
+**No look change on anything already drawn.** At the engine, the cottage in two views and with PottedStandard plops hash the same before and after (its DEVLOG).
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: its v0.8.34 potted plants. This tree's versions 0.5.19 and 0.5.20, also uncommitted, are not in this commit.
+
+**Checked here (no browser):** the sync's `--check`; the two pins compared file by file, Init among the unchanged; all 44 engine files AURA's code references resolve in the new pin. The asset was drawn and looked at in headless Edge at the engine. Not run in a browser through AURA (the local server is down): Adam tests it. Not pushed.
+
 ## Version 0.5.18, 03-Nov-2026: A Cut Elevation Is Painted Past Its Cut, Then Clipped
 
 **Asked by Adam**, with the Thrower sheet and the gaps ringed in red: "On Aura the bottom swish and ground plane elevation viewport should define the range the paintins linework and watercolor wash run down to [...] If a viewport cut and swoosh is enabled it should overun the pained area and then clip it back so you dont end up with voids like this".

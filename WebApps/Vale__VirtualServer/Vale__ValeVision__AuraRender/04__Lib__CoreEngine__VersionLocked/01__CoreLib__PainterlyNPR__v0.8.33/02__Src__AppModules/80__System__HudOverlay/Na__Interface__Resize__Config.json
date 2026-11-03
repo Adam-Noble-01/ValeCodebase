@@ -1,0 +1,39 @@
+{
+    "PainterlyNPR__InterfaceResize__Config" : {
+        "PainterlyNPR__InterfaceResize__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - Column Resizing",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The drag handles between the sheet and the columns beside it: how wide each may go, how far a key moves it, and where the widths are remembered.",
+            "ReadBy"        : "02__Src__AppModules/80__System__HudOverlay/PainterlyNPR__Interface__Resize__.mjs",
+            "Source"        : "Adam, 30-Oct-2026: 'Add drag resizing' (v0.7.3)"
+        },
+
+        "PainterlyNPR__InterfaceResize__Config__Columns" : {
+            "Drawer" : {
+                "Variable"     : "--PainterlyNPR_DrawerWidth",
+                "Min"          : 220,
+                "Max"          : 640,
+                "Side"         : "Left",
+                "Label"        : "Resize the asset library",
+                "Note"         : "The Assets drawer, left of the sheet; its handle shows only while the drawer is out"
+            },
+            "Panel"  : {
+                "Variable"     : "--PainterlyNPR_PanelWidth",
+                "Min"          : 280,
+                "Max"          : 680,
+                "Side"         : "Right",
+                "Label"        : "Resize the controls",
+                "Note"         : "The controls and the meta strip over them, right of the sheet; its handle hides while the panel is folded"
+            }
+        },
+
+        "PainterlyNPR__InterfaceResize__Config__Limits"  : {
+            "StageMin"     : 420,
+            "StageMinNote" : "The sheet's column never goes narrower than this by a drag: a column stops growing instead",
+            "KeyStep"      : 16,
+            "KeyStepNote"  : "Pixels an arrow key moves a focused handle; Shift moves it four times as far. Home puts the column back to its default width, as a double-click does",
+            "Store"        : "PainterlyNPR.App.ColumnWidths",
+            "StoreNote"    : "Remembered per viewer, as the folds are"
+        }
+    }
+}

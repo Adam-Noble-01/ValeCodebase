@@ -1,0 +1,32 @@
+{
+    "PainterlyNPR__InkLayer__Config" : {
+        "PainterlyNPR__InkLayer__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Inks",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The ink families: never pure black.",
+            "ReadBy"        : "02__Src__AppModules/34__Stroke__InkCompositing/PainterlyNPR__InkLayer__InkFamilies__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__InkLayer__Config__Inks" : {
+            "Families" : {
+                "Sepia"      : {
+                    "Label"  : "Sepia",
+                    "Colour" : "#4B3A2C"
+                },
+                "WarmGrey"   : {
+                    "Label"  : "Warm grey",
+                    "Colour" : "#413C37"
+                },
+                "PaynesGrey" : {
+                    "Label"  : "Payne's grey",
+                    "Colour" : "#2E3540"
+                },
+                "SoftBlack"  : {
+                    "Label"  : "Soft black",
+                    "Colour" : "#272523"
+                }
+            }
+        }
+    }
+}

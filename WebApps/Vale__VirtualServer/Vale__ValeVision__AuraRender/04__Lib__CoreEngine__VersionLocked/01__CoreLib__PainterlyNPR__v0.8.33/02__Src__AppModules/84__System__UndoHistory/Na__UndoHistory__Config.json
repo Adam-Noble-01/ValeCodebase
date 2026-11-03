@@ -1,0 +1,83 @@
+{
+    "PainterlyNPR__UndoHistory__Config" : {
+        "PainterlyNPR__UndoHistory__Config__Meta"    : {
+            "ConfigLabel"   : "PainterlyNPR - Undo and Redo",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How many steps are kept, when an edit counts as finished, the keys, the buttons' words and icons. Adam, 30-Oct-2026: 'Add a comprehensive user undo / redo caching system ... store 100 undos and 100 redos then add control +z and control + y as keyboard mappings'.",
+            "ReadBy"        : "02__Src__AppModules/84__System__UndoHistory/PainterlyNPR__Interface__UndoHistory__.mjs",
+            "Source"        : "New in v0.7.4 (30-Oct-2026), after ValeVision 3D's Layout Editor history (Na__LayoutEditor__History__ 1.7.0) and its key map's Edit__ bindings (Na__Hotkeys__DrawingTabs__.json)"
+        },
+
+        "PainterlyNPR__UndoHistory__Config__History" : {
+            "MaxUndo"          : 100,
+            "MaxRedo"          : 100,
+            "MaxNote"          : "Adam, 30-Oct-2026: '100 undos and 100 redos'. The oldest step goes when a 101st is made; a new edit after an undo clears the redos, as everywhere.",
+            "SettleMs"         : 350,
+            "SettleNote"       : "An edit becomes a step once nothing has changed for this long and no pointer button is held: a slider drag, a point dragged on the sheet or a held arrow key is one step, however long it lasted.",
+            "TypingSettleMs"   : 1200,
+            "TypingSettleNote" : "In a text box a pause between words is not the end of the edit: typing is one step until it stops this long, or the box is left.",
+            "CheckMs"          : 1000,
+            "CheckNote"        : "A quiet look for a change no click or key announced (a saved set-up or an opened file that finished loading after its click had settled).",
+            "ChunkMinChars"    : 256,
+            "ChunkNote"        : "Parts of a step this long or longer (as JSON) are stored once and shared by every step that holds them, so 200 steps of a drawing with many points, assets and materials stay small."
+        },
+
+        "PainterlyNPR__UndoHistory__Config__Keys"    : {
+            "Note"             : "The edit keys, in the form of the Layout Editor's key map: each binding an Id, a Label and Enabled; Keys are KeyboardEvent.key values; Modifiers must be exactly those held (Ctrl, Shift, Alt, Meta). Bindings are tried in order and the first enabled match wins. Read anywhere on the page, except while a text box has the keyboard: there the box's own undo works on its words.",
+            "IgnoreWhenTyping" : true,
+            "Bindings"         : [
+                { "Id": "Edit__Undo",      "Label": "Undo the last change",              "Action": "Undo", "Enabled": true, "Keys": ["z", "Z"], "Modifiers": ["Ctrl"] },
+                { "Id": "Edit__Redo",      "Label": "Redo the change just undone",       "Action": "Redo", "Enabled": true, "Keys": ["y", "Y"], "Modifiers": ["Ctrl"] },
+                { "Id": "Edit__RedoShift", "Label": "Redo (Ctrl + Shift + Z)",           "Action": "Redo", "Enabled": true, "Keys": ["z", "Z"], "Modifiers": ["Ctrl", "Shift"] },
+                { "Id": "Edit__UndoCmd",   "Label": "Undo (Cmd + Z, a Mac keyboard)",    "Action": "Undo", "Enabled": true, "Keys": ["z", "Z"], "Modifiers": ["Meta"] },
+                { "Id": "Edit__RedoCmd",   "Label": "Redo (Cmd + Shift + Z, a Mac keyboard)", "Action": "Redo", "Enabled": true, "Keys": ["z", "Z"], "Modifiers": ["Meta", "Shift"] }
+            ],
+            "RepeatMs"         : 90,
+            "RepeatNote"       : "A held Ctrl + Z steps back once each this many milliseconds at most, so a long hold never piles up rebuilds."
+        },
+
+        "PainterlyNPR__UndoHistory__Config__Labels"  : {
+            "Note"            : "What the buttons' titles call a step: one control's own label under its part of the drawing, else that part, else Several settings. {step}, {name} and {keys} are filled in.",
+            "Undo"            : "Undo: {step} ({keys})",
+            "Redo"            : "Redo: {step} ({keys})",
+            "NothingToUndo"   : "Nothing to undo ({keys})",
+            "NothingToRedo"   : "Nothing to redo ({keys})",
+            "Sections"        : {
+                "Seed"        : "New seed",
+                "Sun"         : "Light",
+                "Discipline"  : "Drawing Discipline",
+                "InkFamily"   : "Ink",
+                "LineWeight"  : "Line weight",
+                "PenPreset"   : "Pen preset",
+                "Pen"         : "Pen",
+                "Wash"        : "Wash",
+                "Sky"         : "Sky",
+                "Indication"  : "Indication",
+                "Kuwahara"    : "Kuwahara filter",
+                "Paper"       : "Paper",
+                "Composition" : "Composition"
+            },
+            "Several"         : "Several settings",
+            "PointAdded"      : "Place an art direction point",
+            "PointRemoved"    : "Remove an art direction point",
+            "PointChanged"    : "Change an art direction point",
+            "AssetAdded"      : "Place the {name}",
+            "AssetRemoved"    : "Remove the {name}",
+            "AssetMoved"      : "Move the {name}",
+            "AssetTurned"     : "Turn the {name}",
+            "AssetResized"    : "Resize the {name}",
+            "AssetSwapped"    : "Swap the {name}",
+            "AssetReshaped"   : "Give the {name} a new shape",
+            "AssetChanged"    : "Change the {name}",
+            "Assets"          : "Placed assets",
+            "MaterialAdded"   : "Apply a material",
+            "MaterialRemoved" : "Reset a material",
+            "MaterialChanged" : "Change a material"
+        },
+
+        "PainterlyNPR__UndoHistory__Config__Icons"   : {
+            "Undo" : "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9 13.5L4.5 9 9 4.5M4.5 9H14a5.5 5.5 0 0 1 0 11h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+            "Redo" : "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M15 13.5L19.5 9 15 4.5M19.5 9H10a5.5 5.5 0 0 0 0 11h3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
+        }
+    }
+}

@@ -21,7 +21,9 @@
 
 **Worth knowing:** `ApplySettings` merges `Indication` by key, so a drawing set saved before this keeps whatever hands are in State rather than going back to the starting ones. Only a session that has moved those sliders would notice.
 
-**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository at e7c5799; all 64 engine references in AURA's modules resolve in the new pin, and their 89 named imports exist; `node --check` on the two edited modules. The engine itself was driven in headless Edge on Thrower before it was committed (its DEVLOG). Not run in AURA's own browser: Adam tests it. Committed at Adam's word, "Commit and sync"; not pushed.
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository at e7c5799; all 64 engine references in AURA's modules resolve in the new pin, and their 89 named imports exist; `node --check` on the two edited modules. The engine itself was driven in headless Edge on Thrower before it was committed (its DEVLOG). Not run in AURA's own browser: Adam tests it. Committed at Adam's word, "Commit and sync".
+
+**Live** since the `aura` push of 03-Nov-2026 11:22 UTC, at Adam's word: "Push all" (1,093 files new, 9 replaced, none deleted, no API change so no restart). The push also carried the v0.8.23 and v0.8.25 pins and version 0.5.14, which had not gone out. The engine commit is on GitHub, so SketchUp's NPR windows take it at their next Reload Remote Plugin Files.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.25, Stonework (No App Version of Its Own)
 

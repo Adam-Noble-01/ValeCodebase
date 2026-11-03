@@ -331,6 +331,12 @@
 
     .aura-scenes__tab {
         white-space                        : nowrap;
+        touch-action                       : none;                         /* <-- A drag along the row is the tab's */
+    }
+
+    .aura-scenes__tab.is-dragging {
+        cursor                             : grabbing;
+        opacity                            : 0.65;
     }
 
     .aura-scenes__add {

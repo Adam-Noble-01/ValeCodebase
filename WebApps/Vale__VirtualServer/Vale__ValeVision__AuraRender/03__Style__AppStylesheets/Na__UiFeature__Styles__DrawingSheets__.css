@@ -196,6 +196,27 @@
  * REGION | Selection
  * ----------------------------------------------------------------------------- */
 
+    .aura-vp--locked {
+        cursor                             : default;
+    }
+
+    .aura-vp__lock-disc {
+        fill                               : #ffffff;
+        stroke                             : var(--Aura_Select);
+        stroke-width                       : 1.2;
+    }
+
+    .aura-vp__lock-bow {
+        fill                               : none;
+        stroke                             : var(--Aura_Select);
+        stroke-width                       : 1.6;
+        stroke-linecap                     : round;
+    }
+
+    .aura-vp__lock-body {
+        fill                               : var(--Aura_Select);
+    }
+
     .aura-select-frame {
         fill                               : none;
         stroke                             : var(--Aura_Select);

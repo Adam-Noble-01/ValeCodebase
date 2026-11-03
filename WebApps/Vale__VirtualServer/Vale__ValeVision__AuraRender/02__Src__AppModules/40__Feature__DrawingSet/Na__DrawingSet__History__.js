@@ -49,6 +49,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.0.3 (AURA 0.5.25)
+// - Dragging a scene's tab is named "Change the order of the scenes".
+//
+// 03-Nov-2026 - Version 1.0.2 (AURA 0.5.24)
+// - Locking a viewport is named "Lock a view", and unlocking "Unlock a view".
+//
 // 30-Oct-2026 - Version 1.0.1 (AURA 0.5.13)
 // - A change to a viewport's ground cut is named "Change the ground cut".
 //
@@ -91,6 +97,7 @@
         TitleBlock   : 'Change the title block',
         Engine       : 'Change the parameters',
         Points       : 'Change the art direction points',
+        SceneOrder   : 'Change the order of the scenes',
         Other        : 'Change the drawing set',
         Several      : 'Several changes'
     };
@@ -99,6 +106,7 @@
         removed : 'Delete a view',
         changed : 'Change a view',
         detail  : (was, now) => {
+            if ((was.Viewport__Locked === true) !== (now.Viewport__Locked === true)) return now.Viewport__Locked === true ? 'Lock a view' : 'Unlock a view';
             const a = was.Viewport__FrameMm || {}, b = now.Viewport__FrameMm || {};
             if (a.WidthMm !== b.WidthMm || a.HeightMm !== b.HeightMm) return 'Resize a view';
             if (a.X !== b.X || a.Y !== b.Y) return 'Move a view';
@@ -219,6 +227,7 @@
         return {
             sheets : sheets,
             saved  : new Map((snapshot.AuraDrawingSet__SavedViews || []).map((v) => [v.View__Id, text(v)])),
+            order  : (snapshot.AuraDrawingSet__SavedViews || []).map((v) => v.View__Id),
             engine : text(snapshot.AuraDrawingSet__Engine),
             points : text(snapshot.AuraDrawingSet__WorkingPoints || []),
             rest   : text(rest)
@@ -259,6 +268,7 @@
             Na__History__Records(was.notes, now.notes, found, Na__History__NOTE_WORDS);
         });
         Na__History__Records(before.saved, after.saved, found, Na__History__SAVED_WORDS);
+        if (before.order.length === after.order.length && before.order.some((id, i) => id !== after.order[i]) && after.order.every((id) => before.saved.has(id))) found.push(W.SceneOrder);
         if (before.engine !== after.engine) found.push(W.Engine);
         if (before.points !== after.points) found.push(W.Points);
         if (before.rest !== after.rest) found.push(W.Other);

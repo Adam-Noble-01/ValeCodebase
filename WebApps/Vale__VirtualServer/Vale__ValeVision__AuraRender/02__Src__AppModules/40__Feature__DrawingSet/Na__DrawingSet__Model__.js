@@ -65,6 +65,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.6.1 (AURA 0.5.24)
+// - Viewport__Locked: true, or absent. A set saved before it opens unlocked.
+//
 // 30-Oct-2026 - Version 1.6.0 (AURA 0.5.9)
 // - The sun is a scene's: View__Sun on every scene (NewScene takes sun),
 //   AuraDrawingSet__Engine.WorkingSun, Na__DrawingSet__CleanSun,
@@ -534,6 +537,7 @@
                         : Na__Format__Clamp(Number(v.Viewport__ScaleDenominator) || Na__DrawingSet__DefaultScale(v.Viewport__Kind), 1, 5000);
                     v.Viewport__PlanKind = v.Viewport__Kind === 'Plan' ? (v.Viewport__PlanKind || 'RoofPlan') : null;
                     v.Viewport__PanM = Na__DrawingSet__Point3(v.Viewport__PanM);
+                    if (v.Viewport__Locked !== true) delete v.Viewport__Locked;
                     ['Viewport__Side', 'Viewport__CentreM', 'Viewport__CameraSource', 'Viewport__Points', 'Viewport__View'].forEach((k) => { delete v[k]; });   // <-- Now the scene's
                     return v;
                 });

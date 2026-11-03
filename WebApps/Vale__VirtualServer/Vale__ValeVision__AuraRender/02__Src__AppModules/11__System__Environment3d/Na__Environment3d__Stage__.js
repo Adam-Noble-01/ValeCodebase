@@ -57,6 +57,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.3.0 (AURA 0.5.25)
+// - Adam: "Make it so you can drag tabs to rearrange order. make first tab the
+//   view loaded when the project is loaded". A scene's tab drags along the row
+//   (WireTabDrag): the order is the drawing set's, saved and undone with it. The
+//   project opens on the first tab's scene.
+//
 // 30-Oct-2026 - Version 2.2.0 (AURA 0.5.9)
 // - Each scene keeps its own sun (Na__Environment3d__SceneSun__, mounted at
 //   the head of the Parameters before the Art Direction section opens the
@@ -161,11 +167,14 @@
 // REGION | Module State
 // -----------------------------------------------------------------------------
 
+    const Na__Environment3d__TAB_DRAG_PX = 5;                                    // <-- Less than this and a press on a scene's tab is a click
+
     const Na__Environment3d__State = {
         root       : null,
         canvas     : null,
         presetBar  : null,                       // <-- The toolbar
         tabs       : null,                       // <-- The scene tabs in it
+        tabDragged : false,                      // <-- The press now ending moved a scene's tab: its click does not open it
         tabsKey    : '',                         // <-- The tabs as last drawn: redrawn only when a scene comes, goes or is renamed
         renaming   : false,                      // <-- A tab's name is being typed: the tabs wait
         menu       : null,                       // <-- The right-click menu, while it is open
@@ -260,9 +269,13 @@
                 const kind = scene.View__Kind === 'Elevation' ? 'an elevation, to scale' : scene.View__Kind === 'Plan' ? 'the roof plan, to scale' : 'a 3D view';
                 const tab = Na__Dom__El('button', 'aura-segmented__item aura-scenes__tab', scene.View__Name, {
                     type: 'button', 'aria-pressed': 'false', dataset: { scene: scene.View__Id },
-                    title: `${scene.View__Name}: ${kind}. Right-click to rename, update, duplicate or delete it`
+                    title: `${scene.View__Name}: ${kind}. Drag to change the order. Right-click to rename, update, duplicate or delete it`
                 });
-                tab.addEventListener('click', () => Na__Environment3d__OpenSceneTab(scene.View__Id));
+                tab.addEventListener('click', () => {
+                    if (S.tabDragged) { S.tabDragged = false; return; }          // <-- The release of a drag is not a click
+                    Na__Environment3d__OpenSceneTab(scene.View__Id);
+                });
+                Na__Environment3d__WireTabDrag(tab, list);
                 tab.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     Na__Environment3d__ShowMenu(scene.View__Id, tab, e.clientX, e.clientY);
@@ -275,6 +288,63 @@
             S.tabs.appendChild(add);
         }
         Na__Environment3d__MarkScene();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Drag a Tab Along the Row: the tabs make way as it goes, the order kept on release
+    // ------------------------------------------------------------
+    // A press that travels less than TAB_DRAG_PX is still a click, so a tab opens as
+    // ever. The tab moves among the others in the page while it is dragged; nothing
+    // in the drawing set changes until it is let go, in one saved and undoable step.
+    // ------------------------------------------------------------
+    function Na__Environment3d__WireTabDrag(tab, list) {
+        const S = Na__Environment3d__State;
+        tab.addEventListener('pointerdown', (e) => {
+            S.tabDragged = false;
+            if (e.button !== 0) return;
+            const startX = e.clientX, startY = e.clientY;
+            let dragging = false;
+            const move = (m) => {
+                if (!dragging) {
+                    if (Math.hypot(m.clientX - startX, m.clientY - startY) < Na__Environment3d__TAB_DRAG_PX) return;
+                    dragging = true;
+                    S.tabDragged = true;
+                    tab.classList.add('is-dragging');
+                    tab.setPointerCapture(e.pointerId);
+                }
+                const others = [...list.children].filter((el) => el !== tab);
+                const next = others.find((el) => { const r = el.getBoundingClientRect(); return m.clientX < r.left + r.width / 2; }) || null;
+                if (tab.nextElementSibling !== next) list.insertBefore(tab, next);
+            };
+            const finish = (keep) => {
+                tab.removeEventListener('pointermove', move);
+                tab.removeEventListener('pointerup', up);
+                tab.removeEventListener('pointercancel', cancel);
+                if (!dragging) return;
+                tab.classList.remove('is-dragging');
+                if (keep) Na__Environment3d__ReorderScenes([...list.children].map((el) => el.dataset.scene));
+                else { S.tabsKey = ''; Na__Environment3d__RenderTabs(); }        // <-- Cancelled: drawn again in the order kept
+                if (!tab.isConnected) S.tabDragged = false;                      // <-- Drawn again: no click will come to this tab
+            };
+            const up = () => finish(true);
+            const cancel = () => finish(false);
+            tab.addEventListener('pointermove', move);
+            tab.addEventListener('pointerup', up);
+            tab.addEventListener('pointercancel', cancel);
+        });
+    }
+
+    // Put the Scenes in This Order (their ids): one saved step, when it is a new order
+    function Na__Environment3d__ReorderScenes(ids) {
+        const doc = Na__AppState__Data.doc;
+        const scenes = doc ? doc.AuraDrawingSet__SavedViews || [] : [];
+        if (ids.length !== scenes.length || ids.every((id, i) => scenes[i].View__Id === id)) return;
+        const byId = new Map(scenes.map((v) => [v.View__Id, v]));
+        if (ids.some((id) => !byId.has(id))) return;                             // <-- The list changed under the drag: leave the drawing set as it is
+        doc.AuraDrawingSet__SavedViews = ids.map((id) => byId.get(id));
+        Na__AppState__Touch('views');
+        Na__Environment3d__RenderTabs();
     }
     // ------------------------------------------------------------
 
@@ -677,6 +747,8 @@
         }
 
         Na__Environment3d__RenderTabs();
+        const first = (Na__AppState__Data.doc.AuraDrawingSet__SavedViews || [])[0];
+        if (first) Na__Environment3d__OpenSceneTab(first.View__Id);              // <-- The project opens on its first tab (0.5.25): drag a scene there to make it the one
         Na__AppState__On('saved', () => Na__Environment3d__RenderTabs());
         Na__AppState__On('changed', (detail) => {                               // <-- A scene added, renamed or removed (here or from a sheet)
             Na__Environment3d__RenderTabs();

@@ -116,7 +116,8 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
 - **Scenes** (0.5.0, SketchUp to LayOut): the 3D Environment's toolbar tabs, after the Saved views icon. A scene is
   what a viewport looks at (a 3D camera, or an elevation or the roof plan square and to scale) with its art direction
   points; every viewport on a sheet shows one, and all follow it. Click a tab to open it (an elevation keeps its
-  orientation: pan and zoom only); **+ Add Scene** keeps the camera as a new one; right-click a tab to Rename, Update
+  orientation: pan and zoom only); **drag a tab** to change the order, and the project opens on the first; **+ Add Scene**
+  keeps the camera as a new one; right-click a tab to Rename, Update
   from camera, Duplicate or Delete it. A sheet's "Add a view" lists the scenes first; a viewport's panel picks its
   scene and keeps its own scale, pen, frame, title and pan.
 - **Cameras** (0.5.6, the 3D Environment's third section): the **lens** is ValeVision 3D's, a full-frame focal length

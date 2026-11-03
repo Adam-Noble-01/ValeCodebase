@@ -34,6 +34,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.2.0 (AURA 0.5.24)
+// - Every viewport has this menu: Lock or Unlock viewport (Na__Viewports__Lock__),
+//   and on an elevation its ground cut below that.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.5.13)
 // - Initial build.
 //
@@ -50,6 +54,7 @@
     import { Na__EngineHost__GroundCut, Na__EngineHost__GroundCutLoad, Na__EngineHost__OpenMenu } from '../10__System__EngineHost/Na__EngineHost__GroundCut__.js';
     import { Na__Surface__RedrawLayer } from '../20__System__DrawingSheets/Na__DrawingSheets__Surface__.js';
     import { Na__DrawingSet__Viewport } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
+    import { Na__ViewportLock__MenuItem } from './Na__Viewports__Lock__.js';
     import {
         Na__GroundCut__Applies, Na__GroundCut__Of, Na__GroundCut__Write, Na__GroundCut__Cut,
         Na__GroundCut__Preview, Na__GroundCut__EndPreview, Na__GroundCut__Changed
@@ -142,13 +147,13 @@
         const under = (el) => (el && el.closest ? el.closest('[data-hit="viewport"]') : null);
         const hit = under(event.target) || under(document.elementFromPoint(event.clientX, event.clientY));   // <-- The desk may have the event if it held the pointer for a pan
         const viewport = hit ? Na__GroundCutMenu__Find(hit.getAttribute('data-id')) : null;
-        if (!Na__GroundCut__Applies(viewport)) return false;
+        if (!viewport) return false;
         Na__AppState__Select('viewport', viewport.Viewport__Id);
         const x = event.clientX, y = event.clientY;
         const S = Na__GroundCutMenu__State;
         const history = S.history ? Promise.resolve(S.history)                   // <-- Fetched on the first menu, so this module adds nothing to the app's load order
             : import('../40__Feature__DrawingSet/Na__DrawingSet__History__.js').then((m) => { S.history = m; return m; }).catch(() => null);
-        Promise.all([Na__EngineHost__GroundCutLoad(), history]).then(() => Na__EngineHost__OpenMenu(Na__GroundCutMenu__Items(viewport, x, y), x, y, 'Ground cut-off'));
+        Promise.all([Na__EngineHost__GroundCutLoad(), history]).then(() => Na__EngineHost__OpenMenu(Na__GroundCutMenu__Items(viewport, x, y), x, y, 'Viewport'));
         return true;
     }
     // ------------------------------------------------------------
@@ -157,14 +162,22 @@
     // FUNCTION | The Menu's Items, in the Engine's Form
     // ------------------------------------------------------------
     function Na__GroundCutMenu__Items(viewport, x, y) {
+        const items = [Na__ViewportLock__MenuItem(viewport)];                    // <-- Every viewport's (0.5.24); the ground cut is an elevation's
+        if (!Na__GroundCut__Applies(viewport)) {
+            items.push(...Na__GroundCutMenu__HistoryItems());
+            return items;
+        }
+        items.push({ Separator: true }, { Heading: 'Ground cut-off' });
         const engine = Na__EngineHost__GroundCut();
-        if (!engine) return [{ Label: 'The ground cut needs PainterlyNPR v0.8.13 or later (sync the engine)', Disabled: true }];
+        if (!engine) {
+            items.push({ Label: 'The ground cut needs PainterlyNPR v0.8.13 or later (sync the engine)', Disabled: true });
+            return items;
+        }
         const E = engine.Settings;
         const rec = Na__GroundCut__Of(viewport);
         const s = E.PainterlyNPR__GroundCut__Resolve(rec.Settings, viewport.Viewport__Id);
         const cut = Na__GroundCut__Cut(viewport, Na__AppState__Data.doc);
         const change = (mutate) => () => Na__GroundCutMenu__Change(viewport, mutate, false);
-        const items = [];
         if (!cut) items.push({ Heading: rec.Mode === 'Off' ? 'Off for this viewport' : 'Drag the bottom edge up past the ground to cut it' });
         E.PainterlyNPR__GroundCut__Kinds().forEach((k) => items.push({
             Label: k.Label, Title: k.Hint, Checked: k.Key === s.Kind, Action: change((st) => E.PainterlyNPR__GroundCut__WithKind(st, k.Key))

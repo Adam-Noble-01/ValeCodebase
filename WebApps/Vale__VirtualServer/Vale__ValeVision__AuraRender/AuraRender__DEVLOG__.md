@@ -1,5 +1,57 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.25, 03-Nov-2026: Scene Tabs Drag, and the First One Opens
+
+**Asked by Adam**, with the 3D Environment's scene tabs ringed in red: "Make it so you can drag tabs to rearrange order. make first tab the view loaded when the project is loaded".
+
+**What changed** (`Na__Environment3d__Stage__.js` 2.3.0, AURA's own):
+
+- **Drag a scene's tab** along the row and the others make way. A press that travels less than 5 px is still a click. The order is the drawing set's (`AuraDrawingSet__SavedViews`), saved and one undo step, "Change the order of the scenes" (`Na__DrawingSet__History__.js` 1.0.3). A sheet's Add a view and a viewport's scene list follow it.
+- **The project opens on the first tab's scene:** its camera, points and sun, instead of the engine's default view. Opening it marks nothing as changed. With no scenes, the default view as before.
+
+**Read from Adam's ring:** this is the row of scene tabs only. The top row (3D Environment and the sheets) does not drag, and a project's address can still open it on a sheet, whose tab stays in charge of what shows.
+
+**Checked:** `node --check` on the changed modules and the config parsed. Not run in a browser: Adam tests it. Committed at Adam's word, "Commit and push".
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Drag a scene's tab along the row: the others make way, and it stays where it is let go.
+- [ ] A click still opens a tab, and a drag does not open the one dragged.
+- [ ] Undo puts the order back, as "Change the order of the scenes".
+- [ ] Reload the page: the order is kept, and the first tab's scene is open and lit, with its own points and sun.
+- [ ] An elevation dragged first opens square and to scale.
+- [ ] Opening the project alone leaves the header at Saved, with nothing to undo.
+- [ ] A sheet's Add a view lists the scenes in the new order.
+
+**Live:** since the `aura` push of 03-Nov-2026 13:48 UTC (stamp 20261103-134841; 10 files), which was not this session's. Adam then said "Commit and push", and a compare found nothing left to send. No API change, so no restart. Checked on the live site: version 0.5.25, with this change's code. The look is Adam's to check.
+
+## Version 0.5.24, 03-Nov-2026: Lock a Viewport in Place
+
+**Asked by Adam:** "Add right click lock viewport on the sheets to stop them being able to be moved once user places where they need. toggle lock / unlock".
+
+**What it does** (`Na__Viewports__Lock__.js` 1.0.0, new; AURA's own, so nothing in the engine):
+
+- **Right-click any viewport:** Lock viewport, or Unlock viewport once it is locked. Plans and 3D views had no menu until now, so every viewport has one, its title now Viewport; an elevation's ground cut sits below the lock under its own heading (`Na__Viewports__GroundCutMenu__.js` 1.2.0). The Viewport panel has the same switch.
+- **While locked** it cannot be dragged, resized (no handles), nudged with the arrows, panned with Alt, re-centred, given a new width or height, or deleted, and a typed length has no offer on it (`Na__Viewports__Editor__.js` 2.5.0, `Na__Viewports__Move__.js` 1.1.1). A padlock in its corner replaces the handles while it is selected, and a drag or a nudge says why nothing moved.
+- **Still free:** selecting it, and its scene, scale, pen, title, ground cut settings and art direction points. Changing the scale still changes how big the drawing is inside the frame.
+- **Kept with the viewport** (`Viewport__Locked`; `Na__DrawingSet__Model__.js` 1.6.1): saved with the drawing set, and one undo step, named Lock a view or Unlock a view (`Na__DrawingSet__History__.js` 1.0.2).
+
+**Beyond what was asked, for Adam to overrule:** resizing, Alt-panning, re-centring and deleting are locked as well as moving, since any of them would disturb a placed viewport.
+
+**Checked:** `node --check` on the changed modules and the config parsed. Not run in a browser: Adam tests it. Committed at Adam's word, "Commit and push".
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Right-click an elevation: Lock viewport is first, then the ground cut's rows. Right-click a plan and a 3D view: Lock viewport, Undo and Redo.
+- [ ] Lock it: the handles go and a padlock shows at the frame's top left. Drag it and press an arrow: it stays, and a message says it is locked.
+- [ ] Delete key and the panel's Delete button: it stays. Width, Height and Back to the scene's centre are greyed out.
+- [ ] Right-click again: Unlock viewport. It moves and resizes as before.
+- [ ] Undo and Redo step through the lock, and the panel's box follows. Reload the page: the lock is still on.
+- [ ] Its ground cut and art direction points still change while it is locked.
+- [ ] The padlock does not print on a sheet.
+
+**Live:** since the `aura` push of 03-Nov-2026 13:48 UTC (stamp 20261103-134841; 10 files), which was not this session's. Adam then said "Commit and push", and a compare found nothing left to send. No API change, so no restart. Checked on the live site: version 0.5.25, with this change's code. The look is Adam's to check.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.34, Four Potted Plants in Red Bowls (No App Version of Its Own)
 
 **Asked by Adam:** of the plants, "The plants havbent appeared in the asset browser I cant see them", then, asked whether to sync the four potted plants and push AURA live, "Sync and push". The plants themselves: "Load your npr skill / Make these 4x potted plant assets", with a scan of a row along an orangery's foot.

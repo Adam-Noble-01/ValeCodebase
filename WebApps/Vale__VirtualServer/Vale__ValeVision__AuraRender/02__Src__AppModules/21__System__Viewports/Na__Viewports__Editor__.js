@@ -32,6 +32,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.5.0 (AURA 0.5.24)
+// - A locked viewport (Na__Viewports__Lock__) shows a padlock in place of its
+//   handles and takes a press only to be selected. Its panel has the switch.
+//
 // 30-Oct-2026 - Version 2.2.0 (AURA 0.5.13)
 // - The ground cut (Na__Viewports__GroundCut__): an elevation whose bottom
 //   handle is brought up into the drawing ends in the engine's swish of wash,
@@ -104,6 +108,7 @@
     import { Na__SheetPc__OnMenu } from '../20__System__DrawingSheets/Na__DrawingSheets__Controls__Pc__.js';
     import { Na__GroundCut__Decorate, Na__GroundCut__Drag } from './Na__Viewports__GroundCut__.js';
     import { Na__GroundCutMenu__OnContextMenu } from './Na__Viewports__GroundCutMenu__.js';
+    import { Na__ViewportLock__Is, Na__ViewportLock__Toggle, Na__ViewportLock__Refuse } from './Na__Viewports__Lock__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -136,7 +141,7 @@
     function Na__ViewportEditor__DrawOne(parent, defs, viewport, doc) {
         const f = viewport.Viewport__FrameMm;
         const id = viewport.Viewport__Id;
-        const g = Na__Dom__Svg('g', { class: 'aura-vp', 'data-hit': 'viewport', 'data-id': id }, parent);
+        const g = Na__Dom__Svg('g', { class: `aura-vp${Na__ViewportLock__Is(viewport) ? ' aura-vp--locked' : ''}`, 'data-hit': 'viewport', 'data-id': id }, parent);
         const clip = Na__Dom__Svg('clipPath', { id: `aura-clip-${id}` }, defs);
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm }, clip);
         const inner = Na__Dom__Svg('g', { 'clip-path': `url(#aura-clip-${id})`, class: 'aura-vp__inner' }, g);
@@ -225,6 +230,13 @@
         const f = viewport.Viewport__FrameMm;
         const k = 1 / Na__Surface__PxPerMm();                                    // <-- Millimetres per screen pixel: handles keep their size on screen
         Na__Dom__Svg('rect', { x: f.X, y: f.Y, width: f.WidthMm, height: f.HeightMm, class: 'aura-select-frame', 'stroke-width': 1.5 * k, 'pointer-events': 'none' }, group);
+        if (Na__ViewportLock__Is(viewport)) {                                    // <-- No handles: a padlock in the corner says why
+            const lock = Na__Dom__Svg('g', { class: 'aura-vp__lock', transform: `translate(${f.X} ${f.Y}) scale(${k})`, 'pointer-events': 'none' }, group);
+            Na__Dom__Svg('circle', { cx: 0, cy: 0, r: 11, class: 'aura-vp__lock-disc' }, lock);
+            Na__Dom__Svg('path', { d: 'M-3.5 -1 V-3.5 A3.5 3.5 0 0 1 3.5 -3.5 V-1', class: 'aura-vp__lock-bow' }, lock);
+            Na__Dom__Svg('rect', { x: -5.5, y: -1, width: 11, height: 7.5, rx: 1, class: 'aura-vp__lock-body' }, lock);
+            return;
+        }
         const size = 9 * k;
         Na__ViewportEditor__HANDLES.forEach((h) => {
             const x = h.includes('w') ? f.X : h.includes('e') ? f.X + f.WidthMm : f.X + f.WidthMm / 2;
@@ -261,6 +273,8 @@
         Na__AppState__Select('viewport', viewport.Viewport__Id);
         const start = { X: mm.X, Y: mm.Y, frame: Object.assign({}, viewport.Viewport__FrameMm) };
         let moved = false;
+
+        if (Na__ViewportLock__Is(viewport)) return { move() { Na__ViewportLock__Refuse(); }, end() {} };   // <-- A click selects it; a drag only says why nothing moves
 
         if (event.altKey && Na__Views__IsScaled(viewport)) {
             const image = element.querySelector('.aura-vp__picture');
@@ -301,7 +315,7 @@
     function Na__ViewportEditor__OnHandle(event, mm, element) {
         const sheet = Na__ViewportEditor__Sheet();
         const viewport = Na__ViewportEditor__Selected(sheet);
-        if (!viewport) return null;
+        if (!viewport || Na__ViewportLock__Is(viewport)) return null;
         const h = element.getAttribute('data-handle');
         const start = { X: mm.X, Y: mm.Y, frame: Object.assign({}, viewport.Viewport__FrameMm) };
         const min = Na__AppConfig__Get('Viewport__MinFrameMm', 20);
@@ -417,6 +431,7 @@
     function Na__ViewportEditor__Remove(viewport) {
         const sheet = Na__ViewportEditor__Sheet();
         if (!sheet || !viewport) return;
+        if (Na__ViewportLock__Is(viewport)) { Na__ViewportLock__Refuse(); return; }   // <-- The Delete key comes here too
         sheet.Sheet__Viewports = sheet.Sheet__Viewports.filter((v) => v !== viewport);
         Na__AppState__Select(null);
         Na__AppState__Touch('viewport', sheet.Sheet__Id);
@@ -445,6 +460,15 @@
         };
         const kindLabel = { Elevation: 'Elevation (to scale)', Plan: 'Roof plan (to scale)', Perspective: '3D view' }[viewport.Viewport__Kind];
         container.appendChild(Na__Dom__El('p', 'aura-panel__note', kindLabel));          // <-- Its title is the section's
+
+        const locked = Na__ViewportLock__Is(viewport);
+        const lock = Na__Dom__El('input', null, null, { type: 'checkbox' });
+        lock.checked = locked;
+        lock.addEventListener('change', () => Na__ViewportLock__Toggle(viewport));
+        const lockRow = Na__Dom__El('label', 'aura-check');
+        lockRow.appendChild(lock);
+        lockRow.appendChild(Na__Dom__El('span', null, 'Locked: it cannot be moved, resized or deleted'));
+        container.appendChild(lockRow);
 
         const title = Na__Dom__El('input', 'aura-input', null, { type: 'text', maxlength: 80, placeholder: Na__Views__Title(Object.assign({}, viewport, { Viewport__Title: '' }), doc) });
         title.value = viewport.Viewport__Title || '';
@@ -494,6 +518,7 @@
             container.appendChild(Na__Dom__Field('Pen', profile));
             const centre = Na__Dom__IconButton('fit', 'aura-button', 'Back to the scene\'s centre', 'Let this viewport\'s own pan go: the scene\'s centre in the middle of the frame');
             centre.addEventListener('click', () => { viewport.Viewport__PanM = null; changed(true); });
+            centre.disabled = locked;
             container.appendChild(centre);
             const sheet = Na__EngineHost__SheetMm();
             container.appendChild(Na__Dom__El('p', 'aura-panel__hint', `Alt and drag inside the frame to pan this viewport only. A scaled view is at most ${sheet.WidthMm} x ${sheet.HeightMm} mm: the engine draws one sheet that size, its pen widths true on the paper.`));
@@ -504,6 +529,7 @@
             const max = Na__Views__IsScaled(viewport) ? Na__Views__MaxScaledFrame()[key] : 2000;
             const input = Na__Dom__El('input', 'aura-input aura-input--number', null, { type: 'number', min: Na__AppConfig__Get('Viewport__MinFrameMm', 20), max, step: 1 });
             input.value = Math.round(viewport.Viewport__FrameMm[key]);
+            input.disabled = locked;
             input.addEventListener('change', () => {
                 const value = Na__Format__Clamp(Number(input.value) || 0, Na__AppConfig__Get('Viewport__MinFrameMm', 20), max);
                 viewport.Viewport__FrameMm = Na__Paper__ClampFrame(sheet, Object.assign({}, viewport.Viewport__FrameMm, { [key]: value }));
@@ -516,6 +542,7 @@
 
         const remove = Na__Dom__IconButton('trash', 'aura-button aura-button--danger', 'Delete viewport');
         remove.addEventListener('click', () => Na__ViewportEditor__Remove(viewport));
+        remove.disabled = locked;
         container.appendChild(remove);
     }
     // ------------------------------------------------------------

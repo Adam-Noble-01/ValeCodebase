@@ -12,7 +12,9 @@
 
 **Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: the R rotate tool and the rounded object margins.
 
-**Not pushed.** Not run in a browser through AURA: Adam tests it.
+**Live:** pushed 03-Nov-2026 14:11 UTC (stamp 20261103-141158), at Adam's word: "Push both": 450 files new, 3 replaced, none deleted; no API change, so no restart. The whole folder's compare held nothing else, so nothing was held back. `engine undo aura` reverses it. Checked on the live site, signed out: the import map at v0.8.35, the worker's version 2026-11-03-11, the pin's own catalogue module listing 43 assets with all ten new ones, each with its pot's class and its RND and PXY answering 200. The drawer itself not opened signed in, and a plant not placed through AURA: Adam tests it. A tab already open needs a reload.
+
+**GitHub:** the engine's c0fb28c is on `Adam-Noble-01/Na__PainterlyNPR`, so SketchUp's window gets the plants after Reload Remote Plugin Files.
 
 ## Version 0.5.26, 03-Nov-2026: A Dragged Scene Tab Feels Right
 

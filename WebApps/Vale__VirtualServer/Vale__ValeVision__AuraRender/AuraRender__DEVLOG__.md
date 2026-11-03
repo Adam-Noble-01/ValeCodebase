@@ -12,7 +12,7 @@
 
 **Tested** in the NPR Standalone with real keys and a real pointer, not yet in AURA.
 
-**Live:** not pushed. It waits on Adam's word.
+**Live:** on the server since 03-Nov-2026 14:38:01 UTC (stamp 20261103-143801, 474 files: the pin, the import map's record, the worker and `index.html`), at Adam's word: "Push it". Another push had already carried it when this session compared: the compare found nothing to send, the whole folder equal to the server (one session). The live page's import map (v0.8.37), worker (2026-11-03-13), AppVersion and `PainterlyNPR__SceneEdit__RotateTool__.mjs` were read back signed out. No API change, so no restart. The engine's b60b2ce is on `Adam-Noble-01/Na__PainterlyNPR`, so SketchUp's window gets R after Reload Remote Plugin Files.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.36, the Plants in a Plain Flowerpot (No App Version of Its Own)
 

@@ -75,6 +75,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.15.0 (AURA 0.5.22)
+// - The point editor's stylesheets link again: LinkPointStyles stopped at any
+//   engine link, and since the Assets drawer links first (AURA 0.5.7) it never
+//   linked its own, leaving the handles and their layer unstyled.
+//
 // 03-Nov-2026 - Version 1.14.0 (AURA 0.5.18)
 // - RenderStill takes footOpen and hands it to SetFrame (PainterlyNPR 0.8.32):
 //   a viewport cut at the ground is painted past the cut, and clipped back.
@@ -915,7 +920,7 @@
 
     // HELPER FUNCTION | Link the Engine's Point Editor Stylesheets (once)
     function Na__EngineHost__LinkPointStyles() {
-        if (document.querySelector('link[data-engine-styles]') || typeof import.meta.resolve !== 'function') return;
+        if (document.querySelector('link[data-engine-styles="points"]') || typeof import.meta.resolve !== 'function') return;   // <-- Its own links only: the Assets drawer's and the menu's come first and are other sheets (1.15.0)
         Na__EngineHost__POINT_STYLES.forEach((specifier) => {
             const link = document.createElement('link');
             link.rel = 'stylesheet';

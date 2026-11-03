@@ -47,6 +47,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.3.0 (AURA 0.5.21)
+// - Middle: lettering in the middle of its box's height (the title block).
+//
 // 30-Oct-2026 - Version 1.2.0
 // - The house hand (AURA 0.5.10): the Steady hand, M018 for every entry and
 //   the notes' Forest ink by default (Na__Lettering__Colour); a caller's
@@ -247,8 +250,9 @@
     // ------------------------------------------------------------
     // spec: { Text, X, Y (the box's top left, sheet mm), WidthMm, HeightMm
     // (the box; HeightMm optional), SizeMm (the handwriting's letter height),
-    // OneLine (never wrap: the box only shrinks it), PenKey (else the lettering
-    // pen), Colour, Channel (what onInk redraws: one redraw per channel) }.
+    // OneLine (never wrap: the box only shrinks it), Middle (in the middle of the
+    // box's height, not at its top), PenKey (else the lettering pen), Colour,
+    // Channel (what onInk redraws: one redraw per channel) }.
     // typed(): draws the typed words meanwhile. onInk(): the caller's redraw,
     // called once the ink is here (a short batch, once per channel).
     // ------------------------------------------------------------
@@ -277,7 +281,8 @@
         const wide = spec.WidthMm && ink.InkWidthMm > spec.WidthMm ? spec.WidthMm / ink.InkWidthMm : 1;
         const tall = spec.HeightMm && ink.HeightMm > spec.HeightMm ? spec.HeightMm / ink.HeightMm : 1;
         const k = Math.min(1, wide, tall);                                       // <-- Smaller to fit its box, never larger
-        const g = Na__Dom__Svg('g', { transform: `translate(${spec.X.toFixed(3)} ${spec.Y.toFixed(3)})${k < 1 ? ` scale(${k.toFixed(4)})` : ''}`,
+        const y = spec.Middle && spec.HeightMm ? spec.Y + (spec.HeightMm - ink.HeightMm * k) / 2 : spec.Y;
+        const g = Na__Dom__Svg('g', { transform: `translate(${spec.X.toFixed(3)} ${y.toFixed(3)})${k < 1 ? ` scale(${k.toFixed(4)})` : ''}`,
                                       fill: 'none', stroke: spec.Colour || Na__Lettering__Colour(), 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
                                       class: 'aura-lettering' }, parent);
         ink.Paths.forEach((p) => Na__Dom__Svg('path', { d: p.D, 'stroke-width': ((ink.Relative ? p.W * pen.WidthMm : p.W) / k).toFixed(4) }, g));   // <-- / k: the pen keeps its true width

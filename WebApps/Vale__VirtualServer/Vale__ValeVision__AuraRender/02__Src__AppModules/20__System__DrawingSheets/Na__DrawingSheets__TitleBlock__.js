@@ -33,6 +33,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.3.0 (AURA 0.5.21)
+// - Each entry has breathing space: Adam, with the cells marked up in red: "the
+//   text needs more margin its too close the handwriting needs to be place with
+//   more breathing space". It sits in the middle of the room below its label,
+//   clear of the cell's sides and foot (AuraConfig__TitleBlock__Value...Mm).
+//   Revisions keep their tight rows.
+//
 // 30-Oct-2026 - Version 1.2.0 (AURA 0.5.10)
 // - The entries take the notes' ink (the lettering's colour) instead of
 //   black; the title and drawing number keep the lettering's EmphasisPen,
@@ -69,6 +76,7 @@
     const Na__TitleBlock__LABEL_FONT  = '"Arial Narrow", "Liberation Sans Narrow", Arial, sans-serif';
     const Na__TitleBlock__VALUE_FONT  = '"Open Sans", Arial, sans-serif';
     const Na__TitleBlock__CHAR_EM     = 0.56;                                    // <-- An Open Sans character is about this many ems wide: enough to wrap a value
+    const Na__TitleBlock__LABEL_FOOT  = 1.1;                                     // <-- A label's lowest ink below its size (its 0.5 mm drop and its descenders): where the room for an entry starts
 
 // endregion -------------------------------------------------------------------
 
@@ -138,9 +146,10 @@
     // ------------------------------------------------------------
     // box: { X, Y, W, H } in the column's millimetres (its top left); size: the
     // typed size the handwriting replaces; oneLine: never wrap (the box only
-    // shrinks it); emphasis: the heavier pen, where the typed block was bold.
+    // shrinks it); emphasis: the heavier pen, where the typed block was bold;
+    // middle: in the middle of the box's height, not at its top.
     // ------------------------------------------------------------
-    function Na__TitleBlock__Hand(parent, value, box, size, oneLine, emphasis, typed) {
+    function Na__TitleBlock__Hand(parent, value, box, size, oneLine, emphasis, typed, middle) {
         const lettering = Na__AppConfig__Get('Handwriting__Lettering', {});
         Na__Lettering__Draw(parent, {
             Text     : value,
@@ -150,6 +159,7 @@
             HeightMm : box.H,
             SizeMm   : Na__Lettering__Size(size),
             OneLine  : oneLine,
+            Middle   : !!middle,
             PenKey   : emphasis ? lettering.EmphasisPen : lettering.Pen,
             Channel  : 'titleblock'                                       // <-- No Colour: the notes' ink, as every word on the sheet (1.2.0)
         }, typed, Na__TitleBlock__Redraw);
@@ -173,6 +183,9 @@
         const lineW = Na__AppConfig__Get('Sheet__LineWidthMm', 0.25);
         const labelSize = Na__AppConfig__Get('TitleBlock__LabelSizeMm', 2.7);
         const valueSize = Na__AppConfig__Get('TitleBlock__ValueSizeMm', 3.4);
+        const valueGap = Na__AppConfig__Get('TitleBlock__ValueGapMm', 1);
+        const valueSide = Na__AppConfig__Get('TitleBlock__ValueSideMm', 2);
+        const valueFoot = Na__AppConfig__Get('TitleBlock__ValueFootMm', 1.2);
         const fields = sheet.Sheet__Fields || {};
         const g = Na__Dom__Svg('g', { class: 'aura-titleblock', transform: solve.Title.Transform }, parent);
 
@@ -215,14 +228,20 @@
             Na__TitleBlock__Text(g, cell.X + 0.8, cell.Y + labelSize + 0.5, [cell.Label], labelSize, Na__TitleBlock__LABEL_FONT);
             const value = cell.Key === 'Scale' ? scaleText : fields[cell.Key];
             if (!value) return;
-            const room = cell.H - labelSize - 1.6;
-            const size = Math.min(valueSize, room * 0.8);
-            const maxLines = Math.max(1, Math.floor((room + size * 0.22) / (size * 1.22)));
-            const wrapped = Na__TitleBlock__Wrap(value, cell.W - 2.6, size, maxLines);
-            const top = cell.Y + labelSize + 1.4 + size;
+            const box = {                                                        // <-- The room for the entry: clear of the label, the cell's sides and its foot (1.3.0)
+                X : cell.X + valueSide,
+                Y : cell.Y + labelSize + Na__TitleBlock__LABEL_FOOT + valueGap,
+                W : cell.W - 2 * valueSide,
+                H : cell.H - labelSize - Na__TitleBlock__LABEL_FOOT - valueGap - valueFoot
+            };
+            const size = Math.min(valueSize, box.H * 0.8);
+            const maxLines = Math.max(1, Math.floor((box.H + size * 0.22) / (size * 1.22)));
+            const wrapped = Na__TitleBlock__Wrap(value, box.W, size, maxLines);
+            const block = size + (wrapped.length - 1) * size * 1.22;
+            const top = box.Y + (box.H - block) / 2 + size * 0.8;                // <-- The first line's baseline, the block in the room's middle as the handwriting is
             const emphasis = cell.Key === 'DrawingNo' || cell.Key === 'Title';
-            const typed = () => Na__TitleBlock__Text(g, cell.X + 1.6, top, wrapped, size, Na__TitleBlock__VALUE_FONT, emphasis ? 600 : 400);
-            Na__TitleBlock__Hand(g, value, { X: cell.X + 1.2, Y: cell.Y + labelSize + 1.0, W: cell.W - 2.4, H: room + 0.6 }, size, maxLines === 1, emphasis, typed);
+            const typed = () => Na__TitleBlock__Text(g, box.X, top, wrapped, size, Na__TitleBlock__VALUE_FONT, emphasis ? 600 : 400);
+            Na__TitleBlock__Hand(g, value, box, size, maxLines === 1, emphasis, typed, true);
         });
 
         // The column's outline last, over the artwork's own edges

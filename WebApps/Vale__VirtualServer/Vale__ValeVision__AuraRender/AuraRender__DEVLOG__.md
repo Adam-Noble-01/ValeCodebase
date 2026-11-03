@@ -1,5 +1,59 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.22, 03-Nov-2026: Art Direction Points Show Again
+
+**Asked by Adam:** "Art direction points arent visible on the sheets check z height".
+
+**The cause was not really the height.** The engine's three point stylesheets (PointHandles, PointNode, PointGroups) were never being linked. `Na__EngineHost__LinkPointStyles` stopped if any engine stylesheet was already linked, and since 0.5.7 the Assets drawer links its own first, at start-up. Without them the handles have no shape, and the layer has no `position`, so its `z-index: 3` did nothing.
+
+**Fixed:**
+
+- `Na__EngineHost__PainterlyNpr__.js` 1.15.0: it now looks only for its own links (`data-engine-styles="points"`).
+- `Na__UiFeature__Styles__ArtDirection__.css`: the sheet's layer sets its own `position: absolute`, since AURA places it and stacks it.
+
+**Also affected:** the 3D Environment's handles and the add buttons' grouped look, which read the same stylesheets, in both places.
+
+**The stacking, read through:** the layer (3) and its stand-in (2) lie over the sheet's SVG, which has no z-index; nothing else in the sheet's wrapper is higher. Handles show only while a viewport is selected and its Art direction points section is open, by design since 0.3.0, and sections start folded.
+
+**Checked:** read through; not run in a browser, because the project API needs a sign-in. Adam tests it. Committed at Adam's word, "Commit and push both". The check on the page: `document.querySelectorAll('link[data-engine-styles="points"]').length` should be 3.
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Select an elevation viewport, open Art direction points: its handles and rings lie over the picture, above the paper.
+- [ ] Add a point by a type button: it lands where clicked, and its sliders hang beside it.
+- [ ] Zoom and pan the sheet: the handles stay on the picture.
+- [ ] The 3D Environment's handles look right too.
+- [ ] The add buttons: two to a row, under their group headings.
+- [ ] The Assets drawer and the right-click menu look as they did.
+
+**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+
+## Version 0.5.21, 03-Nov-2026: Breathing Space in the Title Block
+
+**Asked by Adam**, with the title column's cells marked up in red: "next update title block text placement / See here? the text needs more margin its too close the handwriting needs to be place with more breathing space". Of the ground cut before it: "It works".
+
+**What changed** (AURA's own: the title block is Vale's side, so nothing in the engine):
+
+- `Na__DrawingSheets__TitleBlock__.js` 1.3.0: each entry has a room of its own, and sits in the middle of that room's height: 1 mm below its label, 2 mm in from the cell's sides, 1.2 mm up from its foot. A typed entry waiting for its handwriting sits in the same place.
+- `Na__Handwriting__Lettering__.js` 1.3.0: a new `Middle` option. Notes and viewport titles do not use it, so they stay where they were.
+- The config's `AuraConfig__TitleBlock__ValueGapMm`, `ValueSideMm` and `ValueFootMm` hold the three distances, to change without touching code.
+
+**Read from Adam's marks, for him to judge:** the middle of the room fits his Scale, Date, Drawn By, Checked By and Drawing No. boxes. His Address strokes sit in the upper part of its cell, so a short address now sits a little lower than he drew. Long values shrink slightly to fit the narrower width: ADAM WIDDOWSON in a half-width cell loses about 7%.
+
+**Not changed:** the revision rows keep their tight rows, as they have only 3.6 mm each.
+
+**Checked:** `node --check` on both modules. Not run in a browser: Adam tests it. Committed at Adam's word, "Commit and push both".
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Client, Title, Scale, Date, Drawn By, Checked By, Drawing No.: each clear of its label and the cell's lines.
+- [ ] A two or three line Address reads well in its cell.
+- [ ] A long Drawn By fits inside its half-width cell.
+- [ ] A4 and a portrait sheet: the column still looks right.
+- [ ] A note and a viewport's title have not moved.
+
+**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.33, a Ball Standard in a Red Bowl (No App Version of Its Own)
 
 **Asked by Adam:** "Load your NPR Skill / Build this potted plant asset", with an orangery's pots ringed in red, then "Commit and sync".
@@ -30,7 +84,7 @@
 
 **Not changed:** the sides of the wash still dissolve before the frame's sides (wider towards the foot). While a viewport's points are edited on its sheet, its preview is the live engine's whole sheet, as before, until its still is drawn again.
 
-**Checked:** `node --check` on the changed modules. The engine's half was looked at in headless Edge with AURA's own `SetFrame` call. The sync's `--check`: the pin untouched and the same as the repository. AURA itself not run in a browser: Adam tests it. Committed at Adam's word, "Commit and sync", with 0.5.17 and 0.5.19, other sessions' open work, left out; not pushed.
+**Checked:** `node --check` on the changed modules. The engine's half was looked at in headless Edge with AURA's own `SetFrame` call. The sync's `--check`: the pin untouched and the same as the repository. AURA itself not run in a browser: Adam tests it. Committed at Adam's word, "Commit and sync", with 0.5.17 and 0.5.19, other sessions' open work, left out.
 
 **For Adam to test** (reload AURA locally first):
 
@@ -40,7 +94,7 @@
 - [ ] A perspective viewport is unchanged.
 - [ ] The sky round the building looks the same as before.
 
-**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+**Live:** since the `aura` push of 03-Nov-2026 13:18 UTC (stamp 20261103-131821), made by another session; no API change, so no restart. Adam then said "Push it live", and a compare found nothing of this work left to send. Checked on the live site: the import map at v0.8.32, the worker's cache version 2026-11-03-08, `footOpen` in the render queue and `uFootOpen` in the pinned shader. The look on the Thrower sheet is Adam's to check.
 
 ## Version 0.5.16, 03-Nov-2026: The Art Direction Points' New Names, Under Groups
 

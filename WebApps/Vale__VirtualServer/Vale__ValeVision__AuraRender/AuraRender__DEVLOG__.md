@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.34, Four Potted Plants in Red Bowls (No App Version of Its Own)
+
+**Asked by Adam:** of the plants, "The plants havbent appeared in the asset browser I cant see them", then, asked whether to sync the four potted plants and push AURA live, "Sync and push". The plants themselves: "Load your npr skill / Make these 4x potted plant assets", with a scan of a row along an orangery's foot.
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.34 at afe37b5, pinned as `01__CoreLib__PainterlyNPR__v0.8.34` from the commit (476 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.33, the worker's cache version 2026-11-03-10, the README's engine row.
+
+**What it brings AURA:** four new assets in the Assets drawer, under Garden furniture, Planters And Pots (`NPR_25_1011` to `NPR_25_1014`): a low bowl with lilac flowers, a deep tub with red flowers, a low bowl with a dark bud, and a wide bowl under a peak of big leaves. Three new material classes in the Materials tab: `RedTerracotta`, `DeepLeaf` and `SapLeaf`. AURA draws them through the engine alone.
+
+**No look change on anything already drawn.** At the engine, Three-quarter and Measured elevation hash the same before and after (its DEVLOG).
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: Adam's report that a plant's rotation does not match its proxy, and the R rotate tool, are still being worked on.
+
+**Checked here (no browser):** the sync's `--check`; the two pins compared file by file, Init among the unchanged; all 44 engine files AURA's code references resolve in the new pin. Not run in a browser through AURA: Adam tests it.
+
 ## Version 0.5.23, 03-Nov-2026: The Title Block's Writing 0.8 of Its Size
 
 **Asked by Adam:** "Make title block written text smaller 0.8x current". Of the spacing and points before it: "Both look right".

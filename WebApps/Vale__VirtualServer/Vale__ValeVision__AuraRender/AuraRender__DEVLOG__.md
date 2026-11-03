@@ -1,5 +1,17 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.23, the Assets Drawer's Categories and Filters Graphic (No App Version of Its Own)
+
+**Asked by Adam:** "In the NPR Standlone and aura ensure there are categories for assets and materials like with the sketchUP plugin / secondly add a filters graphic that hides these unless needed as the menu is messy", then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.23 at da1d873, pinned as `01__CoreLib__PainterlyNPR__v0.8.23` from the commit (427 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.18; the worker's cache version 2026-11-03-02; the README's engine row.
+
+**What it brings AURA:** the 3D Environment's Assets drawer lays its cards under category headings (Materials by group; Objects by collection, then type), and a funnel beside the search hides the chips until wanted. The drawer also fills when the right-click menu read the library first. AURA's code did not change: it mounts the engine's own drawer.
+
+**Not in this pin:** PainterlyNPR's v0.8.19 to v0.8.22 are other sessions' and still uncommitted, so version 0.5.14 below (v0.8.21's copy and paste) is still waiting on a sync, and the engine's next commit of them takes v0.8.24 or later.
+
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; all 49 engine references in AURA's modules resolve in the new pin; Init unchanged. Not run in a browser: Adam tests it. Not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.18, the Ground Is a Backdrop (No App Version of Its Own)
 
 **Asked by Adam:** "Currently the NPR render creates a grass groundplane, whilst this is usefull, if a mesh is below 0

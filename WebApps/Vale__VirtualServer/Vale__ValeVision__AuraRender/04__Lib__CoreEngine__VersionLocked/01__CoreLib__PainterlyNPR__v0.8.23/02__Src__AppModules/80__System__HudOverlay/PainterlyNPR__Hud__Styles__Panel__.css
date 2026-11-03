@@ -1,0 +1,472 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - PANEL
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__Panel__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - Panel
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The panel's tabs, groups and fields, the range controls and the buttons
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: PANEL, CONTROLS.
+ * - ICONS (v0.8.11): each section head's line icon, 16 px, before its title.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * PANEL | Head, Sections, Groups, Fields
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Panel {
+        display                            :  flex;
+        flex-direction                     :  column;
+        min-height                         :  0;
+        margin-bottom                      :  8px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_Radius);
+        background                         :  var(--PainterlyNPR_Cream);
+        overflow                           :  hidden;
+    }
+
+    /* HEAD | The panel's title and its fold button, where the tab row was (v0.7.2) */
+    .PainterlyNPR__PanelHead {
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  space-between;
+        flex-shrink                        :  0;
+        padding                            :  6px 6px 6px 14px;
+        border-bottom                      :  1px solid var(--PainterlyNPR_Rule);
+        background                         :  rgba(231, 225, 214, 0.45);
+    }
+
+    .PainterlyNPR__PanelHead__Title {
+        color                              :  var(--PainterlyNPR_Ink);
+        font-size                          :  12px;
+        font-weight                        :  600;
+    }
+
+    /* SECTIONS | AURA's flow: one column of fold-down sections, its groups folding inside (v0.7.2) */
+    .PainterlyNPR__Sections {
+        padding                            :  0;
+    }
+
+    .PainterlyNPR__Section {
+        border-bottom                      :  1px solid var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__Section__Head {
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  space-between;
+        padding                            :  10px 14px;
+        list-style                         :  none;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  12.5px;
+        font-weight                        :  600;
+        cursor                             :  pointer;
+        user-select                        :  none;
+        transition                         :  background var(--PainterlyNPR_Transition), color var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Section__Head::-webkit-details-marker {
+        display                            :  none;
+    }
+
+    .PainterlyNPR__Section__Head::after {
+        content                            :  '\203A';                     /* <-- A chevron: right closed, down open, as AURA's */
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  16px;
+        line-height                        :  1;
+        transition                         :  transform var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Section[open] > .PainterlyNPR__Section__Head::after {
+        transform                          :  rotate(90deg);
+    }
+
+    .PainterlyNPR__Section__Head:hover,
+    .PainterlyNPR__Section[open] > .PainterlyNPR__Section__Head {
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+
+    .PainterlyNPR__Section[open] > .PainterlyNPR__Section__Head {
+        background                         :  rgba(231, 225, 214, 0.45);
+    }
+
+    /* ICONS | Each section's line icon before its title, in the palette's sepia (v0.8.11) */
+    .PainterlyNPR__Section__Icon {
+        flex                               :  0 0 16px;
+        width                              :  16px;
+        height                             :  16px;
+        margin-right                       :  9px;
+        opacity                            :  0.82;                    /* <-- Soft while folded, as the title's InkSoft */
+        pointer-events                     :  none;
+        transition                         :  opacity var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Section__Head:hover > .PainterlyNPR__Section__Icon,
+    .PainterlyNPR__Section[open] > .PainterlyNPR__Section__Head > .PainterlyNPR__Section__Icon {
+        opacity                            :  1;                       /* <-- Full with the title's Ink */
+    }
+
+    .PainterlyNPR__Section__Icon + .PainterlyNPR__Section__Title {
+        flex                               :  1;
+        min-width                          :  0;
+    }
+
+    .PainterlyNPR__Section__Body {
+        padding                            :  0 14px 4px;
+    }
+
+    .PainterlyNPR__PanelBody {
+        flex                               :  1 1 auto;
+        min-height                         :  0;
+        overflow-y                         :  auto;
+        padding                            :  4px 14px 14px;
+    }
+
+    .PainterlyNPR__Group {
+        padding                            :  12px 0;
+        border-bottom                      :  1px solid var(--PainterlyNPR_Rule);
+    }
+
+    .PainterlyNPR__Group:last-child {
+        border-bottom                      :  0;
+    }
+
+    .PainterlyNPR__Group__Title {
+        margin                             :  0 0 9px;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  10.5px;
+        font-weight                        :  600;
+        text-transform                     :  uppercase;
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+    }
+
+    .PainterlyNPR__Hint {
+        margin                             :  8px 0 0;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__Note {
+        margin                             :  8px 0 0;
+        padding                            :  7px 9px;
+        border-left                        :  3px solid var(--PainterlyNPR_Slate);
+        border-radius                      :  0 var(--PainterlyNPR_RadiusSmall) var(--PainterlyNPR_RadiusSmall) 0;
+        background                         :  rgba(95, 122, 145, 0.09);
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__Readout {
+        margin                             :  4px 0 0;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+    }
+
+    .PainterlyNPR__Readout output {
+        color                              :  var(--PainterlyNPR_Ink);
+        font-weight                        :  600;
+    }
+
+    /* A labelled control on one row: label, input, value */
+    .PainterlyNPR__Field {
+        display                            :  grid;
+        grid-template-columns              :  104px minmax(0, 1fr) 62px;
+        align-items                        :  center;
+        gap                                :  8px;
+        margin                             :  5px 0;
+    }
+
+    .PainterlyNPR__Field__Label {
+        color                              :  var(--PainterlyNPR_InkSoft);
+        font-size                          :  12px;
+    }
+
+    .PainterlyNPR__Field output {
+        color                              :  var(--PainterlyNPR_Ink);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  11px;
+        text-align                         :  right;
+        white-space                        :  nowrap;
+    }
+
+    /* A readout that can be typed into (PainterlyNPR__Interface__TypeIn__.mjs):
+       the field takes the readout's own cell, so the row does not jump */
+    .PainterlyNPR__TypeIn__Readout {
+        border-radius                      :  3px;
+        cursor                             :  text;
+    }
+
+    .PainterlyNPR__TypeIn__Readout:hover {
+        background                         :  rgba(231, 225, 214, 0.65);
+    }
+
+    .PainterlyNPR__TypeIn__Field {
+        width                              :  100%;
+        min-width                          :  0;
+        padding                            :  1px 4px;
+        border                             :  1px solid var(--PainterlyNPR_Slate);
+        border-radius                      :  3px;
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_Ink);
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  11px;
+        text-align                         :  right;
+    }
+
+    .PainterlyNPR__Node__Row .PainterlyNPR__TypeIn__Field {
+        font-size                          :  9.5px;
+        padding                            :  0 3px;
+    }
+
+    .PainterlyNPR__Field select {
+        grid-column                        :  2 / 4;
+        width                              :  100%;
+        padding                            :  5px 8px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+    }
+
+    .PainterlyNPR__Toggle {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  8px;
+        margin-top                         :  10px;
+        color                              :  var(--PainterlyNPR_InkSoft);
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__Toggle input {
+        accent-color                       :  var(--PainterlyNPR_Slate);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * CONTROLS | Ranges and Buttons
+ * ----------------------------------------------------------------------------- */
+
+    /* RANGE | A hairline track and an ink thumb */
+    /* ------------------------------------------------------------ */
+    input[type="range"] {
+        -webkit-appearance                 :  none;
+        appearance                         :  none;
+        width                              :  100%;
+        height                             :  20px;
+        margin                             :  0;
+        background                         :  transparent;
+        cursor                             :  pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+        height                             :  3px;
+        border-radius                      :  2px;
+        background                         :  var(--PainterlyNPR_InkGhost);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance                 :  none;
+        width                              :  14px;
+        height                             :  14px;
+        margin-top                         :  -5.5px;
+        border                             :  2px solid var(--PainterlyNPR_Cream);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Ink);
+        box-shadow                         :  0 0 0 1px var(--PainterlyNPR_Ink);
+    }
+
+    input[type="range"]::-moz-range-track {
+        height                             :  3px;
+        border-radius                      :  2px;
+        background                         :  var(--PainterlyNPR_InkGhost);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width                              :  12px;
+        height                             :  12px;
+        border                             :  2px solid var(--PainterlyNPR_Cream);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DISCIPLINE | The macro slider, its stops, and the view's ceiling */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Discipline {
+        position                           :  relative;
+    }
+
+    .PainterlyNPR__Discipline input[type="range"]::-webkit-slider-runnable-track {
+        height                             :  5px;
+        background                         :  linear-gradient(90deg, var(--PainterlyNPR_Slate), var(--PainterlyNPR_Sepia) 55%, var(--PainterlyNPR_Terracotta));
+    }
+
+    .PainterlyNPR__Discipline input[type="range"]::-webkit-slider-thumb {
+        margin-top                         :  -4.5px;
+    }
+
+    .PainterlyNPR__Discipline__Marker {
+        position                           :  absolute;
+        top                                :  2px;
+        width                              :  2px;
+        height                             :  16px;
+        margin-left                        :  -1px;
+        background                         :  var(--PainterlyNPR_Slate);
+        pointer-events                     :  none;
+    }
+
+    .PainterlyNPR__Discipline__Stops {
+        display                            :  flex;
+        justify-content                    :  space-between;
+        margin-top                         :  2px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  10.5px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTONS | Quiet, matte */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Button {
+        padding                            :  7px 10px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_Ink);
+        font-size                          :  12px;
+        line-height                        :  1.25;
+        cursor                             :  pointer;
+        transition                         :  background var(--PainterlyNPR_Transition), border-color var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Button:hover {
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+        background                         :  #FFFFFF;
+    }
+
+    .PainterlyNPR__Button--active {
+        border-color                       :  var(--PainterlyNPR_Slate);
+        background                         :  rgba(95, 122, 145, 0.12);
+        color                              :  var(--PainterlyNPR_Ink);
+        font-weight                        :  600;
+    }
+
+    .PainterlyNPR__Button--small {
+        padding                            :  3px 8px;
+        font-size                          :  11px;
+    }
+
+    .PainterlyNPR__ButtonGrid {
+        display                            :  grid;
+        grid-template-columns              :  1fr 1fr;
+        gap                                :  6px;
+    }
+
+    .PainterlyNPR__ButtonGrid--three {
+        grid-template-columns              :  1fr 1fr 1fr;
+    }
+
+    .PainterlyNPR__ButtonGrid--three .PainterlyNPR__Button {
+        padding                            :  7px 4px;
+        font-size                          :  11.5px;
+    }
+
+    .PainterlyNPR__ButtonRow {
+        display                            :  flex;
+        gap                                :  6px;
+        margin-top                         :  8px;
+    }
+
+    .PainterlyNPR__IconButton {
+        width                              :  24px;
+        height                             :  24px;
+        padding                            :  0;
+        border                             :  0;
+        border-radius                      :  50%;
+        background                         :  transparent;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  17px;
+        line-height                        :  1;
+        cursor                             :  pointer;
+    }
+
+    .PainterlyNPR__IconButton:hover {
+        background                         :  rgba(43, 42, 40, 0.07);
+        color                              :  var(--PainterlyNPR_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* POINT CARDS | One per Art Direction Point */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__PointList {
+        display                            :  grid;
+        gap                                :  8px;
+        padding                            :  6px 0 2px;
+    }
+
+    .PainterlyNPR__PointCard {
+        --PainterlyNPR_PointColour         :  var(--PainterlyNPR_Slate);
+        padding                            :  8px 10px 6px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-left                        :  3px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+    }
+
+    .PainterlyNPR__PointCard[data-type="Fade"]        { --PainterlyNPR_PointColour: var(--PainterlyNPR_Terracotta); }
+    .PainterlyNPR__PointCard[data-type="LineControl"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_Ochre); }
+    .PainterlyNPR__PointCard[data-type="Indication"]  { --PainterlyNPR_PointColour: var(--PainterlyNPR_Brick); }
+
+    .PainterlyNPR__PointCard__Head {
+        display                            :  flex;
+        align-items                        :  baseline;
+        gap                                :  7px;
+        margin-bottom                      :  2px;
+    }
+
+    .PainterlyNPR__PointCard__Glyph {
+        color                              :  var(--PainterlyNPR_PointColour);
+        font-size                          :  15px;
+    }
+
+    .PainterlyNPR__PointCard__Meta {
+        flex                               :  1 1 auto;
+        min-width                          :  0;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  11px;
+        overflow                           :  hidden;
+        text-overflow                      :  ellipsis;
+        white-space                        :  nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SETTINGS | The JSON */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Json {
+        width                              :  100%;
+        margin-top                         :  8px;
+        padding                            :  8px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        font-family                        :  var(--PainterlyNPR_FontMono);
+        font-size                          :  10.5px;
+        line-height                        :  1.4;
+        resize                             :  vertical;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

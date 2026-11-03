@@ -1,0 +1,43 @@
+{
+    "PainterlyNPR__SmartFields__Config" : {
+        "PainterlyNPR__SmartFields__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - Smart Fields - Line Run-out and Vignette",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How a Line run-out point lets lines run on past the paint: which classes take part and how far each runs; and the sheet's vignette, where the paint dissolves into the paper.",
+            "ReadBy"        : "02__Src__AppModules/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__SmartFields__Config__RunOut" : {
+            "LineRunClasses"     : {
+                "Profiles" : 0,
+                "Main"     : 1,
+                "Most"     : 2,
+                "All"      : 3
+            },
+            "LineRunClassesNote" : "The last class a point's Lines let through",
+            "RunClassReach"      : [1, 0.92, 0.8, 0.65],
+            "RunClassReachNote"  : "Profiles run furthest, texture least - gently: a rail is often modelled Optional",
+            "Unaimed"            : {
+                "ObjectId" : null
+            },
+            "UnaimedNote"        : "For a caller that does not know its object: the pixel's stands in"
+        },
+
+        "PainterlyNPR__SmartFields__Config__Vignette" : {
+            "Note"              : "The sheet's vignette, in sheet millimetres from its bottom-left corner: where the paint dissolves into the paper. v0.5.2, Adam: the default views cut off too much of the lower context, so the paint fills more of the sheet's height (it was centred at 104 mm, 60-112 mm high, the foreground squeezed by 1.35: the paint was half gone 52 mm above the foot of the sheet, now about 24 mm). v0.8.3: the sheet is A3, 420 x 297 mm, so every length here grew with it (across by 1.4, up by 1.485): the same shape on the page, the paint half gone about 36 mm above the foot.",
+            "CentreMm"          : [210, 139.6],
+            "CentreMmNote"      : "A touch below the middle of the 297 mm height, so the foreground gets the room the sky gave up (150, 94 on the 300 x 200 mm sheet)",
+            "HalfWidthMm"       : [129, 238],
+            "HalfWidthMmNote"   : "At Painted area 0 and 1 (92 and 170 on the 300 x 200 mm sheet)",
+            "HalfHeightMm"      : [98, 181.2],
+            "HalfHeightMmNote"  : "At Painted area 0 and 1: about 150 mm at the default 62% (66 and 122 on the 300 x 200 mm sheet)",
+            "ForegroundSqueeze" : 1.1,
+            "ForegroundSqueezeNote" : "Below the centre the field is this much tighter: the foreground still goes to paper first, but only just, and never reaches the sheet's foot",
+            "Fade"              : [0.52, 1.0],
+            "FadeNote"          : "Fully present inside the first, gone past the second, in the field's own radius",
+            "Roughness"         : [0.08, 0.6],
+            "RoughnessNote"     : "How far the edge's noise pushes it in or out, at Edge irregularity 0 and 1"
+        }
+    }
+}

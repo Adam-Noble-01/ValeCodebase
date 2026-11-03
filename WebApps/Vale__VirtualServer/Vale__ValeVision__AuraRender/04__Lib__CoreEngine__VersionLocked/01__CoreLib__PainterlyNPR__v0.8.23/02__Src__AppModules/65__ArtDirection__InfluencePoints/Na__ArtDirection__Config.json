@@ -1,0 +1,129 @@
+{
+    "PainterlyNPR__ArtDirection__Config" : {
+        "PainterlyNPR__ArtDirection__Config__Meta"   : {
+            "ConfigLabel"   : "PainterlyNPR - Art Direction Points",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The point types (manifest section 10), the Line Control presets, what a point can target, and the materials an Indication point reaches.",
+            "ReadBy"        : "02__Src__AppModules/65__ArtDirection__InfluencePoints/PainterlyNPR__ArtDirection__Points__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__ArtDirection__Config__Points" : {
+            "Note"               : "Focus keeps detail and ink clarity; Fade to Paper takes the drawing away, lowest priority first; Line Control holds weight, pressure, wobble, break-up, silhouette emphasis, overdraw and looseness; Indication steers material indication; Hatch lays nested tonal hatching; Detail Suppression strips the subordinate classes; Line Run-out lets the pen run on past the paint.",
+            "Types"              : {
+                "Focus"       : {
+                    "Code"  : 0,
+                    "Label" : "Focus",
+                    "Glyph" : "◎"
+                },
+                "Fade"        : {
+                    "Code"  : 1,
+                    "Label" : "Fade to paper",
+                    "Glyph" : "○"
+                },
+                "LineControl" : {
+                    "Code"  : 2,
+                    "Label" : "Line control",
+                    "Glyph" : "✎"
+                },
+                "Indication"  : {
+                    "Code"  : 3,
+                    "Label" : "Indication",
+                    "Glyph" : "▦"
+                },
+                "Hatch"       : {
+                    "Code"  : 4,
+                    "Label" : "Hatch",
+                    "Glyph" : "▨"
+                },
+                "Suppress"    : {
+                    "Code"  : 5,
+                    "Label" : "Detail suppression",
+                    "Glyph" : "⊘"
+                },
+                "Discipline"  : {
+                    "Code"  : 6,
+                    "Label" : "Drawing discipline",
+                    "Glyph" : "∿"
+                },
+                "RunOut"      : {
+                    "Code"  : 7,
+                    "Label" : "Line run-out",
+                    "Glyph" : "⇢"
+                }
+            },
+            "TypesNotes"         : {
+                "Discipline" : "The Drawing Discipline set locally, fading to the sheet's at its edge",
+                "RunOut"     : "Lines run on past the paint where it reaches, fading as they go"
+            },
+            "LineControlPresets" : {
+                "Accent"  : {
+                    "Label"  : "Accent",
+                    "Values" : {
+                        "LineWeight"   : 1.7,
+                        "Looseness"    : 0,
+                        "Wobble"       : 1,
+                        "Breakup"      : 0,
+                        "Emphasis"     : 1.8,
+                        "Overdraw"     : 1.4,
+                        "Pressure"     : 1.2,
+                        "VegLeaves"    : 1.3,
+                        "VegLeafSize"  : 1.1,
+                        "VegLeafStyle" : "Kind"
+                    }
+                },
+                "Sketchy" : {
+                    "Label"  : "Sketchy",
+                    "Values" : {
+                        "LineWeight"   : 1,
+                        "Looseness"    : 0.5,
+                        "Wobble"       : 2,
+                        "Breakup"      : 0.2,
+                        "Emphasis"     : 1,
+                        "Overdraw"     : 2.4,
+                        "Pressure"     : 1.6,
+                        "VegLeaves"    : 1.6,
+                        "VegLeafSize"  : 1.25,
+                        "VegLeafStyle" : "Loops"
+                    }
+                },
+                "Ghost"   : {
+                    "Label"  : "Ghost",
+                    "Values" : {
+                        "LineWeight"   : 0.6,
+                        "Looseness"    : 0.2,
+                        "Wobble"       : 1.2,
+                        "Breakup"      : 0.6,
+                        "Emphasis"     : 0.7,
+                        "Overdraw"     : 0.5,
+                        "Pressure"     : 1.8,
+                        "VegLeaves"    : 0.4,
+                        "VegLeafSize"  : 0.9,
+                        "VegLeafStyle" : "Kind"
+                    }
+                },
+                "Clean"   : {
+                    "Label"  : "Clean",
+                    "Values" : {
+                        "LineWeight"   : 1,
+                        "Looseness"    : -0.5,
+                        "Wobble"       : 0.3,
+                        "Breakup"      : 0,
+                        "Emphasis"     : 1.2,
+                        "Overdraw"     : 0,
+                        "Pressure"     : 0.4,
+                        "VegLeaves"    : 0.8,
+                        "VegLeafSize"  : 1,
+                        "VegLeafStyle" : "Kind"
+                    }
+                }
+            },
+            "Targets"            : {
+                "Area"     : 0,
+                "Object"   : 1,
+                "Material" : 2
+            },
+            "IndicatedMaterials" : ["Brick", "ClayTile", "Paving"]
+        }
+    }
+}

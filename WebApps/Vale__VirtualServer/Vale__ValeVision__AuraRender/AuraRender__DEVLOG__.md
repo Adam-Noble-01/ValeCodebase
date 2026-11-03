@@ -19,7 +19,9 @@ hidden by it. Foundations left in a whitecard will now show. AURA's code did not
 **Checked here (no browser):** `--check`: the pin untouched and the same as the repository; all 65 engine references in
 AURA's modules resolve in the new pin. No picture rendered: Adam tests it.
 
-**Not yet live:** nothing has been pushed to the server, and the engine commit has not gone to GitHub.
+**Live** since the `aura` push of 03-Nov-2026, at Adam's word: "Push both" (720 files new, 3 replaced, none deleted, no API
+change so no restart). The push also carried the v0.8.17 pin and its starting composition, which had waited since
+01-Nov-2026. The engine commit is on GitHub, so SketchUp's NPR windows take it at their next Reload Remote Plugin Files.
 
 ## Engine Sync, 01-Nov-2026: PainterlyNPR v0.8.17, the Composition Starts at 70% and 10% (No App Version of Its Own)
 

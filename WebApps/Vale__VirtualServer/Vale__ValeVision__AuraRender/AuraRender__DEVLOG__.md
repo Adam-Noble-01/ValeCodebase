@@ -1,5 +1,20 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.23, 03-Nov-2026: The Title Block's Writing 0.8 of Its Size
+
+**Asked by Adam:** "Make title block written text smaller 0.8x current". Of the spacing and points before it: "Both look right".
+
+**What changed:** the written entries from 3.4 to 2.72 mm and the revision rows from 2.5 to 2 mm (`AuraConfig__TitleBlock__ValueSizeMm`, the new `RevisionSizeMm`; `Na__DrawingSheets__TitleBlock__.js` 1.3.1). The handwriting's letter height follows from them, so it is exactly 0.8 of what it was. The printed labels, the room for each entry and the notes on the sheet are unchanged. An entry that had been shrunk to fit its cell may come out at nearly its old size, as it now fits.
+
+**Checked:** `node --check` and the config parsed. Not run in a browser: Adam tests it. Committed at Adam's word, "Commit and push".
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Client, Address, Title, Scale, Date, Drawn By, Checked By and Drawing No. read 0.8 of their size, still in the middle of their rooms.
+- [ ] Revision rows too, if the sheet has any.
+
+**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+
 ## Version 0.5.22, 03-Nov-2026: Art Direction Points Show Again
 
 **Asked by Adam:** "Art direction points arent visible on the sheets check z height".

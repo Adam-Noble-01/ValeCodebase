@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.3.1 (AURA 0.5.23)
+// - The written entries and revisions 0.8 of their size, from the config.
+//
 // 03-Nov-2026 - Version 1.3.0 (AURA 0.5.21)
 // - Each entry has breathing space: Adam, with the cells marked up in red: "the
 //   text needs more margin its too close the handwriting needs to be place with
@@ -182,7 +185,7 @@
         const cw = solve.ColumnWidthMm, ch = solve.ColumnHeightMm;
         const lineW = Na__AppConfig__Get('Sheet__LineWidthMm', 0.25);
         const labelSize = Na__AppConfig__Get('TitleBlock__LabelSizeMm', 2.7);
-        const valueSize = Na__AppConfig__Get('TitleBlock__ValueSizeMm', 3.4);
+        const valueSize = Na__AppConfig__Get('TitleBlock__ValueSizeMm', 2.72);
         const valueGap = Na__AppConfig__Get('TitleBlock__ValueGapMm', 1);
         const valueSide = Na__AppConfig__Get('TitleBlock__ValueSideMm', 2);
         const valueFoot = Na__AppConfig__Get('TitleBlock__ValueFootMm', 1.2);
@@ -210,7 +213,7 @@
                     if (col.X > 0) Na__Dom__Svg('line', { x1: col.X, y1: cell.Y, x2: col.X, y2: cell.Y + cell.H }, lines);
                     Na__TitleBlock__Text(g, col.X + 0.7, cell.Y + labelSize + 0.6, [col.Label], labelSize, Na__TitleBlock__LABEL_FONT);
                 });
-                const rowH = 3.6, small = 2.5;
+                const rowH = 3.6, small = Na__AppConfig__Get('TitleBlock__RevisionSizeMm', 2);
                 const rows = Array.isArray(fields.Revisions) ? fields.Revisions : [];
                 rows.slice(-Math.floor((cell.H - (cell.HeaderMm || 4.6)) / rowH)).forEach((rev, i) => {
                     const y = head + rowH * (i + 1) - 0.9;

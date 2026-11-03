@@ -17,7 +17,8 @@
 // - EVENTS: 'tab' (the open tab changed), 'select' (the selection), 'tool',
 //   'changed' (the drawing set was edited: { reason, sheetId }), 'saved',
 //   'engine' (the engine's settings moved), 'restored' (an undo or redo wrote
-//   a step back into the drawing set: { direction, reason, label, tab }; 0.3.1).
+//   a step back into the drawing set: { direction, reason, label, tab }; 0.3.1),
+//   'ortho' (Ortho was switched, Na__Viewports__Move__: true or false; 0.5.20).
 //
 // -----------------------------------------------------------------------------
 //

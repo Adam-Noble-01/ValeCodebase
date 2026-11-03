@@ -73,6 +73,8 @@
         --Aura_WarnBg                      : #fff4dc;
         --Aura_Focus                       : #2f6f9f;
         --Aura_Select                      : #336699;                      /* <-- The Layout Editor's selection blue */
+        --Aura_AxisX                       : #c0392b;                      /* <-- The Layout Editor's X axis lock */
+        --Aura_AxisY                       : #2e7d32;                      /* <-- The Layout Editor's Y axis lock */
         --Aura_ActiveBg                    : #e9f1f8;
 
         /* Type | Open Sans, as every Vale app */

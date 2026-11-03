@@ -105,13 +105,72 @@
         ]
     },
     "DrawingSheets__KeyboardBindings__Config": {
-        "DrawingSheets__KeyboardBindings__Description": "Keys read while a sheet tab is on screen. The Layout Editor ships its zoom keys off because the bare arrows nudge its selection and F is its Offset tool; AURA's sheets have neither, so Fit (F), 100 percent (1) and zoom in and out (+ and -) ship on, matching the toolbar's zoom buttons. The Alt + arrow pans stay off: Alt + Left is the browser's Back. Page Up and Page Down turn the sheets, as in the Layout Editor. V, N, L, Delete and Escape are the workspace's tool keys, not navigation, and stay in its code.",
+        "DrawingSheets__KeyboardBindings__Description": "Keys read while a sheet tab is on screen. The Layout Editor ships its zoom keys off because F is its Offset tool; AURA's sheets have no such tool, so Fit (F), 100 percent (1) and zoom in and out (+ and -) ship on, matching the toolbar's zoom buttons. The Alt + arrow pans stay off: Alt + Left is the browser's Back. Page Up and Page Down turn the sheets, as in the Layout Editor. The bare arrows are the Layout Editor's too (Na__Viewports__Move__): a nudge of the selected viewport, or the axis lock during a drag. V, N, L, Delete and Escape are the workspace's tool keys, not navigation, and stay in its code.",
         "DrawingSheets__KeyboardBindings__IgnoreWhenTyping": true,
         "DrawingSheets__KeyboardBindings__CoarseStepModifier": "Shift",
         "DrawingSheets__KeyboardBindings__PanStepPx": 60,
         "DrawingSheets__KeyboardBindings__PanCoarseStepPx": 240,
         "DrawingSheets__KeyboardBindings__ZoomKeyStep": 1.15,
+        "DrawingSheets__KeyboardBindings__NudgeStepMm": 1,
+        "DrawingSheets__KeyboardBindings__NudgeCoarseStepMm": 10,
         "DrawingSheets__KeyboardBindings__List": [
+            {
+                "Id": "Edit__NudgeLeft",
+                "Label": "Nudge the selected viewport left, or lock the X axis during a drag",
+                "Action": "Edit__NudgeLeft",
+                "Enabled": true,
+                "Keys": [
+                    "ArrowLeft"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional",
+                "Note": "As in the Layout Editor. Shift takes the coarse step at rest."
+            },
+            {
+                "Id": "Edit__NudgeRight",
+                "Label": "Nudge the selected viewport right, or lock the X axis during a drag",
+                "Action": "Edit__NudgeRight",
+                "Enabled": true,
+                "Keys": [
+                    "ArrowRight"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Edit__NudgeUp",
+                "Label": "Nudge the selected viewport up, or lock the Y axis during a drag",
+                "Action": "Edit__NudgeUp",
+                "Enabled": true,
+                "Keys": [
+                    "ArrowUp"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Edit__NudgeDown",
+                "Label": "Nudge the selected viewport down, or lock the Y axis during a drag",
+                "Action": "Edit__NudgeDown",
+                "Enabled": true,
+                "Keys": [
+                    "ArrowDown"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "CoarseOptional"
+            },
+            {
+                "Id": "Ortho__Toggle",
+                "Label": "Ortho on or off: a viewport being moved stays square to the paper",
+                "Action": "Ortho__Toggle",
+                "Enabled": true,
+                "Keys": [
+                    "F8"
+                ],
+                "Modifiers": [],
+                "ModifierMatch": "Exact",
+                "Note": "The Layout Editor's, and AutoCAD's key."
+            },
             {
                 "Id": "Nav__ZoomFit",
                 "Label": "Zoom to fit the sheet",
@@ -236,6 +295,23 @@
                 "Modifiers": [],
                 "ModifierMatch": "Exact"
             }
+        ]
+    },
+    "DrawingSheets__MeasurementsBox__Config": {
+        "DrawingSheets__MeasurementsBox__Description": "Typing into the Measurements box at the bottom right of the sheet, as in the Layout Editor and SketchUp: during a viewport's move, or after it until something else is done, a value typed anywhere goes into the box and Enter lands the viewport that far along its line. Only the keys here are taken, and Escape, Delete and Backspace only while something is typed. While a move is on offer, a figure is the box's before it is a zoom key, so 1 goes into the box rather than zooming to 100 percent.",
+        "DrawingSheets__MeasurementsBox__StartCharacters": "0123456789.,",
+        "DrawingSheets__MeasurementsBox__DragStartCharacters": "-",
+        "DrawingSheets__MeasurementsBox__DragStartCharactersNote": "These also begin a value, but only during a drag. Once it is let go, a bare minus is still Zoom out.",
+        "DrawingSheets__MeasurementsBox__TypingCharacters": "0123456789.,-+ mMcC",
+        "DrawingSheets__MeasurementsBox__CommitKeys": [
+            "Enter"
+        ],
+        "DrawingSheets__MeasurementsBox__ClearKeys": [
+            "Escape",
+            "Delete"
+        ],
+        "DrawingSheets__MeasurementsBox__EraseKeys": [
+            "Backspace"
         ]
     },
     "DrawingSheets__TouchBindings__Config": {

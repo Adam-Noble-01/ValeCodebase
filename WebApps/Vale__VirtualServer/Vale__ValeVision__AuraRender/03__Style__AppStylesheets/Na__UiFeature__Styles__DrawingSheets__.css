@@ -245,6 +245,115 @@
         fill                               : var(--Aura_Select);           /* <-- The selected bend point: Delete takes it out */
     }
 
+    .aura-move-band--x                     { stroke: var(--Aura_AxisX); }  /* <-- A viewport's drag locked by an arrow key: the width is set by the code from the zoom */
+    .aura-move-band--y                     { stroke: var(--Aura_AxisY); }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Measurements Box (the Layout Editor's)
+ * ----------------------------------------------------------------------------- */
+
+    .aura-measure {
+        position                           : absolute;
+        right                              : 26px;
+        bottom                             : 26px;
+        z-index                            : 20;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        padding                            : 4px 5px 4px 10px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : var(--Aura_RadiusSmall);
+        background                         : var(--Aura_Surface);
+        box-shadow                         : var(--Aura_Shadow);
+        font-size                          : var(--Aura_FontSize_Small);
+        color                              : var(--Aura_Text);
+    }
+
+    .aura-measure__label {
+        min-width                          : 5.4em;
+        color                              : var(--Aura_TextSecondary);
+        white-space                        : nowrap;
+    }
+
+    .aura-measure__input {
+        width                              : 9em;
+        padding                            : 3px 7px;
+        border                             : 1px solid var(--Aura_Border);
+        border-radius                      : 4px;
+        background                         : var(--Aura_SurfaceMuted);
+        color                              : var(--Aura_Text);
+        font                               : inherit;
+        font-weight                        : var(--Aura_FontSemiBold);
+        font-variant-numeric               : tabular-nums;
+        text-align                         : right;
+        outline                            : none;
+    }
+
+    .aura-measure__input::placeholder {
+        color                              : var(--Aura_Text);
+        opacity                            : 0.75;
+        font-weight                        : var(--Aura_FontRegular);
+    }
+
+    .aura-measure__input:disabled {
+        cursor                             : default;
+    }
+
+    /* Typing: the box lights up, so a value on its way is never mistaken for a
+       reading. An error keeps the value, edged red, until it is corrected. */
+
+    .aura-measure__input:focus,
+    .aura-measure--typing .aura-measure__input {
+        border-color                       : var(--Aura_Focus);
+        background                         : var(--Aura_Surface);
+    }
+
+    .aura-measure--error .aura-measure__input {
+        border-color                       : var(--Aura_Danger);
+    }
+
+    .aura-measure__chip {
+        padding                            : 2px 6px;
+        border-radius                      : 4px;
+        background                         : var(--Aura_SurfaceMuted);
+        color                              : var(--Aura_TextSecondary);
+        font-weight                        : var(--Aura_FontSemiBold);
+        white-space                        : nowrap;
+    }
+
+    .aura-measure__chip[hidden],
+    .aura-measure__hint[hidden] {
+        display                            : none;
+    }
+
+    .aura-measure--idle .aura-measure__label,
+    .aura-measure--idle .aura-measure__input {
+        opacity                            : 0.55;
+    }
+
+    /* The line above the box: how a value is being read as it is typed, why it
+       could not be used, or Ortho being switched. */
+
+    .aura-measure__hint {
+        position                           : absolute;
+        right                              : 0;
+        bottom                             : calc(100% + 6px);
+        padding                            : 4px 9px;
+        border-radius                      : 5px;
+        background                         : var(--Aura_Text);
+        color                              : var(--Aura_Surface);
+        line-height                        : 1.35;
+        white-space                        : nowrap;
+        pointer-events                     : none;
+    }
+
+    .aura-measure__hint--error {
+        background                         : var(--Aura_Danger);
+    }
+
 /* endregion ------------------------------------------------------------------- */
 
 
@@ -254,7 +363,8 @@
 
     @media print {
         .aura-vp__frame,
-        .aura-sheet__layer--overlay {
+        .aura-sheet__layer--overlay,
+        .aura-measure {
             display                        : none;
         }
     }

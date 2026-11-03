@@ -31,10 +31,16 @@
 //   turn the sheets.
 // - ADD A VIEW: the four elevations and the roof plan to scale, the engine's
 //   perspectives, the 3D Environment's own view, or a saved view.
+// - ORTHO (Na__Viewports__Move__) has a button on the toolbar, lit while it is on,
+//   and the Measurements box (Na__Viewports__Measurements__) sits at the bottom
+//   right of the desk's column.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.4.0 (AURA 0.5.20)
+// - The toolbar's Ortho button; the Measurements box mounted beside the desk.
+//
 // 30-Oct-2026 - Version 1.3.0 (AURA 0.5.0)
 // - "Add a view" lists the drawing set's scenes first (a viewport shows a
 //   scene, SketchUp to LayOut), then the new ones it can make.
@@ -81,6 +87,8 @@
     import { Na__ViewportEditor__Mount, Na__ViewportEditor__Add, Na__ViewportEditor__Remove, Na__ViewportEditor__Panel } from '../21__System__Viewports/Na__Viewports__Editor__.js';
     import { Na__RenderQueue__Clear, Na__RenderQueue__OnStatus } from '../21__System__Viewports/Na__Viewports__RenderQueue__.js';
     import { Na__ViewportPoints__Mount, Na__ViewportPoints__Panel, Na__ViewportPoints__SetOpen } from '../21__System__Viewports/Na__Viewports__ArtDirection__.js';
+    import { Na__ViewportMove__OrthoIsOn, Na__ViewportMove__OrthoToggle } from '../21__System__Viewports/Na__Viewports__Move__.js';
+    import { Na__ViewportMeasure__Mount } from '../21__System__Viewports/Na__Viewports__Measurements__.js';
     import { Na__Annotations__Mount, Na__Annotations__OnPaper, Na__Annotations__Panel, Na__Annotations__Remove, Na__Annotations__RemoveBend } from '../30__System__Annotations/Na__Annotations__Layer__.js';
     import { Na__DrawingSet__Viewport, Na__DrawingSet__Annotation } from '../40__Feature__DrawingSet/Na__DrawingSet__Model__.js';
 
@@ -97,6 +105,7 @@
         left    : null,                          // <-- The left panel: the sheet's sections
         status  : null,
         tools   : null,
+        ortho   : null,                          // <-- Ortho's button
         addView : null,
         onSheetChanged : null,                   // <-- The tabs redraw a renamed sheet
         paperTimer : 0                           // <-- A settings burst settling before the paper is made again
@@ -165,6 +174,18 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Light Ortho's Button While It Is On
+    // ------------------------------------------------------------
+    function Na__Workspace__MarkOrtho() {
+        const button = Na__Workspace__State.ortho;
+        if (!button) return;
+        const on = Na__ViewportMove__OrthoIsOn();
+        button.classList.toggle('is-active', on);
+        button.setAttribute('aria-pressed', String(on));
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Toolbar
     // ------------------------------------------------------------
     function Na__Workspace__BuildToolbar(bar) {
@@ -180,6 +201,14 @@
         });
         bar.appendChild(tools);
         Na__Workspace__State.tools = tools;
+
+        const aids = Na__Dom__El('div', 'aura-segmented', null, { role: 'group', 'aria-label': 'Drawing aids' });
+        const ortho = Na__Dom__El('button', 'aura-segmented__item', 'Ortho', { type: 'button', title: 'Ortho (F8): a viewport being moved stays on the horizontal or the vertical, whichever it has travelled further along. Hold Shift to free it. F8 again switches it off.' });
+        ortho.addEventListener('click', () => Na__ViewportMove__OrthoToggle());
+        aids.appendChild(ortho);
+        bar.appendChild(aids);
+        Na__Workspace__State.ortho = ortho;
+        Na__Workspace__MarkOrtho();
 
         Na__Workspace__State.addView = Na__Dom__El('div', 'aura-toolbar__add');
         bar.appendChild(Na__Workspace__State.addView);
@@ -405,6 +434,7 @@
         Na__SheetTouch__Attach(desk);
         Na__Surface__Mount(desk);
         Na__ViewportEditor__Mount();
+        Na__ViewportMeasure__Mount(desk.parentElement, desk);                    // <-- Beside the desk, so it stays put as the sheet scrolls
         Na__ViewportPoints__Mount();
         Na__Annotations__Mount((focusWords) => Na__Workspace__RenderPanel(focusWords));
         Na__Surface__On('paper', (event, mm) => {
@@ -415,6 +445,7 @@
         Na__RenderQueue__OnStatus((text) => { if (S.status) S.status.textContent = text; });
         Na__AppState__On('select', () => Na__Workspace__RenderPanel());
         Na__AppState__On('tool', () => Na__Workspace__MarkTool());
+        Na__AppState__On('ortho', () => Na__Workspace__MarkOrtho());
         Na__AppState__On('changed', (detail) => { if (detail && detail.reason === 'views') Na__Workspace__RefreshAddView(); });
         document.addEventListener('keydown', Na__Workspace__OnKey);
         S.panel.addEventListener('aura-panel-refresh', () => { Na__Workspace__RefreshAddView(); Na__Workspace__RenderPanel(); });

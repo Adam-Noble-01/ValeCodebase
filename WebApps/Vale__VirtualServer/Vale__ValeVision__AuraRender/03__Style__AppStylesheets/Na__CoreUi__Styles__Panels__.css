@@ -103,6 +103,7 @@
  * ----------------------------------------------------------------------------- */
 
     .aura-sheets__centre {
+        position                           : relative;                     /* <-- The Measurements box sits at its bottom right, clear of the desk's scrolling */
         flex                               : 1;
         min-width                          : 0;
         min-height                         : 0;

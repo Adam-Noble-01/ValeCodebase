@@ -28,12 +28,19 @@
 //     handed-in personalisation (SetKeyMap): AURA ships the one file.
 //   - Keys DrawingSheets__ for LayoutEditor__; the navigation limits live in the
 //     same file (DrawingSheets__Navigation__Config), not the app config.
-//   - No When contexts, selection or Measurements box readers: AURA's sheets
-//     have none of those.
+//   - No When contexts or selection readers: AURA's sheets have neither.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.2.0 (AURA 0.5.20)
+// - GetMeasureKeys: the Measurements box's characters and keys, the Layout
+//   Editor's, read by Na__Viewports__Measurements__.
+//
+// 03-Nov-2026 - Version 1.1.0 (AURA 0.5.19)
+// - The keyboard's setup gains the nudge steps (NudgeStepMm, NudgeCoarseStepMm),
+//   the Layout Editor's, read by Na__Viewports__Move__.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.1.3)
 // - Initial port.
 //
@@ -114,7 +121,24 @@
             coarseStepModifier : Na__SheetKeys__Val('KeyboardBindings', 'CoarseStepModifier', 'Shift'),
             panStepPx          : Na__SheetKeys__Val('KeyboardBindings', 'PanStepPx', 60),
             panCoarseStepPx    : Na__SheetKeys__Val('KeyboardBindings', 'PanCoarseStepPx', 240),
-            zoomKeyStep        : Na__SheetKeys__Val('KeyboardBindings', 'ZoomKeyStep', 1.15)
+            zoomKeyStep        : Na__SheetKeys__Val('KeyboardBindings', 'ZoomKeyStep', 1.15),
+            nudgeStepMm        : Na__SheetKeys__Val('KeyboardBindings', 'NudgeStepMm', 1),
+            nudgeCoarseStepMm  : Na__SheetKeys__Val('KeyboardBindings', 'NudgeCoarseStepMm', 10)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What the Measurements Box Takes From the Keyboard
+    // ------------------------------------------------------------
+    function Na__SheetKeys__GetMeasureKeys() {
+        return {
+            start  : Na__SheetKeys__Val('MeasurementsBox', 'StartCharacters', '0123456789.,'),
+            drag   : Na__SheetKeys__Val('MeasurementsBox', 'DragStartCharacters', '-'),
+            typing : Na__SheetKeys__Val('MeasurementsBox', 'TypingCharacters', '0123456789.,-+ mMcC'),
+            commit : Na__SheetKeys__Val('MeasurementsBox', 'CommitKeys', ['Enter']),
+            clear  : Na__SheetKeys__Val('MeasurementsBox', 'ClearKeys', ['Escape', 'Delete']),
+            erase  : Na__SheetKeys__Val('MeasurementsBox', 'EraseKeys', ['Backspace'])
         };
     }
     // ------------------------------------------------------------
@@ -221,6 +245,7 @@
     export {
         Na__SheetKeys__GetGuards,
         Na__SheetKeys__GetKeyboardSetup,
+        Na__SheetKeys__GetMeasureKeys,
         Na__SheetKeys__GetTouchSetup,
         Na__SheetKeys__GetNavigationSetup,
         Na__SheetKeys__MatchPointer,

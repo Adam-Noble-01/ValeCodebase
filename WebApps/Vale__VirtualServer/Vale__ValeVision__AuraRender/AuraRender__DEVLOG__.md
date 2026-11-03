@@ -125,7 +125,7 @@
 - [ ] Client, Address, Title, Scale, Date, Drawn By, Checked By and Drawing No. read 0.8 of their size, still in the middle of their rooms.
 - [ ] Revision rows too, if the sheet has any.
 
-**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+**Live:** pushed 03-Nov-2026 13:36 UTC (stamp 20261103-133653; 2 files replaced, none deleted), at Adam's word: "Commit and push". Measured with the real title block code in the app's page at the new size: THROWER 12.46 mm wide and 2.42 mm tall, ADAM WIDDOWSON 23.82 mm wide.
 
 ## Version 0.5.22, 03-Nov-2026: Art Direction Points Show Again
 
@@ -181,6 +181,112 @@
 
 **Live:** since the `aura` push of 03-Nov-2026 13:31 UTC (stamp 20261103-133123), made by another session; no API change, so no restart. Adam said "Commit and push both", and a compare found nothing left to send. Checked on the live site: this change's code and version 0.5.22, with the v0.8.33 pin. The look is Adam's to check.
 
+## Version 0.5.20, 03-Nov-2026: Typed Lengths and Ortho for a Viewport's Move
+
+**Asked by Adam**, offered the two things 0.5.19 left out ("Add TrueVision's typed lengths and F8 Ortho as well?"): "Yes, add both".
+
+**Ortho** (`Na__Viewports__Move__.js` 1.1.0, TrueVision's `32__System__OrthoMode`):
+
+- F8, or the new **Ortho** button on the sheet's toolbar, lit while it is on. It holds a viewport's move, and an Alt-drag pan, to the axis it has travelled further along.
+- The rule is TrueVision's and AutoCAD's: the axis is held when Ortho XOR Shift, so Shift frees a drag while Ortho is on. An arrow key's lock beats it.
+- F8 during a drag re-aims it at once. A held key counts once. F8 still works straight after using a list or a tick box in the panel, and stands down in a text box.
+- Each switch writes `<Ortho on>` or `<Ortho off>` above the Measurements box. Remembered in this browser, never in the drawing set.
+- It reaches viewport moves only. AURA's notes and leaders have no held axis for it to latch.
+
+**The Measurements box** (new: `Na__Viewports__Measurements__.js`, TrueVision's `Na__LayoutEditor__Measurements__`, and `Na__AppUtils__MeasureParse__.js`, its length reader):
+
+- It sits at the bottom right of the sheet, greyed at rest. During a frame move it reads how far the frame has gone, with the scale on a chip beside it.
+- **Type without clicking:** during a move, or after it, a number typed anywhere goes into the box and Enter lands the frame exactly that far along its line. An arrow key holds the axis while you type, which Shift cannot do, since Shift has to come off to reach the number keys. The drag ends there (`Na__Surface__FinishDrag`), so a still-down button cannot pull the frame back.
+- **At the viewport's scale, as in TrueVision:** 2500 on a 1:50 elevation moves it 50 mm of paper. Units and commas read the same way: 2500, 2,500, 250cm, 2.5m. A minus runs the other way.
+- **The last move stays on offer**, SketchUp's rule: every length typed lands it again from where it started, so 1000 then 1200 is 1200. Another selection, another tool, a nudge, an undo, a resize or a pan ends the offer.
+- Exact: no Shift, Ortho or lock bends a typed length. Only the paper's edge can stop it, and the box says where.
+- Escape or Delete drops what is typed and Backspace takes a character back, each only while something is typed. Letters stay tool keys until a value is begun, and a click on the sheet drops a half-typed value. Clicking the box types into it directly, which is also how a touch screen reaches it.
+
+**A frame is now kept to a thousandth of a millimetre.** Frames were rounded to a tenth on the paper, which at 1:50 is 5 mm on the building, so a typed 1234 could not have landed on 1234. A hand drag still moves in tenths, but from where the frame started, so the axis it is not moving keeps its place to the last figure. Existing frames are unchanged.
+
+**Where it differs from TrueVision, on purpose:**
+
+- A 3D view reads in paper millimetres (the chip says Paper). TrueVision reads one at the sheet's scale, but AURA's sheets can be all 3D views, with no scale to borrow. Adam to say if he wants it otherwise.
+- **A bare minus begins a value only during a drag.** Once let go it is still Zoom out, a key TrueVision's sheets do not have.
+- **While a move is on offer, 1 goes into the box rather than zooming to 100 percent.** AURA has that key and TrueVision does not. It is back once a click, Escape or another selection ends the offer. Said in `Na__Hotkeys__DrawingSheets__.json`.
+
+**Also changed:** `Na__DrawingSheets__Surface__.js` 1.3.0 (`FinishDrag`), `Na__DrawingSheets__KeyMap__.js` 1.2.0 (`GetMeasureKeys`), `Na__DrawingSheets__Workspace__.js` 1.4.0 (the button, the box's mount), `Na__Viewports__Editor__.js` 2.4.0, the app state's list of events (`ortho`), the panel's hint, the README, and the stylesheets (the box; `.aura-sheets__centre` is now positioned, to hold it).
+
+**Checked here (no browser):** both modules run together in Node against the real key map and the real length reader, with the DOM and the app stubbed: 42 checks, the 18 from 0.5.19 and 24 new, covering Ortho XOR Shift, F8's focus rules, the reader's figures, live readings, typed and retyped landings at 1:50 and on the paper, the edge, refusals, every way the offer ends, and the keys the box must leave alone. `node --check` on the changed modules, both JSON files parsed, all 128 imported names found in their modules' exports. `FinishDrag` itself and the box's look have only been read, not run.
+
+Not run in a browser: Adam tests it. Committed by another session at Adam's word, "coomit", once this one was idle.
+
+**For Adam to test** (reload AURA locally first):
+
+- [ ] The box is at the bottom right of a sheet, greyed, and stays put as the sheet moves. It is not on the 3D Environment tab, or in a print.
+- [ ] Press F8: the toolbar's Ortho lights and `<Ortho on>` shows above the box. Drag a viewport: it stays square. Hold Shift: it goes free. Reload: Ortho is still on. F8 again: off.
+- [ ] Press F8 during a drag: it snaps to the axis at once, and frees at once on the second press.
+- [ ] Drag a 1:50 elevation: the box reads the distance in real millimetres and the chip says 1:50.
+- [ ] During that drag, tap an arrow to lock an axis, type 2500, press Enter with the button still down: it lands 50 mm of paper along, and stays there as the mouse moves and lets go.
+- [ ] Without clicking anything, type 3000 and Enter: it moves to 3000 from where it started, not 3000 further. Type -1000 and Enter: it goes the other way from its start.
+- [ ] Type a length that would run off the paper: it stops at the border and says how far it got.
+- [ ] A 3D viewport: the chip says Paper and 100 moves it 100 mm.
+- [ ] Type 12, then Backspace, then Escape: the typing goes and the viewport is not deselected. Press Escape again: it is. Type 12 then Delete: the viewport stays. Press Delete again: it goes.
+- [ ] Type 2 then m then Enter: 2 metres at the scale. Type 2,5 and Enter: refused with a reason, and the value stays to be corrected.
+- [ ] After a move, click paper or another viewport, or nudge it: the box goes back to rest, and 1 zooms to 100 percent again.
+- [ ] Right after a move, `-` still zooms out and V, N and L still pick tools.
+- [ ] Ctrl + Z after a typed length puts the viewport back, and the box rests.
+- [ ] Alt-drag pan and a resize do not wake the box.
+- [ ] With a typed landing: nudge it, then drag it with an arrow lock. The other axis does not creep.
+- [ ] No errors in the console.
+
+**Live:** by the `aura` pushes of 03-Nov-2026, the last at 14:11 UTC; a compare then found nothing left to send. No API change, so no restart.
+
+## Version 0.5.19, 03-Nov-2026: Viewports Move as They Do in TrueVision's Layout Editor
+
+**Asked by Adam:** "The sheet viewports add constraints for moving them like shift and directrional drag and also arrow keys. / at the moment its a massive pain in the ass to accurately move the viewports / see TrueVision 3D's Layout editor and its viewport handling, and copy that".
+
+**This is AURA's own side** (the drawing page and its viewports), so nothing went into PainterlyNPR and no sync was needed. The rules are TrueVision's, from `Na__LayoutEditor__SheetTools__PointerDrag__` 1.19.0, `Na__LayoutEditor__SheetTools__Keyboard__` 1.18.0 and `Na__LayoutEditor__AxisLock__`, in a new module, `Na__Viewports__Move__.js`:
+
+- **A press is not yet a drag.** Before, the first pixel of travel moved the frame, so clicking a viewport to select it could shift it. It now travels barely two pixels at any zoom (`Viewport__DragThresholdMm`, 0.5), and the press that selects a viewport travels 8 pixels (`Viewport__PickDragPx`).
+- **Shift holds the drag to the nearer axis**, taking effect as it goes down or comes up, without waiting for the mouse.
+- **An arrow key during a drag locks the axis** with nothing held down: left or right holds it to X, up or down to Y, and the same axis again lets it go. It beats Shift. A line runs from the press to where the frame has been carried, red for X and green for Y, in TrueVision's colours. The lock ends with the drag.
+- **An arrow key at rest nudges the selected viewport** 1 mm, or 10 mm with Shift. Only with the Select tool up, and stopped by the paper's edge, as a drag is. The frame moves in place and the layer is drawn again once the keys rest (`Viewport__NudgeSettleMs`), so a held key does not redraw every picture on the sheet. A run of presses is one undo step. The steps and the four bindings are in `Na__Hotkeys__DrawingSheets__.json`, read by `Na__DrawingSheets__KeyMap__.js` 1.1.0.
+
+**In `Na__Viewports__Editor__.js` 2.3.0:** a move, an Alt-drag pan and a resize all go through the new module, and the panel explains the keys, reading the steps from the key map. The stylesheets gain the two axis colours.
+
+**Where it differs from TrueVision, on purpose:**
+
+- An Alt-drag pan holds too. TrueVision's stays free, but in AURA Shift has no other use there, and an elevation slid along its frame wants it.
+- A held arrow counts once during a drag, so the lock cannot flicker.
+- The arrows do nothing during a resize. In TrueVision they fall through to the nudge and walk the frame.
+- Alt + Left during an Alt-drag pan is the lock, and is kept from being the browser's Back.
+
+**Not copied:**
+
+- **Carrying a viewport by a point of its linework, with snap and tracking lines.** AURA's viewports are pictures, so there is no linework here to grab or snap to.
+- **Typed lengths (the Measurements box) and Ortho mode (F8).** Both came across in 0.5.20, at Adam's word.
+- The drawing grid and Ctrl-drag copy: AURA's sheets have neither.
+
+**Checked here (no browser):** the new module run in Node against the real key map, with the DOM and the app stubbed: 18 checks covering the dead zones, Shift, the lock, the line, the nudge, the paper's edge, a layer redrawn mid-run and the keys that must not nudge. `node --check` on the three modules, both JSON files parsed, all 66 imported names in `Move` and `Editor` found in their modules' exports.
+
+Not run in a browser: Adam tests it. Committed by another session at Adam's word, "coomit", once this one was idle. 0.5.17 is another session's open work, left as it is; this file's hunks need separating if the two are committed apart.
+
+**For Adam to test** (reload AURA locally first):
+
+- [ ] Click a viewport that is not selected, with a slight wobble: it selects and does not move.
+- [ ] Drag a viewport freely. It starts after a very short travel and follows the pointer.
+- [ ] Hold Shift during a drag: it stays on the nearer axis. Press and release Shift with the mouse still: the frame jumps on and off the axis at once.
+- [ ] During a drag, tap left or right: held to X, with a red line. Tap either again: free. Tap up or down: held to Y, with a green line.
+- [ ] Hold Shift and tap an arrow during a drag: the arrow's axis wins.
+- [ ] Let go and drag again: the lock has gone.
+- [ ] With a viewport selected and nothing dragged: each arrow moves it 1 mm, Shift + arrow 10 mm. Hold a key: it runs smoothly, and the pictures do not flash until it stops.
+- [ ] One Ctrl + Z undoes a whole run of nudges.
+- [ ] Nudge and drag into the border: the frame stops at it.
+- [ ] Alt-drag an elevation's drawing, with Shift and with an arrow: it holds to the axis. Alt + Left does not take the browser Back.
+- [ ] Drag a resize handle and press an arrow or Shift: nothing changes.
+- [ ] Arrows in the Title box or a slider still belong to them. With a note selected, or the note tool up, they do not move a viewport.
+- [ ] A cut elevation: its swish and title move with the frame on a nudge and on a drag.
+- [ ] With Art direction points open on a viewport: a nudge keeps the points on the picture.
+- [ ] The panel's hint reads properly. No errors in the console.
+
+**Live:** by the `aura` pushes of 03-Nov-2026, the last at 14:11 UTC; a compare then found nothing left to send. No API change, so no restart.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.33, a Ball Standard in a Red Bowl (No App Version of Its Own)
 
 **Asked by Adam:** "Load your NPR Skill / Build this potted plant asset", with an orangery's pots ringed in red, then "Commit and sync".
@@ -224,6 +330,52 @@
 - [ ] The sky round the building looks the same as before.
 
 **Live:** since the `aura` push of 03-Nov-2026 13:18 UTC (stamp 20261103-131821), made by another session; no API change, so no restart. Adam then said "Push it live", and a compare found nothing of this work left to send. Checked on the live site: the import map at v0.8.32, the worker's cache version 2026-11-03-08, `footOpen` in the render queue and `uFootOpen` in the pinned shader. The look on the Thrower sheet is Adam's to check.
+
+## Version 0.5.17, 03-Nov-2026: The Ground Cut's Two Copies Retired
+
+**Why:** PainterlyNPR v0.8.30's DEVLOG: "AURA can now retire two copies" once its pin holds them, under Adam's rule ("dont duplicate code the npr repo remains definitive source"). Version 0.5.16's v0.8.31 pin holds them. The two are named there, and nothing else was changed.
+
+**Retired** (no sync: the v0.8.31 pin already has both, so the import map and the worker's cache version stay as they are):
+
+- **The building's bounds** (`Na__EngineHost__PainterlyNpr__.js` 1.13.0): `Na__EngineHost__BuildingBounds` now calls the engine's `PainterlyNPR__ScenePackage__BuildingBounds`. AURA's measure and its cache are gone. The door keeps its name, since only folder 10 imports the engine, so its readers change nothing: the ground line, the Cameras tab, the drawing planes, the views and the parameter dump. The retired code and the engine's are the same apart from names and spacing, so no bounds and no ground line move.
+- **The menu's list** (`Na__Viewports__GroundCutMenu__.js` 1.1.0): the kinds, New swish, Flip, Colour, Ink ground line and Adjust... now come from the engine's `PainterlyNPR__GroundCut__MenuItems`, given this viewport's change and its Adjust panel. AURA adds only its own: the line when nothing is cut, Show it, Undo and Redo. A pin older than v0.8.30 has no list, so the menu says to sync the engine.
+
+**Three small changes Adam will see, all in the menu's words, as the engine has them:**
+
+- The current colour is marked "now" at the row's right, where its name read "(now)".
+- Ink ground line gains a tooltip, the engine's.
+- Adjust...'s tooltip says "in the panel", where it said "in a small panel".
+
+**Left as it is:**
+
+- **The Adjust panel's words** (Kind, Colour, New swish, Flip, Reset and their tooltips) are still written in `Na__Viewports__GroundCutMenu__.js`. The engine holds the same words in its config's `Menu` section but does not export them, so retiring them needs a seam in PainterlyNPR and a sync. Its controls, ranges, readouts and kinds were already the engine's.
+- **AURA's ground line** (`Na__GroundCut__GroundY`) is not a copy: it is the building's foot through the viewport's own camera and scale. The engine's sheet uses the higher of the lawn and the foot, on the whole sheet, and does not export it. AURA's stills still carry no second swish: it never calls `SheetEnable`.
+
+**Checked here (no browser):**
+
+- The retired list and the engine's compared in Node, every kind with Flip off and on, and with no settings at all (196 rows): only the three changes above differ, and each row's action writes the same settings.
+- All 71 engine references in AURA's modules resolve in the v0.8.31 pin, with their 90 imported names (one new: `PainterlyNPR__ScenePackage__BuildingBounds`).
+- `node --check` on both modules.
+- The sync's `--check`: the v0.8.31 pin untouched and the same as the repository. It exits 1 on the old v0.8.17 pin (288 files differ from its lock), which nothing loads, and which git shows unchanged by this work.
+
+Not run in a browser: Adam tests it. Committed by another session at Adam's word, "coomit", once this one was idle.
+
+**For Adam to test** (reload AURA locally first):
+
+- [ ] Open a sheet with an elevation viewport and drag its bottom handle up past the ground: it cuts at the same height as before, with its swish.
+- [ ] Right-click that viewport: the menu reads Grass sweep, Grass strip, Hardstanding, Gravel, Paving, Plain cut, then New swish, Flip, Colour, Ink ground line, Adjust..., then Show it, Undo, Redo.
+- [ ] Choose another kind: the tick moves and the swish changes. Undo brings it back.
+- [ ] New swish paints a different stroke. Flip moves its heavy end to the other side.
+- [ ] Colour: the current one shows "now" at the right. Choosing another changes the swish.
+- [ ] Ink ground line turns the ruled line on and off, and its tooltip shows on hover.
+- [ ] Adjust... opens the panel beside where you clicked, and its sliders still paint live.
+- [ ] Plain cut: New swish, Flip, Colour, Ink ground line and Adjust... are greyed out.
+- [ ] An elevation not cut (handle at the bottom) shows "Drag the bottom edge up past the ground to cut it" at the top of the menu. Show it, Off shows "Off for this viewport".
+- [ ] The other readers of the bounds: a new elevation view still centres on the building, and the 3D Environment's Cameras tab and drawing planes still sit round it.
+- [ ] Open a second project: its ground line and centring follow its own building.
+- [ ] No errors in the console.
+
+**Live:** by the `aura` pushes of 03-Nov-2026, the last at 14:11 UTC; a compare then found nothing left to send. No API change, so no restart.
 
 ## Version 0.5.16, 03-Nov-2026: The Art Direction Points' New Names, Under Groups
 

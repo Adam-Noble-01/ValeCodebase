@@ -84,6 +84,11 @@
 // - RenderStill takes footOpen and hands it to SetFrame (PainterlyNPR 0.8.32):
 //   a viewport cut at the ground is painted past the cut, and clipped back.
 //
+// 03-Nov-2026 - Version 1.13.0 (AURA 0.5.17)
+// - BuildingBounds is the engine's own (PainterlyNPR 0.8.30,
+//   PainterlyNPR__ScenePackage__BuildingBounds): AURA's copy of the measure and
+//   its cache are gone, and this door keeps its name for AURA's modules.
+//
 // 03-Nov-2026 - Version 1.12.0
 // - BuildPointTypes: the engine's own add buttons, in AURA's panels (PainterlyNPR
 //   0.8.31), reached by name through the module's namespace.
@@ -175,7 +180,7 @@
         PainterlyNPR__Engine__SHEET_WIDTH_MM   as  SHEET_WIDTH_MM
     } from 'PainterlyNPR/02__AppData/PainterlyNPR__AppData__Engine__.mjs';
     import { PainterlyNPR__SeededRandom__MintSeed, PainterlyNPR__SeededRandom__DeriveSeed } from 'PainterlyNPR/03__AppUtils/PainterlyNPR__AppUtils__SeededRandom__.mjs';
-    import { PainterlyNPR__ScenePackage__Load, PainterlyNPR__ScenePackage__Scene as Scene } from 'PainterlyNPR/10__Import__ScenePackage/PainterlyNPR__ScenePackage__Build__.mjs';
+    import { PainterlyNPR__ScenePackage__BuildingBounds, PainterlyNPR__ScenePackage__Load, PainterlyNPR__ScenePackage__Scene as Scene } from 'PainterlyNPR/10__Import__ScenePackage/PainterlyNPR__ScenePackage__Build__.mjs';
     import {
         PainterlyNPR__RenderGraph__Bump,
         PainterlyNPR__RenderGraph__Request,
@@ -461,27 +466,10 @@
         return Scene ? { Objects: Scene.Objects.length, Edges: Scene.Edges.length, Surfaces: Scene.Surfaces.length } : null;
     }
 
-    // The building, not its garden: every vertex of an Architecture or Focal object
-    // (walls, roofs, chimneys, windows, door, porch). Elevations and plans centre on it.
-    // Measured once a scene (an open elevation reads it every frame), handed out as copies.
-    const Na__EngineHost__BoundsCache = { Vertices: null, Length: -1, Objects: -1, Bounds: null };
-
+    // The building, not its garden: the engine's own measure of its Architecture and
+    // Focal objects. Elevations and plans centre on it.
     function Na__EngineHost__BuildingBounds() {
-        if (!Scene) return null;
-        const c = Na__EngineHost__BoundsCache;
-        if (c.Vertices !== Scene.Vertices || c.Length !== Scene.Vertices.length || c.Objects !== Scene.Objects.length) {
-            const ids = new Set(Scene.Objects.filter((o) => o.Role === 'Architecture' || o.Role === 'Focal').map((o) => o.Id));
-            const v = Scene.Vertices;
-            const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
-            for (let i = 0; i < v.length; i += 8) {
-                if (!ids.has(Math.round(v[i + 6]))) continue;
-                for (let k = 0; k < 3; k++) { if (v[i + k] < min[k]) min[k] = v[i + k]; if (v[i + k] > max[k]) max[k] = v[i + k]; }
-            }
-            Object.assign(c, { Vertices: v, Length: v.length, Objects: Scene.Objects.length, Bounds: Number.isFinite(min[0]) ? { Min: min, Max: max } : null });
-        }
-        if (!c.Bounds) return null;
-        const min = c.Bounds.Min.slice(), max = c.Bounds.Max.slice();
-        return { Min: min, Max: max, Centre: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2] };
+        return PainterlyNPR__ScenePackage__BuildingBounds();
     }
     // ------------------------------------------------------------
 

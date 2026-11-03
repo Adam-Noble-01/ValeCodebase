@@ -35,6 +35,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.3.0 (AURA 0.5.20)
+// - FinishDrag: a typed length lands a viewport with the button still down, so
+//   the drag ends there and a still-down pointer cannot pull it back.
+//
 // 30-Oct-2026 - Version 1.2.0 (AURA 0.3.3)
 // - The paper is the engine's (SetPaper): the drawing set's paper tone and
 //   grain as an SVG pattern, on the sheet and as a ground under the title
@@ -329,6 +333,19 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | End the Drag Under Way Where It Is, the Button Still Down
+    // ------------------------------------------------------------
+    // The pointer's later moves find no drag; its release only lets the capture go.
+    // ------------------------------------------------------------
+    function Na__Surface__FinishDrag() {
+        const S = Na__Surface__State;
+        const drag = S.drag;
+        S.drag = null;
+        if (drag && drag.end) drag.end(S.lastMm || { X: 0, Y: 0 }, null);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Wire the Desk: presses and drags (navigation is the controls')
     // ------------------------------------------------------------
     function Na__Surface__Wire() {
@@ -426,6 +443,7 @@
         Na__Surface__SetZoom,
         Na__Surface__Elements,
         Na__Surface__SetSuppressed,
+        Na__Surface__FinishDrag,
         Na__Surface__Current
     };
 

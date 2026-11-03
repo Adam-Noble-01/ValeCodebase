@@ -159,7 +159,7 @@ Noble Architecture's TrueVision 3D wrapper       the second wrapper, to come, ro
   Layout Editor's:
   the wheel zooms about the cursor, a middle or right drag (or Space and a left drag) pans, two fingers pinch and pan,
   one finger pans from the grey desk, a double tap on the desk fits; F fits, 1 is 100 percent, + and - zoom, Page Up
-  and Page Down turn the sheets.
+  and Page Down turn the sheets. Moving a viewport is TrueVision's Layout Editor's too: a click selects it without shifting it, Shift holds a drag to the nearer axis, an arrow key during a drag locks X or Y (the same axis again lets it go), and with nothing dragged the arrow keys nudge it 1 mm, or 10 mm with Shift. Ortho (F8, or the toolbar's button) holds every move square until Shift frees it. The Measurements box at the bottom right reads how far a move has gone: during it, or just after, type a distance and press Enter (250, 2,500, 2.5m) and it lands exactly that far along its line, at the viewport's scale shown beside the box (2500 at 1:50 is 50 mm of paper; a 3D view has no scale, so its figures are paper millimetres). Type another to correct it.
 - **Add a view:** the four elevations and the roof plan at 1:20, 1:50, 1:100 or 1:200, or a 3D view (a preset, a saved
   view, or the 3D Environment's view now). Drag to move, drag a handle to resize, Alt and drag inside a scaled view to
   pan it, Delete to remove. A scaled view is at most the engine's own sheet, A3 (420 x 297 mm): the engine draws one sheet that size, its pen

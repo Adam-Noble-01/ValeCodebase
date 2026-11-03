@@ -20,6 +20,8 @@
 //   are the viewport's own (Viewport__PanM): its scene stays where it is.
 // - A 3D VIEW is a picture: it fills its frame, cropped to the frame's shape.
 // - Drag a viewport to move it; drag a handle to resize it; Delete removes it.
+//   Shift and the arrow keys hold a move, and the arrows nudge one at rest
+//   (Na__Viewports__Move__, TrueVision's Layout Editor's rules).
 // - The pictures come from the render queue; until one arrives its frame shows
 //   "Drawing in pen and wash".
 // - SCENES (SketchUp to LayOut, AURA 0.5.0): every viewport shows a scene,
@@ -35,6 +37,16 @@
 // 03-Nov-2026 - Version 2.5.0 (AURA 0.5.24)
 // - A locked viewport (Na__Viewports__Lock__) shows a padlock in place of its
 //   handles and takes a press only to be selected. Its panel has the switch.
+//
+// 03-Nov-2026 - Version 2.4.0 (AURA 0.5.20)
+// - A move names its frame to Na__ViewportMove__Drag, which is what the
+//   Measurements box reads and a typed length lands.
+//
+// 03-Nov-2026 - Version 2.3.0 (AURA 0.5.19)
+// - A move, an Alt-drag pan and a resize go through Na__ViewportMove__Drag: a
+//   dead zone before anything moves; Shift and an arrow key hold a move or a pan
+//   to an axis, and the arrows nudge a selected viewport at rest. A resize keeps
+//   the raw pointer. The panel says so.
 //
 // 30-Oct-2026 - Version 2.2.0 (AURA 0.5.13)
 // - The ground cut (Na__Viewports__GroundCut__): an elevation whose bottom
@@ -109,6 +121,7 @@
     import { Na__GroundCut__Decorate, Na__GroundCut__Drag } from './Na__Viewports__GroundCut__.js';
     import { Na__GroundCutMenu__OnContextMenu } from './Na__Viewports__GroundCutMenu__.js';
     import { Na__ViewportLock__Is, Na__ViewportLock__Toggle, Na__ViewportLock__Refuse } from './Na__Viewports__Lock__.js';
+    import { Na__ViewportMove__Mount, Na__ViewportMove__Drag, Na__ViewportMove__Place, Na__ViewportMove__Hint } from './Na__Viewports__Move__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -270,42 +283,53 @@
         const sheet = Na__ViewportEditor__Sheet();
         const viewport = Na__DrawingSet__Viewport(sheet, element.getAttribute('data-id'));
         if (!viewport) return null;
+        const pick = Na__ViewportEditor__Selected(sheet) !== viewport;           // <-- The press that selects it: a click must not shift it
         Na__AppState__Select('viewport', viewport.Viewport__Id);
         const start = { X: mm.X, Y: mm.Y, frame: Object.assign({}, viewport.Viewport__FrameMm) };
-        let moved = false;
 
-        if (Na__ViewportLock__Is(viewport)) return { move() { Na__ViewportLock__Refuse(); }, end() {} };   // <-- A click selects it; a drag only says why nothing moves
+        if (Na__ViewportLock__Is(viewport)) {                                    // <-- A click selects it; a drag only says why nothing moves
+            let told = false;
+            return Na__ViewportMove__Drag({
+                startMm: start,
+                pick,
+                holds: false,
+                apply() { if (!told) { told = true; Na__ViewportLock__Refuse(); } },
+                land() {}
+            });
+        }
 
         if (event.altKey && Na__Views__IsScaled(viewport)) {
             const image = element.querySelector('.aura-vp__picture');
-            return {
-                move(p) {
-                    moved = true;
-                    if (image) image.setAttribute('transform', `translate(${p.X - start.X} ${p.Y - start.Y})`);
+            let panned = { X: 0, Y: 0 };
+            return Na__ViewportMove__Drag({
+                startMm: start,
+                pick,
+                apply(delta) {
+                    panned = delta;
+                    if (image) image.setAttribute('transform', `translate(${delta.X} ${delta.Y})`);
                 },
-                end(p) {
-                    if (!moved) return;
-                    Na__Views__Pan(viewport, p.X - start.X, p.Y - start.Y, Na__AppState__Data.doc);
+                land() {
+                    Na__Views__Pan(viewport, panned.X, panned.Y, Na__AppState__Data.doc);
                     Na__AppState__Touch('viewport', sheet.Sheet__Id);
                     Na__Surface__RedrawLayer('viewports');
                 }
-            };
+            });
         }
-        return {
-            move(p) {
-                moved = true;
-                const frame = Na__Paper__ClampFrame(sheet, Object.assign({}, start.frame, { X: start.frame.X + p.X - start.X, Y: start.frame.Y + p.Y - start.Y }));
-                viewport.Viewport__FrameMm.X = Na__Format__Round(frame.X, 1);
-                viewport.Viewport__FrameMm.Y = Na__Format__Round(frame.Y, 1);
-                element.setAttribute('transform', `translate(${viewport.Viewport__FrameMm.X - start.frame.X} ${viewport.Viewport__FrameMm.Y - start.frame.Y})`);
-                Na__Surface__RedrawOverlay();
+        return Na__ViewportMove__Drag({
+            startMm: start,
+            pick,
+            frame: { sheet, viewport },                                          // <-- A move of the frame: the Measurements box reads it and takes a typed length
+            apply(delta, exact) {
+                const step = exact ? delta : { X: Na__Format__Round(delta.X, 1), Y: Na__Format__Round(delta.Y, 1) };   // <-- A hand moves it in tenths from where it started, so an axis it is not moving keeps its place to the last figure
+                const frame = Na__Paper__ClampFrame(sheet, Object.assign({}, start.frame, { X: start.frame.X + step.X, Y: start.frame.Y + step.Y }));
+                const at = Na__ViewportMove__Place(viewport, frame.X, frame.Y);
+                return { X: at.X - start.frame.X, Y: at.Y - start.frame.Y };     // <-- The paper's edge may have stopped it
             },
-            end() {
-                if (!moved) return;
+            land() {
                 Na__AppState__Touch('viewport', sheet.Sheet__Id);
                 Na__Surface__RedrawLayer('viewports');
             }
-        };
+        });
     }
     // ------------------------------------------------------------
 
@@ -320,11 +344,11 @@
         const start = { X: mm.X, Y: mm.Y, frame: Object.assign({}, viewport.Viewport__FrameMm) };
         const min = Na__AppConfig__Get('Viewport__MinFrameMm', 20);
         const max = Na__Views__IsScaled(viewport) ? Na__Views__MaxScaledFrame() : { WidthMm: 2000, HeightMm: 2000 };
-        let moved = false;
-        return {
-            move(p) {
-                moved = true;
-                const dx = p.X - start.X, dy = p.Y - start.Y, s = start.frame;
+        return Na__ViewportMove__Drag({
+            startMm: start,
+            holds: false,                                                        // <-- Shift and the arrows are a move's: a handle follows the pointer
+            apply(delta) {
+                const dx = delta.X, dy = delta.Y, s = start.frame;
                 let x0 = s.X, y0 = s.Y, x1 = s.X + s.WidthMm, y1 = s.Y + s.HeightMm;
                 if (h.includes('w')) x0 = Na__Format__Clamp(x0 + dx, x1 - max.WidthMm, x1 - min);
                 if (h.includes('e')) x1 = Na__Format__Clamp(x1 + dx, x0 + min, x0 + max.WidthMm);
@@ -334,10 +358,8 @@
                 const clip = document.querySelector(`#aura-clip-${viewport.Viewport__Id} rect`);
                 if (clip) ['x', 'y', 'width', 'height'].forEach((k, i) => clip.setAttribute(k, String([x0, y0, x1 - x0, y1 - y0][i])));
                 Na__GroundCut__Drag(viewport, Na__AppState__Data.doc);           // <-- An elevation's cut rides on the frame's bottom while it moves
-                Na__Surface__RedrawOverlay();
             },
-            end() {
-                if (!moved) return;
+            land() {
                 const f = viewport.Viewport__FrameMm, s = start.frame;
                 if (Na__Views__IsScaled(viewport)) {
                     const dcx = (f.X + f.WidthMm / 2) - (s.X + s.WidthMm / 2), dcy = (f.Y + f.HeightMm / 2) - (s.Y + s.HeightMm / 2);
@@ -347,7 +369,7 @@
                 Na__Surface__RedrawLayer('viewports');
                 Na__Surface__RedrawOverlay();
             }
-        };
+        });
     }
     // ------------------------------------------------------------
 
@@ -524,6 +546,8 @@
             container.appendChild(Na__Dom__El('p', 'aura-panel__hint', `Alt and drag inside the frame to pan this viewport only. A scaled view is at most ${sheet.WidthMm} x ${sheet.HeightMm} mm: the engine draws one sheet that size, its pen widths true on the paper.`));
         }
 
+        container.appendChild(Na__Dom__El('p', 'aura-panel__hint', Na__ViewportMove__Hint()));
+
         const size = Na__Dom__El('div', 'aura-field-pair');
         ['WidthMm', 'HeightMm'].forEach((key) => {
             const max = Na__Views__IsScaled(viewport) ? Na__Views__MaxScaledFrame()[key] : 2000;
@@ -561,6 +585,7 @@
         Na__Surface__AddOverlay(Na__ViewportEditor__DrawOverlay);
         Na__Surface__On('viewport', Na__ViewportEditor__OnPress);
         Na__Surface__On('handle:viewport', Na__ViewportEditor__OnHandle);
+        Na__ViewportMove__Mount();                                               // <-- The axis lock's line, and the arrow keys (AURA 0.5.19)
         Na__AppState__On('select', () => Na__Surface__RedrawOverlay());
         Na__SheetPc__OnMenu(Na__GroundCutMenu__OnContextMenu);                   // <-- A right click on an elevation: how it meets the ground (AURA 0.5.13)
     }

@@ -18,10 +18,12 @@
 //   settings and be able to seed new watercolour swishes". Asked, he chose the
 //   menu plus a small Adjust panel.
 // - THE MENU IS THE ENGINE'S (its look, keys and submenus), opened through the
-//   host. It lists the kinds, New swish, Flip, Colour, Ink ground line,
-//   Adjust..., Show it (AURA's own: when the cut is made) and AURA's Undo and
-//   Redo. A right drag still pans the sheet: only a right click that did not
-//   move opens it (Na__DrawingSheets__Controls__Pc__).
+//   host. Its list of the kinds, New swish, Flip, Colour, Ink ground line and
+//   Adjust... is the engine's too (MenuItems, PainterlyNPR v0.8.30), given this
+//   viewport's change and panel. AURA adds only what is its own: the line when
+//   nothing is cut, Show it (when the cut is made), and its Undo and Redo. A
+//   right drag still pans the sheet: only a right click that did not move opens
+//   it (Na__DrawingSheets__Controls__Pc__).
 // - THE ADJUST PANEL floats beside the viewport, draggable by its head, with
 //   every control the engine lists for a cut: its label, range, step, readout
 //   (click it to type a value) and hint are the engine's. A slider shows a
@@ -37,6 +39,10 @@
 // 03-Nov-2026 - Version 1.2.0 (AURA 0.5.24)
 // - Every viewport has this menu: Lock or Unlock viewport (Na__Viewports__Lock__),
 //   and on an elevation its ground cut below that.
+//
+// 03-Nov-2026 - Version 1.1.0 (AURA 0.5.17)
+// - The menu's list is the engine's PainterlyNPR__GroundCut__MenuItems: AURA's
+//   copy of it is gone. A pin older than v0.8.30 says to sync the engine.
 //
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.5.13)
 // - Initial build.
@@ -159,7 +165,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Menu's Items, in the Engine's Form
+    // FUNCTION | The Menu's Items: the engine's list, with AURA's own around it
     // ------------------------------------------------------------
     function Na__GroundCutMenu__Items(viewport, x, y) {
         const items = [Na__ViewportLock__MenuItem(viewport)];                    // <-- Every viewport's (0.5.24); the ground cut is an elevation's
@@ -169,27 +175,16 @@
         }
         items.push({ Separator: true }, { Heading: 'Ground cut-off' });
         const engine = Na__EngineHost__GroundCut();
-        if (!engine) {
-            items.push({ Label: 'The ground cut needs PainterlyNPR v0.8.13 or later (sync the engine)', Disabled: true });
+        const E = engine ? engine.Settings : null;
+        if (!E || typeof E.PainterlyNPR__GroundCut__MenuItems !== 'function') {
+            items.push({ Label: 'The ground cut\'s menu needs PainterlyNPR v0.8.30 or later (sync the engine)', Disabled: true });
             return items;
         }
-        const E = engine.Settings;
         const rec = Na__GroundCut__Of(viewport);
-        const s = E.PainterlyNPR__GroundCut__Resolve(rec.Settings, viewport.Viewport__Id);
         const cut = Na__GroundCut__Cut(viewport, Na__AppState__Data.doc);
         const change = (mutate) => () => Na__GroundCutMenu__Change(viewport, mutate, false);
         if (!cut) items.push({ Heading: rec.Mode === 'Off' ? 'Off for this viewport' : 'Drag the bottom edge up past the ground to cut it' });
-        E.PainterlyNPR__GroundCut__Kinds().forEach((k) => items.push({
-            Label: k.Label, Title: k.Hint, Checked: k.Key === s.Kind, Action: change((st) => E.PainterlyNPR__GroundCut__WithKind(st, k.Key))
-        }));
-        items.push({ Separator: true });
-        items.push({ Label: 'New swish', Hint: 'a new seed', Disabled: s.Plain, Title: 'Paint the swish again from a new seed', Action: change((st) => E.PainterlyNPR__GroundCut__NewSeed(st)) });
-        items.push({ Label: 'Flip', Checked: s.Flip, Disabled: s.Plain, Title: 'Mirror it: its heavy end to the other side', Action: change((st) => Object.assign(st, { Flip: !s.Flip })) });
-        items.push({ Label: 'Colour', Disabled: s.Plain, Submenu: E.PainterlyNPR__GroundCut__Colours(s.Kind).map((c) => ({
-            Label: c.Key === s.Colour ? `${c.Label} (now)` : c.Label, Swatch: c.Swatch, Action: change((st) => Object.assign(st, { Colour: c.Key }))
-        })) });
-        items.push({ Label: 'Ink ground line', Checked: s.InkLine, Disabled: s.Plain, Action: change((st) => Object.assign(st, { InkLine: !s.InkLine })) });
-        items.push({ Label: 'Adjust...', Disabled: s.Plain, Title: 'Every setting, live, in a small panel', Action: () => Na__GroundCutMenu__Open(viewport, x, y) });
+        items.push(...E.PainterlyNPR__GroundCut__MenuItems(rec.Settings, viewport.Viewport__Id, change, () => Na__GroundCutMenu__Open(viewport, x, y)));
         items.push({ Separator: true });
         items.push({ Label: 'Show it', Submenu: Na__AppConfig__Get('GroundCut__Modes', []).map((m) => ({
             Label: m.Label, Title: m.Hint, Checked: m.Key === rec.Mode, Action: () => Na__GroundCutMenu__SetMode(viewport, m.Key)

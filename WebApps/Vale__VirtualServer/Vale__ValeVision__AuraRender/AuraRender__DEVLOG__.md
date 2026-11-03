@@ -14,6 +14,8 @@
 
 **Checked here (no browser):** the sync's `--check`; the two pins compared file by file, Init among the unchanged; all 44 engine files AURA's code references resolve in the new pin. Not run in a browser through AURA: Adam tests it.
 
+**Live:** pushed 03-Nov-2026 13:46 UTC (stamp 20261103-134603), at Adam's word: "Sync and push": 410 files new, 3 replaced, none deleted; no API change, so no restart. **Only the sync went:** the new pin, `index.html`, the worker and the import map's record, through the Server Manager engine's own Compare and Push with the plan cut down to them, because the whole folder would have carried other sessions' open work too. Ten files of 0.5.23 to 0.5.25 and their neighbours stayed back: `Na__Viewports__Lock__`, `__Editor__`, `__GroundCutMenu__`, `__Move__`, `Na__DrawingSet__History__`, `__Model__`, `Na__Environment3d__Stage__`, two stylesheets and the app config. `engine undo aura` reverses it. Checked on the live site, signed out: the import map at v0.8.34, the worker's version 2026-11-03-10, the pin's own catalogue module listing 33 assets with the ball standard and all four potted plants, their pictures answering 200, and each one's generator building from the live pin. The drawer itself not opened signed in: Adam tests it. A tab already open needs a reload.
+
 ## Version 0.5.23, 03-Nov-2026: The Title Block's Writing 0.8 of Its Size
 
 **Asked by Adam:** "Make title block written text smaller 0.8x current". Of the spacing and points before it: "Both look right".
@@ -95,7 +97,9 @@
 
 **Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: its v0.8.34 potted plants. This tree's versions 0.5.19 and 0.5.20, also uncommitted, are not in this commit.
 
-**Checked here (no browser):** the sync's `--check`; the two pins compared file by file, Init among the unchanged; all 44 engine files AURA's code references resolve in the new pin. The asset was drawn and looked at in headless Edge at the engine. Not run in a browser through AURA (the local server is down): Adam tests it. Not pushed.
+**Checked here (no browser):** the sync's `--check`; the two pins compared file by file, Init among the unchanged; all 44 engine files AURA's code references resolve in the new pin. The asset was drawn and looked at in headless Edge at the engine. Not run in a browser through AURA (the local server is down): Adam tests it.
+
+**Live:** since the `aura` push of 03-Nov-2026 13:31 UTC (stamp 20261103-133123), made by another session; no API change, so no restart.
 
 ## Version 0.5.18, 03-Nov-2026: A Cut Elevation Is Painted Past Its Cut, Then Clipped
 

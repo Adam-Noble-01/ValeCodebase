@@ -28,7 +28,7 @@
 
 **Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: the demo cottage's hashes are the Standalone's at the three perspective presets (`10d86579`, `7faed955`, `200680c5`). The two elevation presets differ, as they should: this host never asks for the sheet's ground cut. The engine's own checks, on Thrower's live drawing set in headless Edge, are in its DEVLOG. Not yet looked at in AURA itself, signed in, with that drawing set.
 
-**Live:** not pushed. It waits on Adam's word.
+**Live:** on the server since 16:29:39 UTC, with v0.8.40's pin beside it (stamp 20261103-162937, 960 files new, 3 replaced, none deleted), by a push this session did not make, at about the moment of Adam's word, "Push both". This session's compare at 16:29:58 UTC found nothing left to send. The live import map names v0.8.40, which carries all of this, so this pin sits beside it unused. Checked signed out: `/aura/` and the engine's region and wash modules answer 200 and hold this fix, and the server's import map, worker version and locks (383121c and 243da99, `WorkingTreeClean` true) are these. No API changed, so no service was restarted. The engine's 243da99 is on GitHub.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.38, Round Forms Held to Their Rims (No App Version of Its Own)
 

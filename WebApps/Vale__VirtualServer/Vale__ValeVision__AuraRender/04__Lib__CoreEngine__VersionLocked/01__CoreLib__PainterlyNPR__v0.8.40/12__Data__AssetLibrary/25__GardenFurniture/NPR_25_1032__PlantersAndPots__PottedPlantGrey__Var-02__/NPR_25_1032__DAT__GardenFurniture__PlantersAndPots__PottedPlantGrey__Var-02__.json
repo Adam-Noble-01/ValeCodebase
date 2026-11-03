@@ -1,0 +1,451 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Potted plant: deep tub, red flowers (NPR_25_1012) in a grey pot, at Adam's word (03-Nov-2026: \"add variations with terracotta pots and also the grey color pots like this\"): a copy of its DAT with only the pot's material, Slate, changed",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_25_1032",
+            "Namespace": "NPR",
+            "Collection": "25",
+            "CollectionName": "GardenFurniture",
+            "Type": "PlantersAndPots",
+            "TypeBlock": "10",
+            "Family": "103",
+            "Item": 2,
+            "Name": "PottedPlantGrey",
+            "Variant": "Var-02",
+            "Stem": "GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02",
+            "DisplayName": "Potted plant: deep tub, red flowers, grey",
+            "Description": "A deep red tub with big red flowers on tall stems, a few sap and dark leaves, and a long strap leaf in pen alone."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "25__GardenFurniture/NPR_25_1032__PlantersAndPots__PottedPlantGrey__Var-02__",
+            "DAT": {
+                "File": "NPR_25_1032__DAT__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_25_1032__MOD__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_25_1032__SKP__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_25_1032__PXY__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_25_1032__RND__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.92,
+            "NominalSpreadM": 0.5,
+            "Bounds": {
+                "Min": [
+                    -0.178,
+                    0,
+                    -0.18
+                ],
+                "Max": [
+                    0.178,
+                    0.909,
+                    0.178
+                ],
+                "Size": [
+                    0.356,
+                    0.909,
+                    0.358
+                ],
+                "RadiusM": 0.52
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "PottedPlant",
+            "Params": {
+                "PotWidthM": 0.355,
+                "PotHeightM": 0.275,
+                "PotLipM": 0.012,
+                "PotProfile": [
+                    0,
+                    0.72,
+                    0.06,
+                    0.84,
+                    0.18,
+                    0.94,
+                    0.4,
+                    1,
+                    0.62,
+                    0.98,
+                    0.78,
+                    0.93,
+                    0.9,
+                    0.88,
+                    1,
+                    0.84
+                ],
+                "RimM": 0,
+                "Leaves": [
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            -0.111,
+                            0.505
+                        ],
+                        "To": [
+                            -0.076,
+                            0.59
+                        ],
+                        "WidthM": 0.06,
+                        "Bow": 0.0,
+                        "Z": -0.18
+                    },
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            0.049,
+                            0.44
+                        ],
+                        "To": [
+                            0.124,
+                            0.58
+                        ],
+                        "WidthM": 0.092,
+                        "Bow": 0.0,
+                        "Z": -0.18
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            -0.051,
+                            0.325
+                        ],
+                        "To": [
+                            -0.153,
+                            0.34
+                        ],
+                        "WidthM": 0.07,
+                        "Bow": 0.0,
+                        "Z": 0.09
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            0.049,
+                            0.313
+                        ],
+                        "To": [
+                            0.111,
+                            0.357
+                        ],
+                        "WidthM": 0.044,
+                        "Bow": 0.0,
+                        "Z": 0.108
+                    },
+                    {
+                        "Tone": "GlazedRed",
+                        "From": [
+                            0.071,
+                            0.81
+                        ],
+                        "To": [
+                            0.017,
+                            0.915
+                        ],
+                        "WidthM": 0.08,
+                        "Bow": 0.0,
+                        "Z": 0.036,
+                        "Thick": 0.7
+                    },
+                    {
+                        "Tone": "GlazedRed",
+                        "From": [
+                            0.071,
+                            0.653
+                        ],
+                        "To": [
+                            0.049,
+                            0.75
+                        ],
+                        "WidthM": 0.118,
+                        "Bow": 0.0,
+                        "Z": 0.054,
+                        "Thick": 0.7
+                    },
+                    {
+                        "Tone": "GlazedRed",
+                        "From": [
+                            -0.121,
+                            0.67
+                        ],
+                        "To": [
+                            0.054,
+                            0.51
+                        ],
+                        "WidthM": 0.095,
+                        "Bow": 0.0,
+                        "Z": 0.09,
+                        "Thick": 0.7
+                    }
+                ],
+                "PenLines": [
+                    {
+                        "Points": [
+                            -0.103,
+                            0.285,
+                            -0.121,
+                            0.415,
+                            -0.133,
+                            0.575,
+                            -0.136,
+                            0.735,
+                            -0.129,
+                            0.85,
+                            -0.099,
+                            0.865,
+                            -0.061,
+                            0.847,
+                            -0.059,
+                            0.675,
+                            -0.061,
+                            0.505,
+                            -0.063,
+                            0.355,
+                            -0.066,
+                            0.285
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.021,
+                            0.29,
+                            -0.019,
+                            0.375,
+                            -0.015,
+                            0.505
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.073,
+                            0.335,
+                            -0.051,
+                            0.415,
+                            -0.023,
+                            0.507
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.001,
+                            0.293,
+                            0.017,
+                            0.375,
+                            0.069,
+                            0.435,
+                            0.124,
+                            0.45,
+                            0.137,
+                            0.385,
+                            0.119,
+                            0.303
+                        ]
+                    },
+                    {
+                        "Points": [
+                            0.117,
+                            0.295,
+                            0.149,
+                            0.363,
+                            0.209,
+                            0.403,
+                            0.259,
+                            0.41,
+                            0.289,
+                            0.367,
+                            0.294,
+                            0.285,
+                            0.269,
+                            0.203
+                        ]
+                    },
+                    {
+                        "Points": [
+                            0.029,
+                            0.238,
+                            0.044,
+                            0.245,
+                            0.057,
+                            0.25
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.064,
+                            0.183,
+                            0.099,
+                            0.193,
+                            0.139,
+                            0.175
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.084,
+                            0.205,
+                            0.134,
+                            0.2
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            -0.051,
+                            0.07,
+                            -0.026,
+                            0.043,
+                            0.049,
+                            0.04,
+                            0.139,
+                            0.067
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.149,
+                            0.257,
+                            0.181,
+                            0.175,
+                            0.161,
+                            0.045,
+                            0.049,
+                            -0.001
+                        ],
+                        "Pot": true
+                    }
+                ],
+                "Touches": [
+                    {
+                        "From": [
+                            -0.156,
+                            0.34
+                        ],
+                        "To": [
+                            -0.051,
+                            0.325
+                        ],
+                        "WidthM": 0.072,
+                        "Amount": 0.85,
+                        "Z": 0.1
+                    },
+                    {
+                        "From": [
+                            0.049,
+                            0.313
+                        ],
+                        "To": [
+                            0.111,
+                            0.357
+                        ],
+                        "WidthM": 0.046,
+                        "Amount": 0.85,
+                        "Z": 0.1
+                    }
+                ],
+                "PenRings": [
+                    {
+                        "At": [
+                            0.064,
+                            0.64
+                        ],
+                        "RM": 0.014
+                    },
+                    {
+                        "At": [
+                            0.319,
+                            0.26
+                        ],
+                        "RM": 0.022
+                    }
+                ],
+                "PenFlecks": [
+                    0.164,
+                    0.553
+                ],
+                "PotMaterial": "Slate"
+            },
+            "Kind": null,
+            "Material": "Slate",
+            "Role": "Furniture",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0.04,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.5
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "potted",
+                "pot",
+                "bowl",
+                "planter",
+                "plant",
+                "terrace",
+                "orangery",
+                "tub",
+                "deep",
+                "flowers",
+                "geranium",
+                "tall",
+                "grey",
+                "lead",
+                "slate"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2711032,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T15:10:04",
+            "EngineVersion": "0.8.38",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 2.225,
+                "Target": [
+                    0,
+                    0.455,
+                    -0.001
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

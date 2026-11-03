@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40, Two Topiary Bushes in a Border (No App Version of Its Own)
+
+**Asked by Adam:** "Load your NPR Skill and create two new topiary bush assets like these", with two bushes ringed on Vale's Thrower perspective, then: "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.40 at 243da99, pinned as `01__CoreLib__PainterlyNPR__v0.8.40` from the commit (552 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.39, the worker's cache version 2026-11-03-16, the README's engine row.
+
+**What it brings AURA:** two new assets in the Assets drawer, under Vegetation, Topiary: "Topiary bush: dome" and "Topiary bush: cone", 50 in the library. A new class in its Materials tab, Clipped sage. No existing drawing or card changes: on the commit and the one before it the factory's dry pass gives all 84 RND and 84 PXY byte-identical. Their SKPs are Pending, so Cloud Sync's Sync Aura has only a built proxy for them in SketchUp until Write Missing SKPs is run there.
+
+**AURA's own code is unchanged:** Init's hash is the same, the engine brings no new pass, control or setting, and all 50 engine references resolve in the new pin.
+
+**Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: the demo cottage's hashes are the Standalone's at the three perspective presets (`10d86579`, `7faed955`, `200680c5`), the same as v0.8.39's. The pin's catalogue lists both bushes and serves their pictures and the new swatch. Both were placed through `Na__EngineHost__ApplySettings`, the way a drawing set restores its plops, and drawn in the cottage's garden. Not yet looked at in AURA itself, signed in, with a project's drawing set.
+
+**Live:** not pushed. It waits on Adam's word.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.39, No White Under a Pot's Foot and No White Dots on a Bowl (No App Version of Its Own)
 
 **Asked by Adam:** "Stop this from happening it looks bad", of a picture of Thrower's plants with the feet of three bowls and the dots on a fourth ringed in blue, then: "Commit and sync".

@@ -12,7 +12,9 @@
 
 **Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: the R rotate tool and the rounded object margins.
 
-**Not pushed.** Not run in a browser through AURA: Adam tests it.
+**Live:** on the server since about 14:22 UTC on 03-Nov-2026, at Adam's word: "Push both". Another session's `aura` push had already carried it when this session compared: the compare found nothing to send, AURA's folder clean, the whole folder equal to the server. No API change in the sync. Checked on the live site, signed out: the import map at v0.8.36, the worker's version 2026-11-03-12, the pin's own catalogue module listing 48 assets with all five new ones, each with its RND and PXY answering 200. The drawer itself not opened signed in, and a plant not placed through AURA: Adam tests it. A tab already open needs a reload.
+
+**GitHub:** the engine's f35cc32 is on `Adam-Noble-01/Na__PainterlyNPR`, so SketchUp's window gets the plants after Reload Remote Plugin Files.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.35, the Plants in Terracotta and in Grey (No App Version of Its Own)
 

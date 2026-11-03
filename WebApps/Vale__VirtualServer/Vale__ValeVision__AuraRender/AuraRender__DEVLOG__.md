@@ -1,5 +1,33 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.26, 03-Nov-2026: A Dragged Scene Tab Feels Right
+
+**Asked by Adam**, of 0.5.25's tabs: "dragging feels cumbersome, there needs to be better visual feedback it feels clunky".
+
+**The cause:** the tab was moved through the page's order as the pointer crossed each neighbour. It hopped from slot to slot, never sat under the pointer, faded, nothing else moved smoothly, and the row clipped it.
+
+**What changed** (`Na__Environment3d__Stage__.js` 2.4.0, `Na__UiFeature__Styles__Environment3d__.css`):
+
+- The tab lifts with a shadow at full strength and stays under the pointer, held to the row and stopped at its ends.
+- The others slide aside as its leading edge passes each one's middle, leaving a gap where it will land.
+- On release it glides into the gap in 160 ms, and only then is the order kept. Escape sends it home with nothing changed.
+- The drag starts after 4 px, where it was 5. Reduced-motion settings drop the slides.
+
+**Read from Adam's words:** this is the scene tabs' drag, the one just added, and not a viewport's move on a sheet.
+
+**Checked:** `node --check` and the config parsed. Not run in a browser, and a feel can only be judged by hand: Adam tests it. Committed at Adam's word, "Commit and push".
+
+**For Adam to test** (reload AURA first):
+
+- [ ] Drag a tab slowly along the row, then quickly: it stays under the pointer and the others slide aside.
+- [ ] Let go: it glides into the gap, the order is kept, and it does not open.
+- [ ] Press Escape in a drag: it goes back and the order is unchanged.
+- [ ] A plain click still opens a tab. A wide tab and a narrow one swap sensibly.
+- [ ] With the row scrolled, or the first and last tabs at the ends, nothing jumps.
+- [ ] Undo puts the order back.
+
+**Live:** pushed 03-Nov-2026 14:07 UTC (stamp 20261103-140716; 3 files replaced, none deleted), at Adam's word: "Commit and push". No API change, so no restart. The feel is Adam's to judge.
+
 ## Version 0.5.25, 03-Nov-2026: Scene Tabs Drag, and the First One Opens
 
 **Asked by Adam**, with the 3D Environment's scene tabs ringed in red: "Make it so you can drag tabs to rearrange order. make first tab the view loaded when the project is loaded".

@@ -334,9 +334,46 @@
         touch-action                       : none;                         /* <-- A drag along the row is the tab's */
     }
 
-    .aura-scenes__tab.is-dragging {
+    /* A tab being dragged: the row opens up so its shadow is not cut off, its slot
+       shows as a gap, the others slide aside, and a let-go tab glides home.
+       The glide's length is Na__Environment3d__TAB_SETTLE_MS. */
+    .aura-scenes.is-sorting {
+        padding-top                        : 8px;
+        padding-bottom                     : 10px;
+        margin-top                         : -8px;
+        margin-bottom                      : -8px;
+    }
+
+    .aura-scenes__list.is-sorting {
+        overflow                           : visible;
+        background                         : var(--Aura_SurfaceMuted);
+    }
+
+    .aura-scenes__list.is-sorting .aura-scenes__tab {
+        transition                         : transform 0.16s ease;
+    }
+
+    .aura-scenes__list.is-sorting .aura-scenes__tab.is-dragging {
+        position                           : relative;
+        z-index                            : 2;
+        border-radius                      : var(--Aura_RadiusSmall);
+        box-shadow                         : 0 0 0 1px var(--Aura_Border), 0 6px 16px rgba(15, 30, 40, 0.28);
         cursor                             : grabbing;
-        opacity                            : 0.65;
+        transition                         : none;                         /* <-- Under the pointer, with no lag */
+        will-change                        : transform;
+    }
+
+    .aura-scenes__list.is-sorting .aura-scenes__tab.is-settling {
+        position                           : relative;
+        z-index                            : 2;
+        border-radius                      : var(--Aura_RadiusSmall);
+        box-shadow                         : 0 0 0 1px var(--Aura_Border);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .aura-scenes__list.is-sorting .aura-scenes__tab {
+            transition                     : none;
+        }
     }
 
     .aura-scenes__add {

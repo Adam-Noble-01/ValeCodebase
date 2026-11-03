@@ -57,6 +57,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.4.0 (AURA 0.5.26)
+// - A dragged tab: Adam: "dragging feels cumbersome, there needs to be better
+//   visual feedback it feels clunky". It stays under the pointer, lifted, the
+//   others slide aside and it glides into its slot; Escape sends it back.
+//
 // 03-Nov-2026 - Version 2.3.0 (AURA 0.5.25)
 // - Adam: "Make it so you can drag tabs to rearrange order. make first tab the
 //   view loaded when the project is loaded". A scene's tab drags along the row
@@ -167,13 +172,15 @@
 // REGION | Module State
 // -----------------------------------------------------------------------------
 
-    const Na__Environment3d__TAB_DRAG_PX = 5;                                    // <-- Less than this and a press on a scene's tab is a click
+    const Na__Environment3d__TAB_DRAG_PX = 4;                                    // <-- Less than this and a press on a scene's tab is a click
+    const Na__Environment3d__TAB_SETTLE_MS = 160;                                // <-- A let-go tab's glide to its slot: the stylesheet's transition (is-settling)
 
     const Na__Environment3d__State = {
         root       : null,
         canvas     : null,
         presetBar  : null,                       // <-- The toolbar
         tabs       : null,                       // <-- The scene tabs in it
+        tabSettling : false,                     // <-- A let-go tab is still gliding to its slot
         tabDragged : false,                      // <-- The press now ending moved a scene's tab: its click does not open it
         tabsKey    : '',                         // <-- The tabs as last drawn: redrawn only when a scene comes, goes or is renamed
         renaming   : false,                      // <-- A tab's name is being typed: the tabs wait
@@ -292,47 +299,110 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Drag a Tab Along the Row: the tabs make way as it goes, the order kept on release
+    // HELPER FUNCTION | Drag a Tab Along the Row: it stays under the pointer and the others slide aside
     // ------------------------------------------------------------
     // A press that travels less than TAB_DRAG_PX is still a click, so a tab opens as
-    // ever. The tab moves among the others in the page while it is dragged; nothing
-    // in the drawing set changes until it is let go, in one saved and undoable step.
+    // ever. The page's order does not change during a drag: the tabs are only
+    // carried by transforms, measured once at its start, so nothing reflows under
+    // the pointer. A tab takes the slot its leading edge has passed the middle of.
+    // On release it glides into its slot, then the order is kept in one saved and
+    // undoable step. Escape sends it back.
     // ------------------------------------------------------------
     function Na__Environment3d__WireTabDrag(tab, list) {
         const S = Na__Environment3d__State;
         tab.addEventListener('pointerdown', (e) => {
             S.tabDragged = false;
-            if (e.button !== 0) return;
+            if (e.button !== 0 || S.tabSettling) return;
             const startX = e.clientX, startY = e.clientY;
-            let dragging = false;
+            let sort = null;
             const move = (m) => {
-                if (!dragging) {
+                if (!sort) {
                     if (Math.hypot(m.clientX - startX, m.clientY - startY) < Na__Environment3d__TAB_DRAG_PX) return;
-                    dragging = true;
+                    sort = Na__Environment3d__TabSortBegin(tab, list, e.pointerId);
                     S.tabDragged = true;
-                    tab.classList.add('is-dragging');
-                    tab.setPointerCapture(e.pointerId);
                 }
-                const others = [...list.children].filter((el) => el !== tab);
-                const next = others.find((el) => { const r = el.getBoundingClientRect(); return m.clientX < r.left + r.width / 2; }) || null;
-                if (tab.nextElementSibling !== next) list.insertBefore(tab, next);
+                Na__Environment3d__TabSortFollow(sort, m.clientX - startX);
             };
             const finish = (keep) => {
                 tab.removeEventListener('pointermove', move);
                 tab.removeEventListener('pointerup', up);
                 tab.removeEventListener('pointercancel', cancel);
-                if (!dragging) return;
-                tab.classList.remove('is-dragging');
-                if (keep) Na__Environment3d__ReorderScenes([...list.children].map((el) => el.dataset.scene));
-                else { S.tabsKey = ''; Na__Environment3d__RenderTabs(); }        // <-- Cancelled: drawn again in the order kept
-                if (!tab.isConnected) S.tabDragged = false;                      // <-- Drawn again: no click will come to this tab
+                window.removeEventListener('keydown', key, true);
+                if (sort) Na__Environment3d__TabSortSettle(sort, keep);
             };
             const up = () => finish(true);
             const cancel = () => finish(false);
+            const key = (k) => {
+                if (k.key !== 'Escape' || !sort) return;
+                k.preventDefault();
+                k.stopPropagation();
+                finish(false);
+            };
             tab.addEventListener('pointermove', move);
             tab.addEventListener('pointerup', up);
             tab.addEventListener('pointercancel', cancel);
+            window.addEventListener('keydown', key, true);
         });
+    }
+
+    // The drag begins: every tab measured where it stands, and the row opened up for the lifted tab
+    function Na__Environment3d__TabSortBegin(tab, list, pointerId) {
+        const tabs = [...list.children];
+        const rects = tabs.map((el) => el.getBoundingClientRect());
+        const from = tabs.indexOf(tab);
+        list.classList.add('is-sorting');
+        list.parentElement.classList.add('is-sorting');
+        tab.classList.add('is-dragging');
+        try { tab.setPointerCapture(pointerId); } catch (error) { /* <-- It still follows while the pointer stays on it */ }
+        return { tab, list, tabs, rects, from, to: from,
+                 min: rects[0].left - rects[from].left, max: rects[rects.length - 1].right - rects[from].right };
+    }
+
+    // The tab under the pointer, held to the row; the tabs it has passed make room
+    function Na__Environment3d__TabSortFollow(sort, dx) {
+        const { tab, tabs, rects, from } = sort;
+        const x = Math.min(sort.max, Math.max(sort.min, dx));
+        tab.style.transform = `translate3d(${x}px, 0, 0)`;
+        let to = from;
+        if (x > 0) {
+            const edge = rects[from].right + x;
+            for (let i = from + 1; i < tabs.length; i++) if (edge > rects[i].left + rects[i].width / 2) to = i;
+        } else if (x < 0) {
+            const edge = rects[from].left + x;
+            for (let i = from - 1; i >= 0; i--) if (edge < rects[i].left + rects[i].width / 2) to = i;
+        }
+        if (to === sort.to) return;
+        sort.to = to;
+        const room = rects[from].width;
+        tabs.forEach((el, i) => {
+            if (el === tab) return;
+            const shift = i > from && i <= to ? -room : i < from && i >= to ? room : 0;
+            el.style.transform = shift ? `translate3d(${shift}px, 0, 0)` : '';
+        });
+    }
+
+    // Let go: it glides to its slot (or home, cancelled), then the row is put back as it should be
+    function Na__Environment3d__TabSortSettle(sort, keep) {
+        const S = Na__Environment3d__State;
+        const { tab, list, tabs, rects, from } = sort;
+        const to = keep ? sort.to : from;
+        const x = to > from ? rects[to].right - rects[from].right : to < from ? rects[to].left - rects[from].left : 0;
+        if (!keep) tabs.forEach((el) => { if (el !== tab) el.style.transform = ''; });
+        S.tabSettling = true;
+        tab.classList.remove('is-dragging');
+        tab.classList.add('is-settling');
+        tab.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+        setTimeout(() => {
+            S.tabSettling = false;
+            tab.classList.remove('is-settling');
+            list.classList.remove('is-sorting');
+            if (list.parentElement) list.parentElement.classList.remove('is-sorting');
+            tabs.forEach((el) => { el.style.transform = ''; });
+            if (to === from) return;
+            const order = tabs.map((el) => el.dataset.scene);
+            order.splice(to, 0, order.splice(from, 1)[0]);
+            Na__Environment3d__ReorderScenes(order);
+        }, Na__Environment3d__TAB_SETTLE_MS);
     }
 
     // Put the Scenes in This Order (their ids): one saved step, when it is a new order

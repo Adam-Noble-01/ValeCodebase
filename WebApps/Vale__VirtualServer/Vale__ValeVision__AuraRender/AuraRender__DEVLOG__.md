@@ -14,7 +14,7 @@
 
 **The Assets drawer's pictures** were drawn before this and show the old white margins until the factory has run and the engine is synced again. A session for that is under way.
 
-**Live:** not pushed. It waits on Adam's word.
+**Live:** on the server since 14:58:01 UTC: the pin at 14:57:14 (stamp 20261103-145714, 474 files new, none deleted) and the import map, the worker and their record at 14:58:01 (stamp 20261103-145801, 3 replaced), by a push this session did not make, minutes before Adam's word, "Push both". This session's compare at 15:00 UTC found nothing left to send. Checked signed out: `/aura/` and the new module answer 200, and the server's import map, worker version and lock (924f7fc, `WorkingTreeClean` true) are these. No API changed, so no service was restarted. The engine's 924f7fc is on GitHub.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.37, R Turns a Placed Asset, and a Turned Plant Keeps Its Proxy's Shape (No App Version of Its Own)
 

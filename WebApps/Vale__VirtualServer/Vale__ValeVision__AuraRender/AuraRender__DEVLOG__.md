@@ -24,6 +24,20 @@
 
 **Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; all 49 engine references in AURA's modules resolve in the new pin; Init unchanged. Not run in a browser: Adam tests it. Not pushed.
 
+## Version 0.5.14, 03-Nov-2026: Art Direction Points Copy and Paste, and Only the Edited Point Shows
+
+**Asked by Adam:** "In both NPR Renderer and aura add control + c and control + v to copy and paste art control points / Aim: to make are control points easier to work with / Secondly make it when your moving or working with an art point by default the others on the canvas do not show as whjen it becomes buys on the canvas they become impossible to wortk with, do add a toggle though to toggle on always show."
+
+**Built in PainterlyNPR v0.8.26 (04364e1), not here.** The copy and paste, the hiding and the "Always show every point" box are all the engine's. AURA's part:
+
+- `Na__EngineHost__PainterlyNpr__.js` 1.11.0: `PointKey` calls the engine's `PointClipboardKey`, by name through the module's namespace, so an older pin still loads. Ctrl+V needs no point selected.
+- `Na__Environment3d__ArtDirection__.js` 2.2.0 and `Na__Viewports__ArtDirection__.js` 1.0.3: a slider with the focus no longer stops the point's keys, as on the engine's own sheet. Without this, Ctrl+C after moving a slider did nothing. Delete, Ctrl+D, [ ] and H now work there too. The 3D Environment's hint names the new keys.
+- A copy made in one scene pastes into another scene, a sheet's viewport or another project, in this browser.
+
+**Waiting on a sync:** none of the new behaviour shows until PainterlyNPR v0.8.26 or later is pinned here. On the v0.8.25 pin AURA behaves as before, but for the slider focus fix.
+
+**Checked here (no browser):** `node --check` on the three edited modules. Not run in a browser: Adam tests it. Committed at Adam's word, "Coomit"; not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.18, the Ground Is a Backdrop (No App Version of Its Own)
 
 **Asked by Adam:** "Currently the NPR render creates a grass groundplane, whilst this is usefull, if a mesh is below 0

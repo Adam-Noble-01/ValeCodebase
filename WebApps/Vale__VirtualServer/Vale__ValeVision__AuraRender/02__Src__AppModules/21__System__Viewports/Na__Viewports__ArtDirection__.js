@@ -25,14 +25,18 @@
 // - ADD A POINT: press a type, then click the picture where it should act (Esc
 //   cancels). It anchors to what lies under it, as in the 3D Environment, once
 //   the viewport's drawing has refined in the engine.
-// - KEYS while a point is selected: Delete, Ctrl+D, [ and ] (Shift: 10 mm), H,
-//   Escape. They come before the sheet's own: Delete removes the point, not
-//   the viewport.
+// - KEYS while a point is selected: Delete, Ctrl+D, Ctrl+C, [ and ] (Shift: 10 mm),
+//   H, Escape; Ctrl+V with or without one. They come before the sheet's own:
+//   Delete removes the point, not the viewport.
 // - The render queue waits while a viewport has the engine.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.0.3
+// - Ctrl+C and Ctrl+V (the engine's, through PointKey); a slider with the focus
+//   no longer stops the point's keys.
+//
 // 30-Oct-2026 - Version 1.0.2 (AURA 0.5.9)
 // - The borrowed engine draws with the viewport's scene's own sun
 //   (Na__Views__Sun), so its preview matches its still.
@@ -328,7 +332,7 @@
         const S = Na__ViewportPoints__State;
         if (!S.viewportId || !Na__EngineHost__Borrowed() || Na__AppState__Data.tab === 'environment') return;
         const active = document.activeElement;
-        if (/^(INPUT|TEXTAREA|SELECT)$/.test((active && active.tagName) || '') || (active && active.isContentEditable)) return;
+        if ((/^(INPUT|TEXTAREA|SELECT)$/.test((active && active.tagName) || '') && active.type !== 'range') || (active && active.isContentEditable)) return;   // <-- A slider just moved keeps the focus, and is not typing
         if (e.key === 'Escape' && Na__EngineHost__ArmedPoint()) {
             e.preventDefault();
             e.stopPropagation();

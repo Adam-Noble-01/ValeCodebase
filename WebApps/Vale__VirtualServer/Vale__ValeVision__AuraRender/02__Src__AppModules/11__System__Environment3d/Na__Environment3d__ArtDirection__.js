@@ -29,12 +29,16 @@
 //   are the drawing set's WorkingPoints; Add Scene takes them with the camera.
 // - The handles show while this section is open; folded, the drawing is clear.
 //   Show influence tints what each point reaches (never on a sheet).
-// - KEYS while a point is selected (the engine's): Delete, Ctrl+D, [ and ]
-//   (Shift: 10 mm), H, Escape.
+// - KEYS while a point is selected (the engine's): Delete, Ctrl+D, Ctrl+C, [ and ]
+//   (Shift: 10 mm), H, Escape; Ctrl+V with or without one.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.2.0
+// - Ctrl+C and Ctrl+V (the engine's, through PointKey); a slider with the focus
+//   no longer stops the point's keys, as on the engine's own sheet.
+//
 // 30-Oct-2026 - Version 2.1.0 (AURA 0.5.9)
 // - The scene's sun follows the same owner (Na__Environment3d__SceneSun__):
 //   UseScene and Retake set the scene's sun (or the working sun) in the
@@ -274,7 +278,7 @@
         const S = Na__ArtDirection3d__State;
         if (Na__AppState__Data.tab !== 'environment' || Na__EngineHost__Borrowed() || e.defaultPrevented) return;
         const active = document.activeElement;
-        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((active && active.tagName) || '') || (active && active.isContentEditable);
+        const typing = (/^(INPUT|TEXTAREA|SELECT)$/.test((active && active.tagName) || '') && active.type !== 'range') || (active && active.isContentEditable);   // <-- A slider just moved keeps the focus, and is not typing
         if (typing) return;
         if (e.key === 'Escape' && Na__EngineHost__ArmedPoint()) {
             e.preventDefault();
@@ -346,7 +350,8 @@
         const listHome = Na__Dom__El('div', 'aura-points');                    // <-- The engine's list lives here (a sheet borrows it while it edits)
         body.appendChild(listHome);
         body.appendChild(Na__Dom__El('p', 'aura-panel__hint', 'Click a point to edit it: its sliders hang beside it. Drag it to move it, Alt-drag for a copy; '
-                                                         + 'Delete removes it, Ctrl+D duplicates it, [ and ] size it, H switches it off.'));
+                                                         + 'Delete removes it, Ctrl+D duplicates it, Ctrl+C and Ctrl+V copy and paste it, [ and ] size it, H switches it off. '
+                                                         + 'While one is being edited the others leave the drawing: click bare drawing or press Esc to see them again.'));
 
         S.layer = Na__Dom__El('div', 'PainterlyNPR__PointLayer aura-points-layer');
         wrap.appendChild(S.layer);

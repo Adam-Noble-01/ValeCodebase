@@ -75,6 +75,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.11.0
+// - PointKey: Ctrl+C and Ctrl+V copy and paste a point, through the engine's
+//   PointClipboardKey (PainterlyNPR 0.8.26), reached by name through the
+//   module's namespace; Ctrl+V needs no point selected.
+//
 // 30-Oct-2026 - Version 1.10.0 (AURA 0.5.12)
 // - The paint scale (PaintScale, RenderStill): a still's washes shrink with
 //   its picture while its pens stay true, through the engine's SetPaintScale
@@ -218,6 +223,7 @@
     } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointControls__.mjs';
     import { PainterlyNPR__Interface__RenderPointList } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointList__.mjs';
     import { PainterlyNPR__Interface__UpdateOverlay } from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';
+    import * as PainterlyNPR__PointOverlay from 'PainterlyNPR/65__ArtDirection__InfluencePoints/PainterlyNPR__Interface__PointOverlay__.mjs';   // <-- PointClipboardKey (0.8.26 on) by name at call time: an older pin still loads
     import { PainterlyNPR__ArtDirection__FS_FIELD as FS_FIELD } from 'PainterlyNPR/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__FieldShader__.mjs';
     import * as PainterlyNPR__Field from 'PainterlyNPR/66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs';   // <-- SetFrame (0.8.9 on) by name at call time: an older pin still loads
     import {
@@ -967,11 +973,19 @@
     // ------------------------------------------------------------
     // Delete removes it (its neighbour is selected next), Ctrl+D duplicates it,
     // [ and ] size it (Shift: 10 mm), H switches it off and on, Escape lets it
-    // go. Nothing while no point is selected or one is being placed.
+    // go. Nothing while one is being placed, or while no point is selected but
+    // for Ctrl+V: Ctrl+C and Ctrl+V are the engine's own key test (0.8.26 on),
+    // by name through the module's namespace so an older pin still loads.
     // ------------------------------------------------------------
     function Na__EngineHost__PointKey(e) {
+        if (Ui.Placing) return false;
+        const clipboardKey = PainterlyNPR__PointOverlay.PainterlyNPR__Interface__PointClipboardKey;
+        if (clipboardKey && clipboardKey(e)) {
+            Na__EngineHost__PointsEdited();
+            return true;
+        }
         const point = PainterlyNPR__Interface__PointById(Ui.SelectedPointId);
-        if (!point || Ui.Placing) return false;
+        if (!point) return false;
         const key = (e.key || '').toLowerCase();
         if ((e.key === 'Delete' || e.key === 'Backspace') && !e.ctrlKey && !e.metaKey) PainterlyNPR__Interface__RemovePoint(point.Id);
         else if (key === 'd' && (e.ctrlKey || e.metaKey) && !e.altKey) PainterlyNPR__Interface__DuplicatePoint(point.Id);

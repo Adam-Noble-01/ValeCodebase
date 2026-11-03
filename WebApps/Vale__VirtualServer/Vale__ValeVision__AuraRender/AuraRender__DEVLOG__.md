@@ -1,5 +1,28 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.15, 03-Nov-2026: Engine Sync to PainterlyNPR v0.8.27, Material Depictions
+
+**Asked by Adam:** "Take a look at the brickwork and roof tile materials, ensure the accent patches fall within the drawn bricks like we just did the stone / on the stonework ensure the linework matches the linethickess and color of the brickwork ... / Sketchup dosnt render the brickwork either, ensure all material linework is added / finally add robust support for brickwork, stonework, roof tiles etc to in their art points Change Indication to Material ... ensure I have a way to dump that data too", then "Add A Dice in the material art point that rerolls the seed for the material", and earlier "When I paint materials in sketchUp the viewer isnt loading / reloading them, even if they are materials from the library". His full words are in PainterlyNPR's DEVLOG. Then: "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.27 at e7c5799, pinned as `01__CoreLib__PainterlyNPR__v0.8.27` from the commit (433 files). It carries v0.8.26 as well. The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.25, the worker's cache version is `2026-11-03-04`, and the README's engine row is updated.
+
+**What it brings AURA:**
+
+- **What is painted in SketchUp is what is drawn:** a painted swatch's class is read from the model, and its linework pairs by name. A wall painted Stonework now reads as stone here, the gap the v0.8.25 sync left.
+- **Accents inside the drawn units:** a picked brick, tile or flag has its joints drawn round it and its touch of wash inside them. Stone is drawn with brick's pen and ink.
+- **Every material's linework on a project's own model:** brick, roof tiles and paving are laid on faces of that class, as stone was.
+- **The Material art point** (the Indication point renamed; its `Type` stays `'Indication'`, which `Na__EngineHost__PainterlyNpr__.js` tests by name): Looseness, Randomness, Rounding, Roughness, Breaks and Wash accents, and a Seed slider with a dice, in its card and on its node. They come from the engine's own point list and node.
+- **Pen: Material linework:** the same six for each material, in Parameters with no code here.
+- **From v0.8.26:** copy and paste (version 0.5.14 below now works), only the edited point on the sheet, and paving weighed as a path.
+
+**A look change on every project:** a whitecard's faces that are class Brick by the file's rule now take courses as well as painted ones, so an Existing building shows courses where it had only its wash. Paving draws far more joints, and stones get a new layout from their new identities. As v0.8.19's entry says, 81 of the library's 338 files draw different lines, and their strokes redraw.
+
+**AURA's own code:** the Pen panel's Material data buttons, Copy and Download (`Na__Environment3d__Parameters__.js` 2.3.0, `Na__EngineHost__Panel__.js` 1.1.0, the engine's `MaterialDumpAction` by name through its namespace). Without them the fold was empty and left out. Apply is left out too: it reads a text box that is the engine page's. A Material point's card has Copy as well.
+
+**Worth knowing:** `ApplySettings` merges `Indication` by key, so a drawing set saved before this keeps whatever hands are in State rather than going back to the starting ones. Only a session that has moved those sliders would notice.
+
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository at e7c5799; all 64 engine references in AURA's modules resolve in the new pin, and their 89 named imports exist; `node --check` on the two edited modules. The engine itself was driven in headless Edge on Thrower before it was committed (its DEVLOG). Not run in AURA's own browser: Adam tests it. Committed at Adam's word, "Commit and sync"; not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.25, Stonework (No App Version of Its Own)
 
 **Asked by Adam:** "Objective: Add NPR Library Stonework Texture asset to match the images", then, of the demo cottage in it, "Take these white elemtns out of the material they do not look good", "make sure too many cant stack vertically like in image 02 it spoils the effect" and "see the side looks bad? but the front looks good?". Of the result: "Looks right". Then "Commit and sync".
@@ -33,8 +56,6 @@
 - `Na__EngineHost__PainterlyNpr__.js` 1.11.0: `PointKey` calls the engine's `PointClipboardKey`, by name through the module's namespace, so an older pin still loads. Ctrl+V needs no point selected.
 - `Na__Environment3d__ArtDirection__.js` 2.2.0 and `Na__Viewports__ArtDirection__.js` 1.0.3: a slider with the focus no longer stops the point's keys, as on the engine's own sheet. Without this, Ctrl+C after moving a slider did nothing. Delete, Ctrl+D, [ ] and H now work there too. The 3D Environment's hint names the new keys.
 - A copy made in one scene pastes into another scene, a sheet's viewport or another project, in this browser.
-
-**Waiting on a sync:** none of the new behaviour shows until PainterlyNPR v0.8.26 or later is pinned here. On the v0.8.25 pin AURA behaves as before, but for the slider focus fix.
 
 **Checked here (no browser):** `node --check` on the three edited modules. Not run in a browser: Adam tests it. Committed at Adam's word, "Coomit"; not pushed.
 

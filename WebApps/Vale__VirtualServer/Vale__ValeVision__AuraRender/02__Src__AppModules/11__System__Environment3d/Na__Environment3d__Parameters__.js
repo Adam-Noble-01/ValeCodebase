@@ -32,6 +32,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 2.3.0 (AURA 0.5.15)
+// - The engine's Material data buttons, Copy and Download: its Apply reads a text
+//   box this panel leaves out. A Material point's card has Copy too, from the
+//   engine's own list.
+//
 // 30-Oct-2026 - Version 2.2.0 (AURA 0.4.2)
 // - The sections carry their icons (Paper and finish, Light, Pen, Wash, Sky;
 //   "More from the engine" the parameters' sliders); the groups inside do not.
@@ -66,6 +71,7 @@
 
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Dom__El, Na__Dom__Icon, Na__Dom__PanelIcon, Na__Dom__Clear, Na__Dom__Select } from '../03__AppUtils/Na__AppUtils__Dom__.js';
+    import { Na__Toast__Show } from '../03__AppUtils/Na__AppUtils__Toast__.js';
     import { Na__EngineHost__Control } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
     import {
         Na__EnginePanel__Sections,
@@ -77,6 +83,7 @@
         Na__EnginePanel__SetChoice,
         Na__EnginePanel__ApplyPenPreset,
         Na__EnginePanel__ApplyVegPreset,
+        Na__EnginePanel__MaterialDump,
         Na__EnginePanel__PenPreset
     } from '../10__System__EngineHost/Na__EngineHost__Panel__.js';
 
@@ -292,6 +299,16 @@
         return row;
     }
 
+    function Na__Parameters__MaterialDump(buttons) {
+        const grid = Na__Dom__El('div', 'aura-param-presets');
+        buttons.filter((b) => b.Data[1] !== 'apply').forEach((b) => {            // <-- Apply reads the engine's text box, left out here
+            const button = Na__Dom__El('button', 'aura-param-preset', b.Text || b.Data[1], { type: 'button' });
+            button.addEventListener('click', async () => { Na__Toast__Show(await Na__EnginePanel__MaterialDump(b.Data[1]) ? 'Material data copied.' : 'Material data downloaded.'); });
+            grid.appendChild(button);
+        });
+        return grid;
+    }
+
     function Na__Parameters__MarkPresets() {
         const now = Na__EnginePanel__PenPreset();
         Na__Parameters__State.presets.forEach((p) => p.button.classList.toggle('is-active', p.key === now));
@@ -349,6 +366,7 @@
                 if (row) fold.body.appendChild(row);
             } else if (Array.isArray(item.Buttons)) {
                 if (item.Buttons.length && item.Buttons.every((b) => Array.isArray(b.Data) && b.Data[0] === 'pen-preset')) fold.body.appendChild(Na__Parameters__PenPresets(item.Buttons));
+                else if (item.Buttons.length && item.Buttons.every((b) => Array.isArray(b.Data) && b.Data[0] === 'material-dump')) fold.body.appendChild(Na__Parameters__MaterialDump(item.Buttons));
             } else if (Array.isArray(item.Chips)) {
                 if (item.Chips.length && item.Chips.every((c) => Array.isArray(c.Data) && c.Data[0] === 'veg-preset')) fold.body.appendChild(Na__Parameters__VegPresets(item.Chips));
             } else if (typeof item.Hint === 'string') {

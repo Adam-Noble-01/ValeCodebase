@@ -1,0 +1,61 @@
+{
+    "PainterlyNPR__Palette__Config" : {
+        "PainterlyNPR__Palette__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Palette and Interface Tokens",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Every colour, type and shape the interface uses. The CSS custom properties in 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Variables__.css mirror this file by hand - a browser cannot read a stylesheet variable from JSON. If you change a value here, change it there.",
+            "DesignIntent"  : "A drawing office around the sheet: warm paper and ink, matte, no gradients, one accent per meaning. The sheet is the only thing with depth.",
+            "ReadBy"        : "03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Variables__.css (by hand)"
+        },
+
+        "PainterlyNPR__Palette__Config__Ground"   : {
+            "Desk"      : "#E7E1D6",
+            "DeskNote"  : "The desk the sheet lies on",
+            "DeskDeep"  : "#DBD3C5",
+            "Paper"     : "#F4EFE4",
+            "PaperNote" : "Cold-pressed tone; the canvas paints its own",
+            "Cream"     : "#FAF7F0"
+        },
+
+        "PainterlyNPR__Palette__Config__Ink"      : {
+            "Ink"      : "#2B2A28",
+            "InkNote"  : "Warm near-black, never #000",
+            "InkSoft"  : "#5A554E",
+            "InkFaint" : "#8C857A",
+            "InkGhost" : "#B9B1A4",
+            "Rule"     : "rgba(43, 42, 40, 0.12)"
+        },
+
+        "PainterlyNPR__Palette__Config__Pigments" : {
+            "Sepia"          : "#4B3A2C",
+            "Terracotta"     : "#BC6540",
+            "TerracottaNote" : "Running, fading to paper",
+            "Slate"          : "#5F7A91",
+            "SlateNote"      : "Focus, selection",
+            "Ochre"          : "#B58A3A",
+            "OchreNote"      : "Line control",
+            "Brick"          : "#9A4A35",
+            "BrickNote"      : "Material indication",
+            "Sage"           : "#7E9A70",
+            "SageNote"       : "Ran"
+        },
+
+        "PainterlyNPR__Palette__Config__Type"     : {
+            "FontStack"          : "'Segoe UI', system-ui, -apple-system, sans-serif",
+            "FontSerif"          : "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif",
+            "FontMono"           : "'Cascadia Mono', Consolas, 'SF Mono', ui-monospace, monospace",
+            "FontSize"           : "13px",
+            "FontSizeSmall"      : "11.5px",
+            "LetterSpacingLabel" : "0.07em"
+        },
+
+        "PainterlyNPR__Palette__Config__Shape"    : {
+            "Radius"      : "10px",
+            "RadiusSmall" : "7px",
+            "Gutter"      : "16px",
+            "PanelWidth"  : "344px",
+            "SheetShadow" : "0 1px 2px rgba(60, 48, 36, 0.10), 0 10px 32px rgba(60, 48, 36, 0.16)",
+            "Transition"  : "140ms ease"
+        }
+    }
+}

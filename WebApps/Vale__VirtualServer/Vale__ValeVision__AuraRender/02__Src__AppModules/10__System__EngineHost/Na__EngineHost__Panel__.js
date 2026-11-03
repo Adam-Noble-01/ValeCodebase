@@ -30,6 +30,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.1.0 (AURA 0.5.15)
+// - The engine's material data, copied or downloaded by its own function, for
+//   its Pen panel's Material data buttons (PainterlyNPR v0.8.27).
+//
 // 30-Oct-2026 - Version 1.0.1 (AURA 0.5.9)
 // - A sun slider tells the host's listeners 'sun' (the open scene keeps it),
 //   every other control 'control' (the drawing set's settings).
@@ -51,6 +55,7 @@
     import * as EngineControls from 'PainterlyNPR/80__System__HudOverlay/PainterlyNPR__Interface__Controls__.mjs';           // <-- Namespace: SetChoice and ChoiceValue since v0.8.1
     import * as EngineCompositor from 'PainterlyNPR/56__Paper__Compositor/PainterlyNPR__Compositor__Pass__.mjs';           // <-- Namespace: BarePaper since v0.8.1
     import * as EnginePaper from 'PainterlyNPR/55__Paper__Model/PainterlyNPR__Paper__Pass__.mjs';                          // <-- Namespace: Tone (Page whiteness) since v0.8.5
+    import * as EngineSettings from 'PainterlyNPR/85__System__ProjectPersistence/PainterlyNPR__Interface__SettingsJson__.mjs';   // <-- Namespace: MaterialDumpAction since v0.8.27
     import { PainterlyNPR__AppCore__State as State } from 'PainterlyNPR/01__AppCore/PainterlyNPR__AppCore__State__.mjs';
     import { PainterlyNPR__Paper__PAPER_PRESETS as PAPER_PRESETS } from 'PainterlyNPR/55__Paper__Model/PainterlyNPR__Paper__Presets__.mjs';
     import { Na__EngineHost__Choices, Na__EngineHost__SetChoice, Na__EngineHost__SetControl, Na__EngineHost__IsSunControl, Na__EngineHost__Notify, Na__EngineHost__Ready } from './Na__EngineHost__PainterlyNpr__.js';
@@ -186,6 +191,13 @@
         return true;
     }
 
+    // The engine's material data (v0.8.27), 'copy' or 'download' as its panel names
+    // them. Answers true when it reached the clipboard: the engine downloads it if
+    // the browser refuses. Its panel only offers the buttons on a pin that has them.
+    function Na__EnginePanel__MaterialDump(action) {
+        return EngineSettings.PainterlyNPR__Interface__MaterialDumpAction(action);
+    }
+
     function Na__EnginePanel__PenPreset() {
         return State.PenPreset;
     }
@@ -269,6 +281,7 @@
         Na__EnginePanel__SetChoice,
         Na__EnginePanel__ApplyPenPreset,
         Na__EnginePanel__ApplyVegPreset,
+        Na__EnginePanel__MaterialDump,
         Na__EnginePanel__PenPreset,
         Na__EnginePanel__Paper
     };

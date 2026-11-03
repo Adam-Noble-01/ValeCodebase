@@ -24,7 +24,7 @@
 
 **Checked here (no browser):** the sync's `--check`, and the two pins compared file by file: only the expected engine files differ, so Init and every module AURA reaches are as in v0.8.28. Thrower and the demo cottage were driven in headless Edge at the engine (its DEVLOG). Not run in a browser through AURA: Adam tests it.
 
-**Not live:** on GitHub, not on the server. An `aura` push sends the working folder, so it would also carry version 0.5.16's five uncommitted files, and a scope cannot send `index.html` alone. Held at Adam's word, "Hold for v0.8.31": it goes live with that sync, whose pin carries this change.
+**Live:** since the `aura` push of 03-Nov-2026 12:15 UTC, at Adam's word: "push" (736 files new, 8 replaced, none deleted; no API change, so no restart). It went with version 0.5.16 and the v0.8.31 pin above, as he chose ("Hold for v0.8.31"): the v0.8.31 pin is what runs, and it carries this change. Checked on the server: the page answers 200, its import map at v0.8.31, the worker's cache version 2026-11-03-07, `Oblique` in the pinned config and read by the pinned Pass. Not opened in a browser: Adam tests it.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.28, Stonework's Darker Washes (No App Version of Its Own)
 

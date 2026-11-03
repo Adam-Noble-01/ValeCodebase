@@ -10,7 +10,9 @@
 
 **Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted (the elevation's ground cut among it).
 
-**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; all 70 engine references in AURA's modules resolve in the new pin, and their 89 imported names; Init unchanged. Not run in a browser: Adam tests it. Not pushed: the live site stays on v0.8.27 until then.
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; all 70 engine references in AURA's modules resolve in the new pin, and their 89 imported names; Init unchanged. Not run in a browser: Adam tests it.
+
+**Live:** pushed 03-Nov-2026 11:48 UTC (367 files new, 3 replaced, none deleted; no API change, so no restart), at Adam's word: "Push it". Checked on the live site: the page's import map at v0.8.28, the worker's cache version 2026-11-03-05, the pin's `Stone.B` `#CBA898`.
 
 ## Version 0.5.15, 03-Nov-2026: Engine Sync to PainterlyNPR v0.8.27, Material Depictions
 

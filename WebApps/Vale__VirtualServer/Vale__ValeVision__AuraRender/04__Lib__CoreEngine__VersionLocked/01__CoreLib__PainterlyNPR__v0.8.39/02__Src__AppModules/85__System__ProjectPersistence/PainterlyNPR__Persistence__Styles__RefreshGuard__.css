@@ -1,0 +1,107 @@
+/* =============================================================================
+ * PAINTERLYNPR - SYSTEM | STYLES - REFRESH GUARD
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Persistence__Styles__RefreshGuard__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : System - Styles - RefreshGuard
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The guard Ctrl + R and F5 open: save and refresh, cancel, or
+ *              abandon the changes
+ * CREATED    : 30-Oct-2026 (v0.7.1)
+ *
+ * DESCRIPTION:
+ * - Imported last by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css:
+ *   a native <dialog> on the top layer, so nothing else in the cascade reaches it.
+ * - The panel's paper, ink and buttons; Save and refresh the strong button,
+ *   Abandon changes the terracotta one.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * REFRESH GUARD | The Dialog
+ * ----------------------------------------------------------------------------- */
+
+    /* THE DIALOG | On the top layer, over a dimmed desk */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Guard {
+        width                              :  min(420px, calc(100vw - 32px));
+        padding                            :  18px 20px 16px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_Radius);
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_Ink);
+        font                               :  var(--PainterlyNPR_FontSize) / 1.45 var(--PainterlyNPR_FontStack);
+        box-shadow                         :  var(--PainterlyNPR_SheetShadow);
+    }
+
+    .PainterlyNPR__Guard::backdrop {
+        background                         :  rgba(43, 42, 40, 0.32);
+    }
+
+    .PainterlyNPR__Guard__Title {
+        margin                             :  0 0 6px;
+        font-family                        :  var(--PainterlyNPR_FontSerif);
+        font-size                          :  18px;
+        font-weight                        :  600;
+    }
+
+    .PainterlyNPR__Guard__Text {
+        margin                             :  0 0 12px;
+        color                              :  var(--PainterlyNPR_InkSoft);
+    }
+    /* ------------------------------------------------------------ */
+
+    /* THE NAME | What Save and refresh saves under */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Guard__Label {
+        display                            :  grid;
+        gap                                :  4px;
+        margin                             :  0 0 14px;
+        color                              :  var(--PainterlyNPR_InkFaint);
+        font-size                          :  var(--PainterlyNPR_FontSizeSmall);
+        letter-spacing                     :  var(--PainterlyNPR_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+    }
+
+    .PainterlyNPR__Guard__Name {
+        padding                            :  6px 8px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  #FFFDF8;
+        color                              :  var(--PainterlyNPR_Ink);
+        font                               :  inherit;
+        font-size                          :  var(--PainterlyNPR_FontSize);
+        letter-spacing                     :  normal;
+        text-transform                     :  none;
+    }
+    /* ------------------------------------------------------------ */
+
+    /* THE CHOICES | Abandon on the left, Save and refresh on the right */
+    /* ------------------------------------------------------------ */
+    .PainterlyNPR__Guard__Actions {
+        display                            :  flex;
+        flex-wrap                          :  wrap;
+        justify-content                    :  flex-end;
+        gap                                :  8px;
+    }
+
+    .PainterlyNPR__Guard__Abandon {
+        margin-right                       :  auto;                        /* <-- Set apart from the safe choices */
+        color                              :  var(--PainterlyNPR_Terracotta);
+    }
+
+    .PainterlyNPR__Guard__Save {
+        background                         :  var(--PainterlyNPR_Ink);
+        border-color                       :  var(--PainterlyNPR_Ink);
+        color                              :  var(--PainterlyNPR_Cream);
+    }
+
+    .PainterlyNPR__Guard .PainterlyNPR__Button:disabled {
+        opacity                            :  0.5;
+        cursor                             :  default;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

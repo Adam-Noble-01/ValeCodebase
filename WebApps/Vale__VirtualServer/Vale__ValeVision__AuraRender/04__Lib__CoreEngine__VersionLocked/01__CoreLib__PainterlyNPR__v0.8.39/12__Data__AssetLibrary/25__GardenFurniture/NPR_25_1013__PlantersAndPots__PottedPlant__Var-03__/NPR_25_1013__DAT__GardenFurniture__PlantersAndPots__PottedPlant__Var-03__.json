@@ -1,0 +1,478 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Drawn from Adam's scan of an orangery elevation (03-Nov-2026): the row of red bowl plants along its foot, set out from the scan and built by the PottedPlant generator (v0.8.34)",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_25_1013",
+            "Namespace": "NPR",
+            "Collection": "25",
+            "CollectionName": "GardenFurniture",
+            "Type": "PlantersAndPots",
+            "TypeBlock": "10",
+            "Family": "101",
+            "Item": 3,
+            "Name": "PottedPlant",
+            "Variant": "Var-03",
+            "Stem": "GardenFurniture__PlantersAndPots__PottedPlant__Var-03",
+            "DisplayName": "Potted plant: low bowl, dark bud",
+            "Description": "A low red bowl with a tall column of dark leaves and a dark bud bending out on its stem."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "25__GardenFurniture/NPR_25_1013__PlantersAndPots__PottedPlant__Var-03__",
+            "DAT": {
+                "File": "NPR_25_1013__DAT__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_25_1013__MOD__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_25_1013__SKP__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_25_1013__PXY__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_25_1013__RND__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 0.68,
+            "NominalSpreadM": 0.55,
+            "Bounds": {
+                "Min": [
+                    -0.216,
+                    0,
+                    -0.216
+                ],
+                "Max": [
+                    0.216,
+                    0.648,
+                    0.216
+                ],
+                "Size": [
+                    0.432,
+                    0.648,
+                    0.432
+                ],
+                "RadiusM": 0.445
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "PottedPlant",
+            "Params": {
+                "PotWidthM": 0.43,
+                "PotHeightM": 0.18,
+                "PotLipM": 0.012,
+                "PotProfile": [
+                    0,
+                    0.78,
+                    0.1,
+                    0.96,
+                    0.3,
+                    1,
+                    0.5,
+                    1,
+                    0.7,
+                    0.96,
+                    0.8,
+                    0.9,
+                    0.9,
+                    0.82,
+                    1,
+                    0.75
+                ],
+                "RimM": 0,
+                "Leaves": [
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            -0.02,
+                            0.195
+                        ],
+                        "To": [
+                            -0.193,
+                            0.405
+                        ],
+                        "WidthM": 0.135,
+                        "Bow": 0.02,
+                        "Z": 0.036
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            0.04,
+                            0.195
+                        ],
+                        "To": [
+                            0.05,
+                            0.53
+                        ],
+                        "WidthM": 0.155,
+                        "Bow": 0.0,
+                        "Z": 0.144
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            0.045,
+                            0.395
+                        ],
+                        "To": [
+                            0.105,
+                            0.495
+                        ],
+                        "WidthM": 0.07,
+                        "Bow": 0.0,
+                        "Z": 0.108
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            0.08,
+                            0.195
+                        ],
+                        "To": [
+                            0.15,
+                            0.305
+                        ],
+                        "WidthM": 0.062,
+                        "Bow": 0.0,
+                        "Z": 0.09
+                    },
+                    {
+                        "Tone": "DeepLeaf",
+                        "From": [
+                            -0.017,
+                            0.585
+                        ],
+                        "To": [
+                            -0.16,
+                            0.627
+                        ],
+                        "WidthM": 0.088,
+                        "Bow": 0.0,
+                        "Z": 0.09,
+                        "Full": 0.55
+                    },
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            0.013,
+                            0.527
+                        ],
+                        "To": [
+                            0.113,
+                            0.597
+                        ],
+                        "WidthM": 0.072,
+                        "Bow": 0.0,
+                        "Z": -0.09
+                    },
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            0.097,
+                            0.44
+                        ],
+                        "To": [
+                            0.137,
+                            0.423
+                        ],
+                        "WidthM": 0.036,
+                        "Bow": 0.0,
+                        "Z": -0.054
+                    }
+                ],
+                "PenLines": [
+                    {
+                        "Points": [
+                            -0.16,
+                            0.627,
+                            -0.137,
+                            0.652,
+                            -0.097,
+                            0.662,
+                            -0.05,
+                            0.64,
+                            -0.015,
+                            0.587,
+                            -0.06,
+                            0.565,
+                            -0.125,
+                            0.57,
+                            -0.155,
+                            0.595,
+                            -0.16,
+                            0.627
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.02,
+                            0.585,
+                            0.003,
+                            0.53,
+                            0.017,
+                            0.405,
+                            0.008,
+                            0.295,
+                            -0.02,
+                            0.233,
+                            -0.07,
+                            0.207,
+                            -0.11,
+                            0.217
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.237,
+                            0.437,
+                            -0.195,
+                            0.423,
+                            -0.145,
+                            0.395,
+                            -0.105,
+                            0.333,
+                            -0.093,
+                            0.245,
+                            -0.087,
+                            0.19
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.21,
+                            0.405,
+                            -0.17,
+                            0.295,
+                            -0.115,
+                            0.215,
+                            -0.095,
+                            0.19
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.045,
+                            0.465,
+                            -0.04,
+                            0.295,
+                            -0.01,
+                            0.205
+                        ]
+                    },
+                    {
+                        "Points": [
+                            0.123,
+                            0.405,
+                            0.123,
+                            0.19
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.05,
+                            0.565,
+                            -0.05,
+                            0.47
+                        ]
+                    },
+                    {
+                        "Points": [
+                            0.085,
+                            0.133,
+                            0.117,
+                            0.145,
+                            0.143,
+                            0.17
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.175,
+                            0.19,
+                            0.213,
+                            0.135,
+                            0.213,
+                            0.085,
+                            0.185,
+                            0.033,
+                            0.15,
+                            -0.005,
+                            0.12,
+                            -0.04
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            -0.15,
+                            0.19,
+                            -0.155,
+                            0.167
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.015,
+                            0.02,
+                            0.007,
+                            -0.005
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.12,
+                            0.11,
+                            0.165,
+                            0.12
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.115,
+                            0.085,
+                            0.177,
+                            0.095
+                        ],
+                        "Pot": true
+                    },
+                    {
+                        "Points": [
+                            0.13,
+                            0.055,
+                            0.185,
+                            0.065
+                        ],
+                        "Pot": true
+                    }
+                ],
+                "Touches": [
+                    {
+                        "From": [
+                            -0.16,
+                            0.625
+                        ],
+                        "To": [
+                            -0.017,
+                            0.585
+                        ],
+                        "WidthM": 0.09,
+                        "Amount": 0.8,
+                        "Z": 0.1
+                    },
+                    {
+                        "From": [
+                            0.04,
+                            0.225
+                        ],
+                        "To": [
+                            0.045,
+                            0.485
+                        ],
+                        "WidthM": 0.12,
+                        "Amount": 0.4,
+                        "Z": 0.1
+                    },
+                    {
+                        "From": [
+                            -0.165,
+                            0.365
+                        ],
+                        "To": [
+                            -0.055,
+                            0.235
+                        ],
+                        "WidthM": 0.07,
+                        "Amount": 0.15,
+                        "Z": 0.1
+                    }
+                ],
+                "PenRings": [
+                    {
+                        "At": [
+                            0.093,
+                            0.587
+                        ],
+                        "RM": 0.02
+                    }
+                ],
+                "PenFlecks": []
+            },
+            "Kind": null,
+            "Material": "RedTerracotta",
+            "Role": "Furniture",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0.04,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.5
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "potted",
+                "pot",
+                "bowl",
+                "planter",
+                "plant",
+                "red",
+                "terracotta",
+                "terrace",
+                "orangery",
+                "low",
+                "bud",
+                "foliage"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2711033,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T15:10:02",
+            "EngineVersion": "0.8.38",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 1.711,
+                "Target": [
+                    0,
+                    0.324,
+                    0
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

@@ -1,0 +1,164 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Ball standard in a red bowl (NPR_07_2031) in the plain flowerpot of the terracotta planter (NPR_25_1001), at Adam's word (03-Nov-2026, with the planter arrowed in a drawing: \"Make varations on them but in this simpler terracotta pot shape formfactor of pot\"): the pot's shape and class changed, the plant lifted to stand on its rim",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2041",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "204",
+            "Item": 1,
+            "Name": "FlowerPotStandard",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Topiary__FlowerPotStandard__Var-01",
+            "DisplayName": "Ball standard in a terracotta flowerpot",
+            "Description": "A ball clipped smooth on a clear stem with a corkscrew round it, in a plain terracotta flowerpot, with underplanting of loose olive washes, dark leaves, lilac flowers and strap leaves in pen."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2041__Topiary__FlowerPotStandard__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2041__DAT__VegetationElements__Topiary__FlowerPotStandard__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2041__MOD__VegetationElements__Topiary__FlowerPotStandard__Var-01__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2041__SKP__VegetationElements__Topiary__FlowerPotStandard__Var-01__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2041__PXY__VegetationElements__Topiary__FlowerPotStandard__Var-01__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2041__RND__VegetationElements__Topiary__FlowerPotStandard__Var-01__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.65,
+            "NominalSpreadM": 1.1,
+            "Bounds": {
+                "Min": [
+                    -0.435,
+                    0,
+                    -0.27
+                ],
+                "Max": [
+                    0.557,
+                    1.65,
+                    0.27
+                ],
+                "Size": [
+                    0.993,
+                    1.65,
+                    0.54
+                ],
+                "RadiusM": 1
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "BowlStandard",
+            "Params": {
+                "PotWidthM": 0.54,
+                "PotHeightM": 0.5281,
+                "StemM": 0.6419,
+                "HeadRadiusM": 0.24,
+                "TwistTurns": 2.75,
+                "TwistRadiusM": 0.058,
+                "HeadTick": 1,
+                "UnderplantStraps": 14,
+                "Overdraw": 1.5,
+                "Wobble": 1.2,
+                "PotProfile": [
+                    0,
+                    0.739,
+                    1,
+                    1
+                ],
+                "PotLipM": 0.0702,
+                "PotGesture": null,
+                "PotMaterial": "Terracotta"
+            },
+            "Kind": "ClippedBall",
+            "Material": "ClippedBox",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": false,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0.04,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.9
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "standard",
+                "topiary",
+                "ball",
+                "lollipop",
+                "box",
+                "bay",
+                "potted",
+                "tree",
+                "pot",
+                "planter",
+                "corkscrew",
+                "spiral",
+                "twisted",
+                "underplanting",
+                "lilac",
+                "formal",
+                "pair",
+                "orangery",
+                "terracotta",
+                "flowerpot",
+                "clay"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1730412031,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T15:09:58",
+            "EngineVersion": "0.8.38",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.145,
+                "Target": [
+                    0.061,
+                    0.825,
+                    0
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

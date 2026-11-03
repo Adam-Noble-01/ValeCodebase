@@ -1,5 +1,21 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.39, No White Under a Pot's Foot and No White Dots on a Bowl (No App Version of Its Own)
+
+**Asked by Adam:** "Stop this from happening it looks bad", of a picture of Thrower's plants with the feet of three bowls and the dots on a fourth ringed in blue, then: "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.39 at 383121c, pinned as `01__CoreLib__PainterlyNPR__v0.8.39` from the commit (540 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.38, the worker's cache version 2026-11-03-15, the README's engine row.
+
+**What it brings AURA:** a pot's foot closed, the ground's wash and the pot's own run up to the line with no white between them; no dots on a bowl, for a warped read cut off on its own goes back to its own place and the band that holds a wash has no holes; a pot's white side closes before its foot; no white stars at a leaf's sharp tip. The paper on the sun's side and in gaps round the rest of a form is as it was. A half-round gutter is round too, so the white flecks along one have gone. Every drawing set draws with this: nothing new is saved.
+
+**The Assets drawer's pictures:** this pin carries the library as redrawn at 6fc84a8, on v0.8.38's washes, so the old white margins of v0.8.37 have gone from the drawer. They were drawn before this fix and keep v0.8.38's white feet until the factory runs again.
+
+**AURA's own code is unchanged:** Init's hash is the same, the new uniforms are set by the engine's own passes, and all 50 engine references resolve in the new pin.
+
+**Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: the demo cottage's hashes are the Standalone's at the three perspective presets (`10d86579`, `7faed955`, `200680c5`). The two elevation presets differ, as they should: this host never asks for the sheet's ground cut. The engine's own checks, on Thrower's live drawing set in headless Edge, are in its DEVLOG. Not yet looked at in AURA itself, signed in, with that drawing set.
+
+**Live:** not pushed. It waits on Adam's word.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.38, Round Forms Held to Their Rims (No App Version of Its Own)
 
 **Asked by Adam:** "Around rounded objects there is way too much white margin / There should be a sobel type profile line effect like we use in ValeVision3D but then this is used to generate lines around smoother objects which then help create the bounds as anything straight renders great and draw realistically, but rounded forms like this dont reciev proper edges or bounds for to contain the wash layers", then, on seeing the previews, "Add a little whitespace back ... add a little, but not uniform, say a little on the edges opoosite to the shadow side and also ramdonly of some areas etc", and: "Commit and sync".

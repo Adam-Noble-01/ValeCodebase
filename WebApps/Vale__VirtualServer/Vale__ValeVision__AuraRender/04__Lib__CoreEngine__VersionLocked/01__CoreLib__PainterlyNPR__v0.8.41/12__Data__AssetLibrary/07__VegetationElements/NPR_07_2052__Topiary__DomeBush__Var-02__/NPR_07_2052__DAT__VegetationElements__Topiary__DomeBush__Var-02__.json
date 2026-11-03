@@ -1,0 +1,161 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "The bush NPR_07_2051 with its flowers out, at Adam's word (03-Nov-2026: \"create a variation of the asset without the coloured flowers so same shape but just the topiary bush\"): a copy of its DAT with the same Profile, height, width, lean and lumps, and nothing set out about it",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2052",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "205",
+            "Item": 2,
+            "Name": "DomeBush",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Topiary__DomeBush__Var-02",
+            "DisplayName": "Topiary bush: dome, plain",
+            "Description": "A rounded clipped bush and nothing else: the dome's own shape, a pale sage wash in a broken line, gone over most on the side away from the sun, with no flowers, stems or planting about it."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2052__Topiary__DomeBush__Var-02__",
+            "DAT": {
+                "File": "NPR_07_2052__DAT__VegetationElements__Topiary__DomeBush__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2052__MOD__VegetationElements__Topiary__DomeBush__Var-02__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2052__SKP__VegetationElements__Topiary__DomeBush__Var-02__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2052__PXY__VegetationElements__Topiary__DomeBush__Var-02__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2052__RND__VegetationElements__Topiary__DomeBush__Var-02__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.15,
+            "NominalSpreadM": 1.36,
+            "Bounds": {
+                "Min": [
+                    -0.682,
+                    0,
+                    -0.724
+                ],
+                "Max": [
+                    0.762,
+                    1.15,
+                    0.737
+                ],
+                "Size": [
+                    1.444,
+                    1.15,
+                    1.461
+                ],
+                "RadiusM": 1.177
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "TopiaryBush",
+            "Params": {
+                "Wobble": 0.7,
+                "Overdraw": 0.3,
+                "HeightM": 1.15,
+                "WidthM": 1.36,
+                "Profile": [
+                    0,
+                    1,
+                    0.2,
+                    0.98,
+                    0.37,
+                    0.92,
+                    0.54,
+                    0.81,
+                    0.71,
+                    0.65,
+                    0.86,
+                    0.45,
+                    0.95,
+                    0.27,
+                    1,
+                    0
+                ],
+                "LeanM": -0.12,
+                "Lump": 0.03,
+                "Leaves": [],
+                "Glazes": [],
+                "PaperLines": [],
+                "PenLines": [],
+                "PenFlecks": []
+            },
+            "Kind": "MoundedBush",
+            "Material": "ClippedSage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Camera",
+            "AutoScale": true,
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.7
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "topiary",
+                "bush",
+                "dome",
+                "round",
+                "mound",
+                "clipped",
+                "evergreen",
+                "plain",
+                "thrower"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2051,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T16:57:17",
+            "EngineVersion": "0.8.41",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.816,
+                "Target": [
+                    0.04,
+                    0.575,
+                    0.007
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

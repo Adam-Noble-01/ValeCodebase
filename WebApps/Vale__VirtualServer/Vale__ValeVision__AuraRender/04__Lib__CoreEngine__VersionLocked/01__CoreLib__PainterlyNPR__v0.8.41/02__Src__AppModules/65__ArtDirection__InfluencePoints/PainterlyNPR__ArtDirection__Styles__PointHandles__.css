@@ -1,0 +1,76 @@
+/* =============================================================================
+ * PAINTERLYNPR - ART DIRECTION | STYLES - POINT HANDLES
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__ArtDirection__Styles__PointHandles__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : ArtDirection - Styles - PointHandles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The points' handles over the sheet
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: ART DIRECTION.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * ART DIRECTION | Point Handles Over the Sheet
+ * ----------------------------------------------------------------------------- */
+
+    /* Covers the sheet exactly; transparent to the pointer except its grips,
+       so a drag on empty paper still orbits the camera. */
+    .PainterlyNPR__PointLayer {
+        position                           :  absolute;
+        inset                              :  0;
+        pointer-events                     :  none;
+        overflow                           :  hidden;
+    }
+
+    .PainterlyNPR__Handle {
+        --PainterlyNPR_PointColour         :  var(--PainterlyNPR_Slate);
+        position                           :  absolute;
+        width                              :  0;
+        height                             :  0;
+    }
+
+    .PainterlyNPR__Handle[data-type="Fade"]        { --PainterlyNPR_PointColour: var(--PainterlyNPR_Terracotta); }
+    .PainterlyNPR__Handle[data-type="LineControl"] { --PainterlyNPR_PointColour: var(--PainterlyNPR_Ochre); }
+    .PainterlyNPR__Handle[data-type="Indication"]  { --PainterlyNPR_PointColour: var(--PainterlyNPR_Brick); }
+
+    .PainterlyNPR__Handle__Ring {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        transform                          :  translate(-50%, -50%);
+        border                             :  1.5px dashed var(--PainterlyNPR_PointColour);
+        border-radius                      :  50%;
+        opacity                            :  0.75;
+    }
+
+    .PainterlyNPR__Handle__Grip {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        transform                          :  translate(-50%, -50%);
+        width                              :  28px;
+        height                             :  28px;
+        display                            :  grid;
+        place-items                        :  center;
+        padding                            :  0;
+        border                             :  2px solid var(--PainterlyNPR_PointColour);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_PointColour);
+        font-size                          :  15px;
+        line-height                        :  1;
+        cursor                             :  move;
+        pointer-events                     :  auto;
+        box-shadow                         :  0 2px 6px rgba(43, 42, 40, 0.22);
+    }
+
+/* #endregion ------------------------------------------------------------------- */

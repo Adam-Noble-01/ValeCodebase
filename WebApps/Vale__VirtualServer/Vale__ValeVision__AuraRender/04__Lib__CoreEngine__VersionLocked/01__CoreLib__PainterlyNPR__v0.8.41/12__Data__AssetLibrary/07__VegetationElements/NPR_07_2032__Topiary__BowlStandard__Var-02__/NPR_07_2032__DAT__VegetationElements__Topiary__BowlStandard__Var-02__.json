@@ -1,0 +1,157 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Ball standard in a red bowl (NPR_07_2031) in a terracotta pot, at Adam's word (03-Nov-2026: \"add variations with terracotta pots and also the grey color pots like this\"): a copy of its DAT with only the pot's material, Terracotta, changed",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2032",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "203",
+            "Item": 2,
+            "Name": "BowlStandard",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Topiary__BowlStandard__Var-02",
+            "DisplayName": "Ball standard in a terracotta bowl",
+            "Description": "A ball clipped smooth on a clear stem with a corkscrew round it, in a low terracotta bowl, with underplanting of loose olive washes, dark leaves, lilac flowers and strap leaves in pen."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2032__Topiary__BowlStandard__Var-02__",
+            "DAT": {
+                "File": "NPR_07_2032__DAT__VegetationElements__Topiary__BowlStandard__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2032__MOD__VegetationElements__Topiary__BowlStandard__Var-02__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2032__SKP__VegetationElements__Topiary__BowlStandard__Var-02__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2032__PXY__VegetationElements__Topiary__BowlStandard__Var-02__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2032__RND__VegetationElements__Topiary__BowlStandard__Var-02__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.65,
+            "NominalSpreadM": 1.1,
+            "Bounds": {
+                "Min": [
+                    -0.532,
+                    0,
+                    -0.33
+                ],
+                "Max": [
+                    0.681,
+                    1.65,
+                    0.33
+                ],
+                "Size": [
+                    1.213,
+                    1.65,
+                    0.66
+                ],
+                "RadiusM": 1.076
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "BowlStandard",
+            "Params": {
+                "PotWidthM": 0.66,
+                "PotHeightM": 0.31,
+                "StemM": 0.86,
+                "HeadRadiusM": 0.24,
+                "TwistTurns": 2.75,
+                "TwistRadiusM": 0.058,
+                "HeadTick": 1,
+                "UnderplantStraps": 14,
+                "Overdraw": 1.5,
+                "Wobble": 1.2,
+                "PotMaterial": "Terracotta"
+            },
+            "Kind": "ClippedBall",
+            "Material": "ClippedBox",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": false,
+            "Facing": "Camera",
+            "AutoScale": false,
+            "ScaleJitter": 0.04,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.9
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "standard",
+                "topiary",
+                "ball",
+                "lollipop",
+                "box",
+                "bay",
+                "potted",
+                "tree",
+                "pot",
+                "bowl",
+                "planter",
+                "corkscrew",
+                "spiral",
+                "twisted",
+                "underplanting",
+                "lilac",
+                "formal",
+                "pair",
+                "orangery",
+                "terracotta",
+                "clay",
+                "orange"
+            ],
+            "Season": "AllYear",
+            "Botanical": "Buxus sempervirens"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 1730412031,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T16:37:36",
+            "EngineVersion": "0.8.40",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.271,
+                "Target": [
+                    0.075,
+                    0.825,
+                    0
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.41, the Two Topiary Bushes Plain (No App Version of Its Own)
+
+**Asked by Adam:** "these recent bushes create a variation of trhe asset without the coloured flowers so same shape but just the topary bush", then: "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.41 at 7ea3bbe, pinned as `01__CoreLib__PainterlyNPR__v0.8.41` from the commit (560 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.40, the worker's cache version 2026-11-03-18, the README's engine row.
+
+**What it brings AURA:** two new assets in the Assets drawer, under Vegetation, Topiary: "Topiary bush: dome, plain" and "Topiary bush: cone, plain", 52 in the library. The same shapes as the two bushes with flowers, with nothing set out about them. Their SKPs are Pending, so Cloud Sync's Sync Aura has only a built proxy for them in SketchUp until Write Missing SKPs is run there.
+
+**Nothing else changes:** against the v0.8.40 pin, file by file, only the engine's version in its AppConfig, its worker's token in its logic file, the library's index and the lock differ, and the two new asset folders are added. So no drawing in AURA moves, and AURA's own code is unchanged.
+
+**Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: it boots and refines the demo cottage (18 of 20 passes, 2037 edges, 6560 strokes, the Standalone's figures), the import map names v0.8.41, the pin's catalogue lists 52 assets with both, and their DAT, MOD, PXY and RND are served. The script's `--check`: 560 files untouched, the repository the same as the newest copy. The app's own start-up stops there at the sign-in script, which a static server of this folder does not have. Not looked at in AURA itself, signed in, with a project's drawing set.
+
+**Not pushed:** Adam's word was commit and sync. The server still has v0.8.40, at 243da99 unless a push has carried the re-pin before this.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40 Re-pinned in Place, the Library's Pictures Redrawn (No App Version of Its Own)
 
 **Asked by Adam:** "Yes, redraw them", of the library's pictures, then "Yes, commit" and "Commit and sync".

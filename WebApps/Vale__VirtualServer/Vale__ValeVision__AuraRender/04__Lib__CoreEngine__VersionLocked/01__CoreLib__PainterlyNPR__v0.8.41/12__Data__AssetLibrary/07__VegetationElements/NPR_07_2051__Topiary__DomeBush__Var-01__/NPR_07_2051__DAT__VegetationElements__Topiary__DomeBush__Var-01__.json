@@ -1,0 +1,487 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "Drawn from Vale's Thrower perspective (A2Q 15270-1 PER), the bushes Adam ringed on it (03-Nov-2026, \"create two new topiary bush assets like these\"): set out from the scan at 5x and built by the TopiaryBush generator (v0.8.40)",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2051",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "205",
+            "Item": 1,
+            "Name": "DomeBush",
+            "Variant": "Var-01",
+            "Stem": "VegetationElements__Topiary__DomeBush__Var-01",
+            "DisplayName": "Topiary bush: dome",
+            "Description": "A rounded clipped bush in a border: a pale sage wash in a broken line, gone over most on the side away from the sun, a gold flower head on dark stems, lilac at its foot and a meander of paper left along it."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2051__Topiary__DomeBush__Var-01__",
+            "DAT": {
+                "File": "NPR_07_2051__DAT__VegetationElements__Topiary__DomeBush__Var-01__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2051__MOD__VegetationElements__Topiary__DomeBush__Var-01__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2051__SKP__VegetationElements__Topiary__DomeBush__Var-01__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2051__PXY__VegetationElements__Topiary__DomeBush__Var-01__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2051__RND__VegetationElements__Topiary__DomeBush__Var-01__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.15,
+            "NominalSpreadM": 1.36,
+            "Bounds": {
+                "Min": [
+                    -0.785,
+                    -0.022,
+                    -0.724
+                ],
+                "Max": [
+                    0.858,
+                    1.15,
+                    0.818
+                ],
+                "Size": [
+                    1.643,
+                    1.172,
+                    1.542
+                ],
+                "RadiusM": 1.27
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "TopiaryBush",
+            "Params": {
+                "Wobble": 0.7,
+                "Overdraw": 0.3,
+                "HeightM": 1.15,
+                "WidthM": 1.36,
+                "Profile": [
+                    0,
+                    1,
+                    0.2,
+                    0.98,
+                    0.37,
+                    0.92,
+                    0.54,
+                    0.81,
+                    0.71,
+                    0.65,
+                    0.86,
+                    0.45,
+                    0.95,
+                    0.27,
+                    1,
+                    0
+                ],
+                "LeanM": -0.12,
+                "Lump": 0.03,
+                "Leaves": [
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            -0.663,
+                            0.039
+                        ],
+                        "To": [
+                            -0.019,
+                            0.029
+                        ],
+                        "WidthM": 0.121,
+                        "Z": 0.08,
+                        "Full": 0.5,
+                        "Thick": 0.12
+                    },
+                    {
+                        "Tone": "SapLeaf",
+                        "From": [
+                            -0.078,
+                            0.029
+                        ],
+                        "To": [
+                            0.673,
+                            0.049
+                        ],
+                        "WidthM": 0.113,
+                        "Z": 0.08,
+                        "Full": 0.5,
+                        "Thick": 0.12
+                    },
+                    {
+                        "Tone": "Lilac",
+                        "From": [
+                            -0.867,
+                            0.039
+                        ],
+                        "To": [
+                            -0.511,
+                            0.136
+                        ],
+                        "WidthM": 0.185,
+                        "Z": 0.05,
+                        "Full": 0.45,
+                        "Thick": 0.3
+                    },
+                    {
+                        "Tone": "Lilac",
+                        "From": [
+                            0.39,
+                            0.819
+                        ],
+                        "To": [
+                            0.604,
+                            0.893
+                        ],
+                        "WidthM": 0.117,
+                        "Bow": 0.03,
+                        "Full": 0.8,
+                        "Thick": 0.3
+                    },
+                    {
+                        "Tone": "Lilac",
+                        "From": [
+                            0.546,
+                            0.76
+                        ],
+                        "To": [
+                            0.756,
+                            0.784
+                        ],
+                        "WidthM": 0.129,
+                        "Bow": -0.03,
+                        "Full": 0.75,
+                        "Thick": 0.3
+                    },
+                    {
+                        "Tone": "Lilac",
+                        "From": [
+                            0.604,
+                            0.893
+                        ],
+                        "To": [
+                            0.78,
+                            0.951
+                        ],
+                        "WidthM": 0.086,
+                        "Bow": 0.02,
+                        "Full": 0.85,
+                        "Thick": 0.3
+                    }
+                ],
+                "Glazes": [
+                    {
+                        "Pigments": {
+                            "Cream": 1,
+                            "Calendula": 0.26,
+                            "Cornflower": 0.05
+                        },
+                        "From": [
+                            -0.205,
+                            0.536
+                        ],
+                        "To": [
+                            0.172,
+                            0.546
+                        ],
+                        "WidthM": 0.257,
+                        "Bow": 0.05,
+                        "Full": 0.45
+                    },
+                    {
+                        "Pigments": {
+                            "Cream": 1,
+                            "Calendula": 0.26,
+                            "Cornflower": 0.05
+                        },
+                        "From": [
+                            -0.019,
+                            0.136
+                        ],
+                        "To": [
+                            0.0,
+                            0.464
+                        ],
+                        "WidthM": 0.14,
+                        "WidestAt": 1.7,
+                        "Full": 0.55
+                    },
+                    {
+                        "Pigments": {
+                            "Cream": 0.8,
+                            "Calendula": 0.16,
+                            "Cornflower": 0.04
+                        },
+                        "From": [
+                            0.195,
+                            0.185
+                        ],
+                        "To": [
+                            0.136,
+                            0.487
+                        ],
+                        "WidthM": 0.051
+                    }
+                ],
+                "PaperLines": [
+                    {
+                        "Points": [
+                            -0.634,
+                            -0.01,
+                            -0.556,
+                            0.058,
+                            -0.448,
+                            0.136,
+                            -0.312,
+                            0.191,
+                            -0.175,
+                            0.185,
+                            -0.088,
+                            0.107,
+                            -0.019,
+                            -0.01,
+                            0.039,
+                            0.078,
+                            0.097,
+                            0.195,
+                            0.088,
+                            0.312,
+                            0.078,
+                            0.433
+                        ],
+                        "WidthMm": 0.46
+                    },
+                    {
+                        "Points": [
+                            0.107,
+                            0.185,
+                            0.166,
+                            0.136,
+                            0.263,
+                            0.117
+                        ],
+                        "WidthMm": 0.46
+                    }
+                ],
+                "PenLines": [
+                    {
+                        "Points": [
+                            -0.127,
+                            0.458,
+                            -0.107,
+                            0.37,
+                            -0.078,
+                            0.253,
+                            -0.049,
+                            0.156,
+                            -0.019,
+                            0.074
+                        ],
+                        "Times": 3
+                    },
+                    {
+                        "Points": [
+                            0.008,
+                            0.156,
+                            -0.019,
+                            0.074
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            0.234,
+                            0.37,
+                            0.224,
+                            0.312,
+                            0.214,
+                            0.253
+                        ],
+                        "Times": 3
+                    },
+                    {
+                        "Points": [
+                            0.312,
+                            0.234,
+                            0.292,
+                            0.156,
+                            0.273,
+                            0.113
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            0.674,
+                            0.234,
+                            0.663,
+                            0.487,
+                            0.628,
+                            0.741
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            0.733,
+                            0.312,
+                            0.713,
+                            0.526,
+                            0.694,
+                            0.78
+                        ]
+                    },
+                    {
+                        "Points": [
+                            -0.497,
+                            0.016,
+                            -0.448,
+                            0.035,
+                            -0.37,
+                            0.047,
+                            -0.253,
+                            0.055,
+                            -0.175,
+                            0.043,
+                            -0.094,
+                            0.062
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            -0.292,
+                            0.097,
+                            -0.214,
+                            0.101,
+                            -0.113,
+                            0.074
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            -0.175,
+                            0.016,
+                            -0.094,
+                            0.039
+                        ]
+                    },
+                    {
+                        "Points": [
+                            0.195,
+                            0.078,
+                            0.234,
+                            0.058,
+                            0.292,
+                            0.117,
+                            0.331,
+                            0.078,
+                            0.39,
+                            0.117,
+                            0.448,
+                            0.166,
+                            0.491,
+                            0.185
+                        ],
+                        "Times": 2
+                    },
+                    {
+                        "Points": [
+                            0.277,
+                            0.016,
+                            0.409,
+                            0.008,
+                            0.53,
+                            -0.004
+                        ]
+                    }
+                ],
+                "PenFlecks": [
+                    0.097,
+                    0.561,
+                    0.185,
+                    0.448,
+                    0.222,
+                    0.335
+                ]
+            },
+            "Kind": "MoundedBush",
+            "Material": "ClippedSage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Camera",
+            "AutoScale": true,
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.7
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "topiary",
+                "bush",
+                "dome",
+                "round",
+                "mound",
+                "clipped",
+                "evergreen",
+                "border",
+                "flowers",
+                "gold",
+                "lilac",
+                "thrower"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2051,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T16:37:37",
+            "EngineVersion": "0.8.40",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 5.282,
+                "Target": [
+                    0.036,
+                    0.564,
+                    0.047
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

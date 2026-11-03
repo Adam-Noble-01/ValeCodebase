@@ -1,0 +1,405 @@
+/* =============================================================================
+   PAINTERLYNPR - ORGANIC | GRAMMAR FRAMEWORK - SKETCH
+   =============================================================================
+
+   FILE       : PainterlyNPR__OrganicGrammar__Sketch__.mjs
+   NAMESPACE  : PainterlyNPR
+   MODULE     : Organic - GrammarFramework - Sketch
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Pen laid by hand over the wash, with no masses of its own: lines
+                in the world, strap leaves looped on the sheet, buds and flecks;
+                and paper left, the place a brush went round
+   CREATED    : 03-Nov-2026 (v0.8.32)
+
+   DESCRIPTION:
+   - An organic of Kind 'Sketch' holds a list of entries, each one stroke of the
+     hand, in world points (Adam's orangery scans, 03-Nov-2026: the pen at a
+     pot's planting runs free of the washes under it, so it cannot be traced
+     from them):
+       { Line: [p0, p1, ...], Alpha?, TaperIn?, TaperOut?, Wobble?, Class?, Dry?, Tier?, Whole?, Times? }
+                 a smooth line through world points, tested by depth: a stem, a
+                 corkscrew, a rim. Times: how often the pen goes over it (v0.8.40)
+       { Straps: [{ Blade: [start, ctrl, tip], WidthM, Lift? }, ...], Alpha? }
+                 looped leaves in one stroke of the pen: up, round the tip, down,
+                 on to the next. Widened on the sheet, so a leaf reads from any
+                 side; Lift leaves paper along it
+       { Ring: centre, RM, Alpha? }
+                 a small open circle: a bud
+       { Fleck: point, Size?, Blot?, Alpha? }
+                 a dot of the pen
+       { Touch: [from, to], WidthM, Amount }
+                 a darker touch of the brush into whatever wash is under it
+       { Glaze: [from, ctrl, to], WidthM, Pigments, Full?, WidestAt? }
+                 a flat shape of colour in the accent layers, a mix no one wash
+                 has (gold, v0.8.40): landing on whatever wash is under it, the
+                 wash lifted first as under a flower
+       { Paper: [p0, p1, ...], WidthMm }
+                 a line of paper left, its width on the sheet as a pen's: the
+                 meander at the foot of Adam's bushes (v0.8.40)
+   - A record may name the objects it is drawn over (Over): a plant's pen comes
+     after its wash, so its own objects never hide it, from any side (v0.8.34).
+   - Every stroke goes through the grammar's one Emit, so the paper, the field
+     and the asset's hand (Overdraw, Wobble) act on it as on any plant's.
+   - Paper left is its own accent channel (Accent2's alpha, read by the wash):
+     LeavePaper is how a gesture asks for it.
+
+   ============================================================================= */
+
+import { PainterlyNPR__Maths__Clamp as Clamp } from '../03__AppUtils/PainterlyNPR__AppUtils__Maths__.mjs';
+import {
+    PainterlyNPR__SeededRandom__Create,
+    PainterlyNPR__SeededRandom__DeriveSeed,
+} from '../03__AppUtils/PainterlyNPR__AppUtils__SeededRandom__.mjs';
+import { PainterlyNPR__GpuResources__Gpu as Gpu } from '../21__System__GpuResources/PainterlyNPR__GpuResources__Core__.mjs';
+import {
+    PainterlyNPR__GeometryBuffers__MaxDepth3,
+    PainterlyNPR__GeometryBuffers__ObjectAt,
+} from '../22__Pass__GeometryBuffers/PainterlyNPR__GeometryBuffers__Pass__.mjs';
+import { PainterlyNPR__LineCandidates__Lines as Lines } from '../30__Line__CandidateCollection/PainterlyNPR__LineCandidates__Collect__.mjs';
+import {
+    PainterlyNPR__AccentLayer__Dab,
+    PainterlyNPR__AccentLayer__Ribbon,
+    PainterlyNPR__AccentLayer__FLOWER_CHANNELS  as  FLOWER_CHANNELS,
+} from '../52__Wash__LayerStack/PainterlyNPR__AccentLayer__Pass__.mjs';
+import { PainterlyNPR__ArtDirection__FieldAt } from '../66__ArtDirection__SmartFields/PainterlyNPR__ArtDirection__Field__.mjs';
+import { PainterlyNPR__CameraRig__Project } from '../70__Camera__ViewTypes/PainterlyNPR__CameraRig__Camera__.mjs';
+import {
+    PainterlyNPR__OrganicGrammar__Circle,
+    PainterlyNPR__OrganicGrammar__Emit,
+    PainterlyNPR__OrganicGrammar__Mark,
+} from './PainterlyNPR__OrganicGrammar__Framework__.mjs';
+
+// =============================================================================
+// REGION | Grammar Framework - Sketch
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// REGION | Paper Left
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | How a Stroke Is Laid
+    // ------------------------------------------------------------
+    const SKETCH  =  {
+        NearM        :  0.2,                                                   // <-- Nearer the eye than this is behind the camera, or in it
+        SeenM        :  0.03,                                                  // <-- The depth test's slack, as a hollyhock's stem's: a line on a surface is never hidden by it
+        SeenShare    :  0.003,
+        StepMm       :  0.3,                                                   // <-- A line's samples on the sheet
+        StrapSteps   :  18,                                                    // <-- A leaf's samples, up one side
+        StrapPeak    :  0.85,                                                  // <-- Where a leaf is widest: a power on its length, below 1 toward the tip
+        StrapFill    :  0.7,                                                   // <-- How soon it reaches that width, unless the leaf says: below 1 a strap, above it a spindle
+        LiftFrom     :  0.3,                                                   // <-- Paper left in a leaf only this far along it: its foot is down among the soil and the rim
+        RingSteps    :  16,
+        BlotMm       :  0.09,                                                  // <-- How far apart the strokes of a fleck gone over lie (Blot)
+        RingOverlap  :  1.1,                                                   // <-- Turns round a bud: the pen runs a little past where it began
+        Dry          :  0.15,                                                  // <-- Firm ink: a line laid on purpose, not a searching one
+        PaperFrom    :  0.25,                                                  // <-- Where the paper is taking the drawing there is nothing to leave paper in
+        PaperGain    :  1.4,
+        OverMm       :  0.06,                                                  // <-- A line gone over (Times) lies this far from the last on the sheet: under the base pen's width, so they merge into weight
+        GlazeSteps   :  18,                                                    // <-- A glaze's samples along its length
+        GlazeWidest  :  0.75,                                                  // <-- As a leaf's: the power on its length, below 1 its widest nearer its foot
+        GlazeFull    :  0.68,                                                  // <-- As a leaf's: below 1 fuller shoulders and a blunter tip
+        PaperMinPerM :  2.2,                                                   // <-- Millimetres of sheet to the metre: further off than this a plant has no room for a line of paper
+        PaperFullPerM:  7,                                                     // <-- From here in it is its full width, as a pen is; further off it narrows to half
+        PaperEndMm   :  0.3,                                                   // <-- Over this its ends close, as a pen's mark rounds off
+    };
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Leave Paper Between Two Lines - the wash and its shadow glaze lifted away
+    // ------------------------------------------------------------
+    // a and b: lists of { X, Y } in sheet pixels, one across from the other. Flat,
+    // so what is left has the edge a brush went round. The wash reads it from
+    // Accent2's alpha. Where the paper is already taking the drawing it fades with it.
+    function PainterlyNPR__OrganicGrammar__LeavePaper(a, b) {
+        const amount  =  (p) => {
+            const presence  =  PainterlyNPR__ArtDirection__FieldAt(p.X, p.Y).Presence;
+            return { X: p.X, Y: p.Y, Amount: presence < SKETCH.PaperFrom ? 0 : Clamp(presence * SKETCH.PaperGain, 0, 1) };
+        };
+        PainterlyNPR__AccentLayer__Ribbon(Lines.Dabs2, a.map(amount), b.map(amount), 3);
+    }
+    // ------------------------------------------------------------
+
+
+
+    // FUNCTION | Glaze Between Two Lines - a flat shape of pigments in the accent layers
+    // ------------------------------------------------------------
+    // a and b as LeavePaper's. pigments: each flower pigment named and its amount.
+    // Each lies in its own channel and the wash multiplies them, so together they
+    // make a colour no one channel has. Fades with the paper as a flower does.
+    function PainterlyNPR__OrganicGrammar__LayGlaze(a, b, pigments) {
+        const present  =  (p) => { const presence = PainterlyNPR__ArtDirection__FieldAt(p.X, p.Y).Presence; return { X: p.X, Y: p.Y, Presence: presence < SKETCH.PaperFrom ? 0 : presence }; };
+        const pa = a.map(present), pb = b.map(present);
+        for (const name of Object.keys(pigments)) {
+            const channel  =  FLOWER_CHANNELS[name];
+            if (channel == null) continue;
+            const amount   =  (p) => ({ X: p.X, Y: p.Y, Amount: Clamp(pigments[name] * p.Presence, 0, 1) });
+            PainterlyNPR__AccentLayer__Ribbon(channel >= 4 ? Lines.Dabs2 : Lines.Dabs, pa.map(amount), pb.map(amount), channel & 3);
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | The Entries
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Can the Eye See a Point of a Line?
+    // ------------------------------------------------------------
+    // By depth alone: the far side of a pot's rim lands on the pot, and an object
+    // test would draw it through the near side. But for a Sketch that names the
+    // objects it is drawn over (Over).
+    const SketchOver  =  { Ids: null };
+
+    function PainterlyNPR__OrganicGrammar__SketchSeen(x, y, depth) {
+        const id  =  PainterlyNPR__GeometryBuffers__ObjectAt(x, y);
+        if (SketchOver.Ids && SketchOver.Ids.has(id)) return true;             // <-- The pen comes after the wash: over this plant's own objects it is never hidden (v0.8.34)
+        return id < 0 || depth <= PainterlyNPR__GeometryBuffers__MaxDepth3(x, y) + SKETCH.SeenM + depth * SKETCH.SeenShare;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand the Seen Runs of Some Points On as Strokes
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__SketchRuns(points, strokes, options, pushDebug) {
+        let run  =  [];
+        for (const p of points) {
+            if (PainterlyNPR__OrganicGrammar__SketchSeen(p.X, p.Y, p.Depth)) run.push({ X: p.X, Y: p.Y });
+            else if (run.length) { PainterlyNPR__OrganicGrammar__Emit(run, strokes, options, pushDebug); run = []; }
+        }
+        PainterlyNPR__OrganicGrammar__Emit(run, strokes, options, pushDebug);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Smooth Curve Through Projected Points - Catmull-Rom, on the sheet
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__SketchCurve(points) {
+        const step  =  SKETCH.StepMm * Gpu.PxPerMm;
+        const n     =  points.length;
+        const out   =  [];
+        for (let i = 0; i < n - 1; i++) {
+            const p0 = points[Math.max(i - 1, 0)], p1 = points[i], p2 = points[i + 1], p3 = points[Math.min(i + 2, n - 1)];
+            const steps  =  Math.max(1, Math.ceil(Math.hypot(p2.X - p1.X, p2.Y - p1.Y) / step));
+            for (let k = i ? 1 : 0; k <= steps; k++) {
+                const t = k / steps, t2 = t * t, t3 = t2 * t;
+                const along  =  (a, b, c, d) => 0.5 * (2 * b + (c - a) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (3 * b - a - 3 * c + d) * t3);
+                out.push({ X: along(p0.X, p1.X, p2.X, p3.X), Y: along(p0.Y, p1.Y, p2.Y, p3.Y), Depth: p1.Depth + (p2.Depth - p1.Depth) * t });
+            }
+        }
+        return out;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | One Line - a smooth line through world points
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__SketchLine(entry, seed, strokes, pushDebug) {
+        const points  =  entry.Line.map(PainterlyNPR__CameraRig__Project);
+        if (points.some(p => p.Depth < SKETCH.NearM)) return;
+        const curve  =  PainterlyNPR__OrganicGrammar__SketchCurve(points);
+        const times  =  entry.Times || 1;
+        for (let k = 0; k < times; k++) {
+            const off   =  (k - (times - 1) / 2) * SKETCH.OverMm * Gpu.PxPerMm;   // <-- Weight by the pen going back, on the sheet: a line once over is exactly the curve
+            const path  =  times === 1 ? curve : curve.map((p, i) => {
+                const q = curve[Math.max(0, i - 1)], r = curve[Math.min(curve.length - 1, i + 1)], len = Math.hypot(r.X - q.X, r.Y - q.Y) || 1;
+                return { X: p.X - (r.Y - q.Y) / len * off, Y: p.Y + (r.X - q.X) / len * off, Depth: p.Depth };
+            });
+            PainterlyNPR__OrganicGrammar__SketchRuns(path, strokes, {
+                Class: entry.Class != null ? entry.Class : 2, Seed: k ? PainterlyNPR__SeededRandom__DeriveSeed(seed, 'over:' + k) : seed, Alpha: entry.Alpha != null ? entry.Alpha : 0.85, Loose: 0,
+                TaperIn: entry.TaperIn != null ? entry.TaperIn : 0.3, TaperOut: entry.TaperOut != null ? entry.TaperOut : 1.2,
+                Wobble: entry.Wobble != null ? entry.Wobble : 0.35, SpacingMm: 0.35, Dry: entry.Dry != null ? entry.Dry : SKETCH.Dry, Tier: entry.Tier, Whole: entry.Whole,
+            }, pushDebug);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Run of Strap Leaves - looped in one stroke of the pen
+    // ------------------------------------------------------------
+    // Each leaf's middle is a curve through the world (start, ctrl, tip); its two
+    // sides are drawn on the sheet, either side of that curve, pointed at both
+    // ends: up one side, round the tip, down the other, on to the next leaf. That
+    // is the scribble at the foot of Adam's standards, all V's and loops. A leaf
+    // with Lift has paper left inside it, so it cuts white through a wash.
+    function PainterlyNPR__OrganicGrammar__SketchStraps(entry, seed, strokes, pushDebug) {
+        const n        =  SKETCH.StrapSteps;
+        const outline  =  [];
+        entry.Straps.forEach((strap) => {
+            const a = PainterlyNPR__CameraRig__Project(strap.Blade[0]), b = PainterlyNPR__CameraRig__Project(strap.Blade[1]), c = PainterlyNPR__CameraRig__Project(strap.Blade[2]);
+            if (a.Depth < SKETCH.NearM || b.Depth < SKETCH.NearM || c.Depth < SKETCH.NearM) return;
+            const width   =  PainterlyNPR__OrganicGrammar__Circle({ C: strap.Blade[1], R: strap.WidthM }).R;
+            const middle  =  [];
+            for (let k = 0; k <= n; k++) {
+                const t = k / n, u = 1 - t;
+                const tx = 2 * u * (b.X - a.X) + 2 * t * (c.X - b.X), ty = 2 * u * (b.Y - a.Y) + 2 * t * (c.Y - b.Y);
+                const len  =  Math.hypot(tx, ty) || 1;
+                middle.push({
+                    X: u * u * a.X + 2 * u * t * b.X + t * t * c.X, Y: u * u * a.Y + 2 * u * t * b.Y + t * t * c.Y,
+                    Depth: u * u * a.Depth + 2 * u * t * b.Depth + t * t * c.Depth,
+                    NX: -ty / len, NY: tx / len,
+                    H: width * Math.pow(Math.sin(Math.PI * Math.pow(t, SKETCH.StrapPeak)), strap.Fill != null ? strap.Fill : SKETCH.StrapFill),
+                });
+            }
+            for (const m of middle) outline.push({ X: m.X + m.NX * m.H, Y: m.Y + m.NY * m.H, Depth: m.Depth });
+            for (let k = n - 1; k >= 0; k--) outline.push({ X: middle[k].X - middle[k].NX * middle[k].H, Y: middle[k].Y - middle[k].NY * middle[k].H, Depth: middle[k].Depth });
+            if (!strap.Lift) return;
+            const shown  =  middle.slice(Math.ceil(n * SKETCH.LiftFrom)).filter(m => PainterlyNPR__OrganicGrammar__SketchSeen(m.X, m.Y, m.Depth));
+            PainterlyNPR__OrganicGrammar__LeavePaper(shown.map(m => ({ X: m.X + m.NX * m.H, Y: m.Y + m.NY * m.H })), shown.map(m => ({ X: m.X - m.NX * m.H, Y: m.Y - m.NY * m.H })));
+        });
+        PainterlyNPR__OrganicGrammar__SketchRuns(outline, strokes, { Class: 2, Seed: seed, Alpha: entry.Alpha != null ? entry.Alpha : 0.92, Loose: 0, TaperIn: 0.25, TaperOut: 0.9, Wobble: 0.3, SpacingMm: 0.3, Dry: entry.Dry != null ? entry.Dry : SKETCH.Dry }, pushDebug);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Bud - a small open circle, the pen running a little past its start
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__SketchRing(entry, seed, strokes, pushDebug) {
+        const c  =  PainterlyNPR__CameraRig__Project(entry.Ring);
+        if (c.Depth < SKETCH.NearM) return;
+        const r       =  PainterlyNPR__OrganicGrammar__Circle({ C: entry.Ring, R: entry.RM }).R;
+        const rng     =  PainterlyNPR__SeededRandom__Create(seed);
+        const start   =  rng.Range(0, Math.PI * 2), squash = rng.Range(0.82, 1), turn = rng.Range(0, Math.PI);
+        const n       =  Math.ceil(SKETCH.RingSteps * SKETCH.RingOverlap);
+        const points  =  [];
+        for (let k = 0; k <= n; k++) {
+            const a  =  start + (k / SKETCH.RingSteps) * Math.PI * 2;
+            const u  =  Math.cos(a) * r * (1 + rng.Spread(0.05)), v = Math.sin(a) * r * squash * (1 + rng.Spread(0.05));
+            points.push({ X: c.X + u * Math.cos(turn) - v * Math.sin(turn), Y: c.Y + u * Math.sin(turn) + v * Math.cos(turn), Depth: c.Depth });
+        }
+        PainterlyNPR__OrganicGrammar__SketchRuns(points, strokes, { Class: 2, Seed: seed, Alpha: entry.Alpha != null ? entry.Alpha : 0.9, Loose: 0, TaperIn: 0.05, TaperOut: 0.15, Wobble: 0.2, SpacingMm: 0.15, Dry: entry.Dry != null ? entry.Dry : SKETCH.Dry }, pushDebug);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Fleck - a dot of the pen
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__SketchFleck(entry, seed, strokes, pushDebug) {
+        const p  =  PainterlyNPR__CameraRig__Project(entry.Fleck);
+        if (p.Depth < SKETCH.NearM || !PainterlyNPR__OrganicGrammar__SketchSeen(p.X, p.Y, p.Depth)) return;
+        const mark  =  PainterlyNPR__OrganicGrammar__Mark('Stipple', p.X, p.Y, null, null, PainterlyNPR__SeededRandom__Create(seed), Gpu.PxPerMm, entry.Size || 1);
+        const a = mark.Points[0], b = mark.Points[1], len = Math.hypot(b.X - a.X, b.Y - a.Y) || 1;
+        const blot  =  entry.Blot || 1;                                        // <-- Strokes side by side, on the sheet: a dot gone over stays on the base pen (v0.8.34)
+        for (let k = 0; k < blot; k++) {
+            const off  =  (k - (blot - 1) / 2) * SKETCH.BlotMm * Gpu.PxPerMm;
+            const nx = -(b.Y - a.Y) / len * off, ny = (b.X - a.X) / len * off;
+            PainterlyNPR__OrganicGrammar__Emit([{ X: a.X + nx, Y: a.Y + ny }, { X: b.X + nx, Y: b.Y + ny }], strokes, { Class: 3, Seed: seed + k, Alpha: entry.Alpha != null ? entry.Alpha : 0.9, Loose: 0, TaperIn: mark.TaperIn, TaperOut: mark.TaperOut, Wobble: 0, SpacingMm: 0.1, Dry: entry.Dry }, pushDebug);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Touch - a darker wash dropped into what is there while it was wet
+    // ------------------------------------------------------------
+    // A ragged dab along a line, in the accent layer's first channel: the one
+    // that deepens a wash toward its own second pigment, so the darkest of a plant
+    // is its own wash gone darker, soft inside it, and never a shape of its own
+    // with a white line round it. Paper under it stays paper (v0.8.34).
+    function PainterlyNPR__OrganicGrammar__SketchTouch(entry, seed) {
+        const a = PainterlyNPR__CameraRig__Project(entry.Touch[0]), b = PainterlyNPR__CameraRig__Project(entry.Touch[1]);
+        if (a.Depth < SKETCH.NearM || b.Depth < SKETCH.NearM) return;
+        const x = (a.X + b.X) / 2, y = (a.Y + b.Y) / 2;
+        const presence  =  PainterlyNPR__ArtDirection__FieldAt(x, y).Presence;
+        if (presence < SKETCH.PaperFrom) return;
+        const ux = (b.X - a.X) / 2, uy = (b.Y - a.Y) / 2, len = Math.hypot(ux, uy) || 1;
+        const half  =  PainterlyNPR__OrganicGrammar__Circle({ C: entry.Touch[0], R: entry.WidthM / 2 }).R;
+        PainterlyNPR__AccentLayer__Dab(Lines.Dabs, x, y, ux, uy, -uy / len * half, ux / len * half, 0, Clamp(entry.Amount * presence, 0, 1), seed);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Glaze - a lens of colour along a curve, flat, hard at its edge
+    // ------------------------------------------------------------
+    // Laid on the sheet, either side of a curve through the world, as a leaf's
+    // sides are, so it reads from any side. Cut where something stands in front.
+    function PainterlyNPR__OrganicGrammar__SketchGlaze(entry) {
+        const a = PainterlyNPR__CameraRig__Project(entry.Glaze[0]), b = PainterlyNPR__CameraRig__Project(entry.Glaze[1]), c = PainterlyNPR__CameraRig__Project(entry.Glaze[2]);
+        if (a.Depth < SKETCH.NearM || b.Depth < SKETCH.NearM || c.Depth < SKETCH.NearM) return;
+        const half    =  PainterlyNPR__OrganicGrammar__Circle({ C: entry.Glaze[1], R: entry.WidthM / 2 }).R;
+        const widest  =  entry.WidestAt != null ? entry.WidestAt : SKETCH.GlazeWidest, full = entry.Full != null ? entry.Full : SKETCH.GlazeFull;
+        let upper = [], lower = [];
+        const flush   =  () => { PainterlyNPR__OrganicGrammar__LayGlaze(upper, lower, entry.Pigments); upper = []; lower = []; };
+        for (let k = 0; k <= SKETCH.GlazeSteps; k++) {
+            const t = k / SKETCH.GlazeSteps, u = 1 - t;
+            const x = u * u * a.X + 2 * u * t * b.X + t * t * c.X, y = u * u * a.Y + 2 * u * t * b.Y + t * t * c.Y, depth = u * u * a.Depth + 2 * u * t * b.Depth + t * t * c.Depth;
+            if (!PainterlyNPR__OrganicGrammar__SketchSeen(x, y, depth)) { flush(); continue; }
+            const tx = 2 * u * (b.X - a.X) + 2 * t * (c.X - b.X), ty = 2 * u * (b.Y - a.Y) + 2 * t * (c.Y - b.Y), len = Math.hypot(tx, ty) || 1;
+            const h  =  half * Math.pow(Math.sin(Math.PI * Math.pow(t, widest)), full);
+            upper.push({ X: x - ty / len * h, Y: y + tx / len * h });
+            lower.push({ X: x + ty / len * h, Y: y - tx / len * h });
+        }
+        flush();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Line of Paper - what the brush went round, a pen's width on the sheet
+    // ------------------------------------------------------------
+    // Its width is millimetres of the sheet, as a pen's is, so a close view does not
+    // fatten it; a plant far off narrows it, and further off has none.
+    function PainterlyNPR__OrganicGrammar__SketchPaper(entry) {
+        const points  =  entry.Paper.map(PainterlyNPR__CameraRig__Project);
+        if (points.some(p => p.Depth < SKETCH.NearM)) return;
+        const pxPerMm  =  Gpu.PxPerMm;
+        const perM     =  PainterlyNPR__OrganicGrammar__Circle({ C: entry.Paper[0], R: 1 }).R / pxPerMm;
+        if (perM < SKETCH.PaperMinPerM) return;
+        const half   =  entry.WidthMm / 2 * pxPerMm * Clamp(perM / SKETCH.PaperFullPerM, 0.5, 1);
+        const curve  =  PainterlyNPR__OrganicGrammar__SketchCurve(points);
+        const S      =  [0];
+        for (let i = 1; i < curve.length; i++) S.push(S[i - 1] + Math.hypot(curve[i].X - curve[i - 1].X, curve[i].Y - curve[i - 1].Y));
+        const total  =  S[S.length - 1], ends = SKETCH.PaperEndMm * pxPerMm;
+        let upper = [], lower = [];
+        const flush  =  () => { PainterlyNPR__OrganicGrammar__LeavePaper(upper, lower); upper = []; lower = []; };
+        curve.forEach((p, i) => {
+            if (!PainterlyNPR__OrganicGrammar__SketchSeen(p.X, p.Y, p.Depth)) { flush(); return; }
+            const q = curve[Math.max(0, i - 1)], r = curve[Math.min(curve.length - 1, i + 1)];
+            const tx = r.X - q.X, ty = r.Y - q.Y, len = Math.hypot(tx, ty) || 1;
+            const h  =  half * Math.sqrt(Clamp(Math.min(S[i], total - S[i]) / ends, 0, 1));
+            upper.push({ X: p.X - ty / len * h, Y: p.Y + tx / len * h });
+            lower.push({ X: p.X + ty / len * h, Y: p.Y - tx / len * h });
+        });
+        flush();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | One Sketch - its entries in their order, each with its own seed
+    // ------------------------------------------------------------
+    function PainterlyNPR__OrganicGrammar__Sketch(organic, strokes, seed, pushDebug) {
+        SketchOver.Ids  =  organic.Over ? new Set(organic.Over) : null;
+        organic.Sketch.forEach((entry, i) => {
+            const own  =  PainterlyNPR__SeededRandom__DeriveSeed(seed, 'sketch:' + i);
+            if (entry.Line) PainterlyNPR__OrganicGrammar__SketchLine(entry, own, strokes, pushDebug);
+            else if (entry.Straps) PainterlyNPR__OrganicGrammar__SketchStraps(entry, own, strokes, pushDebug);
+            else if (entry.Ring) PainterlyNPR__OrganicGrammar__SketchRing(entry, own, strokes, pushDebug);
+            else if (entry.Fleck) PainterlyNPR__OrganicGrammar__SketchFleck(entry, own, strokes, pushDebug);
+            else if (entry.Touch) PainterlyNPR__OrganicGrammar__SketchTouch(entry, own);
+            else if (entry.Glaze) PainterlyNPR__OrganicGrammar__SketchGlaze(entry);
+            else if (entry.Paper) PainterlyNPR__OrganicGrammar__SketchPaper(entry);
+        });
+        SketchOver.Ids  =  null;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | What Other Modules Read - under their three-stage names
+    // ------------------------------------------------------------
+    export {
+        PainterlyNPR__OrganicGrammar__LayGlaze,
+        PainterlyNPR__OrganicGrammar__LeavePaper,
+        PainterlyNPR__OrganicGrammar__Sketch,
+        PainterlyNPR__OrganicGrammar__SketchCurve,
+        PainterlyNPR__OrganicGrammar__SketchSeen,
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

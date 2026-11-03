@@ -1,0 +1,161 @@
+{
+    "PainterlyNPR__AssetData": {
+        "PainterlyNPR__AssetData__Meta": {
+            "SchemaVersion": "1.0.0",
+            "Schema": "11__Contracts__JsonSchemas/PainterlyNPR__Schema__AssetData__1.0.0__.json",
+            "Created": "03-Nov-2026",
+            "Modified": "03-Nov-2026",
+            "Author": "Adam Noble - Noble Architecture",
+            "Source": "The bush NPR_07_2061 with its flowers out, at Adam's word (03-Nov-2026: \"create a variation of the asset without the coloured flowers so same shape but just the topiary bush\"): a copy of its DAT with the same Profile, height, width, lean and lumps, and nothing set out about it",
+            "Status": "Active"
+        },
+        "PainterlyNPR__AssetData__Identity": {
+            "AssetId": "NPR_07_2062",
+            "Namespace": "NPR",
+            "Collection": "07",
+            "CollectionName": "VegetationElements",
+            "Type": "Topiary",
+            "TypeBlock": "20",
+            "Family": "206",
+            "Item": 2,
+            "Name": "ConeBush",
+            "Variant": "Var-02",
+            "Stem": "VegetationElements__Topiary__ConeBush__Var-02",
+            "DisplayName": "Topiary bush: cone, plain",
+            "Description": "A pointed clipped bush and nothing else: the cone's own shape, a pale sage wash in a firm line gone over and nicked toward its point, with no flowers, stems or planting about it."
+        },
+        "PainterlyNPR__AssetData__Files": {
+            "Folder": "07__VegetationElements/NPR_07_2062__Topiary__ConeBush__Var-02__",
+            "DAT": {
+                "File": "NPR_07_2062__DAT__VegetationElements__Topiary__ConeBush__Var-02__.json",
+                "Status": "Present"
+            },
+            "MOD": {
+                "File": "NPR_07_2062__MOD__VegetationElements__Topiary__ConeBush__Var-02__.glb",
+                "Status": "Present"
+            },
+            "SKP": {
+                "File": "NPR_07_2062__SKP__VegetationElements__Topiary__ConeBush__Var-02__.skp",
+                "Status": "Pending"
+            },
+            "PXY": {
+                "File": "NPR_07_2062__PXY__VegetationElements__Topiary__ConeBush__Var-02__.webp",
+                "Status": "Present"
+            },
+            "RND": {
+                "File": "NPR_07_2062__RND__VegetationElements__Topiary__ConeBush__Var-02__.webp",
+                "Status": "Present"
+            }
+        },
+        "PainterlyNPR__AssetData__Geometry": {
+            "Units": "Metres",
+            "UpAxis": "+Y",
+            "FrontAxis": "+Z",
+            "Origin": "BaseCentre",
+            "NominalHeightM": 1.55,
+            "NominalSpreadM": 1.24,
+            "Bounds": {
+                "Min": [
+                    -0.617,
+                    0,
+                    -0.623
+                ],
+                "Max": [
+                    0.613,
+                    1.55,
+                    0.624
+                ],
+                "Size": [
+                    1.23,
+                    1.55,
+                    1.247
+                ],
+                "RadiusM": 1.17
+            }
+        },
+        "PainterlyNPR__AssetData__Painterly": {
+            "Source": "Procedural",
+            "Generator": "TopiaryBush",
+            "Params": {
+                "Wobble": 0.7,
+                "Overdraw": 0.3,
+                "HeightM": 1.55,
+                "WidthM": 1.24,
+                "Profile": [
+                    0,
+                    1,
+                    0.095,
+                    0.966,
+                    0.176,
+                    0.865,
+                    0.285,
+                    0.68,
+                    0.5,
+                    0.43,
+                    0.678,
+                    0.27,
+                    0.854,
+                    0.132,
+                    1,
+                    0
+                ],
+                "LeanM": 0,
+                "Lump": 0.006,
+                "Leaves": [],
+                "Glazes": [],
+                "PaperLines": [],
+                "PenLines": [],
+                "PenFlecks": []
+            },
+            "Kind": "ClippedBush",
+            "Material": "ClippedSage",
+            "Role": "Planting",
+            "Flowers": null
+        },
+        "PainterlyNPR__AssetData__Placement": {
+            "Snap": "Ground",
+            "AutoRotate": true,
+            "Facing": "Camera",
+            "AutoScale": true,
+            "ScaleJitter": 0.06,
+            "NewShapeEachPlop": true,
+            "MinSpacingM": 0.7
+        },
+        "PainterlyNPR__AssetData__Catalogue": {
+            "Keywords": [
+                "topiary",
+                "bush",
+                "cone",
+                "pyramid",
+                "pointed",
+                "clipped",
+                "evergreen",
+                "plain",
+                "thrower"
+            ],
+            "Season": "Summer"
+        },
+        "PainterlyNPR__AssetData__Factory": {
+            "StageSeed": 2061,
+            "Status": "Rendered",
+            "RenderedOn": "2026-11-03T16:57:17",
+            "EngineVersion": "0.8.41",
+            "StageVersion": "1.0.0",
+            "Camera": {
+                "Mode": "Perspective",
+                "Yaw": 28,
+                "Pitch": 9,
+                "Distance": 4.239,
+                "Target": [
+                    -0.002,
+                    0.775,
+                    0.001
+                ],
+                "FovY": 30,
+                "HalfHeight": 10,
+                "Ceiling": 1
+            },
+            "ThumbnailPx": 512
+        }
+    }
+}

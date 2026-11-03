@@ -1,0 +1,26 @@
+{
+    "PainterlyNPR__ProjectPersistence__Config" : {
+        "PainterlyNPR__ProjectPersistence__Config__Meta"  : {
+            "ConfigLabel"   : "PainterlyNPR - Saved Settings",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "Where a save goes: this browser's storage, and the local server's /api/projects, which keeps them in 21__Generated__UserProjects with a history and a bin.",
+            "ReadBy"        : "02__Src__AppModules/85__System__ProjectPersistence/PainterlyNPR__Saves__SavedSettings__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__ProjectPersistence__Config__Saves" : {
+            "StorageKey"     : "PainterlyNPR__Experiment01__SavedSettings",
+            "StorageKeyNote" : "{ Name: { Saved, Settings } }",
+            "Api"            : "/api/projects",
+            "ApiNote"        : "The local server's routes, named as AudioSPACE's",
+            "Folder"         : "21__Generated__UserProjects",
+            "NameRule"       : {
+                "Pattern" : "^[A-Za-z0-9][A-Za-z0-9 _.-]{0,59}$",
+                "Flags"   : ""
+            },
+            "NameRuleNote"   : "AudioSPACE's rule: letters, digits, spaces, _ . -",
+            "ArmMs"          : 3000,
+            "ArmMsNote"      : "A Remove needs a second click within this"
+        }
+    }
+}

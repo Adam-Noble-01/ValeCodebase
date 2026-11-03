@@ -1,0 +1,75 @@
+{
+    "PainterlyNPR__MaterialAssignment__Config" : {
+        "PainterlyNPR__MaterialAssignment__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Material Assignment",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "How a material class given to an object or a face is carried through the drawing: which classes lay courses, what a face is, and the sample each class is drawn on for its swatch.",
+            "ReadBy"        : "02__Src__AppModules/17__Scene__MaterialAssignment/PainterlyNPR__MaterialAssignment__Apply__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.7.0"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Library" : {
+            "Note"            : "Where the Materials tab reads the material library, and where the factory writes its swatches",
+            "Root"            : "07__Data__MaterialRecipes/",
+            "RootNote"        : "From the engine's root (the folder holding 02__Src__AppModules), resolved from the engine's own files rather than the page (v0.8.2): a wrapper that pins the engine pins the register and swatches beside it in the same layout",
+            "RegisterFile"    : "PainterlyNPR__MaterialLibrary__Register__.json",
+            "Api"             : "/api/materials",
+            "ApiNote"         : "The local server's: POST /api/materials/<Key>/<RND|PXY> writes a swatch into the class's group folder",
+            "MaxAssignments"  : 400,
+            "MaxAssignmentsNote": "A drawing holds this many material assignments at most; giving a class again to what already has one replaces it rather than adding"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Rules" : {
+            "Note"            : "A material is a class (13__Scene__MaterialClasses): its wash, its albedo, its hatching - and, for a few, the courses material indication lays. Giving a class to an object or a face carries all of it: the wash and hatching follow at once (they read each pixel's class), and the courses follow by Patterns.",
+            "Excluded"        : ["Sky"],
+            "ExcludedNote"    : "The sky is not a surface: nothing is given it",
+            "Patterns"        : { "Brick": "Brick", "ClayTile": "Tile", "Slate": "Tile", "Stonework": "Rubble" },
+            "PatternsNote"    : "The classes that lay courses, and which. A surface given any other class keeps no courses; a face given one of these gets courses even if it had none",
+            "WholeObject"     : ["Rubble"],
+            "WholeObjectNote" : "A pattern laid after every assignment on each upright flat face whose triangles end up in its class, however they came by it (a whole object or a face given it, a SketchUp swatch, a host's scene file): a project's whitecard is one mesh, and a building given stone should show stones. Laid within what the face and its linework leave clear (Faces, FaceMask)",
+            "SoldierNeeds"    : "Brick",
+            "SoldierNeedsNote": "A soldier course over an opening stays only while its wall is brick",
+            "FlagNeeds"       : "Paving",
+            "FlagNeedsNote"   : "A flagstone path keeps its flags only while it is paving"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Faces" : {
+            "Note"        : "A face is what SketchUp would call one: the triangles of one object that lie in one plane and join edge to edge, found from the one picked. A plant's masses are smooth, so a face on a plant is the plant.",
+            "NormalDot"   : 0.999,
+            "NormalDotNote": "Two triangles face the same way when their normals agree this well (about 2.5 degrees)",
+            "PlaneM"      : 0.003,
+            "PlaneMNote"  : "And lie in one plane within this many metres",
+            "WeldM"       : 0.0005,
+            "WeldMNote"   : "Corners nearer than this are one corner when edges are matched",
+            "OffsetM"     : 0.002,
+            "OffsetMNote" : "A new face's courses sit this far proud of it, as every surface's do",
+            "UprightNy"   : 0.2,
+            "UprightNyNote": "A whole object's face counts as a wall when its normal rises no more than this",
+            "MinAreaM2"   : 0.6,
+            "MinHeightM"  : 0.9,
+            "MinAreaM2Note": "And when it is at least this big and this tall: never a plinth, a fascia or a quoin block",
+            "MaskCellM"   : 0.04,
+            "MaskCellMNote": "What is clear on a face, measured in cells this size. A whitecard's wall is often one flat rectangle with its windows and quoins only drawn on it, so the face alone cannot say where a stone may go: its linework must",
+            "MaskReachM"  : 0.3,
+            "MaskReachMNote": "A line of any object this near the face's plane, both ends, keeps stones off it: quoins and window surrounds stand a little proud, and a wall painted in SketchUp is a bucket of its own, its lines on another object",
+            "MaskMinM2"   : 0.35,
+            "MaskMinShare": 0.25,
+            "MaskMinM2Note": "A clear patch counts as open wall when it is at least this big and this share of the biggest: the panes of a window and the blocks of a quoin are closed off by their own lines, and take no stones",
+            "MaskWallM2"  : 1,
+            "MaskWallM2Note": "A patch this big is open wall whatever the share: no pane is, and the biggest patch of a wall may be behind a new building (Thrower's existing rear wall, painted Stonework, kept its stones out of sight and none where it shows)"
+        },
+
+        "PainterlyNPR__MaterialAssignment__Config__Samples" : {
+            "Note"        : "What each class is drawn on for its swatch in the catalogue environment: a block for what buildings are made of, a slab for what the ground is made of, a mound for planting, a log for bark.",
+            "Slab"        : ["Lawn", "Paving", "Footway", "Tarmac", "Kerb", "Water"],
+            "Mound"       : ["Foliage", "TreeFoliage", "Hedge", "Conifer", "Lavender", "Grass", "DistantTrees", "MidTrees"],
+            "Log"         : ["Bark"],
+            "BlockM"      : [1.8, 1.5, 1.2],
+            "BlockMNote"  : "Width, height and depth of the block: a stretch of wall's worth, its courses at true gauge",
+            "SlabM"       : [2.6, 0.06, 2.0],
+            "MoundM"      : [1.7, 1.3],
+            "LogM"        : [0.3, 1.4],
+            "LogMNote"    : "The log's radius and height: a short upright trunk"
+        }
+    }
+}

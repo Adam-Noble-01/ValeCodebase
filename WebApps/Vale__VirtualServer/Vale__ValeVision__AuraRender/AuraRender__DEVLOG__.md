@@ -1,5 +1,17 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.25, Stonework (No App Version of Its Own)
+
+**Asked by Adam:** "Objective: Add NPR Library Stonework Texture asset to match the images", then, of the demo cottage in it, "Take these white elemtns out of the material they do not look good", "make sure too many cant stack vertically like in image 02 it spoils the effect" and "see the side looks bad? but the front looks good?". Of the result: "Looks right". Then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.25 at c5aabcc, pinned as `01__CoreLib__PainterlyNPR__v0.8.25` from the commit (431 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.23; the worker's cache version 2026-11-03-03; the README's engine row.
+
+**What it brings AURA:** a Stonework material in the Assets drawer's Materials tab, under Walls. A wall given it, as a whole object or a face, takes groups of stones in broken pen with loose tan washes, clear of what its linework draws, and a Stone washes control in the Wash panel, which AURA builds from the engine's config. AURA's code did not change. No project's drawing set was touched.
+
+**Not in this pin:** PainterlyNPR's v0.8.19, v0.8.21, v0.8.22 and v0.8.24 are other sessions' and still uncommitted. So **a wall painted Stonework in SketchUp is not read as stone here** until v0.8.19's painted swatches are committed and pinned: give the material in the Materials tab meanwhile. Version 0.5.14 below still waits on v0.8.21. The engine's next commit of any of them takes v0.8.26 or later.
+
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository, its lock `WorkingTreeClean` true; all 69 engine references in AURA's modules resolve in the new pin, and their 89 imported names; Init unchanged. Not run in a browser: Adam tests it. Not pushed.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.23, the Assets Drawer's Categories and Filters Graphic (No App Version of Its Own)
 
 **Asked by Adam:** "In the NPR Standlone and aura ensure there are categories for assets and materials like with the sketchUP plugin / secondly add a filters graphic that hides these unless needed as the menu is messy", then "Commit and sync".

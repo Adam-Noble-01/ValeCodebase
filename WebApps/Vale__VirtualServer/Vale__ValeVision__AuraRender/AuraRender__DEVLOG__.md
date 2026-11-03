@@ -1,5 +1,21 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40 Re-pinned in Place, the Library's Pictures Redrawn (No App Version of Its Own)
+
+**Asked by Adam:** "Yes, redraw them", of the library's pictures, then "Yes, commit" and "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.40 at 2214cd5, re-pinned in place in `01__CoreLib__PainterlyNPR__v0.8.40` from the commit (552 files). At the same version the script rewrites that folder whole; the lock now names 2214cd5, copied from the commit, `WorkingTreeClean` true. The import map's path stays as it was and `index.html` is untouched, its record's note naming the new commit. The worker's cache version is 2026-11-03-17, because the pin is served cache first. The README's engine row.
+
+**What it brings AURA:** the Assets drawer's cards, and nothing else. They come up to the engine it already runs: 43 asset cards and 17 material swatches redrawn on v0.8.40's washes, so the feet are closed and the white that ran under the ball standards' bowls has gone. All 50 DATs' factory stamps, the index (which also loses 48 DAT byte counts taken with Windows line endings) and the material register's dates move with them. 112 of the 552 files change, plus the lock. Nothing new, nothing removed.
+
+**Nothing else changes:** against the old lock, file by file, all 271 engine modules and 4 stylesheets are byte-identical, as are all 87 PXY pictures, all 50 MOD models, 7 asset cards and 20 swatches. So no drawing in AURA moves, Init's hash is the same, and AURA's own code is unchanged.
+
+**Seen on the cards and not changed:** the lawn's torn front edge reaches a foot in one notch on the low bowls and bites the lead planters' plinth, and a row of tiny white specks runs round the soil's edge (the engine's DEVLOG, v0.8.40).
+
+**Tested** on the files only: the script's `--check` (v0.8.40 at 2214cd5, 552 files untouched, the repository the same as the newest copy), and every file the pin's index and register name is in the pin, 50 assets all stamped 0.8.40, 37 classes. Not opened in AURA, in a browser or signed in. `--check` also reports the old pin v0.8.17 as 288 files changed or missing, as it did before this sync; that is not this work.
+
+**Not pushed:** Adam's word was commit and sync. The server still has this folder at 243da99.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40, Two Topiary Bushes in a Border (No App Version of Its Own)
 
 **Asked by Adam:** "Load your NPR Skill and create two new topiary bush assets like these", with two bushes ringed on Vale's Thrower perspective, then: "Commit and sync".

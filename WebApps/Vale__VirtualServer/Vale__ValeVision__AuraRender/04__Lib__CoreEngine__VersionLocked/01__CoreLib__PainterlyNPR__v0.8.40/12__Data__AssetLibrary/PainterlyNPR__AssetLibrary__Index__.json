@@ -632,7 +632,7 @@
             "DAT": {
               "File": "NPR_07_0001__DAT__VegetationElements__Trees__AppleTree__Var-01__.json",
               "Present": true,
-              "Bytes": 5316
+              "Bytes": 5170
             },
             "MOD": {
               "File": "NPR_07_0001__MOD__VegetationElements__Trees__AppleTree__Var-01__.glb",
@@ -652,7 +652,7 @@
             "RND": {
               "File": "NPR_07_0001__RND__VegetationElements__Trees__AppleTree__Var-01__.webp",
               "Present": true,
-              "Bytes": 22482
+              "Bytes": 22536
             }
           },
           "Geometry": {
@@ -727,8 +727,8 @@
           "Factory": {
             "StageSeed": 1468558450,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:53",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:32",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -769,7 +769,7 @@
             "DAT": {
               "File": "NPR_07_0011__DAT__VegetationElements__Trees__AshTree__Var-01__.json",
               "Present": true,
-              "Bytes": 5040
+              "Bytes": 4903
             },
             "MOD": {
               "File": "NPR_07_0011__MOD__VegetationElements__Trees__AshTree__Var-01__.glb",
@@ -789,7 +789,7 @@
             "RND": {
               "File": "NPR_07_0011__RND__VegetationElements__Trees__AshTree__Var-01__.webp",
               "Present": true,
-              "Bytes": 20226
+              "Bytes": 20204
             }
           },
           "Geometry": {
@@ -855,8 +855,8 @@
           "Factory": {
             "StageSeed": 1318280499,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:53",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:32",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -897,7 +897,7 @@
             "DAT": {
               "File": "NPR_07_0021__DAT__VegetationElements__Trees__MatureOak__Var-01__.json",
               "Present": true,
-              "Bytes": 5113
+              "Bytes": 4975
             },
             "MOD": {
               "File": "NPR_07_0021__MOD__VegetationElements__Trees__MatureOak__Var-01__.glb",
@@ -917,7 +917,7 @@
             "RND": {
               "File": "NPR_07_0021__RND__VegetationElements__Trees__MatureOak__Var-01__.webp",
               "Present": true,
-              "Bytes": 22948
+              "Bytes": 22944
             }
           },
           "Geometry": {
@@ -984,8 +984,8 @@
           "Factory": {
             "StageSeed": 1706954480,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:53",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:33",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1026,7 +1026,7 @@
             "DAT": {
               "File": "NPR_07_0031__DAT__VegetationElements__Trees__FieldMaple__Var-01__.json",
               "Present": true,
-              "Bytes": 5039
+              "Bytes": 4902
             },
             "MOD": {
               "File": "NPR_07_0031__MOD__VegetationElements__Trees__FieldMaple__Var-01__.glb",
@@ -1046,7 +1046,7 @@
             "RND": {
               "File": "NPR_07_0031__RND__VegetationElements__Trees__FieldMaple__Var-01__.webp",
               "Present": true,
-              "Bytes": 19738
+              "Bytes": 19694
             }
           },
           "Geometry": {
@@ -1112,8 +1112,8 @@
           "Factory": {
             "StageSeed": 2091204529,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:53",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:33",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1154,7 +1154,7 @@
             "DAT": {
               "File": "NPR_07_0041__DAT__VegetationElements__Trees__SilverBirch__Var-01__.json",
               "Present": true,
-              "Bytes": 5037
+              "Bytes": 4900
             },
             "MOD": {
               "File": "NPR_07_0041__MOD__VegetationElements__Trees__SilverBirch__Var-01__.glb",
@@ -1174,7 +1174,7 @@
             "RND": {
               "File": "NPR_07_0041__RND__VegetationElements__Trees__SilverBirch__Var-01__.webp",
               "Present": true,
-              "Bytes": 14280
+              "Bytes": 14332
             }
           },
           "Geometry": {
@@ -1240,8 +1240,8 @@
           "Factory": {
             "StageSeed": 870623606,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:54",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:33",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1282,7 +1282,7 @@
             "DAT": {
               "File": "NPR_07_0501__DAT__VegetationElements__Conifers__EnglishYew__Var-01__.json",
               "Present": true,
-              "Bytes": 4939
+              "Bytes": 4806
             },
             "MOD": {
               "File": "NPR_07_0501__MOD__VegetationElements__Conifers__EnglishYew__Var-01__.glb",
@@ -1302,7 +1302,7 @@
             "RND": {
               "File": "NPR_07_0501__RND__VegetationElements__Conifers__EnglishYew__Var-01__.webp",
               "Present": true,
-              "Bytes": 14636
+              "Bytes": 14614
             }
           },
           "Geometry": {
@@ -1364,8 +1364,8 @@
           "Factory": {
             "StageSeed": 1363390105,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:54",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:38:38",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1406,7 +1406,7 @@
             "DAT": {
               "File": "NPR_07_1001__DAT__VegetationElements__Shrubs__GardenShrub__Var-01__.json",
               "Present": true,
-              "Bytes": 4977
+              "Bytes": 4842
             },
             "MOD": {
               "File": "NPR_07_1001__MOD__VegetationElements__Shrubs__GardenShrub__Var-01__.glb",
@@ -1426,7 +1426,7 @@
             "RND": {
               "File": "NPR_07_1001__RND__VegetationElements__Shrubs__GardenShrub__Var-01__.webp",
               "Present": true,
-              "Bytes": 21978
+              "Bytes": 21910
             }
           },
           "Geometry": {
@@ -1490,8 +1490,8 @@
           "Factory": {
             "StageSeed": 1865681687,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:54",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:34",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1532,7 +1532,7 @@
             "DAT": {
               "File": "NPR_07_1002__DAT__VegetationElements__Shrubs__GardenShrub__Var-02__.json",
               "Present": true,
-              "Bytes": 4917
+              "Bytes": 4783
             },
             "MOD": {
               "File": "NPR_07_1002__MOD__VegetationElements__Shrubs__GardenShrub__Var-02__.glb",
@@ -1615,8 +1615,8 @@
           "Factory": {
             "StageSeed": 1983732397,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:55",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:34",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1657,7 +1657,7 @@
             "DAT": {
               "File": "NPR_07_1003__DAT__VegetationElements__Shrubs__GardenShrub__Var-03__.json",
               "Present": true,
-              "Bytes": 5138
+              "Bytes": 4996
             },
             "MOD": {
               "File": "NPR_07_1003__MOD__VegetationElements__Shrubs__GardenShrub__Var-03__.glb",
@@ -1677,7 +1677,7 @@
             "RND": {
               "File": "NPR_07_1003__RND__VegetationElements__Shrubs__GardenShrub__Var-03__.webp",
               "Present": true,
-              "Bytes": 21610
+              "Bytes": 21578
             }
           },
           "Geometry": {
@@ -1748,8 +1748,8 @@
           "Factory": {
             "StageSeed": 20605499,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:55",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:34",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1790,7 +1790,7 @@
             "DAT": {
               "File": "NPR_07_1011__DAT__VegetationElements__Shrubs__Hydrangea__Var-01__.json",
               "Present": true,
-              "Bytes": 5183
+              "Bytes": 5040
             },
             "MOD": {
               "File": "NPR_07_1011__MOD__VegetationElements__Shrubs__Hydrangea__Var-01__.glb",
@@ -1810,7 +1810,7 @@
             "RND": {
               "File": "NPR_07_1011__RND__VegetationElements__Shrubs__Hydrangea__Var-01__.webp",
               "Present": true,
-              "Bytes": 28540
+              "Bytes": 28630
             }
           },
           "Geometry": {
@@ -1882,8 +1882,8 @@
           "Factory": {
             "StageSeed": 1982806614,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:55",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:34",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -1924,7 +1924,7 @@
             "DAT": {
               "File": "NPR_07_1021__DAT__VegetationElements__Shrubs__ShrubRose__Var-01__.json",
               "Present": true,
-              "Bytes": 5206
+              "Bytes": 5062
             },
             "MOD": {
               "File": "NPR_07_1021__MOD__VegetationElements__Shrubs__ShrubRose__Var-01__.glb",
@@ -2017,8 +2017,8 @@
           "Factory": {
             "StageSeed": 1560439189,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:55",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:34",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2059,7 +2059,7 @@
             "DAT": {
               "File": "NPR_07_1501__DAT__VegetationElements__Hedges__ClippedHedge__Var-01__.json",
               "Present": true,
-              "Bytes": 4971
+              "Bytes": 4838
             },
             "MOD": {
               "File": "NPR_07_1501__MOD__VegetationElements__Hedges__ClippedHedge__Var-01__.glb",
@@ -2079,7 +2079,7 @@
             "RND": {
               "File": "NPR_07_1501__RND__VegetationElements__Hedges__ClippedHedge__Var-01__.webp",
               "Present": true,
-              "Bytes": 22518
+              "Bytes": 22602
             }
           },
           "Geometry": {
@@ -2141,8 +2141,8 @@
           "Factory": {
             "StageSeed": 1778371068,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:56",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:35",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2183,7 +2183,7 @@
             "DAT": {
               "File": "NPR_07_2001__DAT__VegetationElements__Topiary__BoxBall__Var-01__.json",
               "Present": true,
-              "Bytes": 5005
+              "Bytes": 4867
             },
             "MOD": {
               "File": "NPR_07_2001__MOD__VegetationElements__Topiary__BoxBall__Var-01__.glb",
@@ -2203,7 +2203,7 @@
             "RND": {
               "File": "NPR_07_2001__RND__VegetationElements__Topiary__BoxBall__Var-01__.webp",
               "Present": true,
-              "Bytes": 26558
+              "Bytes": 26618
             }
           },
           "Geometry": {
@@ -2270,8 +2270,8 @@
           "Factory": {
             "StageSeed": 2105648377,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:56",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:35",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2312,7 +2312,7 @@
             "DAT": {
               "File": "NPR_07_2011__DAT__VegetationElements__Topiary__BoxCone__Var-01__.json",
               "Present": true,
-              "Bytes": 4963
+              "Bytes": 4828
             },
             "MOD": {
               "File": "NPR_07_2011__MOD__VegetationElements__Topiary__BoxCone__Var-01__.glb",
@@ -2332,7 +2332,7 @@
             "RND": {
               "File": "NPR_07_2011__RND__VegetationElements__Topiary__BoxCone__Var-01__.webp",
               "Present": true,
-              "Bytes": 21346
+              "Bytes": 21270
             }
           },
           "Geometry": {
@@ -2396,8 +2396,8 @@
           "Factory": {
             "StageSeed": 1687852472,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:56",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:35",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2438,7 +2438,7 @@
             "DAT": {
               "File": "NPR_07_2021__DAT__VegetationElements__Topiary__PottedStandard__Var-01__.json",
               "Present": true,
-              "Bytes": 5362
+              "Bytes": 5214
             },
             "MOD": {
               "File": "NPR_07_2021__MOD__VegetationElements__Topiary__PottedStandard__Var-01__.glb",
@@ -2458,7 +2458,7 @@
             "RND": {
               "File": "NPR_07_2021__RND__VegetationElements__Topiary__PottedStandard__Var-01__.webp",
               "Present": true,
-              "Bytes": 19424
+              "Bytes": 19348
             }
           },
           "Geometry": {
@@ -2538,8 +2538,8 @@
           "Factory": {
             "StageSeed": 1730412021,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:57",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:35",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2580,7 +2580,7 @@
             "DAT": {
               "File": "NPR_07_2022__DAT__VegetationElements__Topiary__PottedStandard__Var-02__.json",
               "Present": true,
-              "Bytes": 5329
+              "Bytes": 5181
             },
             "MOD": {
               "File": "NPR_07_2022__MOD__VegetationElements__Topiary__PottedStandard__Var-02__.glb",
@@ -2600,7 +2600,7 @@
             "RND": {
               "File": "NPR_07_2022__RND__VegetationElements__Topiary__PottedStandard__Var-02__.webp",
               "Present": true,
-              "Bytes": 20642
+              "Bytes": 20662
             }
           },
           "Geometry": {
@@ -2680,8 +2680,8 @@
           "Factory": {
             "StageSeed": 1730412022,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:57",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:35",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2722,7 +2722,7 @@
             "DAT": {
               "File": "NPR_07_2031__DAT__VegetationElements__Topiary__BowlStandard__Var-01__.json",
               "Present": true,
-              "Bytes": 5550
+              "Bytes": 5396
             },
             "MOD": {
               "File": "NPR_07_2031__MOD__VegetationElements__Topiary__BowlStandard__Var-01__.glb",
@@ -2742,7 +2742,7 @@
             "RND": {
               "File": "NPR_07_2031__RND__VegetationElements__Topiary__BowlStandard__Var-01__.webp",
               "Present": true,
-              "Bytes": 21274
+              "Bytes": 21142
             }
           },
           "Geometry": {
@@ -2829,8 +2829,8 @@
           "Factory": {
             "StageSeed": 1730412031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:57",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:36",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -2871,7 +2871,7 @@
             "DAT": {
               "File": "NPR_07_2032__DAT__VegetationElements__Topiary__BowlStandard__Var-02__.json",
               "Present": true,
-              "Bytes": 5682
+              "Bytes": 5525
             },
             "MOD": {
               "File": "NPR_07_2032__MOD__VegetationElements__Topiary__BowlStandard__Var-02__.glb",
@@ -2891,7 +2891,7 @@
             "RND": {
               "File": "NPR_07_2032__RND__VegetationElements__Topiary__BowlStandard__Var-02__.webp",
               "Present": true,
-              "Bytes": 21464
+              "Bytes": 20528
             }
           },
           "Geometry": {
@@ -2981,8 +2981,8 @@
           "Factory": {
             "StageSeed": 1730412031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:57",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:36",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -3023,7 +3023,7 @@
             "DAT": {
               "File": "NPR_07_2033__DAT__VegetationElements__Topiary__BowlStandard__Var-03__.json",
               "Present": true,
-              "Bytes": 5647
+              "Bytes": 5490
             },
             "MOD": {
               "File": "NPR_07_2033__MOD__VegetationElements__Topiary__BowlStandard__Var-03__.glb",
@@ -3043,7 +3043,7 @@
             "RND": {
               "File": "NPR_07_2033__RND__VegetationElements__Topiary__BowlStandard__Var-03__.webp",
               "Present": true,
-              "Bytes": 20756
+              "Bytes": 20772
             }
           },
           "Geometry": {
@@ -3133,8 +3133,8 @@
           "Factory": {
             "StageSeed": 1730412031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:58",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:36",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -3175,7 +3175,7 @@
             "DAT": {
               "File": "NPR_07_2041__DAT__VegetationElements__Topiary__FlowerPotStandard__Var-01__.json",
               "Present": true,
-              "Bytes": 6030
+              "Bytes": 5866
             },
             "MOD": {
               "File": "NPR_07_2041__MOD__VegetationElements__Topiary__FlowerPotStandard__Var-01__.glb",
@@ -3195,7 +3195,7 @@
             "RND": {
               "File": "NPR_07_2041__RND__VegetationElements__Topiary__FlowerPotStandard__Var-01__.webp",
               "Present": true,
-              "Bytes": 20816
+              "Bytes": 20718
             }
           },
           "Geometry": {
@@ -3292,8 +3292,8 @@
           "Factory": {
             "StageSeed": 1730412031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:58",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:36",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -3774,7 +3774,7 @@
           "Factory": {
             "StageSeed": 2051,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T16:20:57",
+            "RenderedOn": "2026-11-03T16:37:37",
             "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
@@ -4322,7 +4322,7 @@
           "Factory": {
             "StageSeed": 2061,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T16:20:58",
+            "RenderedOn": "2026-11-03T16:37:37",
             "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
@@ -4364,7 +4364,7 @@
             "DAT": {
               "File": "NPR_07_2501__DAT__VegetationElements__Perennials__Lavender__Var-01__.json",
               "Present": true,
-              "Bytes": 5226
+              "Bytes": 5082
             },
             "MOD": {
               "File": "NPR_07_2501__MOD__VegetationElements__Perennials__Lavender__Var-01__.glb",
@@ -4384,7 +4384,7 @@
             "RND": {
               "File": "NPR_07_2501__RND__VegetationElements__Perennials__Lavender__Var-01__.webp",
               "Present": true,
-              "Bytes": 31120
+              "Bytes": 31044
             }
           },
           "Geometry": {
@@ -4457,8 +4457,8 @@
           "Factory": {
             "StageSeed": 2068473362,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:58",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:37",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -4499,7 +4499,7 @@
             "DAT": {
               "File": "NPR_07_2502__DAT__VegetationElements__Perennials__Lavender__Var-02__.json",
               "Present": true,
-              "Bytes": 5212
+              "Bytes": 5068
             },
             "MOD": {
               "File": "NPR_07_2502__MOD__VegetationElements__Perennials__Lavender__Var-02__.glb",
@@ -4519,7 +4519,7 @@
             "RND": {
               "File": "NPR_07_2502__RND__VegetationElements__Perennials__Lavender__Var-02__.webp",
               "Present": true,
-              "Bytes": 30970
+              "Bytes": 30946
             }
           },
           "Geometry": {
@@ -4592,8 +4592,8 @@
           "Factory": {
             "StageSeed": 1648572328,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:59",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:38",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -4634,7 +4634,7 @@
             "DAT": {
               "File": "NPR_07_2511__DAT__VegetationElements__Perennials__Hollyhock__Var-01__.json",
               "Present": true,
-              "Bytes": 5180
+              "Bytes": 5038
             },
             "MOD": {
               "File": "NPR_07_2511__MOD__VegetationElements__Perennials__Hollyhock__Var-01__.glb",
@@ -4654,7 +4654,7 @@
             "RND": {
               "File": "NPR_07_2511__RND__VegetationElements__Perennials__Hollyhock__Var-01__.webp",
               "Present": true,
-              "Bytes": 17182
+              "Bytes": 17146
             }
           },
           "Geometry": {
@@ -4725,8 +4725,8 @@
           "Factory": {
             "StageSeed": 1649497939,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:59",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:38",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -4767,7 +4767,7 @@
             "DAT": {
               "File": "NPR_07_2521__DAT__VegetationElements__Perennials__Foxglove__Var-01__.json",
               "Present": true,
-              "Bytes": 5171
+              "Bytes": 5028
             },
             "MOD": {
               "File": "NPR_07_2521__MOD__VegetationElements__Perennials__Foxglove__Var-01__.glb",
@@ -4787,7 +4787,7 @@
             "RND": {
               "File": "NPR_07_2521__RND__VegetationElements__Perennials__Foxglove__Var-01__.webp",
               "Present": true,
-              "Bytes": 17358
+              "Bytes": 17648
             }
           },
           "Geometry": {
@@ -4859,8 +4859,8 @@
           "Factory": {
             "StageSeed": 1232864400,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:09:59",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:38",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -4901,7 +4901,7 @@
             "DAT": {
               "File": "NPR_07_2531__DAT__VegetationElements__Perennials__Catmint__Var-01__.json",
               "Present": true,
-              "Bytes": 5153
+              "Bytes": 5010
             },
             "MOD": {
               "File": "NPR_07_2531__MOD__VegetationElements__Perennials__Catmint__Var-01__.glb",
@@ -4921,7 +4921,7 @@
             "RND": {
               "File": "NPR_07_2531__RND__VegetationElements__Perennials__Catmint__Var-01__.webp",
               "Present": true,
-              "Bytes": 29814
+              "Bytes": 29658
             }
           },
           "Geometry": {
@@ -4993,8 +4993,8 @@
           "Factory": {
             "StageSeed": 1348941265,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:00",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:38",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5035,7 +5035,7 @@
             "DAT": {
               "File": "NPR_07_2541__DAT__VegetationElements__Perennials__Chamomile__Var-01__.json",
               "Present": true,
-              "Bytes": 5194
+              "Bytes": 5051
             },
             "MOD": {
               "File": "NPR_07_2541__MOD__VegetationElements__Perennials__Chamomile__Var-01__.glb",
@@ -5127,8 +5127,8 @@
           "Factory": {
             "StageSeed": 522625814,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:00",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:39",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5169,7 +5169,7 @@
             "DAT": {
               "File": "NPR_07_2551__DAT__VegetationElements__Perennials__Calendula__Var-01__.json",
               "Present": true,
-              "Bytes": 5250
+              "Bytes": 5106
             },
             "MOD": {
               "File": "NPR_07_2551__MOD__VegetationElements__Perennials__Calendula__Var-01__.glb",
@@ -5262,8 +5262,8 @@
           "Factory": {
             "StageSeed": 104698455,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:00",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:39",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5304,7 +5304,7 @@
             "DAT": {
               "File": "NPR_07_3001__DAT__VegetationElements__Grasses__OrnamentalGrass__Var-01__.json",
               "Present": true,
-              "Bytes": 4897
+              "Bytes": 4766
             },
             "MOD": {
               "File": "NPR_07_3001__MOD__VegetationElements__Grasses__OrnamentalGrass__Var-01__.glb",
@@ -5384,8 +5384,8 @@
           "Factory": {
             "StageSeed": 1161675676,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:00",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:39",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5426,7 +5426,7 @@
             "DAT": {
               "File": "NPR_07_3011__DAT__VegetationElements__Grasses__Reeds__Var-01__.json",
               "Present": true,
-              "Bytes": 4842
+              "Bytes": 4709
             },
             "MOD": {
               "File": "NPR_07_3011__MOD__VegetationElements__Grasses__Reeds__Var-01__.glb",
@@ -5508,8 +5508,8 @@
           "Factory": {
             "StageSeed": 1546056413,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:01",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:39",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5550,7 +5550,7 @@
             "DAT": {
               "File": "NPR_10_0001__DAT__BoundaryElements__Fences__PicketFencePanel__Var-01__.json",
               "Present": true,
-              "Bytes": 4926
+              "Bytes": 4794
             },
             "MOD": {
               "File": "NPR_10_0001__MOD__BoundaryElements__Fences__PicketFencePanel__Var-01__.glb",
@@ -5631,8 +5631,8 @@
           "Factory": {
             "StageSeed": 1828345726,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:01",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:39",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5673,7 +5673,7 @@
             "DAT": {
               "File": "NPR_25_0001__DAT__GardenFurniture__Seating__GardenBench__Var-01__.json",
               "Present": true,
-              "Bytes": 4841
+              "Bytes": 4710
             },
             "MOD": {
               "File": "NPR_25_0001__MOD__GardenFurniture__Seating__GardenBench__Var-01__.glb",
@@ -5753,8 +5753,8 @@
           "Factory": {
             "StageSeed": 232774736,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:01",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:40",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5795,7 +5795,7 @@
             "DAT": {
               "File": "NPR_25_1001__DAT__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.json",
               "Present": true,
-              "Bytes": 4978
+              "Bytes": 4846
             },
             "MOD": {
               "File": "NPR_25_1001__MOD__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.glb",
@@ -5815,7 +5815,7 @@
             "RND": {
               "File": "NPR_25_1001__RND__GardenFurniture__PlantersAndPots__TerracottaPlanter__Var-01__.webp",
               "Present": true,
-              "Bytes": 28178
+              "Bytes": 28150
             }
           },
           "Geometry": {
@@ -5876,8 +5876,8 @@
           "Factory": {
             "StageSeed": 895728437,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:01",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:40",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -5918,7 +5918,7 @@
             "DAT": {
               "File": "NPR_25_1011__DAT__GardenFurniture__PlantersAndPots__PottedPlant__Var-01__.json",
               "Present": true,
-              "Bytes": 19459
+              "Bytes": 18877
             },
             "MOD": {
               "File": "NPR_25_1011__MOD__GardenFurniture__PlantersAndPots__PottedPlant__Var-01__.glb",
@@ -5938,7 +5938,7 @@
             "RND": {
               "File": "NPR_25_1011__RND__GardenFurniture__PlantersAndPots__PottedPlant__Var-01__.webp",
               "Present": true,
-              "Bytes": 27244
+              "Bytes": 27050
             }
           },
           "Geometry": {
@@ -6453,8 +6453,8 @@
           "Factory": {
             "StageSeed": 2711031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:02",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:40",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -6495,7 +6495,7 @@
             "DAT": {
               "File": "NPR_25_1012__DAT__GardenFurniture__PlantersAndPots__PottedPlant__Var-02__.json",
               "Present": true,
-              "Bytes": 15137
+              "Bytes": 14688
             },
             "MOD": {
               "File": "NPR_25_1012__MOD__GardenFurniture__PlantersAndPots__PottedPlant__Var-02__.glb",
@@ -6515,7 +6515,7 @@
             "RND": {
               "File": "NPR_25_1012__RND__GardenFurniture__PlantersAndPots__PottedPlant__Var-02__.webp",
               "Present": true,
-              "Bytes": 21696
+              "Bytes": 21776
             }
           },
           "Geometry": {
@@ -6897,8 +6897,8 @@
           "Factory": {
             "StageSeed": 2711032,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:02",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:40",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -6939,7 +6939,7 @@
             "DAT": {
               "File": "NPR_25_1013__DAT__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.json",
               "Present": true,
-              "Bytes": 16038
+              "Bytes": 15560
             },
             "MOD": {
               "File": "NPR_25_1013__MOD__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.glb",
@@ -6959,7 +6959,7 @@
             "RND": {
               "File": "NPR_25_1013__RND__GardenFurniture__PlantersAndPots__PottedPlant__Var-03__.webp",
               "Present": true,
-              "Bytes": 26830
+              "Bytes": 26608
             }
           },
           "Geometry": {
@@ -7370,8 +7370,8 @@
           "Factory": {
             "StageSeed": 2711033,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:02",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:40",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -7412,7 +7412,7 @@
             "DAT": {
               "File": "NPR_25_1014__DAT__GardenFurniture__PlantersAndPots__PottedPlant__Var-04__.json",
               "Present": true,
-              "Bytes": 20563
+              "Bytes": 19950
             },
             "MOD": {
               "File": "NPR_25_1014__MOD__GardenFurniture__PlantersAndPots__PottedPlant__Var-04__.glb",
@@ -7432,7 +7432,7 @@
             "RND": {
               "File": "NPR_25_1014__RND__GardenFurniture__PlantersAndPots__PottedPlant__Var-04__.webp",
               "Present": true,
-              "Bytes": 24472
+              "Bytes": 24410
             }
           },
           "Geometry": {
@@ -7978,8 +7978,8 @@
           "Factory": {
             "StageSeed": 2711034,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:02",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:41",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -8020,7 +8020,7 @@
             "DAT": {
               "File": "NPR_25_1021__DAT__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-01__.json",
               "Present": true,
-              "Bytes": 19703
+              "Bytes": 19119
             },
             "MOD": {
               "File": "NPR_25_1021__MOD__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-01__.glb",
@@ -8040,7 +8040,7 @@
             "RND": {
               "File": "NPR_25_1021__RND__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-01__.webp",
               "Present": true,
-              "Bytes": 27430
+              "Bytes": 27206
             }
           },
           "Geometry": {
@@ -8557,8 +8557,8 @@
           "Factory": {
             "StageSeed": 2711031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:02",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:41",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -8599,7 +8599,7 @@
             "DAT": {
               "File": "NPR_25_1022__DAT__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-02__.json",
               "Present": true,
-              "Bytes": 15372
+              "Bytes": 14921
             },
             "MOD": {
               "File": "NPR_25_1022__MOD__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-02__.glb",
@@ -8619,7 +8619,7 @@
             "RND": {
               "File": "NPR_25_1022__RND__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-02__.webp",
               "Present": true,
-              "Bytes": 22272
+              "Bytes": 22072
             }
           },
           "Geometry": {
@@ -9003,8 +9003,8 @@
           "Factory": {
             "StageSeed": 2711032,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:03",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:41",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -9045,7 +9045,7 @@
             "DAT": {
               "File": "NPR_25_1023__DAT__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-03__.json",
               "Present": true,
-              "Bytes": 16277
+              "Bytes": 15797
             },
             "MOD": {
               "File": "NPR_25_1023__MOD__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-03__.glb",
@@ -9065,7 +9065,7 @@
             "RND": {
               "File": "NPR_25_1023__RND__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-03__.webp",
               "Present": true,
-              "Bytes": 27244
+              "Bytes": 27076
             }
           },
           "Geometry": {
@@ -9478,8 +9478,8 @@
           "Factory": {
             "StageSeed": 2711033,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:03",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:41",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -9520,7 +9520,7 @@
             "DAT": {
               "File": "NPR_25_1024__DAT__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-04__.json",
               "Present": true,
-              "Bytes": 20806
+              "Bytes": 20191
             },
             "MOD": {
               "File": "NPR_25_1024__MOD__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-04__.glb",
@@ -9540,7 +9540,7 @@
             "RND": {
               "File": "NPR_25_1024__RND__GardenFurniture__PlantersAndPots__PottedPlantTerracotta__Var-04__.webp",
               "Present": true,
-              "Bytes": 25390
+              "Bytes": 25178
             }
           },
           "Geometry": {
@@ -10088,8 +10088,8 @@
           "Factory": {
             "StageSeed": 2711034,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:03",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:41",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -10130,7 +10130,7 @@
             "DAT": {
               "File": "NPR_25_1031__DAT__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-01__.json",
               "Present": true,
-              "Bytes": 19615
+              "Bytes": 19031
             },
             "MOD": {
               "File": "NPR_25_1031__MOD__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-01__.glb",
@@ -10150,7 +10150,7 @@
             "RND": {
               "File": "NPR_25_1031__RND__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-01__.webp",
               "Present": true,
-              "Bytes": 25964
+              "Bytes": 26806
             }
           },
           "Geometry": {
@@ -10667,8 +10667,8 @@
           "Factory": {
             "StageSeed": 2711031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:03",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:42",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -10709,7 +10709,7 @@
             "DAT": {
               "File": "NPR_25_1032__DAT__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.json",
               "Present": true,
-              "Bytes": 15290
+              "Bytes": 14839
             },
             "MOD": {
               "File": "NPR_25_1032__MOD__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.glb",
@@ -10729,7 +10729,7 @@
             "RND": {
               "File": "NPR_25_1032__RND__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-02__.webp",
               "Present": true,
-              "Bytes": 21480
+              "Bytes": 21436
             }
           },
           "Geometry": {
@@ -11113,8 +11113,8 @@
           "Factory": {
             "StageSeed": 2711032,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:04",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:42",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -11155,7 +11155,7 @@
             "DAT": {
               "File": "NPR_25_1033__DAT__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-03__.json",
               "Present": true,
-              "Bytes": 16189
+              "Bytes": 15709
             },
             "MOD": {
               "File": "NPR_25_1033__MOD__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-03__.glb",
@@ -11175,7 +11175,7 @@
             "RND": {
               "File": "NPR_25_1033__RND__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-03__.webp",
               "Present": true,
-              "Bytes": 25702
+              "Bytes": 25288
             }
           },
           "Geometry": {
@@ -11588,8 +11588,8 @@
           "Factory": {
             "StageSeed": 2711033,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:04",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:42",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -11630,7 +11630,7 @@
             "DAT": {
               "File": "NPR_25_1034__DAT__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-04__.json",
               "Present": true,
-              "Bytes": 20718
+              "Bytes": 20103
             },
             "MOD": {
               "File": "NPR_25_1034__MOD__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-04__.glb",
@@ -11650,7 +11650,7 @@
             "RND": {
               "File": "NPR_25_1034__RND__GardenFurniture__PlantersAndPots__PottedPlantGrey__Var-04__.webp",
               "Present": true,
-              "Bytes": 23710
+              "Bytes": 23824
             }
           },
           "Geometry": {
@@ -12198,8 +12198,8 @@
           "Factory": {
             "StageSeed": 2711034,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:04",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:42",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -12240,7 +12240,7 @@
             "DAT": {
               "File": "NPR_25_1041__DAT__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-01__.json",
               "Present": true,
-              "Bytes": 17332
+              "Bytes": 16828
             },
             "MOD": {
               "File": "NPR_25_1041__MOD__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-01__.glb",
@@ -12260,7 +12260,7 @@
             "RND": {
               "File": "NPR_25_1041__RND__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-01__.webp",
               "Present": true,
-              "Bytes": 24784
+              "Bytes": 24174
             }
           },
           "Geometry": {
@@ -12697,8 +12697,8 @@
           "Factory": {
             "StageSeed": 2711031,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:04",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:42",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -12739,7 +12739,7 @@
             "DAT": {
               "File": "NPR_25_1042__DAT__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-02__.json",
               "Present": true,
-              "Bytes": 13258
+              "Bytes": 12878
             },
             "MOD": {
               "File": "NPR_25_1042__MOD__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-02__.glb",
@@ -12759,7 +12759,7 @@
             "RND": {
               "File": "NPR_25_1042__RND__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-02__.webp",
               "Present": true,
-              "Bytes": 21738
+              "Bytes": 21628
             }
           },
           "Geometry": {
@@ -13072,8 +13072,8 @@
           "Factory": {
             "StageSeed": 2711032,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:04",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:43",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -13114,7 +13114,7 @@
             "DAT": {
               "File": "NPR_25_1043__DAT__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-03__.json",
               "Present": true,
-              "Bytes": 13651
+              "Bytes": 13258
             },
             "MOD": {
               "File": "NPR_25_1043__MOD__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-03__.glb",
@@ -13134,7 +13134,7 @@
             "RND": {
               "File": "NPR_25_1043__RND__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-03__.webp",
               "Present": true,
-              "Bytes": 25382
+              "Bytes": 25050
             }
           },
           "Geometry": {
@@ -13460,8 +13460,8 @@
           "Factory": {
             "StageSeed": 2711033,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:05",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:43",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",
@@ -13502,7 +13502,7 @@
             "DAT": {
               "File": "NPR_25_1044__DAT__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-04__.json",
               "Present": true,
-              "Bytes": 18389
+              "Bytes": 17852
             },
             "MOD": {
               "File": "NPR_25_1044__MOD__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-04__.glb",
@@ -13522,7 +13522,7 @@
             "RND": {
               "File": "NPR_25_1044__RND__GardenFurniture__PlantersAndPots__PottedPlantFlowerPot__Var-04__.webp",
               "Present": true,
-              "Bytes": 23516
+              "Bytes": 23442
             }
           },
           "Geometry": {
@@ -13992,8 +13992,8 @@
           "Factory": {
             "StageSeed": 2711034,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:05",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:43",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
               "Mode": "Perspective",

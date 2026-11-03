@@ -370,8 +370,8 @@
         "PainterlyNPR__AssetData__Factory": {
             "StageSeed": 2711033,
             "Status": "Rendered",
-            "RenderedOn": "2026-11-03T15:10:05",
-            "EngineVersion": "0.8.38",
+            "RenderedOn": "2026-11-03T16:37:43",
+            "EngineVersion": "0.8.40",
             "StageVersion": "1.0.0",
             "Camera": {
                 "Mode": "Perspective",

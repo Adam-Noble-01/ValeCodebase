@@ -26,7 +26,7 @@
 - [ ] The add buttons: two to a row, under their group headings.
 - [ ] The Assets drawer and the right-click menu look as they did.
 
-**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+**Live:** since the `aura` push of 03-Nov-2026 13:31 UTC (stamp 20261103-133123), made by another session; no API change, so no restart. Adam said "Commit and push both", and a compare found nothing left to send. Checked on the live site: this change's code and version 0.5.22, with the v0.8.33 pin. The look is Adam's to check.
 
 ## Version 0.5.21, 03-Nov-2026: Breathing Space in the Title Block
 
@@ -52,7 +52,7 @@
 - [ ] A4 and a portrait sheet: the column still looks right.
 - [ ] A note and a viewport's title have not moved.
 
-**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+**Live:** since the `aura` push of 03-Nov-2026 13:31 UTC (stamp 20261103-133123), made by another session; no API change, so no restart. Adam said "Commit and push both", and a compare found nothing left to send. Checked on the live site: this change's code and version 0.5.22, with the v0.8.33 pin. The look is Adam's to check.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.33, a Ball Standard in a Red Bowl (No App Version of Its Own)
 

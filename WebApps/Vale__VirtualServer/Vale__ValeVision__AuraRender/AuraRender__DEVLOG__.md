@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.37, R Turns a Placed Asset, and a Turned Plant Keeps Its Proxy's Shape (No App Version of Its Own)
+
+**Asked by Adam:** "The rotation of the drawing does not seem to match the proxy / Add a Rotation tool (R) key so i can test, tool should function like m key does for move", then, with a picture of this menu at v0.8.36: "You didnt add it to aura".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.37 at b60b2ce, pinned as `01__CoreLib__PainterlyNPR__v0.8.37` from the commit (537 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.36, the worker's cache version 2026-11-03-13, the README's engine row.
+
+**What it brings AURA:** in the 3D Environment, with the library out and a placed asset selected, R swings it round its foot with the pointer: Shift for steps of 15 degrees, a click, a drag let go or Enter to set it, Esc or R to cancel, and Rotate on its right-click menu, as M and Move. With nothing selected R is still the view's reset, back to the open scene (`OnReset`). A plop placed or turned from now on keeps its proxy's shape at any turn (`Rigid`, on the plop in the drawing set's `Assets`: no new root key for the API). A saved plop keeps the shape it was drawn with until it is turned.
+
+**AURA's own code is unchanged:** R comes in with the engine's `SceneEdit__Wire`, the keys behind the same `Active` as M's. In the pin's difference: the engine's 19 changed files and 1 new one, all of v0.8.37; 47 engine references resolve in the new pin.
+
+**Tested** in the NPR Standalone with real keys and a real pointer, not yet in AURA.
+
+**Live:** not pushed. It waits on Adam's word.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.36, the Plants in a Plain Flowerpot (No App Version of Its Own)
 
 **Asked by Adam:** "Make varations on them but in this simpler terracotta pot shape formfactor of pot", with a drawing and an arrow at the terracotta planter's pot, then "Commit and sync".

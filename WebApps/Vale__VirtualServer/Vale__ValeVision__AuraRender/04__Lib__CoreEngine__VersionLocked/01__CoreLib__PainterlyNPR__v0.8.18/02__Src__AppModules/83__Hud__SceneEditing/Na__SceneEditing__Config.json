@@ -1,0 +1,57 @@
+{
+    "PainterlyNPR__SceneEditing__Config" : {
+        "PainterlyNPR__SceneEditing__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - Scene Editing",
+            "ConfigVersion" : "1.1.0",
+            "ConfigNote"    : "Selecting what is on the sheet and what can be done to it: the outline a selection is shown by, the steps the menu's actions take, and the Move Tool. Undo and redo are 84__System__UndoHistory's.",
+            "ReadBy"        : "02__Src__AppModules/83__Hud__SceneEditing/PainterlyNPR__SceneEdit__Selection__.mjs, PainterlyNPR__SceneEdit__Actions__.mjs, PainterlyNPR__SceneEdit__MoveTool__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.7.0; the MoveTool section v0.8.10"
+        },
+
+        "PainterlyNPR__SceneEditing__Config__Highlight" : {
+            "Note"            : "A selection is shown by its outline over the sheet, read from the truth buffers: what is hidden behind something else is not outlined. It goes while the camera moves and comes back when the drawing has settled.",
+            "Rgb"             : [95, 122, 145],
+            "RgbNote"         : "The interface's slate: focus and selection",
+            "FillAlpha"       : 0.14,
+            "EdgeAlpha"       : 0.95,
+            "EdgePx"          : 2,
+            "EdgePxNote"      : "The outline's width in the sheet's own pixels (5 px a millimetre at the default size)",
+            "HoverRgb"        : [188, 101, 64],
+            "HoverRgbNote"    : "Terracotta: what a carried swatch would be given to",
+            "HoverFillAlpha"  : 0.22
+        },
+
+        "PainterlyNPR__SceneEditing__Config__Actions" : {
+            "Note"            : "The steps the menu's actions take on a plop.",
+            "TurnDeg"         : 45,
+            "ScaleStep"       : 1.1,
+            "ScaleStepNote"   : "Bigger multiplies a plop's size by this, smaller divides: within the library's ScaleClamp",
+            "DuplicateGapM"   : 0.4,
+            "DuplicateGapMNote": "A copy stands beside its original, this far clear of its spread, to the right as the camera sees it",
+            "SwapMax"         : 16,
+            "SwapMaxNote"     : "The Swap submenu lists at most this many assets: the same type first, then the same collection"
+        },
+
+        "PainterlyNPR__SceneEditing__Config__MoveTool" : {
+            "Note"            : "M moves the selected plop (v0.8.10). Adam: 'Ground only, pressing shift allows for up and down movement, show only show the gimbal when shift is held otherwise show that same graphic and effect that appears on the insert'. Carried over the ground by the pointer with the insert's drop marker; Shift shows the gimbal and lifts or lowers it; a click sets it down.",
+            "SnapM"           : 0.01,
+            "SnapMNote"       : "A move is made in steps of this many metres along each axis (Adam: 10mm), counted from where the plop stood, so a click that never moved leaves it exactly there",
+            "GimbalPx"        : 64,
+            "GimbalPxNote"    : "Each arrow's length on screen in CSS pixels where it lies across the view: the same size at any zoom, shorter where it points toward the eye",
+            "HeadPx"          : 11,
+            "HeadPxNote"      : "An arrowhead's length on screen in CSS pixels",
+            "HitPx"           : 10,
+            "HitPxNote"       : "How near an arrow a press must be, in CSS pixels, to carry the plop along that arrow instead",
+            "RailArrows"      : 4,
+            "RailArrowsNote"  : "The dashed rail the plop slides on runs this many arrow lengths either side of its foot",
+            "MinRayDy"        : 0.04,
+            "MinRayDyNote"    : "Below this the view looks along the ground (an elevation): the plop is carried across the view instead, its depth kept",
+            "MaxRayM"         : 400,
+            "MaxRayMNote"     : "A pointer whose ray meets the ground further away than this (near the horizon) does not carry the plop",
+            "MaxLiftM"        : 30,
+            "MaxLiftMNote"    : "How far above or below the ground plane Shift can take a plop",
+            "ReadoutPx"       : 12,
+            "ReadoutPxNote"   : "The distance readout beside the plop, in CSS pixels"
+        }
+    }
+}

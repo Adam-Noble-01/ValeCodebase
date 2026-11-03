@@ -1,0 +1,30 @@
+{
+    "PainterlyNPR__ShadowLines__Config" : {
+        "PainterlyNPR__ShadowLines__Config__Meta"        : {
+            "ConfigLabel"   : "PainterlyNPR - Shadow Lines",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The illustrator's marker accent on a window - a shade line: a straight, slightly darker stroke on the glass beside each jamb and glazing bar, on the side away from the sun.",
+            "ReadBy"        : "02__Src__AppModules/52__Wash__LayerStack/PainterlyNPR__ShadowLines__Pass__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__ShadowLines__Config__ShadowLines" : {
+            "ShadowLines"      : {
+                "BarDepth"     : 0.03,
+                "BarHalfWidth" : 0.012,
+                "MinMm"        : 0.55,
+                "MaxShare"     : 0.4,
+                "Jamb"         : 0.95,
+                "Bar"          : 0.8
+            },
+            "ShadowLinesNotes" : {
+                "BarDepth"     : "How far a glazing bar stands off the glass: the depth that casts its shadow",
+                "BarHalfWidth" : "Half a 25 mm bar: the stroke starts at its shaded edge",
+                "MinMm"        : "Never thinner than a marker's nib on the sheet",
+                "MaxShare"     : "Never wider than this share of the pane it lies on",
+                "Jamb"         : "Density beside a reveal, at 100%",
+                "Bar"          : "Density beside a glazing bar, at 100%"
+            }
+        }
+    }
+}

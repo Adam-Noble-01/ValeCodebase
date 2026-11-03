@@ -1,5 +1,26 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.18, the Ground Is a Backdrop (No App Version of Its Own)
+
+**Asked by Adam:** "Currently the NPR render creates a grass groundplane, whilst this is usefull, if a mesh is below 0
+height its obscured by the ground plane / Ensure the ground plane is created still but any meshes are rendered infront
+of it so it acts more like a background.", then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.18 at 9c567c0, pinned as
+`01__CoreLib__PainterlyNPR__v0.8.18` from the commit (426 files). The import map (`index.html` and
+`Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.17; the worker's cache version 2026-11-03-01; the README's
+engine row.
+
+**What it brings AURA:** the lawn is still created but draws behind every mesh, so a project's model below ground height
+shows. A whitecard's Role Ground objects stay cut at the lawn, so a site slab's sides do not become a cliff, and placed
+assets stay cut at their own height or the lawn, whichever is lower. A mesh under the model's own Ground object stays
+hidden by it. Foundations left in a whitecard will now show. AURA's code did not change.
+
+**Checked here (no browser):** `--check`: the pin untouched and the same as the repository; all 65 engine references in
+AURA's modules resolve in the new pin. No picture rendered: Adam tests it.
+
+**Not yet live:** nothing has been pushed to the server, and the engine commit has not gone to GitHub.
+
 ## Engine Sync, 01-Nov-2026: PainterlyNPR v0.8.17, the Composition Starts at 70% and 10% (No App Version of Its Own)
 
 **Asked by Adam:** "Across all of the apps (the Vale Aura app, the SketchUp plugin, and the test environment), make sure

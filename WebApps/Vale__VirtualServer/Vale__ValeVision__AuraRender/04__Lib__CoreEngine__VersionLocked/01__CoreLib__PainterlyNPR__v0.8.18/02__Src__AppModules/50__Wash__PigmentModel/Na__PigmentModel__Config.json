@@ -1,0 +1,28 @@
+{
+    "PainterlyNPR__PigmentModel__Config" : {
+        "PainterlyNPR__PigmentModel__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Pigments That Belong to No One Material",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The shadow glaze, the clouds' undersides, the flowers' accent glazes and the marker's shadow lines: transmittance colours, as the material recipes' pigments are.",
+            "ReadBy"        : "02__Src__AppModules/50__Wash__PigmentModel/PainterlyNPR__PigmentModel__Pigments__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__PigmentModel__Config__Pigments" : {
+            "Shadow"      : "#9A9CB8",
+            "ShadowNote"  : "Ultramarine and burnt sienna: a cool, granulating neutral",
+            "Cloud"       : "#B9BDCB",
+            "CloudNote"   : "Cloud undersides, grey-blue",
+            "Flowers"     : {
+                "Rose"       : "#D98E9C",
+                "Lavender"   : "#A495CA",
+                "Cream"      : "#E9D27C",
+                "Calendula"  : "#E8963A",
+                "Cornflower" : "#8098D2"
+            },
+            "FlowersNote" : "Dropped into the foliage as dabs: rose, lavender and cream by the accent layer's G, B and A, calendula and cornflower by the second layer's R and B; its G is a white flower - the foliage lifted to the paper, nothing laid in",
+            "Marker"      : "#8592AC",
+            "MarkerNote"  : "A cool grey marker: the shadow lines beside reveals and glazing bars"
+        }
+    }
+}

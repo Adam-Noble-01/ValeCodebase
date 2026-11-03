@@ -40,6 +40,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.5.0 (AURA 0.5.18)
+// - A viewport cut at the ground asks for its foot left open (footOpen, in its
+//   key): the paint overruns the cut and the cut's mask takes it back.
+//
 // 30-Oct-2026 - Version 1.4.0 (AURA 0.5.9)
 // - Each still is drawn with its scene's own sun (Na__Views__Sun, the
 //   request's sun), which is in its key; the engine's settings no longer
@@ -70,6 +74,7 @@
     import { Na__AppConfig__Get } from '../01__AppCore/Na__AppCore__AppConfig__.js';
     import { Na__Format__Key } from '../03__AppUtils/Na__AppUtils__Format__.js';
     import { Na__EngineHost__RenderStill, Na__EngineHost__FitsFrames, Na__EngineHost__Settings, Na__EngineHost__SheetMm, Na__EngineHost__Version, Na__EngineHost__Ready } from '../10__System__EngineHost/Na__EngineHost__PainterlyNpr__.js';
+    import { Na__GroundCut__Cut } from './Na__Viewports__GroundCut__.js';
     import { Na__Views__Camera, Na__Views__IsScaled, Na__Views__Points, Na__Views__Sun } from './Na__Viewports__Views__.js';
 
 // endregion -------------------------------------------------------------------
@@ -111,7 +116,8 @@
         const f = viewport.Viewport__FrameMm || {};
         const tenth = (v) => Math.round((Number(v) || 0) * 10) / 10;
         const frameMm = Na__EngineHost__FitsFrames() ? { WidthMm: tenth(f.WidthMm), HeightMm: tenth(f.HeightMm) } : null;   // <-- Drawn for its frame: a new size is a new picture
-        const frame = frameMm ? `${frameMm.WidthMm}x${frameMm.HeightMm}${scaled ? ' scaled' : ''}` : '';
+        const footOpen = !!Na__GroundCut__Cut(viewport, doc);                    // <-- Cut at the ground: the paint overruns the cut, and the cut's mask takes it back (0.5.18)
+        const frame = frameMm ? `${frameMm.WidthMm}x${frameMm.HeightMm}${scaled ? ' scaled' : ''}${footOpen ? ' cut' : ''}` : '';
         return {
             id    : viewport.Viewport__Id,
             camera,
@@ -120,6 +126,7 @@
             scale,
             frameMm,
             scaled,
+            footOpen,
             frame,
             key   : Na__Format__Key({ e: Na__EngineHost__Version(), s: Na__EngineHost__Settings(), c: camera, p: points, u: sun, r: scale, f: frame })
         };
@@ -284,7 +291,7 @@
                 let picture = null, failure = null;
                 try {
                     let still;
-                    const request = { camera: job.camera, scale: job.scale, points: job.points, sun: job.sun, frameMm: job.frameMm, scaled: job.scaled };
+                    const request = { camera: job.camera, scale: job.scale, points: job.points, sun: job.sun, frameMm: job.frameMm, scaled: job.scaled, footOpen: job.footOpen };
                     try {
                         still = Na__EngineHost__RenderStill(request);
                     } catch (error) {

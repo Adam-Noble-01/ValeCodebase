@@ -32,6 +32,10 @@
 //   below. The engine's swish is laid over the picture and the paper with a
 //   multiply blend, outside the clip: it runs past the frame's sides and below
 //   it, as a hand's does.
+// - THE PAINT OVERRUNS THE CUT (0.5.18, PainterlyNPR 0.8.32): Adam: "it should
+//   overun the pained area and then clip it back so you dont end up with
+//   voids". The still of a cut viewport is drawn with its foot left open
+//   (Na__RenderQueue__Key's footOpen), so this mask is what ends it.
 // - THE SETTINGS ARE THE ENGINE'S FORM (GroundCut__Settings: its Clean), kept
 //   with the viewport, saved and undone with the drawing set. A cut with no
 //   seed takes one from the viewport's id, so it never changes until New swish.
@@ -45,6 +49,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.1.0 (AURA 0.5.18)
+// - Notes only: the render queue asks for a cut viewport's foot left open.
+//
 // 30-Oct-2026 - Version 1.0.0 (AURA 0.5.13)
 // - Initial build.
 //

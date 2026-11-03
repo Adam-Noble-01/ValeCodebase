@@ -1,5 +1,33 @@
 # ValeVision AURA: DEVLOG
 
+## Version 0.5.18, 03-Nov-2026: A Cut Elevation Is Painted Past Its Cut, Then Clipped
+
+**Asked by Adam**, with the Thrower sheet and the gaps ringed in red: "On Aura the bottom swish and ground plane elevation viewport should define the range the paintins linework and watercolor wash run down to [...] If a viewport cut and swoosh is enabled it should overun the pained area and then clip it back so you dont end up with voids like this".
+
+**The cause:** a still's vignette is fitted to its frame, so raising the bottom handle made the paint and the pen dissolve inside the new foot, and the cut then clipped bare paper.
+
+**The painting's side is PainterlyNPR v0.8.32** (`66`, not copied here): `SetFrame`'s new `FootOpen`. AURA only asks for it:
+
+- `Na__Viewports__RenderQueue__.js` 1.5.0: a viewport with a cut (`Na__GroundCut__Cut`, Plain cut too) asks for `footOpen`, which is in its picture's key.
+- `Na__EngineHost__PainterlyNpr__.js` 1.14.0: `RenderStill` hands it to `SetFrame`.
+- `Na__Viewports__GroundCut__.js` 1.1.0: notes only. Its mask and foot already did the clipping.
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.32 at 1b78490, pinned as `01__CoreLib__PainterlyNPR__v0.8.32` from the commit (435 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.31; the worker's cache version 2026-11-03-08; the README's engine row. Each cut viewport is drawn once more when this loads, because its key changed.
+
+**Not changed:** the sides of the wash still dissolve before the frame's sides (wider towards the foot). While a viewport's points are edited on its sheet, its preview is the live engine's whole sheet, as before, until its still is drawn again.
+
+**Checked:** `node --check` on the changed modules. The engine's half was looked at in headless Edge with AURA's own `SetFrame` call. The sync's `--check`: the pin untouched and the same as the repository. AURA itself not run in a browser: Adam tests it. Committed at Adam's word, "Commit and sync", with 0.5.17 and 0.5.19, other sessions' open work, left out; not pushed.
+
+**For Adam to test** (reload AURA locally first):
+
+- [ ] The Thrower sheet's two elevations: wash and linework run down to the swish, with no bare gap.
+- [ ] Drag the bottom handle up and down: the picture redraws, its foot always reaching the cut.
+- [ ] Plain cut: the same, without a swish. Show it, Off: the elevation dissolves as before.
+- [ ] A perspective viewport is unchanged.
+- [ ] The sky round the building looks the same as before.
+
+**Live:** needs `aura`, at Adam's word. No API change, so no restart.
+
 ## Version 0.5.16, 03-Nov-2026: The Art Direction Points' New Names, Under Groups
 
 **Asked by Adam:** "Change the name in both the code, notes etc for these / Focus - Becomes - Painted Area / Fade To Paper - Becomes - Negative Space / Then add categories and hr between / Painted Area / ◎ Focus / ○ Fade to paper / ⇢ Linework run-out / Drawing Expression / ▦ Material Expression / ✎ Linework control / ⊘ Suppress detail / ∿ Linework Discipline / Lighting & Shadow / ▨ Shadow Hatching / Ensure this is reflected in all 3 places, standlone UI, SketchUp Plugin UI and the AURA Verion"

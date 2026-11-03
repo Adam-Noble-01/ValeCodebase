@@ -75,6 +75,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 03-Nov-2026 - Version 1.14.0 (AURA 0.5.18)
+// - RenderStill takes footOpen and hands it to SetFrame (PainterlyNPR 0.8.32):
+//   a viewport cut at the ground is painted past the cut, and clipped back.
+//
 // 03-Nov-2026 - Version 1.12.0
 // - BuildPointTypes: the engine's own add buttons, in AURA's panels (PainterlyNPR
 //   0.8.31), reached by name through the module's namespace.
@@ -1241,7 +1245,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Draw One Still: { camera, scale, controls, points, frameMm, scaled } -> { canvas, widthPx, heightPx, ms, showMm }
+    // FUNCTION | Draw One Still: { camera, scale, controls, points, frameMm, scaled, footOpen } -> { canvas, widthPx, heightPx, ms, showMm }
     // ------------------------------------------------------------
     // PainterlyNPR's PNG export, kept in memory. The camera is swapped in and any
     // control overrides set, the whole graph runs at the scale (pixels per mm x
@@ -1280,7 +1284,8 @@
             PainterlyNPR__RenderGraph__Bump('ArtDirection', 'Overlay');
             if (fit) {
                 PainterlyNPR__Field.PainterlyNPR__ArtDirection__SetFrame({ CentreMm: [SHEET_WIDTH_MM / 2, SHEET_HEIGHT_MM / 2],
-                                                                           Scale: [fit.Region[0] / SHEET_WIDTH_MM, fit.Region[1] / SHEET_HEIGHT_MM] });
+                                                                           Scale: [fit.Region[0] / SHEET_WIDTH_MM, fit.Region[1] / SHEET_HEIGHT_MM],
+                                                                           FootOpen: request.footOpen === true });   // <-- PainterlyNPR 0.8.32: cut at the ground, the paint overruns the cut (an older pin ignores it)
                 PainterlyNPR__RenderGraph__Bump('Composition');                  // <-- The paint dissolves inside the frame's edges, not the sheet's
             }
             const paint = Na__EngineHost__PaintScale(fit, State.Camera, !!request.scaled);

@@ -1,5 +1,19 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.36, the Plants in a Plain Flowerpot (No App Version of Its Own)
+
+**Asked by Adam:** "Make varations on them but in this simpler terracotta pot shape formfactor of pot", with a drawing and an arrow at the terracotta planter's pot, then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.36 at f35cc32, pinned as `01__CoreLib__PainterlyNPR__v0.8.36` from the commit (536 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.35, the worker's cache version 2026-11-03-12, the README's engine row.
+
+**What it brings AURA:** five new assets in the Assets drawer. The four potted plants in the terracotta planter's plain flowerpot (`NPR_25_1041` to `1044`, Garden furniture, Planters And Pots) and the ball standard in the same pot (`NPR_07_2041`, Vegetation, Topiary). AURA draws them through the engine alone.
+
+**No drawing code in this pin:** the two pins compared file by file, the 20 new files are those five assets, and what changed is only the library's index, README and config (BowlStandard's defaults gain three keys at the values already used), the engine's version and its worker's token, and the lock. Init and every module are the same.
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted: the R rotate tool and the rounded object margins.
+
+**Not pushed.** Not run in a browser through AURA: Adam tests it.
+
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.35, the Plants in Terracotta and in Grey (No App Version of Its Own)
 
 **Asked by Adam:** "Good work, add variations with terracotta pots and also the grey color pots like this", with a drawing of an orangery, then "Commit and sync".

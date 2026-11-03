@@ -1,0 +1,176 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - INFO BUBBLES
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__InfoBubbles__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - InfoBubbles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : A group's descriptions behind an "i", and its on / off eye
+ * CREATED    : 30-Oct-2026 (v0.5.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css,
+ *   in its place in the order: the cascade is the one Experiment 01's single
+ *   stylesheet had, rule for rule.
+ * - From Experiment 01's stylesheet, unchanged: INFO BUBBLES.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * INFO BUBBLES | A Group's Descriptions Behind an "i", and Its On / Off Eye
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__Group {
+        position                           :  relative;
+    }
+
+    .PainterlyNPR__Info {
+        position                           :  absolute;
+        top                                :  7px;
+        right                              :  0;
+        z-index                            :  5;
+    }
+
+    .PainterlyNPR__Info--open,
+    .PainterlyNPR__Info:hover {
+        z-index                            :  30;                          /* <-- An open card sits over the next group's buttons */
+    }
+
+    details.PainterlyNPR__Group > .PainterlyNPR__Info {
+        right                              :  24px;                        /* <-- Clear of the fold's own + / - */
+    }
+
+    .PainterlyNPR__Info__Button {
+        display                            :  grid;
+        place-items                        :  center;
+        width                              :  24px;
+        height                             :  24px;
+        padding                            :  0;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_InkFaint);
+        cursor                             :  pointer;
+        transition                         :  color var(--PainterlyNPR_Transition), border-color var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Info__Button svg {
+        width                              :  13px;
+        height                             :  13px;
+    }
+
+    .PainterlyNPR__Info__Button:hover,
+    .PainterlyNPR__Info--open .PainterlyNPR__Info__Button {
+        color                              :  var(--PainterlyNPR_Ink);
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+    }
+
+    .PainterlyNPR__Info__Card {
+        display                            :  none;
+        position                           :  absolute;
+        top                                :  30px;
+        right                              :  0;
+        width                              :  min(300px, 78vw);
+        padding                            :  9px 11px;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  var(--PainterlyNPR_RadiusSmall);
+        background                         :  var(--PainterlyNPR_Cream);
+        box-shadow                         :  0 6px 18px rgba(43, 42, 40, 0.16);
+    }
+
+    .PainterlyNPR__Info__Card .PainterlyNPR__Hint {
+        color                              :  var(--PainterlyNPR_InkSoft);
+    }
+
+    .PainterlyNPR__Info__Card .PainterlyNPR__Hint:first-child {
+        margin-top                         :  0;
+    }
+
+    .PainterlyNPR__Info--open .PainterlyNPR__Info__Card {
+        display                            :  block;
+    }
+
+    /* Hover shows it where there is a hover; a touchscreen taps instead */
+    @media (hover: hover) {
+        .PainterlyNPR__Info:hover .PainterlyNPR__Info__Card {
+            display                        :  block;
+        }
+    }
+
+    /* Fingers need bigger buttons */
+    @media (pointer: coarse) {
+        .PainterlyNPR__Info__Button,
+        .PainterlyNPR__Section__Eye {
+            width                          :  32px;
+            height                         :  32px;
+        }
+
+        .PainterlyNPR__Section__Eye {
+            right                          :  38px;
+        }
+    }
+
+    /* The section's eye: beside the "i", or in its place when a group has no notes */
+    .PainterlyNPR__Section__Eye {
+        position                           :  absolute;
+        top                                :  7px;
+        right                              :  30px;
+        z-index                            :  5;
+        display                            :  grid;
+        place-items                        :  center;
+        width                              :  24px;
+        height                             :  24px;
+        padding                            :  0;
+        border                             :  1px solid var(--PainterlyNPR_Rule);
+        border-radius                      :  50%;
+        background                         :  var(--PainterlyNPR_Cream);
+        color                              :  var(--PainterlyNPR_InkFaint);
+        cursor                             :  pointer;
+        transition                         :  color var(--PainterlyNPR_Transition), border-color var(--PainterlyNPR_Transition);
+    }
+
+    .PainterlyNPR__Section__Eye--alone {
+        right                              :  0;
+    }
+
+    details.PainterlyNPR__Group > .PainterlyNPR__Section__Eye {
+        right                              :  54px;                        /* <-- Clear of the "i" and the fold's own + / - */
+    }
+
+    details.PainterlyNPR__Group > .PainterlyNPR__Section__Eye--alone {
+        right                              :  24px;
+    }
+
+    .PainterlyNPR__Section__Eye svg {
+        width                              :  15px;
+        height                             :  10px;
+        overflow                           :  visible;
+    }
+
+    .PainterlyNPR__Section__Eye:hover {
+        color                              :  var(--PainterlyNPR_Ink);
+        border-color                       :  var(--PainterlyNPR_InkFaint);
+    }
+
+    .PainterlyNPR__Section__Strike {
+        display                            :  none;
+    }
+
+    /* Switched off: the eye struck through and terracotta, the section's sliders faded */
+    .PainterlyNPR__Group--off > .PainterlyNPR__Section__Eye {
+        color                              :  var(--PainterlyNPR_Terracotta);
+        border-color                       :  var(--PainterlyNPR_Terracotta);
+    }
+
+    .PainterlyNPR__Group--off > .PainterlyNPR__Section__Eye .PainterlyNPR__Section__Strike {
+        display                            :  inline;
+    }
+
+    .PainterlyNPR__Group--off .PainterlyNPR__Field,
+    .PainterlyNPR__Group--off .PainterlyNPR__Readout {
+        opacity                            :  0.42;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

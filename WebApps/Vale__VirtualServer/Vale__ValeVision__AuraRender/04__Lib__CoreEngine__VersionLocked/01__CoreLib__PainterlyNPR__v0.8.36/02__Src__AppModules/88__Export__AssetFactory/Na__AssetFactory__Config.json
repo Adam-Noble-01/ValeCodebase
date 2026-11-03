@@ -1,0 +1,41 @@
+{
+    "PainterlyNPR__AssetFactory__Config" : {
+        "PainterlyNPR__AssetFactory__Config__Meta" : {
+            "ConfigLabel"   : "PainterlyNPR - The Asset Factory",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The catalogue environment's light, camera and style, and the pictures the factory writes: every asset drawn the same way, so the catalogue reads as one set.",
+            "ReadBy"        : "02__Src__AppModules/88__Export__AssetFactory/PainterlyNPR__AssetFactory__Run__.mjs",
+            "Source"        : "Written 30-Oct-2026, v0.6.0"
+        },
+
+        "PainterlyNPR__AssetFactory__Config__Style" : {
+            "Note"        : "The starting style (the app as it boots), with a fixed seed, the default sun and a sky left as paper: the asset is the only thing on the sheet. The stage itself (the disc of ground, no building) is 16__Scene__AssetLibrary's.",
+            "Seed"        : 20261030,
+            "SeedNote"    : "One hand for the whole catalogue: a re-render draws the same picture",
+            "Sun"         : { "Azimuth": -44, "Altitude": 38 },
+            "SunNote"     : "The cottage's default sun: light from the left and in front, shadow to the right and behind",
+            "Sky"         : { "Strength": 0, "Clouds": 0 },
+            "SkyNote"     : "No sky wash and no clouds: reserved paper round the asset"
+        },
+
+        "PainterlyNPR__AssetFactory__Config__Camera" : {
+            "Note"        : "A three-quarter view from a little above, fitted to the asset's bounds: Fill is the share of the square picture its height or its spread (whichever is the greater) takes.",
+            "Yaw"         : 28,
+            "Pitch"       : 9,
+            "FovY"        : 30,
+            "Fill"        : 0.86,
+            "HalfHeight"  : 10,
+            "Ceiling"     : 1
+        },
+
+        "PainterlyNPR__AssetFactory__Config__Pictures" : {
+            "Note"        : "Each picture is the sheet's centre square, scaled: the camera puts the asset in the middle of it.",
+            "SizePx"      : 512,
+            "SizePxNote"  : "Square, sharp at a card's size and at a SketchUp or three.js preview's",
+            "Type"        : "image/webp",
+            "Quality"     : 0.9,
+            "Api"         : "/api/assets",
+            "ApiNote"     : "The local server's route: POST /api/assets/<AssetId>/<Slot> writes one file into the asset's own folder"
+        }
+    }
+}

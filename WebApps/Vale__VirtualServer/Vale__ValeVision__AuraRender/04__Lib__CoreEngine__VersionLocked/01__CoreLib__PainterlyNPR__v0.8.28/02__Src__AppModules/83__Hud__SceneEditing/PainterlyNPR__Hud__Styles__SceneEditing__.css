@@ -1,0 +1,140 @@
+/* =============================================================================
+ * PAINTERLYNPR - HUD | STYLES - SCENE EDITING
+ * =============================================================================
+ *
+ * FILE       : PainterlyNPR__Hud__Styles__SceneEditing__.css
+ * NAMESPACE  : PainterlyNPR
+ * MODULE     : Hud - Styles - SceneEditing
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The selection's outline over the sheet, the sheet's cursor
+ *              while a material's brush is up, and the Move Tool's gimbal
+ * CREATED    : 30-Oct-2026 (v0.7.0)
+ *
+ * DESCRIPTION:
+ * - Imported by 03__Style__AppStylesheets/PainterlyNPR__CoreUi__Styles__Index__.css.
+ * - The outline is a canvas in the sheet's own pixels, stretched over the
+ *   drawing as the drop marker is; it never takes the pointer.
+ *
+ * ============================================================================= */
+
+
+/* #region ----------------------------------------------------------------------
+ * SHEET | The Outline, the Brush's Cursor
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__SceneEdit__Highlight {
+        position                           :  absolute;
+        inset                              :  0;
+        width                              :  100%;
+        height                             :  100%;
+        pointer-events                     :  none;
+        image-rendering                    :  auto;
+    }
+
+    .PainterlyNPR--paintingMaterial .PainterlyNPR__Sheet {
+        cursor                             :  cell;                          /* <-- The brush is up: a click gives its class */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * MOVE TOOL | The Trail, the Gimbal and the Readout (v0.8.10)
+ * -----------------------------------------------------------------------------
+ * An SVG in the sheet's own pixels, over the drawing as the drop marker is; it
+ * never takes the pointer (the tool reads the arrows' places itself). The
+ * axes are SketchUp's colours, muted to sit on the paper.
+ * ----------------------------------------------------------------------------- */
+
+    .PainterlyNPR__MoveTool__Gimbal {
+        --PainterlyNPR_AxisRed             :  #B5473A;
+        --PainterlyNPR_AxisGreen           :  #4F8A45;
+        --PainterlyNPR_AxisBlue            :  #3C66A6;
+        position                           :  absolute;
+        inset                              :  0;
+        width                              :  100%;
+        height                             :  100%;
+        pointer-events                     :  none;
+        overflow                           :  visible;
+    }
+
+    .PainterlyNPR__MoveTool__Trail,
+    .PainterlyNPR__MoveTool__Drop {
+        fill                               :  none;
+        stroke                             :  var(--PainterlyNPR_Slate);
+        stroke-width                       :  1.5;
+        stroke-dasharray                   :  6 5;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__MoveTool__Drop {
+        stroke-dasharray                   :  2 4;                           /* <-- Down from a lifted plop to the level it stood at */
+    }
+
+    .PainterlyNPR__MoveTool__From {
+        fill                               :  none;
+        stroke                             :  var(--PainterlyNPR_Slate);
+        stroke-width                       :  1.5;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__MoveTool__Axis {
+        stroke-width                       :  2.5;
+        stroke-linecap                     :  round;
+        opacity                            :  0.7;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__MoveTool__Head {
+        opacity                            :  0.7;
+    }
+
+    .PainterlyNPR__MoveTool__Axis--live {
+        stroke-width                       :  4;
+        opacity                            :  1;
+    }
+
+    .PainterlyNPR__MoveTool__Head--live {
+        opacity                            :  1;
+    }
+
+    .PainterlyNPR__MoveTool__Axis--Red    { stroke :  var(--PainterlyNPR_AxisRed); }
+    .PainterlyNPR__MoveTool__Axis--Green  { stroke :  var(--PainterlyNPR_AxisGreen); }
+    .PainterlyNPR__MoveTool__Axis--Blue   { stroke :  var(--PainterlyNPR_AxisBlue); }
+    .PainterlyNPR__MoveTool__Head--Red    { fill   :  var(--PainterlyNPR_AxisRed); }
+    .PainterlyNPR__MoveTool__Head--Green  { fill   :  var(--PainterlyNPR_AxisGreen); }
+    .PainterlyNPR__MoveTool__Head--Blue   { fill   :  var(--PainterlyNPR_AxisBlue); }
+
+    .PainterlyNPR__MoveTool__Rail {
+        stroke-width                       :  1;
+        stroke-dasharray                   :  8 6;
+        opacity                            :  0.55;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR__MoveTool__Rail--Red    { stroke :  var(--PainterlyNPR_AxisRed); }
+    .PainterlyNPR__MoveTool__Rail--Green  { stroke :  var(--PainterlyNPR_AxisGreen); }
+    .PainterlyNPR__MoveTool__Rail--Blue   { stroke :  var(--PainterlyNPR_AxisBlue); }
+
+    .PainterlyNPR__MoveTool__Readout {
+        fill                               :  var(--PainterlyNPR_Ink);
+        font-family                        :  var(--PainterlyNPR_FontStack);
+        font-weight                        :  600;
+        paint-order                        :  stroke;
+        stroke                             :  var(--PainterlyNPR_Cream);
+        stroke-width                       :  3;
+        stroke-linejoin                    :  round;
+        vector-effect                      :  non-scaling-stroke;
+    }
+
+    .PainterlyNPR--movingAsset .PainterlyNPR__Sheet,
+    .PainterlyNPR--movingAsset .PainterlyNPR__Sheet canvas {
+        cursor                             :  move;                          /* <-- M: a click sets the plop down */
+    }
+
+    .PainterlyNPR--carryingAsset .PainterlyNPR__Sheet,
+    .PainterlyNPR--carryingAsset .PainterlyNPR__Sheet canvas {
+        cursor                             :  grabbing;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

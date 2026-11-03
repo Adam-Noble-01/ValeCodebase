@@ -1,0 +1,236 @@
+{
+    "PainterlyNPR__MaterialIndication__Config" : {
+        "PainterlyNPR__MaterialIndication__Config__Meta"     : {
+            "ConfigLabel"   : "PainterlyNPR - Material Indication Patterns",
+            "ConfigVersion" : "1.0.0",
+            "ConfigNote"    : "The illustrator's selected surface cues: brick suggested by a few courses where the eye expects them, never every brick. Each pattern is measured in metres on the real surface.",
+            "ReadBy"        : "02__Src__AppModules/36__Line__MaterialIndication/PainterlyNPR__MaterialIndication__Patterns__.mjs",
+            "Source"        : "Ported from Experiment 01 (engine 0.4.10) on 30-Oct-2026, v0.5.0"
+        },
+
+        "PainterlyNPR__MaterialIndication__Config__Patterns" : {
+            "Note"     : "Gauge and Length in metres (a brick course 75 mm, a plain tile's gauge 100 mm); Ink the mark's ink - every mark is drawn with the base pen, 0.13 mm (32__Line__ClassAndPriority/Na__TechnicalPens__Config.json; v0.8.0 took the patterns' own widths away); Perpend how often a joint between units is ticked; Pick how often a unit is picked out with a darker touch of wash; Floor a minimum importance.",
+            "Patterns" : {
+                "Brick"   : {
+                    "Gauge"   : 0.075,
+                    "Length"  : 0.225,
+                    "Bond"    : 0.5,
+                    "Ink"     : 0.74,
+                    "Perpend" : 0.75,
+                    "Pick"    : 0.1,
+                    "Floor"   : 0
+                },
+                "Tile"    : {
+                    "Gauge"   : 0.1,
+                    "Length"  : 0.165,
+                    "Bond"    : 0.5,
+                    "Ink"     : 0.68,
+                    "Perpend" : 0.5,
+                    "Pick"    : 0.08,
+                    "Floor"   : 0
+                },
+                "Soldier" : {
+                    "Gauge"   : 0.215,
+                    "Length"  : 0.075,
+                    "Bond"    : 0,
+                    "Ink"     : 0.82,
+                    "Perpend" : 1,
+                    "Pick"    : 0.2,
+                    "Floor"   : 1
+                },
+                "Flag"    : {
+                    "Gauge"   : 0,
+                    "Length"  : 0,
+                    "Bond"    : 0,
+                    "Ink"     : 0.7,
+                    "Perpend" : 0,
+                    "Pick"    : 0.14,
+                    "Floor"   : 0
+                },
+                "Flagstone" : {
+                    "Gauge"   : 0.56,
+                    "Length"  : 0.74,
+                    "Bond"    : 0.5,
+                    "Ink"     : 0.7,
+                    "Perpend" : 0.85,
+                    "Pick"    : 0.14,
+                    "Floor"   : 0,
+                    "Ground"  : true
+                },
+                "Rubble"  : {
+                    "Gauge"   : 0.15,
+                    "Length"  : 0.39,
+                    "Bond"    : 0,
+                    "Ink"     : 0.74,
+                    "Perpend" : 0,
+                    "Pick"    : 0,
+                    "Floor"   : 0,
+                    "Layout"  : "Rubble"
+                }
+            },
+            "PatternsNotes" : {
+                "Flagstone" : "A face painted paving (10, a SketchUp swatch): rows laid as courses on a level face, unevened by its hand's Randomness. A builder's flagstone path keeps Flag, which follows the path. Ground: weighed as that path is, over its whole area and not only at its edges (Adam: paving in SketchUp did not draw its slabs as the standalone's path does)",
+                "Rubble"    : "Not courses: laid in groups of stones by PainterlyNPR__MaterialIndication__Rubble__.mjs, from the section below. Gauge and Length are a stone's average, for the sample and the readouts. Ink as Brick's, Adam: 'ensure the linework matches the linethickess and color of the brickwork'"
+            }
+        },
+
+        "PainterlyNPR__MaterialIndication__Config__Depiction" : {
+            "Note"        : "How a material's line work is depicted: its hand. Each material holds its own values (State.Indication.Depiction, Pen -> Material linework; AppState's are the starting ones), and a Material art direction point moves them where it reaches (DepLoose ... DepAccents on the point). Every value is 0 to 1. Dump material data writes all of it out, for making new materials.",
+            "Keys"        : ["Looseness", "Randomness", "Rounding", "Roughness", "Breaks", "Accents"],
+            "KeysNotes"   : {
+                "Looseness"  : "0 ruled, every joint true and its ends flush; up, the ends stagger, the pen wobbles and tapers, and a long joint bows",
+                "Randomness" : "0 perfectly regular; up, courses and units vary in size, joints wander off true, what is kept scatters. A stone's size and tilt",
+                "Rounding"   : "0 square corners; up, a unit's corners round off into its joints. A stone's corner radius",
+                "Roughness"  : "0 a clean line; up, the line's edge breaks up in small steps, as a rough-hewn stone's or a hand-made brick's does",
+                "Breaks"     : "0 unbroken; up, the pen lifts along each joint. A stone's gaps, closed at 0 and more open than drawn above its own",
+                "Accents"    : "How many units take a darker touch of wash inside them, and how strong it is"
+            },
+            "HandOf"      : { "Brick": "Brick", "Soldier": "Brick", "Tile": "Tile", "Flag": "Flag", "Flagstone": "Flag", "Rubble": "Rubble" },
+            "HandOfNote"  : "Which hand each pattern draws with: a soldier course is brickwork; clay tiles and slates share a hand",
+            "Neutral"     : {
+                "Brick"  : { "Looseness": 0.5, "Randomness": 0,   "Rounding": 0,   "Roughness": 0, "Breaks": 0,   "Accents": 0.5 },
+                "Tile"   : { "Looseness": 0.5, "Randomness": 0,   "Rounding": 0,   "Roughness": 0, "Breaks": 0,   "Accents": 0.5 },
+                "Flag"   : { "Looseness": 0.5, "Randomness": 0.3, "Rounding": 0,   "Roughness": 0, "Breaks": 0,   "Accents": 0.5 },
+                "Rubble" : { "Looseness": 0.5, "Randomness": 0.5, "Rounding": 0.5, "Roughness": 0, "Breaks": 0.5, "Accents": 0.5 }
+            },
+            "NeutralNote" : "The values at which each effect is exactly the pattern as its section sets it, multiplying by one and adding nothing. Below them it eases to none; above them it grows by Reach",
+            "Reach"       : {
+                "LooseMax"     : 2.4,
+                "LooseMaxNote" : "Looseness 100%: run-end stagger, the pen's wobble and its tapers times this",
+                "LooseAdd"     : 0.6,
+                "LooseAddNote" : "How far Looseness moves the stroke's own looseness (its drift and searching), per unit of the slider past neutral",
+                "BowShare"     : 0.32,
+                "BowShareNote" : "Looseness 100%: how far a long joint bows, as a share of a course",
+                "WanderShare"  : 0.5,
+                "WanderShareNote": "Randomness 100%: how far a joint wanders off true, as a share of a course",
+                "UnitJitter"   : 0.42,
+                "UnitJitterNote": "Randomness 100%: how far a unit's end strays, as a share of its length",
+                "CourseJitter" : 0.34,
+                "CourseJitterNote": "Randomness 100%: how far a course's height strays, as a share of a course (the material's own value only: one wall's courses are one set-out)",
+                "KeepJitter"   : 0.5,
+                "KeepJitterNote": "Randomness 100%: how much wider the chance that keeps a unit",
+                "TiltM"        : 0.012,
+                "TiltMNote"    : "Randomness 100%: how far off upright a joint between units leans, in metres",
+                "RoundShare"   : 0.45,
+                "RoundShareNote": "Rounding 100%: a unit's corner radius, as a share of its height",
+                "RoughM"       : { "Brick": 0.012, "Tile": 0.014, "Flag": 0.025, "Rubble": 0.035 },
+                "RoughMNote"   : "Roughness 100%: how far a line's edge strays, in metres on the surface",
+                "StepM"        : 0.015,
+                "StepPx"       : 2.2,
+                "StepMNote"    : "A traced line's points stand at least this far apart, in metres and in pixels: finer than the sheet can show is wasted",
+                "MaxPoints"    : 48,
+                "AccentMax"    : 2.6,
+                "AccentMaxNote": "Accents 100%: how many picked units, times this",
+                "BreakDash"    : [1.6, 4.2],
+                "BreakGap"     : [0.15, 0.75],
+                "BreakDashNote": "Breaks: the length of each dash and each gap along a joint, as shares of a unit",
+                "PatchFit"     : 0.47,
+                "PatchFitNote" : "A picked unit's touch of wash stands this far from its middle, as a share of the unit, so it lies inside its joints; Looseness 100% lets it run this much further",
+                "PatchSpill"   : 0.1,
+                "SeedHeart"    : 0.5,
+                "SeedHeartNote": "A Material point's seed holds where its reach is at least this: a seed cannot fade, so it has an edge, about two thirds of the way to the point's ring",
+                "SeedStep"     : 7919,
+                "SeedStepNote" : "How far apart one seed number's draws lie from the next, so neighbouring numbers look nothing alike"
+            }
+        },
+
+        "PainterlyNPR__MaterialIndication__Config__Rubble"   : {
+            "Note"            : "A rubble wall as Vale's illustrator draws it (Thrower, A2Q 15270-1, scanned at 300 dpi and measured): a few groups of stones spaced evenly over a pale wall, each stone two or three broken pen strokes, a loose tan wash dropped in behind. The scans' flicks of white were tried and taken out (Adam: \"they do not look good\"). Metres on the real surface, so the marks belong to the building and hold still as the camera moves",
+            "CellM"           : [0.74, 0.5],
+            "CellMNote"       : "The wall is divided into cells, offset row by row like bonded stone, each holding at most one group: the 1:50 elevation has about 1.8 stones to the square metre and the perspective about 4; this gives about 3",
+            "CellJitter"      : 0.72,
+            "CellJitterNote"  : "How far a group wanders in its cell, as a share of the cell: enough that no grid shows",
+            "GroupShare"      : 1,
+            "GroupShareNote"  : "The share of cells that take a group at Indication 100%, and full size on the sheet",
+            "GroupSizes"      : [0.12, 0.5, 0.3, 0.08],
+            "GroupSizesNote"  : "How often a group is one, two, three or four stones: the scan's are mostly pairs",
+            "SideBySide"      : 0.8,
+            "SideBySideNote"  : "How often a group of two lies side by side rather than one over the other: Adam, of columns of stones, 'it spoils the effect'",
+            "Bond"            : [0.35, 0.65],
+            "BondNote"        : "How far a group's upper row sits off its lower, in shares of a stone's width: never straight over it, as a wall's joints never line up",
+            "StoneWidthM"     : [0.26, 0.48],
+            "StoneHeightM"    : [0.11, 0.2],
+            "StoneWidthMNote" : "The 1:50 elevation's stones run about 0.45 x 0.2 m, the perspective's about 0.25 x 0.1 m",
+            "GapM"            : [0.03, 0.07],
+            "GapMNote"        : "Between neighbouring stones in a group: the mortar joint the pen leaves white",
+            "Stack"           : {
+                "Most"          : 2,
+                "MostNote"      : "No more than this many stones one over another, anywhere on a wall: the next is shifted sideways or left out. Adam: 'make sure too many cant stack vertically ... it spoils the effect'",
+                "GapM"          : 0.3,
+                "GapMNote"      : "Two stones count as stacked when the upper's foot is this near the lower's head",
+                "SharedWidth"   : 0.25,
+                "SharedWidthNote": "And when they share this much of the narrower one's width"
+            },
+            "TiltDeg"         : 4,
+            "TiltDegNote"     : "A stone sits this far off level at most",
+            "SheetMm"         : [0.7, 1.2],
+            "SheetMmNote"     : "A stone's height on the sheet: below the first, no stones are drawn; by the second, all that were chosen",
+            "Quiet"           : {
+                "ReachM"        : [1.2, 0.8],
+                "Probes"        : 12,
+                "Plain"         : [0.4, 0.8],
+                "PlainNote"     : "A group counts as out on a plain stretch by the share of these probes, this far round it along and up the wall, that find open wall: from none at the first share to wholly at the second",
+                "DriftM"        : 1.7,
+                "Keep"          : [0.1, 1],
+                "KeepNote"      : "Out on a plain stretch a group keeps this share of its chance, wandering between the two over patches this size: the middle of a plain gable goes quiet, as a hand leaves it, while stones gather round corners and openings. Adam: 'see the side looks bad? but the front looks good?'"
+            },
+            "SheetAspect"     : 1.15,
+            "SheetAspectNote" : "A stone is drawn only if it comes out at least this many times as wide as it is tall on the sheet. A wall turned away squeezes a stone narrower but no lower, so it comes out square, and twice as close: this thins it as a hand would and leaves a wall seen square on as it was. Adam: 'see the side looks bad? but the front looks good?'",
+            "OnWallEpsM"      : 0.012,
+            "OnWallEpsMNote"  : "A stone must lie on its wall in the truth buffer, within this plus a pixel's depth: never across a chimney breast or anything else standing proud of the plane",
+            "Pen"             : {
+                "Tier"          : 0,
+                "TierNote"      : "The base pen, 0.13 mm, as brick courses and every other surface pattern: Adam, 03-Nov-2026, after the structural pen (v0.8.20): 'on the stonework ensure the linework matches the linethickess and color of the brickwork, the line dont feel right on the stone they seem too thick'",
+                "CornerShare"   : 0.32,
+                "CornerShareNote": "A stone's corner radius, as a share of its height: drawn round, as the scan's C-shaped brackets are",
+                "WobbleShare"   : 0.05,
+                "WobbleShareNote": "How far the outline strays from true, as a share of the stone's height",
+                "TopGap"        : [0.3, 0.7],
+                "BottomGap"     : [0.25, 0.65],
+                "TopGapNote"    : "The pen lifts along the top and the bottom of every stone, for this share of its width: that is what leaves a left bracket and a right bracket",
+                "RightGapChance": 0.75,
+                "RightGap"      : [0.3, 0.8],
+                "RightGapNote"  : "And down the right side this often, for this share of its height: the scan's right bracket is often only a hook",
+                "LeftGapChance" : 0.06,
+                "LeftGap"       : [0.2, 0.45],
+                "DropChance"    : 0.1,
+                "DropChanceNote": "A short stroke left out altogether",
+                "TickChance"    : 0.3,
+                "TickM"         : 0.028,
+                "TickChanceNote": "A dot of the pen beside the right bracket, this often, this long: the scan's ticks and colons",
+                "TaperInMm"     : 0.08,
+                "TaperOutMm"    : 0.3,
+                "Wobble"        : 0.55
+            },
+            "Wash"            : {
+                "GroupChance"   : 0.85,
+                "GroupChanceNote": "A broad pale wash loosely round a group, this often",
+                "GroupGrowM"    : 0.13,
+                "GroupGrowMNote": "How far past the group's stones it reaches",
+                "GroupPeak"     : [0.55, 1],
+                "GroupPeakNote" : "Its strength, drawn for each group",
+                "LoneChance"    : 0.1,
+                "LoneChanceNote": "A cell with no stones takes a pale wash alone, this often: the scan has a few",
+                "LoneHalfM"     : [0.22, 0.14],
+                "LongAt"        : 0.85,
+                "LongAtNote"    : "A wall that comes out this wide on the sheet for its height, or wider, leaves a wash as it is; further turned away, a wash lies longer and lower, so it stays a brush mark rather than a round spot, and fewer groups are kept, in proportion, so they stand as far apart on the sheet",
+                "StoneChance"   : 0.55,
+                "StoneChanceNote": "A darker wash dropped inside a stone, this often: 'the darker washes appear loosely within the bounds of where stones appear' (Adam)",
+                "StoneFit"      : [0.85, 1.2],
+                "StoneFitNote"  : "Its size against the stone's: mostly inside, sometimes just over the line",
+                "StoneOffset"   : 0.22,
+                "StoneOffsetNote": "How far it wanders from the stone's middle, as a share of the stone: never quite centred",
+                "StoneTone"     : [0.35, 1],
+                "StoneToneNote" : "Its strength, drawn for each stone (the scan runs from a pale buff to #D9B27A)",
+                "SecondLobeChance": 0.35,
+                "SecondLobeChanceNote": "A second, smaller touch beside the first, so the wash is not a neat oval",
+                "Sides"         : 18,
+                "SidesNote"     : "A wash's outline, in straight sides; the shader rags it",
+                "Lobes"         : 0.42,
+                "LobesNote"     : "How far the outline swells and falls",
+                "SearchSteps"   : 5,
+                "SearchStepsNote": "A wash is walked out from its middle this many steps along each side's direction, and stops where the wall does: at a quoin, a window or the wall's own edge"
+            }
+        }
+    }
+}

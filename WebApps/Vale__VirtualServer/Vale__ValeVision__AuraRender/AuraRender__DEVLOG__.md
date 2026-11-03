@@ -1,5 +1,17 @@
 # ValeVision AURA: DEVLOG
 
+## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.28, Stonework's Darker Washes (No App Version of Its Own)
+
+**Asked by Adam:** "Our stonework washes feel too bright vs the reference see?", then "Commit and sync".
+
+**Synced** (nothing of the engine copied into AURA by hand): PainterlyNPR v0.8.28 at 9696ef1, pinned as `01__CoreLib__PainterlyNPR__v0.8.28` from the commit (433 files). The import map (`index.html` and `Vale__CoreEngine__ImportMap__Index__.json`) moved from v0.8.27; the worker's cache version 2026-11-03-05; the README's engine row.
+
+**What it brings AURA:** on any wall in Stonework, the darker wash inside a stone is a dusty tan, as Vale's scans have it, where it was mustard. The pale wash, how strong the washes are, where they lie and the pen are as they were. AURA's code did not change.
+
+**Not in this pin:** other sessions' open work in PainterlyNPR's working tree, uncommitted (the elevation's ground cut among it).
+
+**Checked here (no browser):** the sync's `--check`: the pin untouched and the same as the repository; all 70 engine references in AURA's modules resolve in the new pin, and their 89 imported names; Init unchanged. Not run in a browser: Adam tests it. Not pushed: the live site stays on v0.8.27 until then.
+
 ## Version 0.5.15, 03-Nov-2026: Engine Sync to PainterlyNPR v0.8.27, Material Depictions
 
 **Asked by Adam:** "Take a look at the brickwork and roof tile materials, ensure the accent patches fall within the drawn bricks like we just did the stone / on the stonework ensure the linework matches the linethickess and color of the brickwork ... / Sketchup dosnt render the brickwork either, ensure all material linework is added / finally add robust support for brickwork, stonework, roof tiles etc to in their art points Change Indication to Material ... ensure I have a way to dump that data too", then "Add A Dice in the material art point that rerolls the seed for the material", and earlier "When I paint materials in sketchUp the viewer isnt loading / reloading them, even if they are materials from the library". His full words are in PainterlyNPR's DEVLOG. Then: "Commit and sync".

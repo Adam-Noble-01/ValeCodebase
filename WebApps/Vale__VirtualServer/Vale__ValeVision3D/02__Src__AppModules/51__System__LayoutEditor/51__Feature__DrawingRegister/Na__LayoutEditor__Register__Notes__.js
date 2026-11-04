@@ -25,7 +25,7 @@
 // - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/51__Feature__DrawingRegister/Na__LayoutEditor__Register__Notes__.js
 // - Source version: 1.0.1 (TrueVision3D v2.69.0, 19-Sep-2026, the first release whose log names the Drawing
 //                   Register; the file is unchanged since it was first committed that day; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-18; first carried by v2.72.0), inert: nothing imports it until the register
 //                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
 // - Parity        : verbatim
 // - Divergences   :

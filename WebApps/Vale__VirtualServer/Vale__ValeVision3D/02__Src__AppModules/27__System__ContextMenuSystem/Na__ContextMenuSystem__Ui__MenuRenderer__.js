@@ -34,7 +34,7 @@
 // PORT NOTE:
 // - Ported from   : TrueVision3D 02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Ui__MenuRenderer__.js
 // - Source version: 1.0.0 (TrueVision3D v2.10.0, 30-Aug-2026; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-11}}
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-11; first carried by v2.72.0)
 // - Parity        : verbatim
 // - Divergences   :
 //   - Banner reads ValeVision3D. (No console output in this file.)

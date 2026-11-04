@@ -403,8 +403,9 @@
             });
         });
 
-        // THE LINE-UP | Each asset five times from one recipe: the proof it does not repeat
-        S.recipes.forEach((recipe, row) => {
+        // THE LINE-UP | Each asset five times from one recipe: the proof it does not repeat.
+        // The first three, the ones the look was agreed on: the shelf has that many rows.
+        S.recipes.slice(0, Na__VegDemo__LINEUP_ROWS_Y.length).forEach((recipe, row) => {
             const shelfY = Na__VegDemo__LINEUP_ROWS_Y[row];
             for (let c = 0; c < Na__VegDemo__LINEUP_COLS; c++) {
                 S.plopSerial++;
@@ -573,6 +574,7 @@
             }, S.layer.factors);
             const frontBlades = bush.blades.filter((blade) => blade.p[2] >= 0);
             bush.blades = [];
+            bush.core   = null;
 
             if (!S.cardOut) S.cardOut = Na__VegContour__CreateOut(60000, 30000, 60000);
             const out  = S.cardOut;

@@ -19,6 +19,15 @@
 
     "LayoutEditor__RenderComposites__Layers": [
         {
+            "Composite__Key"      : "vegetation",
+            "Composite__Label"    : "Vegetation",
+            "Composite__TwoDOnly" : true,
+            "Composite__Toggle"   : true,
+            "Composite__Order"    : 4,
+            "Composite__Note"     : "The project's linework plants, laid over the linework so a wall's lines stop where a bush stands in front of them. Off unless ticked here, so no existing drawing moves. Nothing shows on a project with no plants.",
+            "Composite__Weight"   : { "Weight__Kind": "none" }
+        },
+        {
             "Composite__Key"      : "depthFog",
             "Composite__Label"    : "Depth Fog",
             "Composite__TwoDOnly" : true,

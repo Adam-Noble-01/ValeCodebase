@@ -57,6 +57,101 @@
                 "planter",
                 "strap leaf"
             ]
+        },
+        {
+            "Asset__Id": "VVL_07_1031",
+            "Asset__Name": "Mophead Hydrangea",
+            "Asset__File": "07__VegetationElements/VVL_07_1031__Shrubs__MopheadHydrangea__Var-01__.json",
+            "Asset__CollectionLabel": "Vegetation",
+            "Asset__TypeLabel": "Shrubs",
+            "Asset__Status": "Active",
+            "Asset__Version": "1.0.0",
+            "Asset__WidthMm": 1300,
+            "Asset__HeightMm": 1050,
+            "Asset__Keywords": [
+                "ornamental",
+                "flowering",
+                "hydrangea",
+                "mound",
+                "border",
+                "planter"
+            ]
+        },
+        {
+            "Asset__Id": "VVL_07_1501",
+            "Asset__Name": "Clipped Hedge",
+            "Asset__File": "07__VegetationElements/VVL_07_1501__Hedges__ClippedHedge__Var-01__.json",
+            "Asset__CollectionLabel": "Vegetation",
+            "Asset__TypeLabel": "Hedges",
+            "Asset__Status": "Active",
+            "Asset__Version": "1.0.0",
+            "Asset__WidthMm": 2400,
+            "Asset__HeightMm": 1200,
+            "Asset__Keywords": [
+                "hedge",
+                "clipped",
+                "managed",
+                "formal",
+                "boundary",
+                "planter"
+            ]
+        },
+        {
+            "Asset__Id": "VVL_07_2001",
+            "Asset__Name": "Box Ball",
+            "Asset__File": "07__VegetationElements/VVL_07_2001__Topiary__BoxBall__Var-01__.json",
+            "Asset__CollectionLabel": "Vegetation",
+            "Asset__TypeLabel": "Topiary",
+            "Asset__Status": "Active",
+            "Asset__Version": "1.0.0",
+            "Asset__WidthMm": 800,
+            "Asset__HeightMm": 800,
+            "Asset__Keywords": [
+                "ornamental",
+                "topiary",
+                "ball",
+                "clipped",
+                "formal",
+                "accent"
+            ]
+        },
+        {
+            "Asset__Id": "VVL_07_2011",
+            "Asset__Name": "Standard Bay",
+            "Asset__File": "07__VegetationElements/VVL_07_2011__Topiary__StandardBay__Var-01__.json",
+            "Asset__CollectionLabel": "Vegetation",
+            "Asset__TypeLabel": "Topiary",
+            "Asset__Status": "Active",
+            "Asset__Version": "1.0.0",
+            "Asset__WidthMm": 720,
+            "Asset__HeightMm": 1650,
+            "Asset__Keywords": [
+                "ornamental",
+                "topiary",
+                "standard",
+                "clipped",
+                "formal",
+                "entrance"
+            ]
+        },
+        {
+            "Asset__Id": "VVL_07_2021",
+            "Asset__Name": "Yew Cone",
+            "Asset__File": "07__VegetationElements/VVL_07_2021__Topiary__YewCone__Var-01__.json",
+            "Asset__CollectionLabel": "Vegetation",
+            "Asset__TypeLabel": "Topiary",
+            "Asset__Status": "Active",
+            "Asset__Version": "1.0.0",
+            "Asset__WidthMm": 760,
+            "Asset__HeightMm": 1500,
+            "Asset__Keywords": [
+                "ornamental",
+                "topiary",
+                "cone",
+                "clipped",
+                "formal",
+                "accent"
+            ]
         }
     ]
 }

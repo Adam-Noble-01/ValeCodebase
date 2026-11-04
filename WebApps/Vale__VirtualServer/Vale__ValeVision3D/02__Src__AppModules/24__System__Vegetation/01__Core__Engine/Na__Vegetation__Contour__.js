@@ -45,6 +45,14 @@
 //   surface is in front of it, and a ball's centre plane is always behind its near
 //   surface. A mass's disc can: masses are not asked (see IsHidden), and about one
 //   inner point in twenty lands behind one and is simply not seen. Harmless.
+// - A BALL ON A FACE LOOKING AWAY IS NOT WORKED OUT. A clipped form's bush carries facing,
+//   the way each ball's face looks, and those turned from the eye are left out: nothing of
+//   them could show, and a shell of balls is half of them. Nothing else carries it.
+// - A CLIPPED BOX'S CORE. Its bush carries bush.core, twelve triangles of fill behind the whole
+//   shell, written as they are: see BushBuilder's header.
+// - A CLIPPED FORM'S MARKS. Its bush also carries marks, an arc inside a ball's outline on its
+//   near surface, where it is the highest thing there: see BushBuilder's header. They leave one
+//   by one with distance as inner arcs do, and the Inner Arcs slider thins them out.
 //
 // FRAMES:
 // - World metres, +Y up, in and out. Angles run round each ball from its own right
@@ -60,6 +68,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
+// - A bush's facing and marks, for clipped forms, and a stem. Without them every line it draws
+//   is unchanged.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.84.0)
 // - PageRadiusPx, and the style's minK and bisectSteps, for the frame budget. With
 //   those two left out, every line it draws is unchanged.
@@ -107,6 +119,12 @@
     const Na__VegContour__MAX_K        = 520;                                  // <-- A mass in a close up: its cusps must land near a sample
     const Na__VegContour__MAX_RUNS     = 64;
     const Na__VegContour__BREAK_RAD    = 0.20;                                 // <-- Width of a pen lift in a line
+    const Na__VegContour__FACING_AWAY  = 0.22;                                 // <-- Past this a ball's face looks away. Not 0: a face seen edge on still makes the outline
+    const Na__VegContour__MARK_LOD     = 0.60;                                 // <-- Of the inner arcs' size on screen: a mark is drawn smaller, so it stays longer
+    const Na__VegContour__MARK_MIN_PX  = 7;                                    // <-- A shorter mark is a speck
+    const Na__VegContour__MARK_SPAN    = 1.5;                                  // <-- Times the asset's inner arc: a mark is nearer the middle, so it needs more turn to read
+    const Na__VegContour__STEM_FOOT    = 0.05;                                 // <-- Of a stem's length: the foot flares this far up
+    const Na__VegContour__STEM_FLARE   = 0.5;
     // ------------------------------------------------------------
 
 
@@ -483,6 +501,7 @@
 
         const camUx = view.upX, camUy = view.upY, camUz = view.upZ;
         const camRx = view.rightX, camRy = view.rightY, camRz = view.rightZ;
+        const facing = bush.facing;
 
         for (let i = 0; i < n; i++) {
             const vx = Cx[i] - Ex, vy = Cy[i] - Ey, vz = Cz[i] - Ez;
@@ -513,6 +532,7 @@
             Delta[i] = Math.max(0.9 / scale, Ra[i] * 0.012);                   // <-- About a pixel beyond the line
 
             Active[i] = (bush.tier[i] === Na__VegBuild__TIER_MASS || PxR[i] >= style.lodSkipPx) ? 1 : 0;
+            if (facing && (facing[i * 3] * nx + facing[i * 3 + 1] * ny + facing[i * 3 + 2] * nz) > Na__VegContour__FACING_AWAY) Active[i] = 0;
         }
 
         // NEIGHBOURS | Only balls whose outlines can touch on the page: an eighth of the work
@@ -619,6 +639,13 @@
             }
         }
 
+        // A CLIPPED FORM'S MARK | On the ball's own surface, so it needs nothing of the walk above
+        if (bush.marks && bush.marks[i] > 0
+            && pxR >= style.lodInteriorPx * Na__VegContour__MARK_LOD * lodRoll
+            && Sty[u + Na__VegContour__U_ARC] < style.interiorFactor) {
+            Na__VegContour__DrawMark(out, bush, i, u, stepRad);
+        }
+
         // THE WHOLE OUTLINE IS ONE STATE
         if (m === 0) {
             if (St[0] === Na__VegContour__OUTER) {
@@ -722,10 +749,38 @@
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Draw the Mark on a Clipped Form's Ball
+    // ------------------------------------------------------------
+    // Point lifts a point inside the outline onto the ball's near surface. A stretch under a
+    // neighbour's dome is left out, so the pen lifts there and carries on.
+    // ------------------------------------------------------------
+    function Na__VegContour__DrawMark(out, bush, i, u, stepRad) {
+        const shrink = bush.marks[i];
+        const use    = (bush.line.Line__InteriorSpanDeg * Math.PI / 180) * (0.55 + 0.75 * Sty[u + Na__VegContour__U_ARC_SPAN]) * Na__VegContour__MARK_SPAN;
+        if (use * (1 - shrink) * PxR[i] < Na__VegContour__MARK_MIN_PX) return;
+
+        const centre = Math.PI * 0.5 + (Sty[u + Na__VegContour__U_ARC_ANGLE] - 0.5) * 2.4;
+        const steps  = Math.max(3, Math.ceil(use / stepRad));
+        let down = false, px = 0, py = 0, pz = 0;
+        for (let s = 0; s <= steps; s++) {
+            Na__VegContour__Point(i, centre - use * 0.5 + (use * s) / steps, shrink);
+            if (Na__VegContour__IsHidden(i, Tx, Ty, Tz)) {
+                down = false;
+                continue;
+            }
+            if (down) Na__VegContour__WriteInner(out, px, py, pz, Tx, Ty, Tz);
+            px = Tx; py = Ty; pz = Tz;
+            down = true;
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Draw One Strap Leaf
     // ------------------------------------------------------------
     // A true 3D centre line with its width turned square to the eye: narrow at the
-    // foot, widest a fifth of the way up, closing to a point.
+    // foot, widest a fifth of the way up, closing to a point. A stem instead keeps one
+    // width, a little wider at the foot, and is open at the top, up inside its head.
     // ------------------------------------------------------------
     function Na__VegContour__DrawBlade(blade, view, style, out) {
         const p = blade.p;
@@ -757,7 +812,9 @@
             const sl = Math.sqrt(sx * sx + sy * sy + sz * sz) || 1;
             sx /= sl; sy /= sl; sz /= sl;
 
-            const w = halfW * (t < 0.22 ? 0.45 + 0.55 * (t / 0.22) : Math.pow((1 - t) / 0.78, 0.85));
+            const w = blade.stem
+                ? halfW * (t < Na__VegContour__STEM_FOOT ? 1 + Na__VegContour__STEM_FLARE * (1 - t / Na__VegContour__STEM_FOOT) : 1)
+                : halfW * (t < 0.22 ? 0.45 + 0.55 * (t / 0.22) : Math.pow((1 - t) / 0.78, 0.85));
             const lx = x + sx * w, ly = y + sy * w, lz = z + sz * w;
             const rx = x - sx * w, ry = y - sy * w, rz = z - sz * w;
 
@@ -826,6 +883,13 @@
         Pol = bush.polar; PolStart = bush.polStart; PolN = bush.polN; Sty = bush.style; Tier = bush.tier;
 
         Na__VegContour__SetUpBalls(bush, view, style);
+
+        if (bush.core) {
+            const c = bush.core;
+            for (let t = 0; t < c.length; t += 9) {
+                Na__VegContour__WriteTri(out, c[t], c[t + 1], c[t + 2], c[t + 3], c[t + 4], c[t + 5], c[t + 6], c[t + 7], c[t + 8]);
+            }
+        }
 
         for (let i = 0; i < bush.count; i++) {
             if (!Active[i]) continue;

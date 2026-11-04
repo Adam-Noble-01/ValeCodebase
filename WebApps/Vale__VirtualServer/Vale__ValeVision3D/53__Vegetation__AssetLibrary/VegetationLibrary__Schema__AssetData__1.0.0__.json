@@ -48,7 +48,7 @@
             "type": "object", "additionalProperties": false,
             "required": ["Proxy__Shape", "Proxy__RingCount", "Proxy__SectorCount"],
             "properties": {
-                "Proxy__Shape"       : { "enum": ["Dome"] },
+                "Proxy__Shape"       : { "enum": ["Dome", "Box"] },
                 "Proxy__RingCount"   : { "type": "integer", "minimum": 2, "maximum": 12 },
                 "Proxy__SectorCount" : { "type": "integer", "minimum": 4, "maximum": 24 }
             }
@@ -63,8 +63,9 @@
                 "Placement__HeightVariationPercent" : { "type": "number", "minimum": 0, "maximum": 100 },
                 "Placement__AlignToPath"            : { "type": "boolean", "description": "A long plant keeps its long side along a path; a round one turns freely" },
                 "Placement__StretchAlongPath"       : { "type": "boolean", "description": "The Linear Tool lays this as stretched runs, not a row of separate plants" },
+                "Placement__Clipped"                : { "type": "boolean", "description": "Optional. A managed plant: the Linear Tool varies nothing about it, and a run of it stops at each corner of a path and meets square" },
                 "Placement__MinSpacingMm"           : { "type": "integer", "exclusiveMinimum": 0, "description": "The Bush Tool keeps plants this far apart" },
-                "Placement__DefaultWeight"          : { "type": "number", "minimum": 0, "description": "Its starting probability when added to a palette" }
+                "Placement__DefaultWeight"          : { "type": "number", "minimum": 0, "description": "Its starting probability when added to a palette. 0 stays out of a project's first mixed palette" }
             }
         },
 
@@ -75,6 +76,23 @@
                 "Catalogue__Keywords"      : { "type": "array", "items": { "type": "string" } },
                 "Catalogue__Season"        : { "enum": ["AllYear", "Spring", "Summer", "Autumn", "Winter"] },
                 "Catalogue__BotanicalName" : { "type": ["string", "null"], "description": "Null until someone names a species: these are generic plants, drawn" }
+            }
+        },
+
+        "Asset__Form": {
+            "type": "object", "additionalProperties": false,
+            "description": "Optional, read by the ClippedForm generator: the shape a clipped plant is kept to",
+            "required": ["Form__Shape", "Form__Inset", "Form__Waver", "Form__EdgeShare", "Form__MarkShare"],
+            "properties": {
+                "Form__Shape"           : { "enum": ["Box", "Ball", "Cone"] },
+                "Form__Inset"           : { "type": "number", "description": "How far in a clump's centre sits from the face, as a share of its radius: more is a flatter face" },
+                "Form__Waver"           : { "type": "number", "minimum": 0, "description": "Plus or minus on that, so a face is not ruled" },
+                "Form__EdgeShare"       : { "type": "number", "minimum": 0, "description": "A clump within this many of its radii of a box's edge draws a mark along it, so a top reads as a top" },
+                "Form__MarkShare"       : { "type": "number", "minimum": 0, "maximum": 1, "description": "The share of the other clumps that draw a small arc on the face: a flat shell's outlines never show, so this is its only texture" },
+                "Form__Batter"          : { "type": "number", "minimum": 0, "maximum": 0.5, "description": "Box only. How much narrower the top is, as a share: the lean of a clipped hedge" },
+                "Form__LapMm"           : { "type": "number", "minimum": 0, "description": "Box only. How far a run reaches past each joint on a path, and sinks into the next one's fill: more than two clumps across, or a joint shows" },
+                "Form__StemHeightShare" : { "type": "number", "minimum": 0, "maximum": 0.9, "description": "A head on a clear stem: this share of the height is stem" },
+                "Form__StemWidthMm"     : { "type": "number", "exclusiveMinimum": 0 }
             }
         },
 

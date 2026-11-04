@@ -49,14 +49,16 @@ One server, one origin, one store (since v2.72.0). Nothing comes from GitHub Pag
   with a live client link; the sender is CC'd and the admin blind-copied. Each sender may send 10 client emails an
   hour (Management and App Admins 20) and 30 internal ones. Guide: `62__Feature__EmailWorkers/` README.
 - **The API decides** (`ValeVision3D__Api__ClientLinks__.py`, one guard before every request): a read needs a Vale
-  sign-in or a live client link for that project; every write needs a sign-in at its route's level. A client link
+  sign-in. A live client link for that project opens only the three the client's page makes (its record, less the
+  Gallery's production notes; its location; the drawings fingerprint), so a new read stays shut to clients until it is
+  named in `CLIENT_READ_ENDPOINTS` (v2.83.1). Every write needs a sign-in at its route's level. A client link
   never authors, whoever is signed in on the device (`Na__DevGate__IsClientLink`), and never loads the Layout Editor.
 - **The model files and the record (the library gate, 28-Oct-2026):** nginx sends a project's `ProjectData__<id>__.json`
   and its `ValeVision3D/Content__3dModel__GlbFiles/`, `Content__3dModel__AppGenerated/` and `Content__SitePlanData/`
-  only after asking this app's API (`GET api/library-access`, nginx's auth_request): a Vale sign-in, or a live client
-  link to that very project in the cookie `vale_vv3d_files` (set by the door on that project's library folder). The
-  list is the valevision route's `LibraryProtected` in the Server Manager's routes file. Live once the API is pushed
-  and restarted and nginx is applied; until then the files still open for anyone holding their exact address.
+  only after asking this app's API (`GET api/library-access`, nginx's auth_request). A Vale sign-in opens all of them.
+  A live client link to that very project, in the cookie `vale_vv3d_files` (set by the door on that project's model
+  folder), opens only a GLB directly in `Content__3dModel__GlbFiles/` (v2.83.1). The list is the valevision route's
+  `LibraryProtected` in the Server Manager's routes file.
 - *Client view on / off* in the bubble menu (or `?authoring=off|on`) still locks authoring on a staff page; opening a
   client link shows an admin exactly what the client sees.
 - **Analytics (v2.78.0):** `03__AppUtils/Na__AppUtils__ActivityLog__.js` reports what a visit does (image exports,
@@ -479,9 +481,20 @@ As of v0.1.4, this shared helper also synchronizes profile-lines normal-buffer r
 
 Double-click `Start__ValeVision__TestServer__8032__.bat`: the app on <http://localhost:8032/valevision/?project=63403__Thrower>, in an amber frame, on sandbox data. The badge in the bottom corner signs in as a fake user of any permission level in one click, opens a real client link, and lists every problem found. Your own Vale account does not exist there, and the real mirror is never written. `--real` runs on the real mirror with your own account, in a red frame; `--reset-sandbox` starts the sandbox again. Settings: `80__Testing__LocalTestServer/Na__TestServer__Config.json`. None of it ever reaches the server.
 
-## Vegetation (from v2.83.0, being built: plants draw since v2.84.0)
+## Vegetation (v2.83.0 to v2.86.0)
 
-Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight, switched on project by project from Dev Tools > Vegetation, which also has a test row to look at until the placing tools arrive. They draw in the live view, stills, thumbnails, video and a sheet's 3D pictures, on both engines, and not through a plan or elevation. There is no menu yet, so a switched-on project shows them to everyone. Plan of record: `ValeVision__PLAN__VegetationSystem__.md`. Code: `02__Src__AppModules/24__System__Vegetation` (its README). Library: `53__Vegetation__AssetLibrary`. A project's settings, every parameter of them, live in its record as `Vegetation__SceneData`. A project without that key costs one module and one listener.
+Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight, switched on project by project from Dev Tools > Vegetation.
+
+| Who | Where | What |
+|---|---|---|
+| Everyone, client links and phones included, on a switched-on project | Tools & Settings > Vegetation | Show Vegetation, Transparency, remembered on the device |
+| An author (AppAdmin) | The same section | Vegetation Assets (the asset browser), Linear Placement Tool, Bush Tool, Vegetation Linework, Show on Live Drawings, Save Vegetation |
+| An author | Plant scale, in every tool and on what is planted | The whole plant: 0.50 is the same bush at half the size. Width, depth and height fit one to a space |
+| An author | Dev Tools > Vegetation | The one switch, where a viewer starts, Remove All |
+| An author | A sheet's viewport | A Vegetation tick, off by default, puts plants over its vectors, on screen and in the PDF |
+| SketchUp | Cloud Sync's Sync Vegetation tab | Proxies both ways, three-way, ValeVision wins a clash; a path's plants come in locked |
+
+The library has shrubs, a clipped hedge (a card's Draw Path), and topiary: a ball, a standard and a cone. They draw in the live view, stills, thumbnails, video and a sheet's 3D pictures, on both engines, their fill at the brightness of a wall facing the camera, changing as you move. A planting change redraws a sheet's cached pictures. Plan of record: `ValeVision__PLAN__VegetationSystem__.md`. Code: `02__Src__AppModules/24__System__Vegetation` (its README). Library: `53__Vegetation__AssetLibrary`. A project's settings, every parameter of them, live in its record as `Vegetation__SceneData`. A project without that key costs one module and one listener.
 
 ## Per-Scene Lighting (v2.71.0)
 

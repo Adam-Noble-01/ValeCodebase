@@ -22,7 +22,7 @@
    - Ported from   : TrueVision3D 02__Src__AppModules/27__System__ContextMenuSystem/Na__ContextMenuSystem__Styles__.css
    - Source version: none of its own - the sheet as TrueVision3D v2.10.0 left it (30-Aug-2026, commit
                      f0c09ffd; read at b2aa9151)
-   - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-11}}, @imported by
+   - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-11; first carried by v2.72.0), @imported by
                      03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css at TrueVision's place
                      in its index (after the Presentation Mode sheets, before the drawing sheets)
    - Parity        : verbatim (the rules and TrueVision's header are unchanged; this note is the only

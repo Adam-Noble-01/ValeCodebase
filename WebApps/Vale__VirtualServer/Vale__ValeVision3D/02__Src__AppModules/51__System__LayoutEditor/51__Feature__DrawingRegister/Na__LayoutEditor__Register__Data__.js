@@ -30,7 +30,7 @@
 // - Source version: 1.0.1 (TrueVision3D v2.69.0, 19-Sep-2026, the first release whose log names the Drawing
 //                   Register; last changed in TrueVision commit 32767407 the same day, where AdoptNumbering took the deleted
 //                   sheet id for the typed-number delete, a change its log does not record; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-18}}, inert: nothing imports it until the register
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-18; first carried by v2.72.0), inert: nothing imports it until the register
 //                   tab lands (W4-10). Its TrueVision release is not confirmed by Adam in TrueVision; ported under DR-01 (c).
 // - Parity        : adapted
 // - Divergences   :

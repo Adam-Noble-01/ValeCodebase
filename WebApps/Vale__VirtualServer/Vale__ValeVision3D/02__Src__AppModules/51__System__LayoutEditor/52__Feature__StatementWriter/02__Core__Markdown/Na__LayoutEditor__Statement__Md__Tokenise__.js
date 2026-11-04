@@ -46,7 +46,7 @@
 // PORT NOTE:
 // - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/02__Core__Markdown/Na__LayoutEditor__Statement__Md__Tokenise__.js
 // - Source version: 1.0.0 (TrueVision3D v2.95.0, 20-Sep-2026; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-04}}, inert (the Statement Writer lands
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-04; first carried by v2.72.0), inert (the Statement Writer lands
 //                   switched off, K1 DR-10; nothing outside the feature imports it)
 // - Parity        : adapted
 // - Divergences   :
@@ -62,7 +62,7 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 02-Oct-2026 - Version 1.0.1 ({{VVREL:W4-04}})
+// 02-Oct-2026 - Version 1.0.1 (W4-04, after ValeVision3D v2.71.5; first carried by v2.72.0)
 // - ValeVision3D: CRLF-tolerant (K1 DR-37 item 1, a declared ValeVision seam).
 //   The block rules read each line without the CR of a CRLF line end; every
 //   block's Lines keep the file's own bytes, so Join is still byte for byte.

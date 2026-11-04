@@ -1,5 +1,7 @@
 # ValeVision 3D - TrueVision Drawing Systems Port and Layout Editor
 
+**Retired, 04-Nov-2026 (dated note; everything below is kept as written).** Adam retired the TrueVision parity programme on 04-Nov-2026, choosing the option worded "The programme is over: a later job can clear the tokens and the ledger's open items". This plan is history. Phases 0 to 5 and the return trips shipped; section 2A's D41 to D91 ran on their defaults and were never answered, and none now waits for an answer. The decisions still explain why the code is as it is. The `{{VVREL:}}` rule in R5 and G7 ended with the programme: the last tokens were cleared at v2.83.3. See the note at the top of `ValeVision__PARITY__TrueVisionLedger__.md`.
+
 **Plan for review. Nothing has been built yet.**
 Target versions: `v2.16.0` (Phase 0) through `v2.21.0` (Phase 5)
 Author: Adam Noble - Noble Architecture

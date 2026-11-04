@@ -706,6 +706,40 @@
                 </li>
                 <!-- endregion ----------------------------------------------------------------- -->
 
+                <!-- ---------------------------------------------------------------- -->
+                <!-- UI MENU | Vegetation (Per-project feature - hidden unless Dev Tools switched it on) -->
+                <!-- Show Vegetation and Transparency are for everyone, clients included. The dev rows are built by JS for an author only. -->
+                <!-- @delegate: ./02__Src__AppModules/24__System__Vegetation/10__Ui__Panels/Na__Vegetation__MenuSection__.js -->
+                <!-- ---------------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item" id="naVegetationMenuItem" style="display:none;" data-na-client-menu>
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naVegetationToggle">
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Vegetation__.svg" alt="" />
+                        <span class="na-dropdown-menu__btn-label">Vegetation</span>
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naVegetationPanel">
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Show Vegetation</span>
+                            <input type="checkbox" id="naVegetationShowToggle" class="na-dropdown-menu__checkbox" checked />
+                        </div>
+                        <div class="na-dropdown-menu__panel-title">Transparency</div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <input
+                                type="range"
+                                id="naVegetationTransparencySlider"
+                                class="na-dropdown-menu__slider"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value="0"
+                            />
+                            <span class="na-dropdown-menu__value" id="naVegetationTransparencyValue">0%</span>
+                        </div>
+                        <div id="naVegetationDevRows" hidden></div>
+                    </div>
+                </li>
+                <!-- endregion ----------------------------------------------------------------- -->
+
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--send-email" id="naSendEmailMenuItem">
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
@@ -2476,6 +2510,7 @@
         controls    : Na__Controls__Orbit,
         modelRoot   : Na__ModelGroup__Root,
         lineColour  :(Na__Config__Models && Na__Config__Models.RenderConfig__Linework) ? Na__Config__Models.RenderConfig__Linework.RenderConfig__Linework__EdgeColor : 0x000000,
+        wallColour  : Na__Config__Models.baseMesh.material.whiteColor,          // <-- A plant's fill has the walls' brightness
         getPipeline : () => Na__AppFlow__PipelineRef.current,
         showToast   : Na__UiFeature__ShowToast
     });

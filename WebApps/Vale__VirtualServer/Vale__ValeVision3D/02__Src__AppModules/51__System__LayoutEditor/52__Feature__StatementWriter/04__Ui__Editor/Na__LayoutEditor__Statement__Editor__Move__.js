@@ -45,7 +45,7 @@
 // PORT NOTE:
 // - Ported from   : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/52__Feature__StatementWriter/04__Ui__Editor/Na__LayoutEditor__Statement__Editor__Move__.js
 // - Source version: 1.1.0 (TrueVision3D v2.162.0, 29-Sep-2026; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-05}}, inert (the Statement Writer lands
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (W4-05; first carried by v2.72.0), inert (the Statement Writer lands
 //                   switched off, K1 DR-10; nothing outside the feature imports it)
 // - Parity        : verbatim
 // - Divergences   :

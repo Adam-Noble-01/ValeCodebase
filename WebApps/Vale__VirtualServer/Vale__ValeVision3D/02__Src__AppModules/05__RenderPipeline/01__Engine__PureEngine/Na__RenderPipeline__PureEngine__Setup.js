@@ -17,6 +17,11 @@
 //   -> Fog (optional, via insertFogPass) -> FXAA.
 // - NO MaxEngine systems (SSAO, DataLib, depth pre-pass, AO layers) may ever
 //   be imported here. See .cursor/rules/07-RenderEngine-Architecture-.mdc.
+// - LAYER 1 HERE MEANS AUTHORING HELPERS. The compass and the drawing planes sit
+//   on layer 1 so the profile-line passes skip them, and the camera enables it so
+//   the scene render draws them. It is not MaxEngine's AO exclusion: nothing else
+//   is on that layer under this engine, because restoring the materials returns
+//   every AO-excluded mesh to layer 0.
 //
 // -----------------------------------------------------------------------------
 //
@@ -29,6 +34,12 @@
 // 11-Sep-2026 - Version 1.0.1
 // - Pipeline state exposes fxaaPassRef, so the Video Studio exporter can stand
 //   FXAA aside while it supersamples. The live chain is unchanged.
+//
+// 04-Nov-2026 - Version 1.0.2
+// - Layer 1 enabled on the camera and blinded around the profile-line passes, as
+//   MaxEngine does. On a session that never built MaxEngine the compass and the
+//   drawing planes were not drawn at all; after a switch back from MaxEngine they
+//   were drawn but entered the normal and colour passes and spoilt the lines.
 //
 // =============================================================================
 
@@ -54,6 +65,9 @@
         const pixelRatio = renderer.getPixelRatio();
         const width      = window.innerWidth * pixelRatio;
         const height     = window.innerHeight * pixelRatio;
+
+        // HELPER LAYER SETUP | Layer 1 = authoring helpers (compass, drawing planes), drawn by the scene render
+        camera.layers.enable(1);                                           // <-- Without this nothing on layer 1 is drawn on a session that never built MaxEngine
 
         const depthTextureFallback = new THREE.DepthTexture(width, height); // <-- Fallback for fog when profile lines are disabled
         depthTextureFallback.type  = THREE.FloatType;
@@ -136,11 +150,15 @@
             return profileLinesRuntimeEnabled;
         }
 
-        // Wrapped renderProfileNormals that respects the runtime toggle
+        // Wrapped renderProfileNormals that respects the runtime toggle and
+        // excludes authoring helpers (layer 1) from the normal, depth and profile
+        // colour captures, so the Sobel never outlines them and fog never reads them.
         const originalRenderProfileNormals = renderProfileNormals;
         renderProfileNormals = () => {
             if (!profileLinesRuntimeEnabled) return;
+            camera.layers.disable(1);                                      // <-- Exclude helpers from normals + depth + profile colour capture
             originalRenderProfileNormals();
+            camera.layers.enable(1);                                       // <-- Restore layer 1 visibility for the scene render
         };
         
         const fxaaPass = new ShaderPass(FXAAShader);

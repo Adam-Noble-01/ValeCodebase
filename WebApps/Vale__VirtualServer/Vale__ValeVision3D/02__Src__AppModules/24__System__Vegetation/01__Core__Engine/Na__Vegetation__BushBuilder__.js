@@ -39,6 +39,33 @@
 //   beside it, listed in the app's config. THE ORDER OF THE RANDOM DRAWS IS PART OF
 //   THAT PROMISE: one rng call added, removed or moved changes every plant it has ever
 //   made, with no error anywhere.
+// - A PLANT'S SCALE IS THE WHOLE PLANT (Adam, 04-Nov-2026: "I would set a scale of 0.5").
+//   Every ball, radius, blade and hook is multiplied after the build, so no random number
+//   moves: the same bush, smaller, and a slider never reshuffles it. Its size (sizeMm) is
+//   the other control: it fits the bush to a space, and its clumps keep their own size.
+// - CLIPPED FORMS (Adam: "a more managed hedge-looking plant"). The same balls and the same
+//   line language, on a different habit: a generator of its own, so BallCluster is left
+//   alone. Small even clumps sit on the faces of a form, a box, a ball, a cone or a ball on
+//   a stem, so the outline is that form with a fine scalloped edge. A clump knows which
+//   way its face looks, and the drawer leaves out those facing away (Contour's facing), or
+//   a shell of hundreds would cost hundreds. Inside, larger balls lie close behind the faces:
+//   any ball at all behind an outline makes it an inner line, so they stop the gaps in the
+//   shell from drawing as holes. Being clumps to the drawer, they cost a clump's table.
+// - A BOX HAS A SOLID CORE. Fill is a disc for each ball, and there are always gaps between the
+//   discs of a flat shell, where a line far behind the hedge would show through. So a box also
+//   carries bush.core, twelve triangles of fill just behind its faces, that the drawer writes
+//   as they are. It stops short of a lapped end, so it never covers what the next run's lap needs.
+// - A LONG HEDGE HAS NO JOINTS. A plop's ends say what a run meets, behind and ahead along its
+//   path (Lap, Corner or End). A lapped end has no end face, and over its last Form__LapMm its
+//   clumps sink further and further into the body. The path laps the next run by twice that, so
+//   wherever one has started to sink the other is full out: each one's end lies behind the
+//   other's fill, and the depth test takes it out from any side. A ramp, because a clump left
+//   at full depth at the very end would lie in the other's plane and show. At a corner the end
+//   face is the other run's long face, so it is left off too.
+// - A FLAT FACE IS MARKED, NOT OUTLINED. In a flat shell every ball's outline lies under its
+//   neighbours, so no inner arc could ever show. So a share of the clumps carry a mark, an arc
+//   drawn inside the outline on the ball's own near surface (bush.marks: how far in), and every
+//   clump along a box's edge does, so the top of a hedge reads as a top.
 //
 // FRAMES:
 // - Everything here is three.js world: metres, +Y up. Recipes and plops are integer
@@ -52,6 +79,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
+// - A plop's scale, and the ClippedForm generator. Assemble is what the two share, moved
+//   out of Bush with every draw in the same order: BallCluster's plants are unchanged, by
+//   the engine hash.
+//
 // 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.83.0)
 // - Moved in from the prototype 85__EarlyStage__VegetationLinework, where the look
 //   was agreed. Every draw is unchanged. Added BuildPlant, which picks the generator an
@@ -91,6 +123,23 @@
     const Na__VegBuild__TIER_CLUMP  = 1;
     const Na__VegBuild__TIER_NUB    = 2;
     const Na__VegBuild__MAX_LOBES   = 900;                                     // <-- A very long drift stops here rather than freezing the page
+    const Na__VegBuild__U_ARC_ANGLE = 7;                                       // <-- Contour's own number: where round the ball an arc goes
+    const Na__VegBuild__ARC_TOP     = 0.5;                                     // <-- Contour reads 0.5 as the top of the ball, and 0 or 1 as well round to a side
+    const Na__VegBuild__ARC_SIDE_A  = 0.02;
+    const Na__VegBuild__ARC_SIDE_B  = 0.98;
+    const Na__VegBuild__MARK_EDGE   = 0.16;                                    // <-- How far in from the outline a mark is, as a share of the radius: an edge's runs along it
+    const Na__VegBuild__MARK_FACE   = 0.34;
+    const Na__VegBuild__END_REAL    = 'End';                                   // <-- What a clipped run's end may meet: Plop__Ends in the record
+    const Na__VegBuild__END_LAP     = 'Lap';
+    const Na__VegBuild__END_FACE_NX = 0.7;                                     // <-- A spot whose normal is this much along the run is on an end face
+    const Na__VegBuild__LAP_SINK    = 1.6;                                     // <-- How deep the very end of a lap goes, in clump radii
+    const Na__VegBuild__LAP_MARKS   = 0.2;                                     // <-- Of the lap's ramp: a clump sunk further than this has no mark
+    const Na__VegBuild__CORE_BACK_M = 0.03;                                    // <-- How far behind the deepest clump's outline a box's core lies
+    const Na__VegBuild__FORM_FALLBACK = { Form__Shape : 'Ball', Form__Inset : 0.55, Form__Waver : 0.12, Form__EdgeShare : 0, Form__MarkShare : 0.2 };   // <-- An asset with no Asset__Form still draws something
+    const Na__VegBuild__CORE_FACES  = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]];
+    const Na__VegBuild__SHELL_TRIES = 14;                                      // <-- A clump gives up after this many spots on a crowded form
+    const Na__VegBuild__SHELL_THROWS = 1800;                                   // <-- Clumps tried, of which about two in five land: enough for the longest clipped run
+    const Na__VegBuild__GRID_SPAN   = 1024;                                    // <-- Cells a side in the crowding grid's key: far more than a plant has
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -436,7 +485,7 @@
 
     // FUNCTION | Build One Bush from Its Recipe and Its Plop
     // ------------------------------------------------------------
-    // plop   : { seed, positionMm:[x,y,z], yawDeg, sizeMm:[w,d,h] | null }
+    // plop   : { seed, positionMm:[x,y,z], yawDeg, sizeMm:[w,d,h] | null, scale, ends }
     // factors: { scallop, nubs }, the panel's two structural sliders
     // ------------------------------------------------------------
     function Na__VegBuild__Bush(recipe, plop, factors) {
@@ -460,13 +509,31 @@
         const nubs   = Na__VegBuild__ScatterNubs(rng, clumps, recipe, factors);
         const blades = Na__VegBuild__BuildTufts(rng, recipe, a, b);
 
+        return Na__VegBuild__Assemble(rng, recipe, plop, factors, { masses, clumps, nubs, blades, a, b, h, widthM, depthM, highM });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fit a Plant's Balls to Its Size, and Set Them in the World
+    // ------------------------------------------------------------
+    // parts: { masses, clumps, nubs, blades, a, b, h, widthM, depthM, highM, faces, core }. What
+    // every generator ends with, and from here on it draws random numbers for each ball in turn,
+    // so nothing may be added above a draw. A ball may carry nx, ny, nz, the way its face
+    // looks, and mark and markAt, how far in its mark is and where round the ball.
+    // ------------------------------------------------------------
+    function Na__VegBuild__Assemble(rng, recipe, plop, factors, parts) {
+        const { masses, clumps, nubs, blades, a, b, h, widthM, depthM, highM } = parts;
+
+        // THE PLANT'S SCALE | See the header. Applied below, after every draw is decided
+        const zoom = plop.scale > 0 ? plop.scale : 1;
+
         // FIT TO THE PROXY | Centres only: radii stay as the recipe says, so a stretched
         // proxy never stretches a scallop
         let maxX = 0.001, maxZ = 0.001, maxY = 0.001;
         const all = [];
         masses.forEach((m) => all.push({ tier : Na__VegBuild__TIER_MASS, x : m.x, y : m.y, z : m.z, r : m.r }));
-        clumps.forEach((m) => all.push({ tier : Na__VegBuild__TIER_CLUMP, x : m.x, y : m.y, z : m.z, r : m.r }));
-        nubs.forEach((m) => all.push({ tier : Na__VegBuild__TIER_NUB, x : m.x, y : m.y, z : m.z, r : m.r }));
+        clumps.forEach((m) => all.push({ tier : Na__VegBuild__TIER_CLUMP, x : m.x, y : m.y, z : m.z, r : m.r, nx : m.nx, ny : m.ny, nz : m.nz, mark : m.mark, markAt : m.markAt }));
+        nubs.forEach((m) => all.push({ tier : Na__VegBuild__TIER_NUB, x : m.x, y : m.y, z : m.z, r : m.r, nx : m.nx, ny : m.ny, nz : m.nz }));
         all.forEach((m) => {
             maxX = Math.max(maxX, Math.abs(m.x) + m.r);
             maxZ = Math.max(maxZ, Math.abs(m.z) + m.r);
@@ -499,13 +566,18 @@
             cuspU    : null,
             style    : new Float32Array(n * Na__VegBuild__STYLE_N),
             blades   : [],
-            line     : recipe.Asset__Line,
-            sizeM    : [widthM, depthM, highM],
+            facing   : parts.faces ? new Float32Array(n * 3) : null,
+            marks    : parts.faces ? new Float32Array(n) : null,
+            line     : (zoom === 1) ? recipe.Asset__Line : Object.assign({}, recipe.Asset__Line, {
+                Line__CuspHookMinMm : recipe.Asset__Line.Line__CuspHookMinMm * zoom,
+                Line__CuspHookMaxMm : recipe.Asset__Line.Line__CuspHookMaxMm * zoom
+            }),
+            sizeM    : [widthM * zoom, depthM * zoom, highM * zoom],
             groundY  : oy,
             boundsCx : ox,
-            boundsCy : oy + h * 0.5,
+            boundsCy : oy + h * 0.5 * zoom,
             boundsCz : oz,
-            boundsR  : Math.hypot(a, h * 0.5, b) * 1.15
+            boundsR  : Math.hypot(a, h * 0.5, b) * 1.15 * zoom
         };
 
         // THE RADIUS TABLES | One shared array, each ball taking what its size needs
@@ -537,11 +609,11 @@
 
         for (let i = 0; i < n; i++) {
             const m  = all[i];
-            const lx = m.x * fitX, lz = m.z * fitZ;
+            const lx = m.x * fitX * zoom, lz = m.z * fitZ * zoom;
             bush.cx[i]   = ox + lx * cosY + lz * sinY;
-            bush.cy[i]   = oy + m.y * fitY;
+            bush.cy[i]   = oy + m.y * fitY * zoom;
             bush.cz[i]   = oz - lx * sinY + lz * cosY;
-            bush.r[i]    = m.r;
+            bush.r[i]    = m.r * zoom;
             bush.tier[i] = m.tier;
 
             // A CLUMP'S CHAIN IS SHORT AND SHALLOW; A NUB IS PLAIN | Sizes are per ball, not per bush
@@ -549,8 +621,8 @@
                 ? { chordMinM : m.r * 0.85, chordMaxM : m.r * 1.9, depth : clumpDepth, skew : 1.0, tipShare : clumpTips, ellipse : clumpEll, wobble : clumpWob }
                 : { chordMinM : m.r * 2.4, chordMaxM : m.r * 4.0, depth : 0.02, skew : 1.0, tipShare : 0, ellipse : clumpEll, wobble : clumpWob });
             const span = Na__VegBuild__FillPolar(rng, bush.polar, bush.polStart[i], bush.polN[i], m.r, rules);
-            bush.rMax[i] = m.r * span.max;
-            bush.rMin[i] = m.r * span.min;
+            bush.rMax[i] = m.r * zoom * span.max;
+            bush.rMin[i] = m.r * zoom * span.min;
 
             bush.cuspFrom[i] = cuspList.length;
             if (m.tier !== Na__VegBuild__TIER_NUB) {
@@ -560,6 +632,37 @@
             for (let u = 0; u < Na__VegBuild__STYLE_N; u++) {
                 bush.style[i * Na__VegBuild__STYLE_N + u] = rng.next();
             }
+
+            // WHICH WAY IT LOOKS, AND WHETHER IT DRAWS ITS ARC | Clipped forms only: see the header
+            if (bush.facing && m.nx !== undefined) {
+                bush.facing[i * 3]     = m.nx * cosY + m.nz * sinY;
+                bush.facing[i * 3 + 1] = m.ny;
+                bush.facing[i * 3 + 2] = -m.nx * sinY + m.nz * cosY;
+            }
+            if (m.mark > 0) {
+                bush.marks[i] = m.mark;
+                bush.style[i * Na__VegBuild__STYLE_N + Na__VegBuild__U_ARC_ANGLE] = m.markAt;
+            }
+        }
+
+        // A BOX'S CORE | Its eight corners, set in the world as the balls are, as twelve triangles
+        if (parts.core) {
+            const c = parts.core;
+            const corners = [
+                [c.x0, 0, -c.zFoot], [c.x1, 0, -c.zFoot], [c.x1, 0, c.zFoot], [c.x0, 0, c.zFoot],
+                [c.x0, c.y1, -c.zTop], [c.x1, c.y1, -c.zTop], [c.x1, c.y1, c.zTop], [c.x0, c.y1, c.zTop]
+            ].map(([x, y, z]) => {
+                const lx = x * fitX * zoom, lz = z * fitZ * zoom;
+                return [ox + lx * cosY + lz * sinY, oy + y * fitY * zoom, oz - lx * sinY + lz * cosY];
+            });
+            bush.core = new Float32Array(Na__VegBuild__CORE_FACES.length * 18);
+            let at = 0;
+            Na__VegBuild__CORE_FACES.forEach((face) => {
+                [face[0], face[1], face[2], face[0], face[2], face[3]].forEach((corner) => {
+                    bush.core.set(corners[corner], at);
+                    at += 3;
+                });
+            });
         }
 
         // A CUSP'S OWN NUMBERS | Kept like a lobe's, so a slider never reshuffles the hooks
@@ -571,15 +674,325 @@
         blades.forEach((blade) => {
             const p = new Float32Array(12);
             for (let k = 0; k < 4; k++) {
-                const lx = blade.p[k * 3], ly = blade.p[k * 3 + 1], lz = blade.p[k * 3 + 2];
+                const lx = blade.p[k * 3] * zoom, ly = blade.p[k * 3 + 1] * zoom, lz = blade.p[k * 3 + 2] * zoom;
                 p[k * 3]     = ox + lx * cosY + lz * sinY;
                 p[k * 3 + 1] = oy + ly;
                 p[k * 3 + 2] = oz - lx * sinY + lz * cosY;
             }
-            bush.blades.push({ p, w : blade.w });
+            bush.blades.push(blade.stem ? { p, w : blade.w * zoom, stem : true } : { p, w : blade.w * zoom });
         });
 
         return bush;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Clipped Forms: the Faces a Clump Sits On
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | A Vector Made a Unit Long, Into an Object
+    // ------------------------------------------------------------
+    function Na__VegBuild__SetNormal(out, x, y, z) {
+        const length = Math.hypot(x, y, z) || 1;
+        out.nx = x / length;
+        out.ny = y / length;
+        out.nz = z / length;
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Each Form: How Much Face It Has, a Spot on It, What Fills It
+    // ------------------------------------------------------------
+    // All in local metres, standing on the origin. spot writes x, y, z, nx, ny, nz, edge (how
+    // far the spot is from one of the form's edges, in metres, or Infinity), edgeAt (where
+    // round the ball that edge draws) and fit (a share of the clump's radius that fits here).
+    // look says which way a point looks, for a nub. body is the balls inside, kept just under
+    // the shell, so its gaps show no holes and a far plant whose clumps have dropped out still
+    // has its shape.
+    // ------------------------------------------------------------
+    const Na__VegBuild__FORMS = {
+
+        Box : {
+            sharp : true,
+            area : (a, b, h) => 4 * a * b + 4 * a * h + 4 * b * h,
+            spot(rng, a, b, h, form, out) {
+                const batter = form.Form__Batter || 0;
+                const faces  = 4 * a * b + 4 * a * h + 4 * b * h;
+                let pick = rng.next() * faces;
+                const u = rng.next(), v = rng.next();
+                const inAt = (y) => 1 - batter * (y / h);                      // <-- A clipped hedge leans in a little to its top
+                if (pick < 4 * a * b) {
+                    out.x = (2 * u - 1) * a * inAt(h); out.y = h; out.z = (2 * v - 1) * b * inAt(h);
+                    Na__VegBuild__SetNormal(out, 0, 1, 0);
+                    out.edge = Math.min(a * inAt(h) - Math.abs(out.x), b * inAt(h) - Math.abs(out.z));
+                    out.edgeAt = Na__VegBuild__ARC_TOP;
+                    return;
+                }
+                pick -= 4 * a * b;
+                if (pick < 4 * a * h) {
+                    const side = v < 0.5 ? 1 : -1;
+                    out.y = rng.next() * h;
+                    out.x = (2 * u - 1) * a * inAt(out.y);
+                    out.z = side * b * inAt(out.y);
+                    Na__VegBuild__SetNormal(out, 0, batter * b / h, side);
+                    const toTop = h - out.y, toEnd = a * inAt(out.y) - Math.abs(out.x);
+                    out.edge = Math.min(toTop, toEnd);
+                    out.edgeAt = toTop <= toEnd ? Na__VegBuild__ARC_TOP : (rng.chance(0.5) ? Na__VegBuild__ARC_SIDE_A : Na__VegBuild__ARC_SIDE_B);
+                    return;
+                }
+                const side = v < 0.5 ? 1 : -1;
+                out.y = rng.next() * h;
+                out.z = (2 * u - 1) * b * inAt(out.y);
+                out.x = side * a * inAt(out.y);
+                Na__VegBuild__SetNormal(out, side, batter * a / h, 0);
+                const toTop = h - out.y, toEnd = b * inAt(out.y) - Math.abs(out.z);
+                out.edge = Math.min(toTop, toEnd);
+                out.edgeAt = toTop <= toEnd ? Na__VegBuild__ARC_TOP : (rng.chance(0.5) ? Na__VegBuild__ARC_SIDE_A : Na__VegBuild__ARC_SIDE_B);
+            },
+            look(x, y, z, a, b, h, out) {
+                const dx = a - Math.abs(x), dy = h - y, dz = b - Math.abs(z);
+                if (dy <= dx && dy <= dz) Na__VegBuild__SetNormal(out, 0, 1, 0);
+                else if (dz <= dx) Na__VegBuild__SetNormal(out, 0, 0, z < 0 ? -1 : 1);
+                else Na__VegBuild__SetNormal(out, x < 0 ? -1 : 1, 0, 0);
+            },
+            body(rng, a, b, h) {
+                // A GRID A BALL'S REACH APART | Close enough that the circles leave no gap, and
+                // its outer ones just inside the faces. Only a mid plane: a face seen from
+                // any side has it behind it, and a far end has the end balls'.
+                const r      = Math.max(0.03, Math.min(b * 0.9, h * 0.48, a * 0.9));
+                const pitch  = r * 1.35;
+                const across = Math.max(1, Math.ceil((2 * a - 2 * r) / pitch));
+                const levels = Math.max(1, Math.ceil((h - 2 * r) / pitch));
+                const balls  = [];
+                for (let l = 0; l <= levels; l++) {
+                    const y = r + ((h - 2 * r) * l) / levels;
+                    for (let k = 0; k <= across; k++) {
+                        balls.push({
+                            x : -a + r + ((2 * a - 2 * r) * k) / across,
+                            y,
+                            z : 0,
+                            r : r * rng.range(0.98, 1.0),
+                            mx : 0, my : y, mz : 0
+                        });
+                    }
+                }
+                return balls;
+            }
+        },
+
+        Ball : {
+            area : (a, b, h) => 4 * Math.PI * Math.pow((Math.pow(a * b, 1.6) + 2 * Math.pow(a * h * 0.5, 1.6)) / 3, 1 / 1.6),
+            spot(rng, a, b, h, form, out) {
+                const up = rng.range(form.Form__StemHeightShare > 0 ? -1.0 : -0.72, 1.0), az = rng.angle();   // <-- A ball on the ground has no underside to see
+                const s  = Math.sqrt(Math.max(0, 1 - up * up));
+                out.x = Math.cos(az) * s * a;
+                out.y = h * 0.5 + up * h * 0.5;
+                out.z = Math.sin(az) * s * b;
+                Na__VegBuild__SetNormal(out, Math.cos(az) * s / a, up / (h * 0.5), Math.sin(az) * s / b);
+                out.edge = Infinity;
+                out.fit  = 1;
+            },
+            look(x, y, z, a, b, h, out) {
+                Na__VegBuild__SetNormal(out, x / (a * a), (y - h * 0.5) / (h * h * 0.25), z / (b * b));
+            },
+            body(rng, a, b, h) {
+                const y = h * 0.5;
+                return [{ x : 0, y, z : 0, r : Math.min(a, b, h * 0.5) * 0.84, mx : 0, my : y, mz : 0 }];
+            }
+        },
+
+        Cone : {
+            area : (a, b, h) => Math.PI * (a + b) * 0.5 * Math.hypot((a + b) * 0.5, h),
+            spot(rng, a, b, h, form, out) {
+                const k  = Math.sqrt(rng.next());                              // <-- More round the foot than at the tip: the face is wider there
+                const az = rng.angle();
+                out.y = h * (1 - k);
+                out.x = Math.cos(az) * a * k;
+                out.z = Math.sin(az) * b * k;
+                Na__VegBuild__SetNormal(out, Math.cos(az) * h, (a + b) * 0.5, Math.sin(az) * h);
+                out.edge = Infinity;
+                out.fit  = Math.min(1, Math.max(0.35, k * 1.7));               // <-- Fine at the tip, or it ends in a string of beads
+            },
+            look(x, y, z, a, b, h, out) {
+                const around = Math.atan2(z, x);
+                Na__VegBuild__SetNormal(out, Math.cos(around) * h, (a + b) * 0.5, Math.sin(around) * h);
+            },
+            body(rng, a, b, h) {
+                // A STACK UP THE AXIS TO THE TIP | Each ball overlaps the last, so nothing floats
+                const balls = [];
+                const wide  = Math.min(a, b);
+                let y = wide * 0.72;
+                while (y < h) {
+                    const r = (1 - y / h) * wide * 0.92;
+                    if (r < 0.014) break;
+                    balls.push({ x : 0, y, z : 0, r, mx : 0, my : y, mz : 0 });
+                    y += Math.max(0.012, r * 0.62);
+                }
+                return balls;
+            }
+        }
+    };
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Clumps Over a Form's Faces, Largest First
+    // ------------------------------------------------------------
+    // A grid answers "is anything too close?", or a shell of hundreds would ask everything
+    // about everything. Each clump sits a share of itself in from its spot, so the faces stay
+    // flat and only its top shows as a scallop.
+    // ------------------------------------------------------------
+    function Na__VegBuild__ShellClumps(rng, shape, form, a, b, h, recipe, factors, ends) {
+        const rules   = recipe.Asset__Clumps;
+        const scallop = factors.scallop;
+        const minR    = (rules.Clumps__RadiusMinMm / 1000) * scallop;
+        const maxR    = (rules.Clumps__RadiusMaxMm / 1000) * scallop;
+        const lapM    = (form.Form__LapMm || 0) / 1000;
+        const meanR   = (minR + maxR) * 0.5;
+        const target  = Math.min(Na__VegBuild__SHELL_THROWS, Math.ceil(shape.area(a, b, h) / (Math.PI * meanR * meanR * 0.7)));
+
+        const radii = [];
+        for (let k = 0; k < target; k++) radii.push(rng.skew(minR, maxR, rules.Clumps__Skew));
+        radii.sort((p, q) => q - p);
+
+        const cell  = Math.max(0.001, 2 * maxR * rules.Clumps__Spacing);
+        const span  = Na__VegBuild__GRID_SPAN;
+        const half  = span / 2;
+        const grid  = new Map();
+        const keyOf = (ix, iy, iz) => ((ix + half) * span + (iy + half)) * span + (iz + half);
+        const edgeReach = form.Form__EdgeShare || 0;
+        const markShare = form.Form__MarkShare || 0;
+        const clumps = [];
+        const spot   = { x : 0, y : 0, z : 0, nx : 0, ny : 0, nz : 0, edge : Infinity, edgeAt : 0, fit : 1 };
+
+        for (let k = 0; k < radii.length; k++) {
+            for (let tries = 0; tries < Na__VegBuild__SHELL_TRIES; tries++) {
+                spot.fit = 1;
+                shape.spot(rng, a, b, h, form, spot);
+                const rc   = radii[k] * spot.fit;
+
+                // WHAT THIS END MEETS | See the header
+                const meets  = ends ? ends[spot.x < 0 ? 0 : 1] : Na__VegBuild__END_REAL;
+                const onEnd  = Math.abs(spot.nx) > Na__VegBuild__END_FACE_NX;
+                if (onEnd && meets !== Na__VegBuild__END_REAL) continue;
+                const fromEnd = a - Math.abs(spot.x);
+                const ramp    = (meets === Na__VegBuild__END_LAP && fromEnd < lapM) ? 1 - fromEnd / lapM : 0;
+
+                const sink = rc * (form.Form__Inset + rng.range(-form.Form__Waver, form.Form__Waver) + ramp * Na__VegBuild__LAP_SINK);
+                let cx = spot.x - spot.nx * sink;
+                let cy = spot.y - spot.ny * sink;
+                let cz = spot.z - spot.nz * sink;
+
+                // A BOX'S CORNERS | A clump on one face stays within the faces next to it, or the corners bulge
+                if (shape.sharp) {
+                    const within = rc * form.Form__Inset;
+                    cx = Math.max(within - a, Math.min(a - within, cx));
+                    cy = Math.min(h - within, cy);
+                    cz = Math.max(within - b, Math.min(b - within, cz));
+                }
+                if (cy < rc * 0.10) continue;
+
+                const ix = Math.floor(cx / cell), iy = Math.floor(cy / cell), iz = Math.floor(cz / cell);
+                let crowded = false;
+                for (let dx = -1; dx <= 1 && !crowded; dx++) {
+                    for (let dy = -1; dy <= 1 && !crowded; dy++) {
+                        for (let dz = -1; dz <= 1 && !crowded; dz++) {
+                            const list = grid.get(keyOf(ix + dx, iy + dy, iz + dz));
+                            if (!list) continue;
+                            for (let j = 0; j < list.length; j++) {
+                                const o = list[j];
+                                const gap = (rc + o.r) * rules.Clumps__Spacing;
+                                const ox = cx - o.x, oy = cy - o.y, oz = cz - o.z;
+                                if (ox * ox + oy * oy + oz * oz < gap * gap) { crowded = true; break; }
+                            }
+                        }
+                    }
+                }
+                if (crowded) continue;
+
+                const onEdge = spot.edge < rc * edgeReach;
+                const clump  = {
+                    x : cx, y : cy, z : cz, r : rc,
+                    mx : cx - spot.nx, my : cy - spot.ny, mz : cz - spot.nz,   // <-- Where a nub's "out from the mass" starts from
+                    nx : spot.nx, ny : spot.ny, nz : spot.nz,
+                    mark   : ramp > Na__VegBuild__LAP_MARKS ? 0 : (onEdge ? Na__VegBuild__MARK_EDGE : (rng.chance(markShare) ? Na__VegBuild__MARK_FACE : 0)),
+                    markAt : onEdge ? spot.edgeAt : rng.next()
+                };
+                const key = keyOf(ix, iy, iz);
+                if (!grid.has(key)) grid.set(key, []);
+                grid.get(key).push(clump);
+                clumps.push(clump);
+                break;
+            }
+        }
+        return clumps;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build One Clipped Plant: a Form Whose Faces Are Clumps
+    // ------------------------------------------------------------
+    // recipe.Asset__Form: Form__Shape (Box, Ball, Cone), Form__Inset, Form__Waver,
+    // Form__EdgeShare, Form__MarkShare, and for a box Form__Batter and Form__LapMm. With
+    // Form__StemHeightShare the form is a head on a clear stem, a standard: that share of the
+    // height is stem.
+    // ------------------------------------------------------------
+    function Na__VegBuild__ClippedForm(recipe, plop, factors) {
+        const rng    = Na__VegRand__Create(plop.seed);
+        const size   = recipe.Asset__Size;
+        const form   = Object.assign({}, Na__VegBuild__FORM_FALLBACK, recipe.Asset__Form);
+        const shape  = Na__VegBuild__FORMS[form.Form__Shape] || Na__VegBuild__FORMS.Ball;
+        const jitter = 1 + rng.range(-size.Size__JitterShare, size.Size__JitterShare);
+        const widthM = ((plop.sizeMm ? plop.sizeMm[0] : size.Size__WidthMm) / 1000) * (plop.sizeMm ? 1 : jitter);
+        const depthM = ((plop.sizeMm ? plop.sizeMm[1] : size.Size__DepthMm) / 1000) * (plop.sizeMm ? 1 : jitter);
+        const highM  = ((plop.sizeMm ? plop.sizeMm[2] : size.Size__HeightMm) / 1000) * (plop.sizeMm ? 1 : jitter);
+        const a = widthM / 2, b = depthM / 2, h = highM;
+
+        // A HEAD ON A STEM | The form is built low and lifted, so its faces are the same sums
+        const stemShare = form.Form__StemHeightShare || 0;
+        const lift  = h * stemShare;
+        const formH = h - lift;
+
+        const body   = shape.body(rng, a, b, formH);
+        const shell  = Na__VegBuild__ShellClumps(rng, shape, form, a, b, formH, recipe, factors, plop.ends);
+        const nubs   = Na__VegBuild__ScatterNubs(rng, shell, recipe, factors);
+        const facing = { nx : 0, ny : 0, nz : 0 };
+        nubs.forEach((nub) => {
+            shape.look(nub.x, nub.y, nub.z, a, b, formH, facing);
+            nub.nx = facing.nx; nub.ny = facing.ny; nub.nz = facing.nz;
+        });
+        const blades = Na__VegBuild__BuildTufts(rng, recipe, a, b);
+        const clumps = body.concat(shell);                                     // <-- See the header: a clump to the drawer
+
+        if (lift > 0) {
+            [clumps, nubs].forEach((list) => list.forEach((ball) => { ball.y += lift; }));
+            const top   = lift + formH * 0.12;                                 // <-- Just into the head: nothing of it can be seen beyond that
+            const leanX = rng.range(-0.010, 0.010), leanZ = rng.range(-0.010, 0.010);
+            blades.push({
+                p     : [0, 0, 0, leanX, top * 0.33, leanZ, leanX, top * 0.66, leanZ, 0, top, 0],
+                w     : (form.Form__StemWidthMm || 40) / 1000,
+                stem  : true
+            });
+        }
+
+        // A BOX'S CORE | See the header
+        let core = null;
+        if (shape.sharp) {
+            const back = form.Form__Inset * (recipe.Asset__Clumps.Clumps__RadiusMaxMm / 1000) + Na__VegBuild__CORE_BACK_M;
+            const lapM = (form.Form__LapMm || 0) / 1000;
+            const ends = plop.ends;
+            core = {
+                x0    : -(a - (ends && ends[0] === Na__VegBuild__END_LAP ? lapM : back)),
+                x1    : a - (ends && ends[1] === Na__VegBuild__END_LAP ? lapM : back),
+                y1    : Math.max(0.01, h - back),
+                zFoot : Math.max(0.01, b - back),
+                zTop  : Math.max(0.01, b * (1 - (form.Form__Batter || 0)) - back)
+            };
+        }
+
+        return Na__VegBuild__Assemble(rng, recipe, plop, factors, { masses : [], clumps, nubs, blades, a, b, h, widthM, depthM, highM, faces : true, core });
     }
     // ------------------------------------------------------------
 
@@ -596,7 +1009,8 @@
     // which is what the library's build util checks an asset against.
     // ------------------------------------------------------------
     const Na__VegBuild__GENERATORS = {
-        BallCluster : { 1 : Na__VegBuild__Bush }
+        BallCluster : { 1 : Na__VegBuild__Bush },
+        ClippedForm : { 1 : Na__VegBuild__ClippedForm }
     };
     // ------------------------------------------------------------
 

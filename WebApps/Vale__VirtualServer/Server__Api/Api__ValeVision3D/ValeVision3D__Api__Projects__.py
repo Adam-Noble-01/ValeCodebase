@@ -19,11 +19,16 @@
 # - READS NEED A SIGN-IN OR A CLIENT LINK, WRITES NEED THE AUTHORING LEVEL.
 #   Since 28-Oct-2026 a plain project link (/valevision/?project=<id>) is a staff
 #   link: the routes below without a decorator read for any signed-in Vale
-#   account, or for a client holding a live client link for THIS project
-#   (/valevision/?project=<id>&share=<token>). The guard that decides is
+#   account. A client holding a live client link for THIS project
+#   (/valevision/?project=<id>&share=<token>) reads only the three the client's
+#   page makes: the record (less CLIENT_HIDDEN_KEYS), its location and the
+#   drawings fingerprint. The guard that decides is
 #   ValeVision3D__Api__ClientLinks__ (one before-request hook), not the routes.
 #   Every write needs a signed-in user at vv_shared.AUTHOR_LEVEL (AppAdmin: the
 #   people who see the Dev Tools menu); a client link never opens a write.
+# - THE TWO RECORD WRITES TAKE THE WHOLE PATH AS THE PROJECT (resolve_project_exact).
+#   Their rule is <path:token>, so a POST to a route this service does not have
+#   lands here, and must never save over whichever project its last word names.
 # - THE DRAWINGS SAVE GUARD (X-ValeVision-Drawings-Base) is kept exactly: a save
 #   built on drawings that have since changed is refused with 409 and nothing
 #   is written.
@@ -45,6 +50,12 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 04-Nov-2026 - Version 1.3.0
+# - A client link's read of the record leaves out productionData, scheduleData and description
+#   (CLIENT_HIDDEN_KEYS): staff still get it as stored, and the 3D page reads none of the three.
+# - POST and PATCH of the record refuse a path that is not one project's, so /api/projects/<A>/<B>
+#   answers 404 Project not found instead of writing to B. <year>/<id> still saves.
+#
 # 28-Oct-2026 - Version 1.2.1
 # - Notes only: the open reads are guarded by ValeVision3D__Api__ClientLinks__ (a
 #   sign-in, or a live client link for the project). No route changed.
@@ -90,6 +101,7 @@ valevision_projects_api  = Blueprint('valevision_projects_api', __name__)
 DRAWING_NOTES_FILE       = 'ValeVision__DrawingNotes__.json'
 REQUIRED_RECORD_KEYS     = ('projectName', 'projectCode')                         # <-- A save without them would blank the Gallery's card
 MERGE_UNSET_KEY          = '_unset'                                               # <-- PATCH: the keys to remove
+CLIENT_HIDDEN_KEYS       = ('productionData', 'scheduleData', 'description')      # <-- The Gallery's production notes (names, critique, hours): never in a client link's copy of the record
 
 # ASSET PATHS | The three families the app uploads, and where each lands in the project
 ASSET_PATH_GUARD         = re.compile(r'^(PresentationMode/Thumbnails|LayoutEditor/(Linework|Snapshots))/[A-Za-z0-9_.-]+\.(webp|png|json)$')
@@ -106,8 +118,8 @@ USERDATA_EXTENSIONS      = ('.webp', '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.
 # REGION | Helpers
 # -----------------------------------------------------------------------------
 
-def _project_or_404(token):
-    folder = vv_shared.resolve_project(token)
+def _project_or_404(token, resolve=vv_shared.resolve_project):
+    folder = resolve(token)
     if not folder:
         return None, (jsonify({'error': f'Project not found: {token}'}), 404)
     return folder, None
@@ -156,14 +168,14 @@ def list_projects():
 
 @valevision_projects_api.get('/api/projects/<path:token>')
 def get_project(token):
-    """The project record, as stored (keys in the order they were written), never cached."""
+    """The project record, as stored (keys in the order they were written), never cached. The guard let this read in, so no sign-in means a client link: its copy goes without CLIENT_HIDDEN_KEYS."""
     folder, missing = _project_or_404(token)
     if missing:
         return missing
     path = vv_shared.project_record_path(folder)
     if not path.is_file():
         return jsonify({'error': f'Project not found: {token}'}), 404
-    return vv_shared.send_json_file(str(path))
+    return vv_shared.send_json_file(str(path), without=() if Na__Auth__CurrentUser() else CLIENT_HIDDEN_KEYS)
 
 
 @valevision_projects_api.get('/api/projects/<path:token>/location')
@@ -192,7 +204,7 @@ def save_project(token):
     missing_keys = [k for k in REQUIRED_RECORD_KEYS if not data.get(k)]
     if missing_keys:
         return jsonify({'error': f'Project data is missing {", ".join(missing_keys)}'}), 400
-    folder, missing = _project_or_404(token)
+    folder, missing = _project_or_404(token, vv_shared.resolve_project_exact)
     if missing:
         return missing
     path = vv_shared.project_record_path(folder)
@@ -240,7 +252,7 @@ def merge_project_keys(token):
     unset = keys.pop(MERGE_UNSET_KEY, None) or []                                  # <-- Keys to remove, named in the same request
     if not isinstance(unset, list) or not all(isinstance(k, str) for k in unset):
         return jsonify({'error': f'{MERGE_UNSET_KEY} must be a list of key names'}), 400
-    folder, missing = _project_or_404(token)
+    folder, missing = _project_or_404(token, vv_shared.resolve_project_exact)
     if missing:
         return missing
     path = vv_shared.project_record_path(folder)

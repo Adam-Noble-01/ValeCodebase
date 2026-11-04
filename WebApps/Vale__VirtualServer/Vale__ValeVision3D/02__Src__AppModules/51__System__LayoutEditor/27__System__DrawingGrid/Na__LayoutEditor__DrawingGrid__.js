@@ -65,7 +65,7 @@
 //                   nothing imports this controller but its own panel until the drafting
 //                   aids are switched on - F6 / F7 in the sheet tools' keyboard (W3-03),
 //                   Attach / Detach and the panel's registration in the mode controller
-//                   (W3-05), the toolbar's Grid buttons (W5-01). The snap search already
+//                   (W3-05), the toolbar's Grid buttons (Toolbar 1.9.6, v2.83.4). The snap search already
 //                   reads Grid Snap from Na__LayoutEditor__DrawingGrid__State__, off until
 //                   then.
 //                   TrueVision's own note said "not yet ported - it waits for Adam's

@@ -45,7 +45,8 @@ Vale__Projects__MasterLibrary\ValeProjects__<year>\<code>__<Name>\
 - **The library gate** (28-Oct-2026): an app route's `LibraryProtected` paths in the Server Manager's routes file
   (`ValeVision3D/Content__3dModel__GlbFiles/`, `ProjectData__*.json` ...) are sent by nginx only after that app's
   API answers `GET /api/library-access` (auth_request, `Server__Api/Api__Shared/ValeShared__LibraryGate__.py`):
-  a Vale sign-in, or a client link's cookie on that project's folder. `LibraryHidden` paths are never served.
+  a Vale sign-in, or a client link's cookie on that project's folder, each app saying which files its link opens
+  (ValeVision 3D: only a GLB directly in the model folder). `LibraryHidden` paths are never served.
   `ValeDev__LocalServer__.py` applies the same rule on this PC.
 
 ## User Accounts

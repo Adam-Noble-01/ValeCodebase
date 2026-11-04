@@ -1,6 +1,105 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.86.1 - 04-Nov-2026 - The Vegetation Menu Icon Is a Leaf and a Flower
+### Adam: "Load your graphic designer skill and create a better vegetation graphic. Make it more in line with the established style, and instead of a bush, create a leaf and a flower or something."
+
+**What was wrong:** the Tools & Settings icon was a bush on a ground line, drawn when the menu was, and it did not sit with the icons round it.
+
+**What changed:** `Icon__ToolsMenu__Vegetation__.svg`, under the same name, so `index.html` did not change. A leaf with staggered veins, with a five petal flower as a badge at the bottom right, the leaf cut back from it by one stroke: the composition of Camera Settings and its gear. Stroke 34, round caps and joins, `#172b3a`, 13.8% ink, 9.4% margin. No code changed. Its spec, its generator and the old bush are in the vector skill's `01__ProductionFiles`.
+
+**Checked:** lint with the deep scan clean; Chrome's render against resvg's, soft IoU 0.99; looked at beside the Gold Standards at 256, 48 and 24 px and in the Tools menu mock-up at 2x; the live file answers 200 and is the new drawing.
+
+**Not checked:** seen in the running app by the agent.
+
+**Live (Adam: "Push to the Vale server and to GitHub"), 04-Nov-2026 21:19 UTC:** `valevision3d` (stamp `20261104-211929`, 5 added, 20 replaced, none deleted): this icon and all of v2.86.0. No API file changed; `server-api`'s `Api__ValeVision3D` compared clean, so no service was restarted. v2.83.1 to v2.85.0 and their 3 API files were already up: push `20261104-183033` at 18:30:33 UTC under the account adam, very likely Adam's own from the Server Manager, not confirmed. Checked signed out only: the page 200, the deploy stamp's latest is this push, the icon and a new asset answer 200.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.86.0 - 04-Nov-2026 - Plants Size and Scale, Their Fill Has the Walls' Brightness, and a Clipped Hedge and Ornamentals Join the Library
+### Adam: "Add some controls to be able to size and scale the assets. Here, for example, I would set a scale of 0.5 because the plants are much smaller in this bed than this. This is too large. Secondly, make them a touch darker so they don't look as stark and white. Can you see here? It should be the same brightness as the building walls and change as you move, rather than it being bright white-looking. Once you've made those corrections, then make a few more assets. Make a more managed hedge-looking plant and then a couple of ornamental bushes."
+
+**The fill.** It was one tone from every side, 249 of 255, against 241 sampled off the wall beside it in Adam's two screenshots. It stays unlit, because a lit stack of discs turns to mud, but its colour is now worked out before each render from the scene's own lights, by the sum the walls' shader does: (ambient + sun x dot) / pi, for a wall facing the camera, each axis counting by the square of how much it faces the eye, so it is never brighter than a real wall in view and never jumps. On Thrower: 240.9 looking at a front from +z, where the wall is 241; 244.4 from +x; 227.3 from behind or from -x, the shade side; going up to 255 looking straight down. A scene's own lighting moves it, as it moves the walls. Vegetation Linework > Advanced has **Fill against walls** (1.00), for darker or lighter than the walls. The old Fill tone is now **Fill on sheets**: a sheet's plants lie on paper, with no walls to match, so they keep it.
+
+**Size and scale.** A plant's scale is the whole plant: every ball, radius, leaf and hook, about its foot, with no random draw changed, so 0.50 is the same bush at half the size and a slider never reshuffles it. Everywhere it is offered, the range is 0.10 to 3.00 from the config.
+- **Linear Tool:** Plant scale, with Spacing following by the same ratio, so half size is the same bed, smaller. Advanced gains **Height** beside Depth across: both are real millimetres, and fit a plant with its clumps keeping their size.
+- **Bush Tool:** Plant scale, with Density and Minimum spacing following. Density now goes up to 20 per square metre.
+- **Asset Browser, Assets tab:** Plant scale for the next plant dropped, with its proxy shown under the pointer while a card is armed.
+- **A palette item:** its own scale, on top of the tool's, for the one plant in a mix that is too big.
+- **In This Project:** a selected plant has Scale, and Width, Depth and Height showing what it really measures, and Reset Size. A stroke has a scale for all its plants, by ratio. A path has its Plant scale.
+- **Saved** per project: `Vegetation__Plop__Scale` (absent at 1, so a plant saved before this keeps its key and is not rebuilt), `Vegetation__Path__PlantScale`, `Vegetation__PathAdvanced__HeightFitMm`, `Vegetation__PaletteItem__PlantScale`, `Vegetation__Brush__PlantScale`, `Vegetation__Tools__Place`.
+
+**The new plants,** five where a hedge and a couple were asked for, because the two extra forms cost a few lines of JSON once the generator could do them. Each is one file to delete if not wanted, and none is in a project until someone plants it.
+- **Clipped Hedge** `VVL_07_1501`: a box leaning in 4% to its top, flat faces, straight lines and a fine scalloped edge. Its proxy is a box, in the scene, on the card and in SketchUp.
+- **Box Ball** `VVL_07_2001`, **Standard Bay** `VVL_07_2011` (a head on a clear stem), **Yew Cone** `VVL_07_2021`. **Mophead Hydrangea** `VVL_07_1031`, a loose flowering shrub, is plain `BallCluster`.
+- **A new generator, `ClippedForm` version 1,** beside `BallCluster`, which is untouched: small even clumps on the faces of a box, a ball or a cone, the same line language on a clipped outline. Three things a flat shell needed: a ball on a face looking away is not worked out; a share of the clumps carry a **mark**, an arc on the ball's own near surface, because in a flat shell every outline lies under its neighbours and no inner arc can ever show; and a box has a **solid core** of twelve fill triangles behind its faces, because the model's far lines showed through the gaps between discs.
+- **`Placement__Clipped` keeps a managed plant:** the path's size, height, spacing, turn and side variation pass it by, with every draw still made and left unused. A run of it stops at each corner and meets square, and laps the next run: each says what its ends meet (`Vegetation__Plop__Ends`), and the end of one sinks into the other's fill, so a long hedge has no joints. Its longest run is 4 m, because a shell costs by the square of its balls.
+- **Draw Path on a card** opens the Linear Tool ready to draw with a palette of only that plant, which is how a hedge is made. A default weight of 0 keeps the hedge and topiary out of a project's first mix; the hydrangea joins it.
+
+**Cost, measured warm in Node:** a 2.4 m hedge run is 396 balls, 9.8 ms to build and 2 to 3 ms to draw, a 4 m one 589, 13.7 ms and 3 to 4.5 ms, against a Rounded Shrub's 89, 3.2 ms and 0.8 to 1.7 ms. The frame budget takes it on the PC; a long hedge on a phone has not been tried.
+
+**SketchUp** (Cloud Sync 0.6.1): the path sums follow all of this. A proxy shows and compares at what a plant really measures. Scaled evenly in SketchUp, a plant's scale changes; on one axis, its saved size. A hedge's proxy is a box.
+
+**Modules:** `24__System__Vegetation`: `BushBuilder` 1.1.0, `Contour` 1.2.0, `PathModel` 1.1.0, `BrushModel` 1.1.0, `SceneData` 1.2.0, `SceneLayer` 1.2.0, `Runtime` 1.2.0, `AssetBrowser` 1.1.0, `PaletteEditor` 1.1.0, `PanelShell` 1.1.0, `LineworkPanel` 1.1.0, `LinearTool` 1.1.0, `BushTool` 1.1.0, `ToolOverlay` 1.1.0, `Styles__Panels`, `Na__Vegetation__AppConfig__.json` 1.3.0. `index.html` (the walls' colour). `53__Vegetation__AssetLibrary`: five assets, the index, the schema's optional `Asset__Form`, `Placement__Clipped` and a `Box` proxy. The prototype's shelf keeps to its three rows, and its cards skip a core. Cloud Sync 0.6.1 in the 2027 Plugins repo.
+
+**Checked,** on an agent's copy of the testing server (port 8040, fake users, no real data), in headless Edge where a look or a flow had to be judged:
+- **Nothing moved.** Engine hash `7f585d5fddf5f48e2650cc3d75903051` on the three old assets. Prototype pixels: closeup `0ef2e4c8`, elevation `da745e1d`, perspective `a1ac3204`, birdseye `c1dafc00`, lineup `424c6d1f`, proxy `d3e0120e`, both `19e01788` (its cards hash moves: it has more cards). No key: `45759d6bafcf`, five loads of five. `stage1_tests` 54, `stage2_tests` 26, `stage5_tests` 78.
+- **The fill, in real pixels, on both engines.** On Thrower, square to a front: fill 241 and the page's commonest non-white value 241, on PureEngine and on MaxEngine. The row at 0.90 gives 216.9 and back. 60% transparent on Max looked at.
+- **The scale, by numbers.** 0.5 against 1 on four assets, old and new: every centre, radius, blade and core halved about the foot, every table and style number identical; scale 1 and no scale identical to the bit.
+- **Adam's request through the real panels, 53 checks:** every slider and field above, spacing and density following and coming back, the plant just dropped already selected, a typed height saved under the scale, Reset Size, a stroke by ratio, Draw Path on the hedge's card, undo and redo, Save, and a reload giving identical plant keys. The first brief's two flows again, the 17 checks of Stage 7 and 8, the real sheet flow, `vv3d_check.py changed` and `smoke`.
+- **The port:** 299 merge and path checks, 225 plants of 21 paths identical between the JavaScript and the Python, plant scale, palette scale, Height, hedges, corners and the longest run among them. 26 live against the sandbox's real API.
+
+**Not checked:**
+- **SketchUp itself, still.** Nothing of Sync Vegetation has run on a real entity, and the new `na_build_box` has not run at all: SketchUp was not open when it was written, an agent never launches it, and this PC has no other Ruby. It has been read and its calls linted against the API index. The first thing to try there.
+- **A real phone or iPad,** least of all with a long hedge.
+- **How a hedge looks from every side on a real project's planter.** Looked at on Thrower on open ground, from the front, three quarters and above. A run's joint can leave a short tick on a far run in a low three quarter view.
+- **On the live server:** v2.85.0 and v2.86.0 were on the PC only, uncommitted, when this was written. Both are live now: see v2.86.1's **Live** line.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.85.0 - 04-Nov-2026 - Vegetation Is Whole: the Menu, the Asset Browser, the Linear and Bush Tools, Plants on Sheets, and SketchUp Both Ways
+### Adam: "You didnt add the menu or implement the feature properly? go back and read my first message and dont stop until feature is complete"
+
+**What was wrong.** v2.84.0 went live with plants that drew and nothing to work them with: Switch On in Dev Tools gave plants and no section in Tools & Settings, which the brief had asked for in its first lines. Working the plan stage by stage and handing over at Stage 2 was not what was asked. Stages 3 to 9 are all here, in one release. Nothing about a project without the key changes, and no real project holds the key yet.
+
+**What can be done now,** on a project switched on in Dev Tools > Vegetation (one switch; off is no menu, no plants, no cost, and keeps everything):
+
+- **Tools & Settings > Vegetation.** Show Vegetation and Transparency for everyone, client links and phones included, remembered on the device. For an author alone, and built only for an author, so a client's page never holds the markup: Vegetation Assets, Linear Placement Tool, Bush Tool, Vegetation Linework, Show on Live Drawings and Save Vegetation.
+- **Transparency fades the whole plant** (Adam: "Whole plant"): one layer at each pixel, however many discs make the bush. From 50% the wall's lines show through. At 0% it is the old opaque route.
+- **The Asset Browser.** Cards drawn live by the same code as the scene, search, filter chips, Rendered, Proxy or Both, click a card then the model, + to a palette, In This Project (paths, strokes, single plants), select on the model, Focus, New Seed, Move, Turn, Remove, Update to latest.
+- **The Linear Placement Tool.** Draw and edit paths on the model: grips, click the line to add a point, Delete, Straight or Curved, Spacing, New Seed, the palette's mix, and an Advanced dropdown for rotation, scale, height and spacing variation, side offset, depth across, align and fit (Adam: "ensure each asset gets a sligtly random rot and scale (but add advanced parameters dropdown"). Bake to Plants. A path saves rules and a seed, never its plants, and plant 7 is the same plant whatever plant 8 turned out to be.
+- **The Bush Tool.** A palette with a share for each asset ("assign proibability for the items"), paint and erase with the brush, Alt erases, Radius, Density, and Advanced for spacing, rotation, scale, slope and same height only. Proxies while painting, real plants on release, undo per stroke.
+- **Vegetation Linework,** the demo's panel, every slider saved per project ("save all parameters to a new json object with nested keys eetc in my style per file").
+- **Save, undo, and a guard.** Save Vegetation goes red when changed; closing with unsaved changes asks first; Ctrl+Z and Ctrl+Y for the session. **Remove All** in Dev Tools asks for the word "delete" and takes the key out of the record (Adam, v2.76.2: "Delete should mean delete").
+- **Pictures.** A planting change redraws a sheet's cached 3D pictures, a project without plants keeping its exact fingerprint. A Video Studio preview frame takes the live frame's budget. Inner lines stay lighter under a sheet's own edge width.
+- **Drawings.** A viewport's Vegetation tick (off by default, beside Depth Fog) puts plants over its vectors as a layer of their own, on screen and in the PDF; a plant change redraws that layer and leaves the picture under it alone. A project's Show on Live Drawings does the same for its live plans and elevations.
+- **SketchUp, both ways** (Adam: "Both ways, like Sync Aura"). Cloud Sync 0.6.0's Sync Vegetation tab: proxies at the model root on `05__ValeVision__VegetationProxies`, three-way merge, ValeVision wins a clash and the report names it, a path's plants come in locked, hidden in the `IMG##` scenes. Its DEVLOG has the detail. **It has not touched a real SketchUp entity:** see Not checked.
+
+**A safe write, and what it is not.** The object is written whole, so `Na__VegData__Save` now reads the key first (new `Na__LocalMirror__ReadKey`) and refuses, in words, if it is no longer what this window read: a stale window would otherwise wipe what a SketchUp sync brought in, and the next sync would take that as a deletion made here. The sync compares from its side too. The plan asked for a guard in the API; `ValeVision3D__Api__Projects__.py` holds other sessions' open work, so this is a comparison and not a lock: a save landing in the moment between the read and the write could still be overwritten, and its revision is kept. No API file changed in this release, so a push needs no service restart.
+
+**Built differently from the plan** (its section 8): the tools' aids are a 2D canvas over the model, not registered overlays, so they cannot reach any picture on any render path; activity goes as `settings.change`; drawings are a viewport tick and a project tick; a path's plants are locked in SketchUp as well as read-only.
+
+**Found on the way:** on Max, from the see-through share, the fill's alpha mark cut the wall's own AO shadow out behind every plant and left dashes in the gaps between them. At that share the fill is in neither of AO's passes, so the mark now stops, and the shadow runs unbroken (`Na__Vegetation__SceneLayer__.js`, one line, compared at three times size against the same view with plants hidden). A pale band to the right of the house in that view is there with plants hidden too: not this work. History kept a stale object after Remove All and Switch On (reset now when the object changes). A default palette marked Save red on merely opening a tool (no longer). The left panel covered the app's pull-out handle and the testing badge (moved).
+
+**Modules:** `24__System__Vegetation`: `Na__Vegetation__.js` 1.2.0, `SceneData` 1.1.0, `SceneLayer` 1.1.0, `Runtime` 1.1.0, `DevControls` 1.1.0, `Na__Vegetation__AppConfig__.json` 1.2.0; new `BrushModel`, `PathModel`, `History`, `MenuSection`, `PanelShell`, `LineworkPanel`, `PaletteEditor`, `AssetBrowser`, `Styles__Panels`, `SurfacePick`, `ToolOverlay`, `ToolHost`, `LinearTool`, `BushTool`, all 1.0.0. `index.html` (the menu item). `Icon__ToolsMenu__Vegetation__.svg`. `Na__AppUtils__LocalProjectMirror__` 2.1.0, `Na__AppUtils__ActivityLog__` 1.3.0, `Na__RenderLoop__InteractiveOverlays__` 1.2.0, `Na__AppFlow__LoadingSequence` 1.8.1, `Na__RenderEffect__LineworkSettings__State` 1.5.0, `ClickToOpenDoors` 1.10.0, `Na__Hotkeys__3dModelTab__.json` (six documentation rows). Folder 51: `SnapshotRenderer` 1.9.0, `Viewport2d` 1.17.0, `Viewport2d__Frame` 1.5.0, `PdfExporter` 1.13.0, `SheetRecords` 1.40.0, `ConfigState__SheetSetup` 1.10.0, `RenderComposites` 1.4.0 and its config. Cloud Sync 0.6.0 in the 2027 Plugins repo.
+
+**Checked,** on an agent's copy of the testing server (port 8040, fake users, no real data; the real Thrower record still holds no key). Browser runs were to judge a look or walk a flow, in headless Edge:
+- **Nothing moved.** Engine hash `7f585d5fddf5f48e2650cc3d75903051`. Prototype pixels at 1400 x 800: closeup `0ef2e4c8`, elevation `da745e1d`, perspective `a1ac3204`, birdseye `c1dafc00`, lineup `424c6d1f`. `stage1_tests` 54, `stage2_tests` 26, `stage5_tests` 78 (a 60 m path, 35 plants in 0.08 ms; 1,000 draws at 50/25/25 gave 471/260/269; spacing closest 652 of 650). `vv3d_check.py changed` clean, boot graph still 313 modules. `smoke` clean, 1,529 requests. No key, switched off and on with no plants are one picture, `45759d6bafcf`; a no-key project fetches the door and, for an author, the Dev section's three files, and no engine.
+- **One thing not explained.** The fourth load of one sequence, a no-key load after a switched-on one, differed in a 20 x 25 px patch of an eave, by 19 levels in a channel, twice. Five no-key loads in a row, and the same on, off, no-key sequence with the browser's storage dumped (it was empty), then all matched. Nothing of vegetation is on that page but the door and the Dev section.
+- **The whole brief through the real menus** (two flows, about 80 steps): no key no menu; Switch On, the menu, every panel; a path drawn with plants as it goes, a grip dragged, curved, new seed, a point added; weights redraw, 0% leaves none, undo restores; bake and undo; a bush stroke, erase, the middle button orbits and the buttons come back; a card placed; search and chips; select on the model, Focus, Remove and undo; linework Reset; transparency and device memory; Save red then Saved; a reload gives identical plant keys; Employee and client get two rows and no dev markup; switch off and back; Remove All needs the word and takes the key out, and a reload shows no menu.
+- **Pictures:** real stills through Download Image, 6144 x 4096, alpha 255 throughout. In front of a real wall (Mathison's south face) at 0, 30, 60 and 90% on both engines, looked at. Walk, Fly and Orbit keep their plants with no errors. A preview frame numbers itself and nothing else does, at the function.
+- **Sheets:** with plants in the project and the tick off the underlay is byte-identical; ticked through the real panel row, a plants layer with the base unchanged; a plant change redraws the layer only. **A real PDF** of a Mathison A1 sheet (jsPDF, drawn back by the app's pdf.js and looked at): one more image per ticked viewport, plants over the vectors at the foot of the South and East elevations. A live elevation: hidden and shown the same with the tick off, plants in with it on.
+- **The safe write:** a second save compares clean; a stale save is refused in words and writes nothing; a sync on the sandbox shows in the app after a reload with its asset pinned, and a save then goes through.
+- **Stage 9 by numbers:** Cloud Sync's DEVLOG: 176 merge and port checks (121 plants identical to the app's JavaScript), 26 live against the sandbox's real API, 50 of the Ruby in SketchUp's own interpreter with real `Geom` and stand-in entities, 24 of the tab's page.
+
+**Not checked:**
+- **Real SketchUp entities.** Faces, tags, locks, scene visibility, the component tool, the observer, Undo and the dialog inside SketchUp have not been run, and nor has a sync against the live API. There was no empty window to run them in: the listing's untitled pid 97292 holds an unsaved model, pid 80400 does not answer, and an agent never launches SketchUp. First thing to try.
+- **A real phone or iPad,** and with it 100 plants at 30 fps. Two rows on a client link are checked in a desktop browser only.
+- **A real Video Studio preview** with plants playing.
+- **One of the nine real Max projects:** Max was tried on Thrower and Mathison through the live switch.
+- **On the live server:** v2.85.0 is on the PC. The server has Stage 2 until this is pushed.
+
+**Left as it was:** Export Render Layers has no plants, and export anti-aliasing at 1 sample leaves 0.6 px inner lines dotted, both noted at Stage 2.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.84.1 - 04-Nov-2026 - A Testing Server With Fake Users: Every Permission Level, a Real Client Link, No Real Data
 ### Adam: "Create a dev mode like the lantern designer with fake users"
 
@@ -64,6 +163,114 @@ Building 300 plants takes about 700 ms in all, in slices. A full redraw of 190 p
 **Known, and left for their stages:** the Video Studio preview is not a live frame, so it draws in full each frame and will crawl with many plants (Stage 7). A sheet's 3D view with its own edge width gives inner lines the same weight as outlines (Stage 7). Export Render Layers has no plants, as it draws only what it classified (a question for Stage 7). Add Test Row's click can still swing a door behind it (the real tools hold doors, T19). Seen from behind a single-sided wall, plants' outlines show through as profile lines, as the model's own do.
 
 **Live (Adam: "Push it"), 04-Nov-2026 15:19 UTC:** `server-api` and `valevision3d` in one push (stamp `20261104-151924`), cut to this job's files with the engine's own functions, because the working copy also holds other sessions' v2.83.1 to v2.83.4, which are not live and wait on their own word (3 API files and 35 app files stayed off). Up: 17 new files (`24__System__Vegetation` and `53__Vegetation__AssetLibrary`, so v2.83.0's foundations go live with this), 6 replaced (`index.html`, `Na__AppFlow__LoadingSequence.js`, `Na__AppConfig__Main.json`, `Na__RenderEffect__LineworkSettings__State.js`, `Na__RenderLoop__InteractiveOverlays__.js`, `Na__RenderEffect__AmbientOcclusion__Shader.js`), and the API's `ValeVision3D__Api__Activity__.py`; nothing deleted. `vale@ValeVision3D` restarted, active 15:19:33 UTC, `api/health` ok. v2.84.1's testing server cannot ship, and did not. Checked through Cloudflare, signed out: before the push, the 6 live files equal the commit before this job's, so nothing of anyone else's was replaced; after it, all 23 app files equal this job's commit; the vegetation README, `85__EarlyStage*`, `80__Testing*` and the testing server's `.py` answer 404; `/valevision/` with no project, in headless Edge, made 476 requests, none failed, no script error, and of the plants fetched only the door; all 10 new modules import on the live page, so this mix links though the PC never ran it whole. A compare afterwards shows only the other sessions' 3 and 35. 5 SSH sessions, one at a time. **Not checked live:** signed in, a real project's model, a save's ledger row. No real project holds the key, so nobody's view changes yet; switching on from Dev Tools here writes that project's real record.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.83.4 - 04-Nov-2026 - Draft, Grid, Grid Snap, Ortho and Axes Get Their Toolbar Buttons
+### Adam, asked what should happen to the toolbar's missing buttons: "Add the five toggles"
+### Ported from TrueVision3D v2.107.0, v2.113.0, v2.114.0 and v2.131.0 (Adam-confirmed in TV: none; its log has them as not tried)
+
+**No project changes. An app admin editing a sheet sees five more buttons. Clients and read-only sessions see no difference.**
+
+**What was wrong:** these five worked only by key or panel, so nothing on screen said they were there. Their buttons were to come with the parity programme's W5-01, which never ran (v2.83.3).
+
+- **Five buttons after Snap, in TrueVision's order and in its code** (`40__Ui__Panels/Na__LayoutEditor__Toolbar__.js`): Draft (K), Grid (F6), Grid Snap (F7), Ortho (F8), Axes (F9). The hunks of TrueVision's Toolbar 1.13.0, 1.15.0, 1.16.0 and 1.22.0, copied by script from `b2aa9151`, which is byte-identical to TrueVision's HEAD for this file.
+- **A button is the same call as its key,** and it is lit while on, whoever switched it: the toolbar listens for each controller's changed event.
+- **The words are each feature's own,** from its config, re-read on every sync because a config can land after the toolbar is built. Nothing was added to any config: all of them were already there.
+- **Nothing new loads.** The sheet tools' keyboard already imports all four controllers, and no stylesheet changed: these are the strip's plain buttons, and the strip already scrolls sideways when it runs out of room.
+- **Still no button:** Circle, Arc, Floor Area and Image, the Snap button's arrow, the vector quality list and Share. Adam chose the five toggles over all nine. Their keys and panels are unchanged.
+
+**Modules:** `Na__LayoutEditor__Toolbar__.js` 1.9.6. `Na__LayoutEditor__DraftMode__.js`, `__DrawingGrid__.js`, `__OrthoMode__.js` and `__DrawingAxes__.js`: one PORT NOTE line each, naming the button that has now arrived, with no version change (they carry TrueVision's module versions).
+
+**Checked:** 66 checks in Node on the real toolbar, the four real controllers and their real configs, over a small fake DOM, with every other module stubbed from its real export names: the order, the words and hover texts against each config, each button on and off by click and by the key's own call, one not disturbing another, the strip going away and coming back lit, a read-only session having none of them, and the listeners balanced at 3 added and 3 removed on each of the four events. Four deliberate breaks made those checks fail, so they can fail. `vv3d_check.py changed`: syntax and JSON clean, 0 undeclared names, the module graph resolves (boot graph 313 modules).
+
+**Not checked:** a real browser. How the strip looks with five more buttons, above all in a narrow window, has not been seen. Nor have the controllers been run against a real sheet by these buttons: only the switching was tested, and a click makes the same call as the key.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.83.3 - 04-Nov-2026 - The TrueVision Parity Programme Is Closed: No Tokens Left, Its Papers Say So, and What It Left Off Stays Off
+### Adam, asked what should become of the parity programme: "The programme is over: a later job can clear the tokens and the ledger's open items"
+
+**No behaviour changes and no project changes: comments and records only.** The buttons Adam asked for along the way are v2.83.4.
+
+**What was wrong:** the programme stopped part-way through Wave 4 on 02-Oct-2026, before its last scribe pass. So 30 files still held `{{VVREL:W4-nn}}` placeholders for a release number that never came, its four documents still read as live, and its ledger still showed its rows as open.
+
+- **No tokens left.** All 31, in 30 files (W4-01, 04, 05, 06, 11, 16 and 18), now say what is true: "after ValeVision3D v2.71.5 (W4-nn; first carried by v2.72.0)". There was never a v2.71.6; the files came into git at `c942cac30` and v2.72.0 was the first numbered release to hold them. They were filled in place, as each wave's scribe filled its own, so no module's version moved and no `DEVELOPMENT LOG` gained a line.
+- **The four documents say they are history,** in a dated note under each title: `ValeVision__PARITY__TrueVisionLedger__.md`, `ValeVision__WORKING_MEMORY__TrueVisionParity__.md`, `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`, `ValeVision__PLAN__TrueVisionRealign__DrawingSystems__.md`. Not one existing line of them changed.
+- **The ledger's open items are closed by its note, as not owed,** each row left as written. Counted at the close: 34 rows `drifted`, 89 `TV-only` and 41 with a Blocked by list in the Module Register; 49 of 177 releases in the Watermark; DR-01 to DR-44 and the seven questions, all unanswered; 44 back-port rows; 72 rows of TrueVision-side corrections. Wave 4 never recorded what it landed, so the note says: 32 of the `TV-only` rows are files on disk.
+- **What the programme left off: Adam was asked about each, and only the toolbar changes.**
+
+| Left off, on disk | State | Adam, 04-Nov-2026 |
+|---|---|---|
+| Select picks up Move (`VV_HOLD_AUTO_MOVE`, DR-40 item 7, TrueVision v2.78.0) | TrueVision's code behind a guard in HitResolution, PointerDrag and Sheet Images' drop | Keep it held |
+| Ctrl-drag copies (`VV_HOLD_COPY_DRAG`, item 8, TrueVision v2.117.0, signed off there) | Behind a guard in PointerPress | Keep it held |
+| Viewport carry (`VV_HOLD_VIEWPORT_CARRY`, item 9, TrueVision's ViewportSnapMove) | Behind a guard in HitResolution | Keep it held |
+| Move anchor (`VV_HOLD_MOVE_ANCHOR`, item 10, TrueVision v2.149.0) | Behind a guard in PointerPress | Keep it held |
+| Drawing Register | 7 of TrueVision's 10 files; its editor, export and stylesheet never landed; only Numbering is used | Leave it off, on disk |
+| Statement Writer | 21 of 33 files; page, editor, PDF, publisher and stylesheets never landed; `LayoutEditor__Statement__Enabled` false; API routes up, writes at AppAdmin | Leave it off, on disk |
+| Publishing | Folder 53 (4 files nothing uses) and five API routes, writes at AppAdmin; the panel, share links and published documents (25 TrueVision files) never landed; the viewer reads live data | Leave it off, on disk |
+| Project QR | Off three times over, and the `/p/` short link is not enabled | Leave it off, on disk |
+| Site plans | Dormant behind `LayoutEditor__Sheet__SitePlanDrawingsEnabled`; no Vale pipeline makes the data | Leave it off, on disk |
+| The read-only viewer's first drawing | Fills in uncovered, because the published viewer never landed (`Na__LayoutEditor__ModeController__.js`) | Leave it as it is |
+| Old three.js, `04__Lib__ThirdParty__Three` | 17 files, 1.5 MB, nothing refers to it | Leave it |
+| Toolbar buttons | Draft, Grid, Grid Snap, Ortho and Axes worked by key only | Add the five toggles: v2.83.4 |
+
+Not put to Adam, because nothing is switched off: design phases (the Model Source row shows only on a project with more than one model group) and folders 35 and 91 (on the programme's retirement list, but both live).
+
+**Modules:** 30 files, one comment or text line each (Tokenise two), no version changes: `27__System__ContextMenuSystem` 2, `51__Feature__DrawingRegister` 6, `52__Feature__StatementWriter` 19, `53__Data__Layout__PublishedSchema` 3.
+
+**Checked:** before touching anything, a parser put every JavaScript token inside a comment, and the stylesheet's too; no code under the modules or at the app root reads the word; the schema README is named only as text. Nothing outside their own folders imports the 30, and only the context menu stylesheet loads at start-up. After: `{{VVREL` finds nothing under the modules. Against git, only the 31 token lines differ, the code tokens are identical in all 28 JavaScript files (49,872 compared), the stylesheet is identical with comments stripped, and line endings are kept. The ledger's figures were counted by script from the ledger and the tree. `vv3d_check.py changed`: syntax and JSON clean, 0 undeclared names, the module graph resolves.
+
+**Not checked:** the app in a browser, since nothing should change. The ledger's rows were counted by the first words of their cells, not read one by one. Other comments still name packages that will not run, such as "until the register tab lands (W4-10)": they were left as written, about 65 lines of them across the modules.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.83.2 - 04-Nov-2026 - The Compass and Drawing Planes Now Draw on PureEngine, With Clean Lines
+### Adam, shown the pictures and asked "Should the compass and drawing planes draw on PureEngine as well as MaxEngine?": "Yes, fix it"
+
+**No project changes, and clients see no difference: both are authoring tools.**
+
+**What was wrong:** the compass and the drawing planes sit on layer 1, so the profile-line passes skip them, and only MaxEngine's setup enabled layer 1 on the main camera. PureEngine runs almost every project and set no layer. Settled from the code earlier today, and seen on screen here for the first time:
+
+- **On a session that never built MaxEngine they were not drawn at all.** Show Compass and a plane's eye toggle said on and nothing appeared: no draws, and with a plane switched on the picture stayed pixel-identical.
+- **After a switch to MaxEngine and back they were drawn, and the lines went wrong.** Layer 1 stayed on for the session, but PureEngine never took it off for its own normal and colour passes: a false line where a plane cut the model, and the model's edges below the plane lost. Nobody had predicted this one.
+
+**What changed:**
+
+- **PureEngine does what MaxEngine does** (`Na__RenderPipeline__PureEngine__Setup.js`): it enables layer 1 on the camera, and its `renderProfileNormals` wrapper disables layer 1 for the normal and colour captures and enables it again. No import and no new pipeline key.
+- **MaxEngine's setup is untouched,** so its depth pre-pass and normals handling are as they were.
+- **Nothing else is on layer 1 under PureEngine.** AO-excluded meshes return to layer 0 when the materials are restored, Export Render Layers uses layers 29 and 30 and restores the camera's mask, and a drawing's orthographic camera has no layer 1. The overlay registry still keeps both helpers out of every render but the live 3D frame.
+
+**What you may notice:** a compass or plane switched on earlier in this browser on a Pure project is kept between visits, so it now appears. That is the toggle being remembered, not a new fault. Touching a row in the Floor Plans or Elevations panels now shows its plane on Pure, as it always did on Max.
+
+**Modules:** `Na__RenderPipeline__PureEngine__Setup.js` 1.0.2.
+
+**Checked:** headless Edge on software rendering, the real app through the real dev server code, on a throwaway root: one generated AppAdmin, two generated box projects (one Pure, one Max from load), nothing outside 127.0.0.1. Draws counted per render target, with the real Show Compass button and a floor plan's plane.
+
+- Before: fresh Pure, 0 helper draws and camera mask 1. Max and back: 153 helper draws in the normal pass and 204 in the colour pass.
+- After, fresh Pure: camera mask 3 at rest and 1 during the normal and colour passes, helper draws in the scene render only. With nothing on, the picture is pixel-identical to before the fix. Compass on: 3,782 pixels changed, none outside its box.
+- After, compass and plane on, to Max and back to Pure: 0 pixels differ, and no helper draws in either pass.
+- Max, from load and switched to: compass and plane drawn, none in the normal or colour pass, as before the fix.
+- A 1280 x 720 still export with both on: 0 helper draws, and no needle pixels in the picture.
+- `vv3d_check.py changed`: syntax and JSON clean, 0 undeclared names, every import resolves.
+
+**Not checked:** a real GPU, a real project or Adam's eye. Thumbnails, video, a Layout Editor snapshot, the viewport-size still and an open plan or elevation were not run with the helpers on: they rest on the overlay registry, which this does not change. MaxEngine's real materials: DataLib was blocked in the check, so no AO-excluded mesh was on layer 1 in the Max runs. Fog, and profile lines switched off.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.83.1 - 04-Nov-2026 - A Client Link Opens the Model and Nothing Else
+### Adam, asked which of the fact audit's gaps to close: "Shut all of those (Recommended)", "Model GLBs only (Recommended)", "Drop those three keys (Recommended)", "One project's path (Recommended)"
+
+**The API only: no page changed, and nothing the client's view asks for has moved.** The fact audit behind the `vgh-valevision3d` skill found a client link could reach far more than the client's view ever asks for. It was the link's own project, apart from the app-wide scrapbook and dictionary, and nothing suggests any of it was used.
+
+- **A link now makes three API reads and no others.** The guard let a link through on any undecorated GET naming its project, `?project=<its id>` included: the app-wide scrapbook and spelling dictionary, which is what the audit found, and also that project's drawing notes, statements, published documents, sheet picture list and Layout Editor files. `CLIENT_READ_ENDPOINTS` now names what a link may read: the record, its location and the drawings fingerprint, the three the client's page asks for (the fingerprint is `Na__DrawData__LearnBase`, as the project loads, and is a digest with no content). It is opt-in, as the client's menu is, so a new GET is shut to clients until it is named there. Every signed-in account reads as before.
+- **The library gate gives a link only a GLB directly in its model folder.** `library_access` ignored the rest of the path and `vale_vv3d_files` sat on the whole project folder, so a link also opened the record file, the site plan data, the model archive zip and AURA's three gated folders, though the server skill said it never did. The gate now checks the path as well as the link, because a cookie's Path only tells a browser when to send it. The cookie narrows to `ValeVision3D/Content__3dModel__GlbFiles/` and the door clears the old whole-project one. A browser still holding the old cookie loses nothing: it is sent with a GLB too, and a GLB is all it opens.
+- **A link's copy of the record goes without `productionData`, `scheduleData` and `description`** (`CLIENT_HIDDEN_KEYS`): artist and designer names, critique notes, hours. The 3D page reads none of the three, and any signed-in account still gets the record as stored. Everything else in the record stays readable by a link, so the rule stands: nothing staff-only goes in the record, or the key joins that list in the same change.
+- **`POST` and `PATCH` of the record take the whole path as the project** (`resolve_project_exact`): the id, a job number, or `<year>/<id>` with that project's own year. `/api/projects/<A>/<B>` used to write to project B, so a whole-record save sent to a route a stale service did not have could overwrite another project. It now answers 404 `Project not found: <A>/<B>` and writes nothing. A plain "refuse any slash" would have stopped Dev menu saves on a page opened from an old `?project=2026/<id>` link, because those save to `/api/projects/2026/<id>`.
+
+**Why a list in the guard, not a decorator on each route:** eleven decorators would have shut these eleven and left the next new GET open to clients, which is how these opened.
+
+**Modules:** `ValeVision3D__Api__ClientLinks__.py` 1.2.0, `ValeVision3D__Api__Projects__.py` 1.3.0, `ValeVision3D__Api__Core__.py` 1.4.0. `Api__Shared` is untouched and nothing else imports the core, so going live means `engine push server-api --scope Api__ValeVision3D` and restarting `vale@ValeVision3D` alone.
+
+**Checked:** `vv3d_api_sandbox.py try`, each once per caller (signed out, temporary password, Affiliate, Employee, Management, AppAdmin, a client link): 27 requests, 189 answers, all as intended. That is the 11 shut reads (401 for a link, their usual answer for staff), the location and fingerprint (200 for a link), the gate on a GLB, the record file, AURA and the archive, the record with and without `additionalNotes`, and 8 record writes (`<A>/<B>`, `<A>/<job number>` and a wrong year 404; the id, a job number and `2026/<id>` 200). `smoke`, which now holds all a link reaches and the record writes' paths: OK on this code, and 28 answers differ on a copy of the API as committed, so it can see the gaps. `boot`, new in the skill's sandbox: 37 of 37, a client's browser with no browser on the dev server's own copy of nginx's gate with a cookie jar that honours Path (the door, the three reads, a GLB and its bytes; what it must not open; a browser holding the old cookie; a cookie sent by hand on any path; staff; the link switched off). What the client's page asks for, by reading the code: a static walk from `index.html` finds no scrapbook or spellings route and no site plan or AURA path; the statement, published, sheet picture, notes and userdata routes are named only in helpers that folder 51 calls, and `Na__LeLoad__` never loads folder 51 on a client link; models are asked for only through `Na__AppUtils__ModelUrl`, and all 797 files directly in the PC's model folders end `.glb`. `vv3d_check.py changed`: clean.
+
+**Not checked:** a real client link in a real browser, on nginx, or on a phone: the cookie is proved by a test client's jar and the gate by the dev server's copy of its rule. Not committed and not pushed, so nothing has changed on the server until `vale@ValeVision3D` restarts on this code.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.83.0 - 04-Nov-2026 - Vegetation Foundations: Engine, Library and Project Key In, Nothing Draws Yet

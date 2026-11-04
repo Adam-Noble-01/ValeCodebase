@@ -52,6 +52,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 2.1.0 (ValeVision3D v2.85.0)
+// - ReadKey: one key of the record as the server holds it now, for a save that replaces a
+//   whole key and must first find out whether it changed meanwhile.
+//
 // 06-Oct-2026 - Version 2.0.0 (the move to app.valegardenhouses.com)
 // - Writes to the ValeVision 3D API on every host: no localhost gate, no
 //   ValeVision Gallery server, no health probe. MergeKeys is one PATCH merged on
@@ -225,6 +229,27 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | One Key of the Record as It Is on the Server Right Now
+    // ------------------------------------------------------------
+    // Resolves to { ok, error, value }, value undefined when the record has no such
+    // key. Asked just before a save that replaces a whole key, so a change made since
+    // (another window, a SketchUp sync) is found before anything is written. Never rejects.
+    // ------------------------------------------------------------
+    async function Na__LocalMirror__ReadKey(key) {
+        const place = Na__LocalMirror__Locate();
+        if (!place) return { ok : false, error : 'no project for this page (?project= names none the library has)', value : undefined };
+        try {
+            const response = await fetch(place.dataUrl, { cache : 'no-store', credentials : 'same-origin' });
+            const answer   = await response.json().catch(() => null);
+            if (response.ok && answer && typeof answer === 'object') return { ok : true, error : null, value : answer[key] };
+            return { ok : false, error : (answer && answer.error) || `the project could not be read (${response.status})`, value : undefined };
+        } catch (error) {
+            return { ok : false, error : (error && error.message) || 'the project could not be read', value : undefined };
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | What the Drawings Block on Disk Is Right Now
     // ------------------------------------------------------------
     // Resolves to { ok, skipped, unsupported, error, drawings }, where
@@ -372,6 +397,7 @@
     // ------------------------------------------------------------
     export {
         Na__LocalMirror__MergeKeys,
+        Na__LocalMirror__ReadKey,
         Na__LocalMirror__DrawingsFingerprint,
         Na__LocalMirror__WriteSiblingFile,
         Na__LocalMirror__StatementTree,

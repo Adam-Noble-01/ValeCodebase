@@ -329,6 +329,72 @@
             "Na__Hotkey__Advanced"    : true,
             "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
             "Na__Hotkey__Description" : "Drawing markup: cancel placement or revert an edit"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_tool_finish",
+            "Na__Hotkey__Key"         : "Enter",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation tools: finish the path being drawn"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_tool_cancel",
+            "Na__Hotkey__Key"         : "Escape",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation tools: stop drawing or placing"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_tool_delete",
+            "Na__Hotkey__Key"         : "Delete",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation tools: remove the grip under the pointer, or the selected path or plant"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_tool_erase",
+            "Na__Hotkey__Key"         : "Alt",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation Bush Tool: hold to erase instead of paint"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_undo",
+            "Na__Hotkey__Key"         : "Ctrl+Z",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation: undo, while a vegetation panel is open"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "vegetation_redo",
+            "Na__Hotkey__Key"         : "Ctrl+Y",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__Vegetation__Contextual",
+            "Na__Hotkey__Description" : "Vegetation: redo, while a vegetation panel is open"
         }
 
     ]

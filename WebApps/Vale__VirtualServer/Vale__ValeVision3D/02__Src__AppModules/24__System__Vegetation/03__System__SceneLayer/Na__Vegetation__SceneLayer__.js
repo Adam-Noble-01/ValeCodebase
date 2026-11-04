@@ -31,10 +31,13 @@
 //   called from them. scene.onBeforeRender fires inside every renderer.render, for
 //   whichever camera is about to draw, including on paths nobody has written yet. A
 //   render with the same view again is one comparison, and a frame has three of them.
-// - NOT THROUGH A DRAWING. An orthographic camera sees no plants until the drawings
-//   stage (plan, D04), so no existing plan, elevation or sheet moves. A camera that
-//   has switched off layer 0 is an Export Render Layers pass, drawing only what it
-//   classified for itself: no plants there either, and no work done for them.
+// - NOT THROUGH A DRAWING, UNLESS ASKED (plan, D04). An orthographic camera sees no plants
+//   by default, so no existing plan, elevation or sheet moves. A project can ask for them
+//   on its live drawings (host.liveDrawingsWantPlants), and a sheet's viewport ticks them
+//   and gets renderDrawingLayer: the plants alone, on a transparent ground, hidden by the
+//   model where it stands in front, to lay over the vectors. A camera that has switched
+//   off layer 0 is an Export Render Layers pass, drawing only what it classified for
+//   itself: no plants there either, and no work done for them.
 // - THE SAME LINE AS THE MODEL. LineSegments2 and LineMaterial with the loader's own
 //   log depth bias (Na__ModelLoader__MultiModel.js, UpgradeLineworkRoot), under a group
 //   tagged as linework, so export line weights reach them as they reach a window.
@@ -48,6 +51,15 @@
 //   the normal buffer clears to: the Sobel sees nothing on a bush and nothing round it
 //   against the sky. The walls' own edges behind it are still masked. A camera move
 //   costs three numbers, however many plants there are.
+// - THE FILL HAS THE WALLS' BRIGHTNESS (Adam, 04-Nov-2026: "It should be the same brightness
+//   as the building walls and change as you move, rather than it being bright white-looking").
+//   Still unlit, because a lit stack of discs turned to mud, but its one colour is worked out
+//   before each render from the scene's own lights, by the sum the walls' shader does:
+//   (ambient + sun x dot) / pi. Its normal for that sum is the view's, with each axis
+//   counting by how much of it faces the eye (its square), so it is never brighter than a
+//   real wall in view: looking square at a front gives exactly that front, the shady side
+//   gives the shade, and looking down goes towards the top's, with no jump on the way. A
+//   sheet's layer has no walls under it, only paper, so it keeps the paper tone (FillTone).
 // - UNDER MAXENGINE'S AO THE FILL MARKS ITSELF. It has to be in the normal and depth
 //   passes for the reason above, and SSAO reading a stack of flat discs turns a bush
 //   into a bunch of grapes; out of those passes (layer 1, as foliage goes) the walls'
@@ -58,6 +70,15 @@
 //   lines heavier by its export scale, so it asks for the view at the size it would be
 //   if its lines were the screen's. A 6000 px still therefore has the picture the screen
 //   has, only sharper: the outline is sampled more finely, and nothing else changes.
+// - TRANSPARENCY FADES THE WHOLE PLANT (Adam: "Whole plant"). A bush is a stack of
+//   overlapping discs, and blending those would show every disc. So above 0% the fill
+//   draws twice from one geometry: depth only, then colour where it equals that depth,
+//   which leaves one layer at each pixel, and a bush fades as one sheet. At 0% it is the
+//   same opaque route as if this did not exist. From the see-through share up the fill
+//   stops masking the profile lines of what is behind it (the normal pass is the only
+//   render with an override material), so the wall's edges show through. Nor is it then
+//   in AO's passes, so AO reads the wall alone and the mark above stops: kept, it cut the
+//   wall's own shadow out behind every plant and left dashes in the gaps (Mathison, Max).
 //
 // INTEGRATION:
 // - Driven by Na__Vegetation__Runtime__.js in the app, and by the test bench in
@@ -65,10 +86,22 @@
 // - options.host carries everything it needs from the app, so it imports nothing of
 //   the app's: getLiveFrame, getExportScale, getClipList, requestFrame, isAoRunning,
 //   registerOverlay, setOverlayWanted. Without a host every draw is a full one.
+// - options.wallColour is the model's wall colour. Without one, as on the test bench, the
+//   fill keeps one tone from every side.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
+// - The fill has the walls' brightness and changes with the view (wallColour, setFillWallShare).
+//   A plant's scale counts in its proxy and its pick. FillTone is now the tone on a sheet.
+//   A box for a plant whose asset asks for one, a hedge, in its proxy and its pick.
+//
+// 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.85.0)
+// - Transparency (plan, D03): lines and fill fade together, the fill as one sheet. Plants
+//   can be taken out one by one, so an edit rebuilds only what changed. The depth bias and
+//   the fill's tone can change live, for the Vegetation Linework panel.
+//
 // 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.84.0)
 // - Moved in from the prototype's Na__VegLine__SceneLayer__.js, where the look was
 //   agreed: Stage 2 of ValeVision__PLAN__VegetationSystem__.md. New here: the slots,
@@ -137,6 +170,12 @@
     const Na__VegLayer__SQUEEZE_ITEMS = 4096;                                  // <-- Too small a buffer to be worth it
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Draw Order When Transparent (after the opaque model, before the lines)
+    // ------------------------------------------------------------
+    const Na__VegLayer__FILL_DEPTH_ORDER  = 900;
+    const Na__VegLayer__FILL_COLOUR_ORDER = 901;
+    // ------------------------------------------------------------
+
     // MODULE CONSTANTS | Proxy Look
     // ------------------------------------------------------------
     const Na__VegLayer__PROXY_FILL    = 0xe6ede1;                              // <-- A pale sage, so a proxy is never mistaken for model
@@ -180,7 +219,7 @@
             polygonOffsetFactor : -4,
             polygonOffsetUnits  : -4
         });
-        const bias   = Na__VegLayer__GlslFloat(depthBias);
+        let bias = Na__VegLayer__GlslFloat(depthBias);
         const orthoB = Na__VegLayer__GlslFloat(orthoBiasMm / 1000);
         material.onBeforeCompile = (shader) => {
             shader.vertexShader = shader.vertexShader
@@ -199,6 +238,10 @@
                 #endif`);
         };
         material.customProgramCacheKey = () => 'naVegLineBias' + bias + orthoB;
+        material.naVegSetDepthBias = (value) => {                              // <-- The bias is compiled in, so a new one means a new program
+            bias = Na__VegLayer__GlslFloat(value);
+            material.needsUpdate = true;
+        };
         return material;
     }
     // ------------------------------------------------------------
@@ -380,6 +423,7 @@
 
         const outerMaterial = Na__VegLayer__MakeLineMaterial(options.lineColour, weightPx, biasLog, 2, options.resolution);
         const innerMaterial = Na__VegLayer__MakeLineMaterial(options.lineColour, weightPx * rules.Vegetation__LineRules__InnerWeightShare, biasLog, 2, options.resolution);
+        innerMaterial.userData.Na__LineworkSettings__OverrideShare = rules.Vegetation__LineRules__InnerWeightShare;   // <-- A sheet's own edge width keeps inner lines lighter than outlines
 
         // SUB FUNCTION | A Fat Line Object over a Shared Buffer
         // ------------------------------------------------------------
@@ -410,9 +454,9 @@
         const outerLine = makeLine(outerArena, outerMaterial, 'Na__Vegetation__OuterLines');
         const innerLine = makeLine(innerArena, innerMaterial, 'Na__Vegetation__InnerLines');
 
-        // THE FILL | ONE TONE FROM EVERY SIDE. Unlit: a lit fill facing the eye went grey
-        // whenever the camera came round away from the sun, and the planting looked dirty
-        // against the walls. Set in working space, because the composer's route is raw.
+        // THE FILL | Unlit, and its one colour set for each render: see toneFillForCamera. Set
+        // in working space, because the composer's route is raw.
+        const wallAlbedo   = Number.isFinite(options.wallColour) ? new THREE.Color(options.wallColour) : null;
         const fillMaterial = new THREE.MeshBasicMaterial({
             color : new THREE.Color().setRGB(tone, tone, tone, THREE.LinearSRGBColorSpace),
             side  : THREE.DoubleSide
@@ -424,6 +468,23 @@
         fillMesh.name          = 'Na__Vegetation__Fill';
         fillMesh.frustumCulled = false;
         fillMesh.raycast       = () => {};
+
+        // THE FILL'S FIRST PASS WHEN TRANSPARENT | Depth only, from the one geometry. See the
+        // header. Marked transparent so it sorts after the opaque model, as the colour does.
+        const fillDepthMaterial = new THREE.MeshBasicMaterial({
+            colorWrite  : false,
+            depthWrite  : true,
+            side        : THREE.DoubleSide,
+            transparent : true
+        });
+        const drawingDepthMaterial = new THREE.MeshBasicMaterial({ colorWrite : false, side : THREE.DoubleSide });   // <-- The model's depth, for renderDrawingLayer
+        const fillDepthMesh = new THREE.Mesh(fillMesh.geometry, fillDepthMaterial);
+        fillDepthMesh.name          = 'Na__Vegetation__FillDepth';
+        fillDepthMesh.frustumCulled = false;
+        fillDepthMesh.renderOrder   = Na__VegLayer__FILL_DEPTH_ORDER;
+        fillDepthMesh.visible       = false;
+        fillDepthMesh.raycast       = () => {};
+
         fillArena.rebind = () => {
             const previous = fillMesh.geometry;
             const position = new THREE.BufferAttribute(fillArena.array, 3);
@@ -433,11 +494,13 @@
             geometry.setAttribute('normal', fillNormal);                       // <-- One value for all, read once per instance, and there is one instance
             geometry.instanceCount = 1;
             geometry.setDrawRange(0, 0);
-            fillMesh.geometry   = geometry;
-            fillArena.attribute = position;
+            fillMesh.geometry      = geometry;
+            fillDepthMesh.geometry = geometry;
+            fillArena.attribute    = position;
             previous.dispose();
         };
         fillArena.rebind();
+        root.add(fillDepthMesh);
         root.add(fillMesh);
 
         // THE PROXIES | Merged, and built only when someone asks to see them. An aid, so
@@ -489,6 +552,12 @@
             movingStyle: Na__VegBudget__MovingStyle(style, tuning),
             drawingExact : true,
             fillMasked : false,
+            transparency : 0,
+            drawingLayerRunning : false,
+            paperTone : tone,
+            wallShare : Number.isFinite(advanced.Vegetation__LineRulesAdvanced__FillWallShare) ? advanced.Vegetation__LineRulesAdvanced__FillWallShare : 1,
+            depthBias  : biasLog,
+            seeThrough : Number.isFinite(options.seeThroughPercent) ? options.seeThroughPercent : 50,
             signature  : new Float64Array(21),
             hasView    : false,
             stats      : {
@@ -504,6 +573,47 @@
         };
         const sizeVector = new THREE.Vector2();
         const nowMs      = () => performance.now();
+
+        // SUB FUNCTION | Set the Fill and Lines for the Transparency and the AO's Mark
+        // ------------------------------------------------------------
+        // Four states. Opaque is exactly what it always was. While AO is running the fill
+        // writes alpha 0 so the AO pass leaves it alone (see the header): opaque by way of
+        // NoBlending, transparent by keeping the blend for colour and zero for alpha.
+        // ------------------------------------------------------------
+        function applyFillLook() {
+            const share = state.transparency / 100;
+            const on    = share > 0;
+            const alpha = 1 - share;
+            const mask  = state.fillMasked && state.transparency < state.seeThrough;
+
+            fillMaterial.transparent = on;
+            fillMaterial.depthWrite  = !on;
+            fillMaterial.opacity     = on ? alpha : (mask ? 0 : 1);
+            if (on && mask) {
+                fillMaterial.blending      = THREE.CustomBlending;
+                fillMaterial.blendEquation = THREE.AddEquation;
+                fillMaterial.blendSrc      = THREE.SrcAlphaFactor;
+                fillMaterial.blendDst      = THREE.OneMinusSrcAlphaFactor;
+                fillMaterial.blendSrcAlpha = THREE.ZeroFactor;
+                fillMaterial.blendDstAlpha = THREE.ZeroFactor;
+            } else {
+                fillMaterial.blending = (mask && !on) ? THREE.NoBlending : THREE.NormalBlending;
+            }
+            fillMaterial.needsUpdate = true;
+            fillMesh.renderOrder     = on ? Na__VegLayer__FILL_COLOUR_ORDER : 0;
+            fillMesh.visible         = true;
+            fillDepthMesh.visible    = on;
+
+            [outerMaterial, innerMaterial].forEach((material) => {
+                if (material.transparent !== on) {
+                    material.transparent = on;
+                    material.needsUpdate = true;
+                }
+                material.opacity = alpha;
+            });
+        }
+        // ------------------------------------------------------------
+
 
         // SUB FUNCTION | Find an Asset's Recipe
         // ------------------------------------------------------------
@@ -582,7 +692,9 @@
             state.plops.forEach((plop) => {
                 const sizeM = plopSizeM(plop);
                 if (!sizeM) return;
-                const dome  = new THREE.SphereGeometry(1, Na__VegLayer__PROXY_SECTORS, Na__VegLayer__PROXY_RINGS, 0, Math.PI * 2, 0, Math.PI / 2);
+                const dome  = plopIsBox(plop)
+                    ? new THREE.BoxGeometry(2, 1, 2).translate(0, 0.5, 0)      // <-- A hedge: the same unit of size as the dome, so the one matrix does for both
+                    : new THREE.SphereGeometry(1, Na__VegLayer__PROXY_SECTORS, Na__VegLayer__PROXY_RINGS, 0, Math.PI * 2, 0, Math.PI / 2);
                 quat.setFromAxisAngle(up, ((plop.yawDeg || 0) * Math.PI) / 180);
                 matrix.compose(
                     new THREE.Vector3(plop.positionMm[0] / 1000, plop.positionMm[1] / 1000, plop.positionMm[2] / 1000),
@@ -627,7 +739,17 @@
             if (!recipe) return null;
             const size = recipe.Asset__Size;
             const mm   = plop.sizeMm || [size.Size__WidthMm, size.Size__DepthMm, size.Size__HeightMm];
-            return [mm[0] / 1000, mm[1] / 1000, mm[2] / 1000];
+            const zoom = plop.scale > 0 ? plop.scale : 1;                      // <-- A plant's scale is the whole plant, its proxy with it
+            return [(mm[0] * zoom) / 1000, (mm[1] * zoom) / 1000, (mm[2] * zoom) / 1000];
+        }
+        // ------------------------------------------------------------
+
+
+        // SUB FUNCTION | Does a Plop's Asset Ask for a Box?
+        // ------------------------------------------------------------
+        function plopIsBox(plop) {
+            const recipe = findRecipe(plop.assetId);
+            return !!(recipe && recipe.Asset__Proxy && recipe.Asset__Proxy.Proxy__Shape === 'Box');
         }
         // ------------------------------------------------------------
 
@@ -839,12 +961,72 @@
         // ------------------------------------------------------------
 
 
+        // SUB FUNCTION | Give the Fill the Brightness of a Wall Facing This Camera
+        // ------------------------------------------------------------
+        // See the header. The lights as they are for this render: a scene's lighting changes
+        // them. Only what is in the scene's first level counts, which is where the app keeps
+        // its lights. With none there, nothing is known about the walls: the paper tone.
+        // ------------------------------------------------------------
+        function toneFillForCamera(camera) {
+            if (!wallAlbedo) return;
+            const paper = state.paperTone;
+            if (state.drawingLayerRunning) {
+                fillMaterial.color.setRGB(paper, paper, paper, THREE.LinearSRGBColorSpace);
+                return;
+            }
+
+            const eye = camera.matrixWorld.elements;
+            const nx = eye[8], ny = eye[9], nz = eye[10];                      // <-- The camera's own +Z: from what it looks at towards the eye
+            let r = 0, g = 0, b = 0, lit = false;
+            const children = scene.children;
+            for (let i = 0; i < children.length; i++) {
+                const light = children[i];
+                if (!light.isLight || !light.visible) continue;
+                let amount;
+                if (light.isAmbientLight) {
+                    amount = light.intensity;
+                } else if (light.isDirectionalLight) {
+                    const from = light.matrixWorld.elements, to = light.target.matrixWorld.elements;
+                    const dx = from[12] - to[12], dy = from[13] - to[13], dz = from[14] - to[14];
+                    const length = Math.hypot(dx, dy, dz) || 1;
+                    amount = light.intensity * (
+                        nx * nx * Math.max(0, (nx < 0 ? -dx : dx) / length) +
+                        ny * ny * Math.max(0, (ny < 0 ? -dy : dy) / length) +
+                        nz * nz * Math.max(0, (nz < 0 ? -dz : dz) / length)
+                    );
+                } else {
+                    continue;
+                }
+                r += light.color.r * amount;
+                g += light.color.g * amount;
+                b += light.color.b * amount;
+                lit = true;
+            }
+            if (!lit) {
+                fillMaterial.color.setRGB(paper, paper, paper, THREE.LinearSRGBColorSpace);
+                return;
+            }
+            const share = state.wallShare / Math.PI;
+            fillMaterial.color.setRGB(
+                Math.min(1, wallAlbedo.r * r * share),
+                Math.min(1, wallAlbedo.g * g * share),
+                Math.min(1, wallAlbedo.b * b * share),
+                THREE.LinearSRGBColorSpace
+            );
+        }
+        // ------------------------------------------------------------
+
+
         // FUNCTION | Run Inside Every renderer.render, for the Camera About to Draw
         // ------------------------------------------------------------
         function onBeforeSceneRender(renderer, camera) {
             if (state.failed || !root.visible) return;
             if (!camera.layers.isEnabled(0)) return;                           // <-- An export layer pass: not looking at plants
-            if (camera.isOrthographicCamera) { hideCounts(); return; }         // <-- A drawing: plan, D04
+            if (camera.isOrthographicCamera && !state.drawingLayerRunning             // <-- A drawing: plan, D04. See the header
+                && !(host.liveDrawingsWantPlants && host.liveDrawingsWantPlants() === true)) {
+                hideCounts();
+                return;
+            }
             if (state.proxyDirty && state.mode !== 'rendered') rebuildProxies();
 
             const liveFrame = host.getLiveFrame ? host.getLiveFrame() : 0;
@@ -870,6 +1052,7 @@
                 const clip = host.getClipList();
                 if (fillMaterial.clippingPlanes !== clip) {
                     fillMaterial.clippingPlanes  = clip;
+                    fillDepthMaterial.clippingPlanes = clip;
                     outerMaterial.clippingPlanes = clip;
                     innerMaterial.clippingPlanes = clip;
                 }
@@ -879,11 +1062,18 @@
             const wantsMask = host.isAoRunning ? host.isAoRunning() === true : false;
             if (wantsMask !== state.fillMasked) {
                 state.fillMasked = wantsMask;
-                fillMaterial.blending    = wantsMask ? THREE.NoBlending : THREE.NormalBlending;
-                fillMaterial.opacity     = wantsMask ? 0 : 1;
-                fillMaterial.needsUpdate = true;
+                applyFillLook();
             }
 
+            // THE NORMAL PASS WHEN TRANSPARENT | See the header. An override material is the
+            // mark of it, and the depth pass has no business in it at all.
+            if (state.transparency > 0) {
+                const overriding = !!scene.overrideMaterial;
+                fillDepthMesh.visible = !overriding;
+                fillMesh.visible      = !(overriding && state.transparency >= state.seeThrough);
+            }
+
+            toneFillForCamera(camera);
             syncToView(camera, widthPx, heightPx, exportScale, liveFrame);
         }
         // ------------------------------------------------------------
@@ -950,6 +1140,114 @@
         // ------------------------------------------------------------
 
 
+        // FUNCTION | Take Plants Out, Leaving the Rest Alone
+        // ------------------------------------------------------------
+        // list: the plops as given to addPlops. Their slots are blanked, and the holes are
+        // squeezed out when the camera next rests.
+        // ------------------------------------------------------------
+        function removePlops(list) {
+            const gone = new Set(list);
+            const kept = [];
+            state.plants.forEach((plant) => {
+                if (!gone.has(plant.plop)) {
+                    kept.push(plant);
+                    return;
+                }
+                Na__VegLayer__WriteSlot(outerArena, plant.outer, scratch.outer, 0);
+                Na__VegLayer__WriteSlot(innerArena, plant.inner, scratch.inner, 0);
+                Na__VegLayer__WriteSlot(fillArena, plant.fill, scratch.fill, 0);
+            });
+            state.plants = kept;
+            state.plops  = state.plops.filter((plop) => !gone.has(plop));
+            state.stats.plants = state.plants.length;
+            state.proxyDirty   = true;
+            if (state.mode !== 'rendered') rebuildProxies();
+        }
+        // ------------------------------------------------------------
+
+
+        // FUNCTION | Draw the Plants Alone for a Drawing on a Sheet
+        // ------------------------------------------------------------
+        // On a transparent ground, through whatever camera and target the caller has set up,
+        // so a sheet can lay them over its vectors. First the model's depth alone, so a wall
+        // in front hides a plant behind it, then the plants with nothing else in the scene.
+        // A printed sheet does not depend on one device's slider, so opaque. Empty with no
+        // plants: a layer of its own starts from nothing whatever happens.
+        // ------------------------------------------------------------
+        function renderDrawingLayer(renderer, camera) {
+            const was = {
+                autoClear   : renderer.autoClear,
+                clearAlpha  : renderer.getClearAlpha(),
+                clearColour : renderer.getClearColor(new THREE.Color()),
+                shadowAuto  : renderer.shadowMap.autoUpdate,
+                background  : scene.background,
+                override    : scene.overrideMaterial,
+                transparency: state.transparency
+            };
+            const hidden = [];
+            const hide = (object) => {
+                if (object.visible) {
+                    object.visible = false;
+                    hidden.push(object);
+                }
+            };
+            const bringBack = () => {
+                hidden.forEach((object) => { object.visible = true; });
+                hidden.length = 0;
+            };
+            const rootWasOn = root.visible;
+            try {
+                renderer.setClearColor(0x000000, 0);
+                renderer.clear(true, true, false);
+                if (state.plants.length === 0 || !rootWasOn) return true;
+
+                renderer.shadowMap.autoUpdate = false;
+                renderer.autoClear = false;
+                scene.background   = null;
+
+                // THE MODEL'S DEPTH | No colour. Fat lines go, as for the profile pass: an
+                // override material on one draws its quad as a solid face.
+                root.visible = false;
+                scene.traverse((object) => { if (object.isLine2 || object.isLineSegments2) hide(object); });
+                drawingDepthMaterial.clippingPlanes = host.getClipList ? host.getClipList() : null;
+                scene.overrideMaterial = drawingDepthMaterial;
+                renderer.render(scene, camera);
+                scene.overrideMaterial = was.override;
+                bringBack();
+                root.visible = true;
+
+                // THE PLANTS | Alone
+                scene.children.forEach((child) => { if (child !== root) hide(child); });
+                if (was.transparency > 0) setTransparency(0);
+                state.drawingLayerRunning = true;
+                renderer.render(scene, camera);
+                return true;
+            } finally {
+                state.drawingLayerRunning = false;
+                bringBack();
+                root.visible           = rootWasOn;
+                scene.overrideMaterial = was.override;
+                scene.background       = was.background;
+                if (was.transparency > 0) setTransparency(was.transparency);
+                renderer.setClearColor(was.clearColour, was.clearAlpha);
+                renderer.autoClear            = was.autoClear;
+                renderer.shadowMap.autoUpdate = was.shadowAuto;
+            }
+        }
+        // ------------------------------------------------------------
+
+
+        // FUNCTION | Fade the Whole of Every Plant, from 0 to 100
+        // ------------------------------------------------------------
+        function setTransparency(percent) {
+            const value = Math.max(0, Math.min(100, Number(percent) || 0));
+            if (value === state.transparency) return;
+            state.transparency = value;
+            applyFillLook();
+        }
+        // ------------------------------------------------------------
+
+
         // FUNCTION | Show or Hide All of It
         // ------------------------------------------------------------
         function setVisible(visible) {
@@ -976,6 +1274,25 @@
                 const lox = (ox * c - oz * s) / (sizeM[0] / 2), loy = oy / sizeM[2], loz = (ox * s + oz * c) / (sizeM[1] / 2);
                 const ldx = (direction.x * c - direction.z * s) / (sizeM[0] / 2), ldy = direction.y / sizeM[2], ldz = (direction.x * s + direction.z * c) / (sizeM[1] / 2);
 
+                // A BOX | The way in through its three pairs of faces
+                if (plopIsBox(plop)) {
+                    let tIn = 0, tOut = Infinity;
+                    [[lox, ldx, -1, 1], [loy, ldy, 0, 1], [loz, ldz, -1, 1]].forEach(([from, along, low, high]) => {
+                        if (Math.abs(along) < 1e-9) {
+                            if (from < low || from > high) tOut = -1;
+                            return;
+                        }
+                        const t0 = (low - from) / along, t1 = (high - from) / along;
+                        tIn  = Math.max(tIn, Math.min(t0, t1));
+                        tOut = Math.min(tOut, Math.max(t0, t1));
+                    });
+                    if (tOut >= tIn && tIn > 0 && tIn < bestT) {
+                        bestT = tIn;
+                        best  = plop;
+                    }
+                    return;
+                }
+
                 const qa = ldx * ldx + ldy * ldy + ldz * ldz;
                 const qb = 2 * (lox * ldx + loy * ldy + loz * ldz);
                 const qc = lox * lox + loy * loy + loz * loz - 1;
@@ -1000,6 +1317,9 @@
             setMode,
             setPlops,
             addPlops,
+            removePlops,
+            setTransparency,
+            renderDrawingLayer,
             setVisible,
             update,
             pick,
@@ -1022,11 +1342,27 @@
                 state.dirty = true;
             },
 
+            // The panel's Advanced dropdown: one needs new programs, one a new colour
+            setDepthBias : (value) => {
+                if (value === state.depthBias) return;                         // <-- A new program each time: never for a slider that moved something else
+                state.depthBias = value;
+                outerMaterial.naVegSetDepthBias(value);
+                innerMaterial.naVegSetDepthBias(value);
+            },
+            setFillTone : (tone) => {
+                state.paperTone = tone;
+                if (!wallAlbedo) fillMaterial.color.setRGB(tone, tone, tone, THREE.LinearSRGBColorSpace);
+            },
+            setFillWallShare : (share) => {
+                if (Number.isFinite(share)) state.wallShare = share;
+            },
+
             // The line weights system stashes a material's base width the first time it
             // scales one, and works from that from then on
             setLineWeights : (outerPx, innerPx) => {
                 outerMaterial.linewidth = outerPx;
                 innerMaterial.linewidth = innerPx;
+                if (outerPx > 0) innerMaterial.userData.Na__LineworkSettings__OverrideShare = innerPx / outerPx;
                 if (Number.isFinite(outerMaterial.userData.Na__LineworkSettings__BaseWidth)) outerMaterial.userData.Na__LineworkSettings__BaseWidth = outerPx;
                 if (Number.isFinite(innerMaterial.userData.Na__LineworkSettings__BaseWidth)) innerMaterial.userData.Na__LineworkSettings__BaseWidth = innerPx;
                 state.dirty = true;

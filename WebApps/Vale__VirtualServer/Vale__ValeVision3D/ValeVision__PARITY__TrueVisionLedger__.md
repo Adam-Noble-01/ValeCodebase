@@ -1,5 +1,34 @@
 # ValeVision 3D - TrueVision Parity Ledger
 
+> **Retired 04-Nov-2026 (dated note; everything below is kept as written).** Adam retired the TrueVision parity programme
+> on 04-Nov-2026, choosing the option worded "The programme is over: a later job can clear the tokens and the ledger's open items". This file is
+> history, frozen where the programme stopped: part-way through Wave 4, after ValeVision3D v2.71.5, pinned to TrueVision3D
+> v2.172.0 (`b2aa9151`). No Parity Scribe writes it again. ValeVision's drawing code is its own, and a port happens only
+> when Adam asks for one. What the job that wrote this note did, and what it found still switched off:
+> `ValeVision__DEVLOG__.md`, v2.83.3.
+>
+> **This note closes every open item below, as not owed.** Each row stays as written: read its "open", "held", "waiting"
+> and "next" as how things stood when the programme stopped, not as something to do. Counted on 04-Nov-2026:
+>
+> | Section | Open when the programme stopped | Closed as |
+> |---|---|---|
+> | 1.5 | The scribe passes W4-99, W5-99 and W6-04 | Never ran, and will not |
+> | 3 Module Register | 34 rows `drifted`, 89 rows `TV-only`, 41 rows with a Blocked by list | Not owed: a difference from TrueVision is no longer drift. Of the 89, 32 are on disk (next paragraph) and 57 never landed |
+> | 4 Release Watermark | 49 of 177 releases: PARTIAL 36, NOT-CONSIDERED 11, PENDING-SIGNOFF 1, REOPENED 1 | Not owed. The watermark stops at TrueVision3D v2.172.0; TrueVision has since reached v2.183.0 (19-Oct-2026) |
+> | 5 Decisions | DR-01 to DR-44 and the seven questions (D41 to D91), none answered; the choices in 5.1 "for Adam's eye" | Stand as built on their defaults. No answer is owed. What those defaults hold back is listed in v2.83.3 |
+> | 6 Back-ports | 44 rows OPEN or VV ahead, each wave's offers among them | Not owed. No TrueVision-lane package (WT-01 to WT-12) ran, and none will unasked |
+> | 7 TrueVision-side records | 72 rows of corrections drafted for the TrueVision lane | Not applied. TrueVision's records stay as they are (D76) |
+>
+> **Wave 4 left no record here.** It stopped before its scribe pass, so nothing below says what it landed. On disk at the
+> close, and still `TV-only` in section 3: `27__System__ContextMenuSystem` 2 files, `51__Feature__DrawingRegister` 6,
+> `52__Feature__StatementWriter` 20 and `53__Data__Layout__PublishedSchema` 4. Thirty of them carried `{{VVREL:W4-nn}}`
+> tokens, cleared at v2.83.3. Wave 4's Port Records and the audit are not in this folder: they survive in git at
+> `c942cac30`, under `WebApps/ValeVision3D/ValeVision__AUDIT__TrueVisionParity__Evidence__/`.
+>
+> **Two things outlast the close.** The read-only viewer's first drawing still fills in uncovered (W1-33, section 5.1),
+> because the published viewer (W4-09) never landed and the decision the row asked for was never taken. And sections 1.4
+> and 8 describe the R2, Worker and shared service worker setup that v2.72.0 replaced: read them as history too.
+
 > **Restructured 01-Oct-2026** by the TrueVision parity programme's records package W0-06, on decision DR-35's default (b)
 > (recorded as D75 in `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`). Sections 1 to 8 are the live record. Section 9,
 > the Archive, holds everything this ledger said from 10-Sep-2026 to 28-Sep-2026, unchanged apart from dated notes beside

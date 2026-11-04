@@ -65,7 +65,7 @@
 // - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, landed inert:
 //                   nothing imports this controller until the drafting aids are switched
 //                   on - K in the sheet tools' keyboard (the hub, W3-03, W3-05) and the
-//                   toolbar's Draft button (W5-01). The viewports read the flag from
+//                   toolbar's Draft button (Toolbar 1.9.6, v2.83.4). The viewports read the flag from
 //                   Na__LayoutEditor__DraftMode__State__ (a leaf, so no import cycle) once
 //                   they are TrueVision's (W2-16).
 //                   TrueVision's own note said "not yet ported - it waits for Adam's

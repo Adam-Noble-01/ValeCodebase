@@ -49,6 +49,10 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   04-Nov-2026 - Version 1.3.0 (ValeVision3D v2.85.0)
+   - The Vegetation section's two controls for everyone report as settings.change: shown or
+     hidden, and the transparency.
+
    28-Oct-2026 - Version 1.2.0 (ValeVision3D v2.78.0)
    - What a visit does (above): exports, the camera, layers, full screen, Reset
      View, Help, settings, the menus, and a visit summary. For the Server
@@ -292,6 +296,10 @@
             }, Na__ActLog__LensMs);
         } else if (t.id === 'naVerticalCorrectionToggle') {
             Na__ActLog__Send('camera.correction', t.checked ? 'On' : 'Off');
+        } else if (t.id === 'naVegetationShowToggle') {
+            Na__ActLog__Send('settings.change', 'Vegetation: ' + (t.checked ? 'shown' : 'hidden'));
+        } else if (t.id === 'naVegetationTransparencySlider') {
+            Na__ActLog__Send('settings.change', 'Vegetation transparency: ' + t.value + '%');
         }
     }, true);
     // ------------------------------------------------------------

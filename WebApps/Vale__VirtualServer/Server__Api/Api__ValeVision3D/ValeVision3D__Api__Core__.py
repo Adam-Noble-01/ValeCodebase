@@ -49,6 +49,11 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 04-Nov-2026 - Version 1.4.0
+# - resolve_project_exact(): for the routes that write the record, the whole token must name the
+#   project, so a POST or PATCH to /api/projects/<A>/<B> no longer lands on project B.
+# - send_json_file() can leave out top-level keys: what a client link's read of the record goes without.
+#
 # 09-Oct-2026 - Version 1.3.0
 # - FIX: write_bytes_atomic() left every file it wrote at mkstemp's 0600 (owner valeapp only), so
 #   nginx answered 403 for saved page layout pictures and thumbnails, and a Collect could not read
@@ -205,6 +210,22 @@ def resolve_project(token):
         if matches:
             return min(matches, key=_job_number_rank)
     return None
+
+
+def resolve_project_exact(token):
+    """
+    resolve_project for a route that writes the record, where the whole token
+    must name the project: the id, a job number, or "<year>/<id>" with that
+    project's own year, which is what a page opened from an old
+    ?project=2026/<id> link saves to. resolve_project reads only the last
+    segment, so without this a POST to a route this service does not have
+    (/api/projects/<A>/<B>) lands on project B.
+    """
+    year, slash, last = str(token or '').strip().strip('/').rpartition('/')
+    folder = resolve_project(last)
+    if folder and slash and year != Na__Library__Year(folder):
+        return None
+    return folder
 
 
 def _job_number_rank(folder: Path):
@@ -384,17 +405,19 @@ def send_private_file(path):
     return response
 
 
-def send_json_file(file_path):
-    """A JSON file's bytes AS STORED, Last-Modified, no-store; a broken file is a 500 naming the line."""
+def send_json_file(file_path, without=()):
+    """A JSON file's bytes AS STORED, Last-Modified, no-store; a broken file is a 500 naming the line. without: top-level keys left out, the rest in their order."""
     with open(file_path, 'rb') as fh:
         modified = os.fstat(fh.fileno()).st_mtime
         data     = fh.read()
     try:
-        json.loads(data.decode('utf-8-sig'))
+        document = json.loads(data.decode('utf-8-sig'))
     except (UnicodeDecodeError, ValueError) as error:
         message = unreadable_message(os.path.basename(file_path), error)
         log(f' [ERROR] {message}')
         return jsonify({'error': message, 'unreadable': True}), 500
+    if without and isinstance(document, dict):
+        data = json_text({key: value for key, value in document.items() if key not in without}).encode('utf-8')
     response = Response(data, mimetype='application/json')
     response.last_modified = modified
     response.headers['Cache-Control'] = 'no-store'

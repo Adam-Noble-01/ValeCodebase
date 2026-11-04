@@ -30,29 +30,41 @@
 // - Twin          : TrueVision3D 02__Src__AppModules/51__System__LayoutEditor/40__Ui__Panels/Na__LayoutEditor__Toolbar__.js
 // - Source version: hunks up to TrueVision's Toolbar 1.12.0 (TrueVision3D v2.70.0, 19-Sep-2026),
 //                   then its 1.17.0 (the Notes toggle; 21-Sep-2026, named in no TrueVision3D
-//                   release entry) and 1.19.0 (Undo, Redo, Fit and the zoom readout; TrueVision3D
-//                   v2.124.0, 21-Sep-2026); TrueVision's file is 1.24.0 (read at b2aa9151)
+//                   release entry), 1.19.0 (Undo, Redo, Fit and the zoom readout; TrueVision3D
+//                   v2.124.0, 21-Sep-2026), and 1.13.0, 1.15.0, 1.16.0 and 1.22.0 (Draft, Ortho,
+//                   Grid and Grid Snap, Axes; TrueVision3D v2.107.0, v2.113.0, v2.114.0 and
+//                   v2.131.0, 21-Sep-2026); TrueVision's file is 1.24.0 (read at b2aa9151)
 // - Ported on     : hunk by hunk, 13-Sep-2026 to 19-Sep-2026, then 02-Oct-2026 for
-//                   ValeVision3D v2.71.2 (see the log below)
+//                   ValeVision3D v2.71.2, then 04-Nov-2026 for v2.83.4 (see the log below)
 // - Parity        : adapted
 // - Divergences   :
 //   - Snap is a plain toggle over 28__System__ObjectSnap's controller
 //     (Na__LayoutEditor__ObjectSnap__.js) with this app's words. TrueVision's is a split
 //     button whose arrow opens Na__LayoutEditor__ObjectSnap__Menu__, worded by the
-//     controller's Label (its 1.20.0); the menu is landed and waits for W5-01.
+//     controller's Label (its 1.20.0); the menu is on disk with nothing opening it.
 //   - The Select and Move hover texts keep this app's words, in the code and in the
 //     config: TrueVision's describe its automatic Move (TrueVision3D v2.78.0), which
-//     this app does not have until Adam confirms it (DR-40 item 7; W3-04, then W5-01).
-//   - Not here yet, each waiting for its feature: Floor Area, Image, Circle, Arc,
-//     Draft, Grid, Grid Snap, Ortho, Axes, the vector quality list, Share, and the
-//     Save Sheets note for a specification held back by its lockstep (TrueVision
-//     1.13.0 to 1.24.0). W5-01 takes TrueVision's file whole once they exist.
+//     this app holds back (DR-40 item 7; Adam, 04-Nov-2026: keep it held).
+//   - Not here: Floor Area, Image, Circle, Arc, the vector quality list, Share, and the
+//     Save Sheets note for a specification held back by its lockstep (the rest of
+//     TrueVision's 1.13.0 to 1.24.0). The parity programme that was to take TrueVision's
+//     file whole (W5-01) was retired on 04-Nov-2026: any of these comes by hunk, if asked.
 //   - Banner reads ValeVision3D.
 // - Back-port     : none - TrueVision has the file and leads it.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.9.6 (the five drafting toggles, v2.83.4)
+// - DRAFT, GRID, GRID SNAP, ORTHO AND AXES ARE ON THE STRIP, after Snap, in
+//   TrueVision's order and in its code: the hunks of its 1.13.0, 1.15.0, 1.16.0
+//   and 1.22.0, read at b2aa9151. Each button is the same call as its key (K,
+//   F6, F7, F8, F9) and is lit while on, whoever switched it. The words come
+//   from each feature's own config and are re-read on every sync, because a
+//   config can land after the toolbar is built. Sessions that can edit only,
+//   like the tool buttons. Adam, 04-Nov-2026: "Add the five toggles".
+// - Nothing new loads: the sheet tools' keyboard imports all four controllers.
+//
 // 02-Oct-2026 - Version 1.9.5 (object snap's own folder, v2.71.4)
 // - THE SNAP BUTTON SWITCHES THROUGH 28__System__ObjectSnap. CHANGED_EVENT,
 //   IsEnabled and Toggle come from its controller,
@@ -168,6 +180,10 @@
     import { Na__LeDrop__CHANGED_EVENT, Na__LeDrop__GetHint } from '../30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js';
     import { Na__LeScope__CHANGED_EVENT, Na__LeScope__Get, Na__LeScope__GetVectorId, Na__LeScope__GetDimensionId } from '../30__System__SheetTools/Na__LayoutEditor__EditScope__.js';
     import { Na__LeOsnap__CHANGED_EVENT, Na__LeOsnap__IsEnabled, Na__LeOsnap__Toggle } from '../28__System__ObjectSnap/Na__LayoutEditor__ObjectSnap__.js';
+    import { Na__LeOrtho__CHANGED_EVENT, Na__LeOrtho__IsOn, Na__LeOrtho__Toggle, Na__LeOrtho__Label } from '../32__System__OrthoMode/Na__LayoutEditor__OrthoMode__.js';
+    import { Na__LeDraft__CHANGED_EVENT, Na__LeDraft__IsOn, Na__LeDraft__Toggle, Na__LeDraft__Label } from '../26__System__DraftMode/Na__LayoutEditor__DraftMode__.js';
+    import { Na__LeGrid__CHANGED_EVENT, Na__LeGrid__IsShowing, Na__LeGrid__IsSnapping, Na__LeGrid__ToggleShow, Na__LeGrid__ToggleSnap, Na__LeGrid__Label } from '../27__System__DrawingGrid/Na__LayoutEditor__DrawingGrid__.js';
+    import { Na__LeAxes__CHANGED_EVENT, Na__LeAxes__IsOn, Na__LeAxes__Toggle, Na__LeAxes__Label } from '../33__System__DrawingAxes/Na__LayoutEditor__DrawingAxes__.js';
     import { Na__LePdf__ExportSheet } from '../60__Feature__PdfExport/Na__LayoutEditor__PdfExporter__.js';
     import { Na__LeRaster__LEVELS, Na__LeRaster__CHANGED_EVENT, Na__LeRaster__Get, Na__LeRaster__Set } from '../20__System__Viewports/Na__LayoutEditor__RasterQuality__.js';
     // ------------------------------------------------------------
@@ -227,6 +243,56 @@
         });
         const snap = Na__LeToolbar__Root.querySelector('[data-na-toolbar="snap"]');
         if (snap) { snap.classList.toggle('na-le-toolbar__btn--active', Na__LeOsnap__IsEnabled()); snap.setAttribute('aria-pressed', String(Na__LeOsnap__IsEnabled())); }
+        const ortho = Na__LeToolbar__Root.querySelector('[data-na-toolbar="ortho"]');
+        if (ortho) {
+            ortho.classList.toggle('na-le-toolbar__btn--active', Na__LeOrtho__IsOn());
+            ortho.setAttribute('aria-pressed', String(Na__LeOrtho__IsOn()));
+            // Re-read for the same reason as Draft's words below: the ortho
+            // config can land after the toolbar is built. Written only when
+            // they differ, because this sync runs often.
+            const orthoText  = Na__LeOrtho__Label('Toggle', 'Ortho');
+            const orthoTitle = Na__LeOrtho__Label('ToggleTitle', 'Ortho Mode (F8): restricts the cursor to horizontal and vertical from the last point. Hold Shift to draw one at an angle.');
+            if (ortho.textContent !== orthoText) ortho.textContent = orthoText;
+            if (ortho.title !== orthoTitle) ortho.title = orthoTitle;
+        }
+        const draft = Na__LeToolbar__Root.querySelector('[data-na-toolbar="draft"]');
+        if (draft) {
+            draft.classList.toggle('na-le-toolbar__btn--active', Na__LeDraft__IsOn());
+            draft.setAttribute('aria-pressed', String(Na__LeDraft__IsOn()));
+            // THE WORDS ARE RE-READ because the draft config may land after the
+            // toolbar is built - and written only when they differ, because this
+            // sync runs often.
+            const text  = Na__LeDraft__Label('Toggle', 'Draft');
+            const title = Na__LeDraft__Label('ToggleTitle', 'Draft mode (K): only the vector linework, every line a hairline, no fills and no raster pictures.');
+            if (draft.textContent !== text) draft.textContent = text;
+            if (draft.title !== title) draft.title = title;
+        }
+        // GRID AND GRID SNAP | Lit while on; the words re-read, because the grid
+        // config can land after the toolbar is built, and written only when
+        // they differ.
+        [ [ 'grid', Na__LeGrid__IsShowing(), 'ToolbarGrid', 'Grid', 'ToolbarGridTitle' ],
+          [ 'grid-snap', Na__LeGrid__IsSnapping(), 'ToolbarSnap', 'Grid Snap', 'ToolbarSnapTitle' ] ].forEach((entry) => {
+            const button = Na__LeToolbar__Root.querySelector('[data-na-toolbar="' + entry[0] + '"]');
+            if (!button) return;
+            button.classList.toggle('na-le-toolbar__btn--active', entry[1]);
+            button.setAttribute('aria-pressed', String(entry[1]));
+            const words = Na__LeGrid__Label(entry[2], entry[3]);
+            const title = Na__LeGrid__Label(entry[4], button.title);
+            if (button.textContent !== words) button.textContent = words;
+            if (button.title !== title) button.title = title;
+        });
+        // DRAWING AXES OVERLAY | Lit while on; the words re-read, because the
+        // axes config can land after the toolbar is built, and written only
+        // when they differ.
+        const axes = Na__LeToolbar__Root.querySelector('[data-na-toolbar="axes"]');
+        if (axes) {
+            axes.classList.toggle('na-le-toolbar__btn--active', Na__LeAxes__IsOn());
+            axes.setAttribute('aria-pressed', String(Na__LeAxes__IsOn()));
+            const axesText  = Na__LeAxes__Label('Toggle', 'Axes');
+            const axesTitle = Na__LeAxes__Label('ToggleTitle', axes.title);
+            if (axes.textContent !== axesText) axes.textContent = axesText;
+            if (axes.title !== axesTitle) axes.title = axesTitle;
+        }
         const raster = Na__LeToolbar__Root.querySelector('[data-na-toolbar="raster"]');
         if (raster && raster.value !== Na__LeRaster__Get()) raster.value = Na__LeRaster__Get();
         const hint = Na__LeToolbar__Root.querySelector('[data-na-toolbar="dropper-hint"]');
@@ -334,6 +400,26 @@
                 root.appendChild(button);
             });
             root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SnapToggle', 'Snap'), 'snap', Na__LeCfg__GetLabel('SnapToggleTitle', 'Snap dimensions to the linework endpoints and midpoints (F3)'), () => Na__LeOsnap__Toggle()));
+            // DRAFT | K, as in LayOut: a view of the sheet, not a setting of it,
+            // so it sits with the other toggles and is lit while it is on.
+            // ------------------------------------
+            root.appendChild(Na__LeToolbar__Button(Na__LeDraft__Label('Toggle', 'Draft'), 'draft', Na__LeDraft__Label('ToggleTitle', 'Draft mode (K): only the vector linework, every line a hairline, no fills and no raster pictures.'), () => Na__LeDraft__Toggle()));
+            // GRID AND GRID SNAP | F6 and F7, SketchUp LayOut's Show Grid and
+            // Grid Snap: two switches, as there, each lit while it is on.
+            // ------------------------------------
+            root.appendChild(Na__LeToolbar__Button(Na__LeGrid__Label('ToolbarGrid', 'Grid'), 'grid', Na__LeGrid__Label('ToolbarGridTitle', 'Show grid (F6): points every millimetre across the whole sheet, heavier every 10 mm. Never printed.'), () => Na__LeGrid__ToggleShow()));
+            root.appendChild(Na__LeToolbar__Button(Na__LeGrid__Label('ToolbarSnap', 'Grid Snap'), 'grid-snap', Na__LeGrid__Label('ToolbarSnapTitle', 'Grid snap (F7): every point placed or dragged lands on the nearest grid point.'), () => Na__LeGrid__ToggleSnap()));
+            // ORTHO | F8, as in AutoCAD: a way of drawing, lit while it is on,
+            // like AutoCAD's Ortho Mode button on its status bar.
+            // ------------------------------------
+            root.appendChild(Na__LeToolbar__Button(Na__LeOrtho__Label('Toggle', 'Ortho'), 'ortho', Na__LeOrtho__Label('ToggleTitle', 'Ortho Mode (F8): restricts the cursor to horizontal and vertical from the last point. Hold Shift to draw one at an angle.'), () => Na__LeOrtho__Toggle()));
+            // AXES | F9, the key after Ortho's: the Drawing Axes Overlay,
+            // SketchUp's red and green axes carried by the cursor out to the
+            // edges of the sheet, lit while it is on, like the grid and Ortho
+            // beside it. One short word on the strip; the full name opens its
+            // hover text.
+            // ------------------------------------
+            root.appendChild(Na__LeToolbar__Button(Na__LeAxes__Label('Toggle', 'Axes'), 'axes', Na__LeAxes__Label('ToggleTitle', 'Drawing Axes Overlay (F9): a red horizontal and a green vertical line through the cursor, run out to the edges of the sheet, as SketchUp draws its red and green axes. Never printed.'), () => Na__LeAxes__Toggle()));
 
             // EYEDROPPER HINT | What the dropper is holding and what to do next.
             // It lives beside the tool buttons because that is where the eye
@@ -390,7 +476,9 @@
         container.appendChild(root);
         Na__LeToolbar__Root = root;
         Na__LeToolbar__Listeners = () => Na__LeToolbar__Sync();
-        [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT, Na__LeDraft__CHANGED_EVENT, Na__LeGrid__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        window.addEventListener(Na__LeOrtho__CHANGED_EVENT, Na__LeToolbar__Listeners);     // <-- F8 lights the Ortho button, whoever switched it
+        window.addEventListener(Na__LeAxes__CHANGED_EVENT, Na__LeToolbar__Listeners);      // <-- F9 lights the Axes button, whoever switched it
         Na__LeToolbar__Sync();
         return true;
     }
@@ -401,8 +489,10 @@
     // ------------------------------------------------------------
     function Na__LeToolbar__Unmount() {
         if (Na__LeToolbar__Listeners) {
-            [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
+            [ Na__LeTools__CHANGED_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeScope__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT, Na__LeDraft__CHANGED_EVENT, Na__LeGrid__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
         }
+        if (Na__LeToolbar__Listeners) window.removeEventListener(Na__LeOrtho__CHANGED_EVENT, Na__LeToolbar__Listeners);
+        if (Na__LeToolbar__Listeners) window.removeEventListener(Na__LeAxes__CHANGED_EVENT, Na__LeToolbar__Listeners);
         if (Na__LeToolbar__Root && Na__LeToolbar__Root.parentNode) Na__LeToolbar__Root.parentNode.removeChild(Na__LeToolbar__Root);
         Na__LeToolbar__Root = Na__LeToolbar__Listeners = null;
     }

@@ -106,7 +106,7 @@ changed.
 ---
 
 Ported from TrueVision3D's `README__PublishedSchema__.md` (as of TrueVision3D v2.166.0, read at HEAD
-b2aa9151) by parity package W4-01, 02-Oct-2026, for ValeVision3D {{VVREL:W4-01}}. This app's own text: the
+b2aa9151) by parity package W4-01, 02-Oct-2026, after ValeVision3D v2.71.5 (first carried by v2.72.0). This app's own text: the
 example folder's location and the note above it, the parity heading, and "on the server" for TrueVision's
 R2 bucket. In ValeVision a share link opens the app itself, keyed by the project's folderId (DR-23 (a)), and
 the example's share record lists no statement (the Statement Writer is switched off, DR-10).

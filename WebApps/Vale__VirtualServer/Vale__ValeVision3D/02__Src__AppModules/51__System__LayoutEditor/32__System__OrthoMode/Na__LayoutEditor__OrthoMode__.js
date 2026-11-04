@@ -79,7 +79,7 @@
 // - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, landed inert:
 //                   nothing imports this controller until the drafting aids are switched
 //                   on - F8 in the sheet tools' keyboard (W3-03, W3-05) and the toolbar's
-//                   Ortho button (W5-01). The tools ask Na__LayoutEditor__OrthoMode__State__
+//                   Ortho button (Toolbar 1.9.6, v2.83.4). The tools ask Na__LayoutEditor__OrthoMode__State__
 //                   (Resolve) once they are TrueVision's (W2-26, W3-03); its flag stays off
 //                   until F8 can switch it.
 //                   TrueVision's own note said "not yet ported - it waits for Adam's

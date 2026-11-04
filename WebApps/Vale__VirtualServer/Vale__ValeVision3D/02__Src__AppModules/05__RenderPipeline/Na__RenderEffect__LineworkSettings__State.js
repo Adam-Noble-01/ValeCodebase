@@ -65,6 +65,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.5.0 (ValeVision3D v2.85.0)
+// - A material can keep a share of a viewport's own edge width (userData.Na__LineworkSettings__OverrideShare),
+//   so a plant's inner lines stay lighter than its outline on a sheet. Without the mark it is what it was.
+//
 // 04-Nov-2026 - Version 1.4.0 (v2.84.0)
 // - GetLineworkExportScale: linework plants keep their detail in step with the line
 //   weight, so a big export has the screen's picture, only sharper.
@@ -339,8 +343,9 @@
             if (!Number.isFinite(material.userData.Na__LineworkSettings__BaseWidth)) {
                 material.userData.Na__LineworkSettings__BaseWidth = material.linewidth; // <-- Stash base once so factors never compound
             }
+            const share = material.userData.Na__LineworkSettings__OverrideShare;   // <-- A material lighter than the rest by design stays so: a plant's inner lines
             const base = Number.isFinite(Na__LineworkSettings__LineworkBaseOverride)
-                ? Na__LineworkSettings__LineworkBaseOverride                   // <-- A Layout Editor viewport's own edge width for this render
+                ? Na__LineworkSettings__LineworkBaseOverride * (Number.isFinite(share) ? share : 1)   // <-- A Layout Editor viewport's own edge width for this render
                 : material.userData.Na__LineworkSettings__BaseWidth;
 
             // A NESTED DETAIL TAG IS NOT THE WALL IT SITS IN: its Model Layers

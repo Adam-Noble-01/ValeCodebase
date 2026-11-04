@@ -72,6 +72,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.9.0 (ValeVision3D v2.85.0)
+// - Plants on a sheet (vegetation plan, Stage 8): Render2d can draw a plants layer alone, a twin of the depth
+//   fog, and holds them out of the base picture and the fog whatever a project does on its live drawings. The
+//   model's fingerprint takes the plants' stamp when there is one, so a planting change redraws a sheet's 3D
+//   picture, and a project without plants keeps its exact fingerprint.
+//
 // 02-Oct-2026 - Version 1.8.0 (TrueVision3D's 1.6.0 to 1.13.0 hunks, v2.71.4)
 // - Design phases (TrueVision3D 1.6.0). Render2d and Render3d stage the
 //   viewport's model source before anything reads the model, and hand the
@@ -266,6 +272,11 @@
     // nested LineworkModifier rules (DIV-1).
     // ------------------------------------------------------------
     import { Na__LineworkSettings__SetLineworkBaseOverride } from '../../05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
+    import {
+        Na__Vegetation__GetContentStamp,
+        Na__Vegetation__HoldDrawings,
+        Na__Vegetation__RenderDrawingLayer
+    } from '../../24__System__Vegetation/Na__Vegetation__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | The Drawing's Depth Fog Layer
@@ -568,7 +579,8 @@
             const described = Na__PlStage__Describe(Na__LeSnap__ModelRoot);
             Na__LeSnap__ModelFp = Na__LeSnap__ModelHash(described);
         }
-        return Na__LeSnap__ModelFp;
+        const plants = Na__Vegetation__GetContentStamp();                        // <-- Plants are in a sheet's 3D pictures, so a change to them redraws one. None: exactly the fingerprint it always was
+        return plants ? Na__LeSnap__ModelFp + '|plants:' + plants : Na__LeSnap__ModelFp;
     }
     function Na__LeSnap__GetPipelineFingerprint(modelSourceId) {
         if (modelSourceId && !Na__PhaseLib__IsLive(modelSourceId)) {
@@ -821,7 +833,7 @@
     // picture itself stays on the composer route, DIV-1), and the Enhance pass
     // is skipped. The png's alpha IS the fog.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, modelSourceId, stillWanted, depthFog) {
+    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, modelSourceId, stillWanted, depthFog, plantsLayer) {
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             if (typeof stillWanted === 'function' && !stillWanted()) return null;  // <-- Nobody is waiting for it any more (its sheet was left meanwhile): the queue moves on. The PDF and the forced renders never pass it
@@ -841,6 +853,7 @@
             let   doorsPosed  = null;                                              // <-- The drawing's door pose, for the finally to hand back
             const fogLayer    = depthFog || null;                                  // <-- A fog source: this render is the viewport's fog image, not its picture
             const fogWas      = Na__ElevFog__SetSource(fogLayer);                  // <-- Borrowed for this render; null for a picture, so nothing fogs it. Handed back in the finally
+            Na__Vegetation__HoldDrawings(true);                                    // <-- No plants in a picture or a fog: they come as a layer of their own, over the vectors, when a viewport ticks them
             const lightingWas = Na__SceneLighting__GetLive();                      // <-- The light a 3D scene may have left on; put back after
             try {
                 // A DRAWING IS ALWAYS LIT BY THE DEFAULT, as it is in the viewer,
@@ -874,19 +887,22 @@
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : Na__LeSnap__Camera,
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
                     elevationOverrides     : Na__DrawView__RenderPreset__GetExportOverrides(),
-                    renderFrame            : fogLayer
-                        ? (cam) => Na__ElevFog__RenderLayerFrame(cam)                                 // <-- The fog alone, premultiplied on a transparent ground, through the same tiles and the same jitter as the picture
-                        : null,                                                                       // <-- The picture: the composer route, as always (DIV-1)
+                    renderFrame            : plantsLayer
+                        ? (cam) => Na__Vegetation__RenderDrawingLayer(cam)                            // <-- The plants alone on a transparent ground, hidden by the model where it stands in front, through the same tiles as the picture
+                        : (fogLayer
+                            ? (cam) => Na__ElevFog__RenderLayerFrame(cam)                             // <-- The fog alone, premultiplied on a transparent ground, through the same tiles and the same jitter as the picture
+                            : null),                                                                  // <-- The picture: the composer route, as always (DIV-1)
                     antiAliasSamples       : antiAliasSamples,                                                            // <-- Each tile drawn N times on sub-pixel jitter and averaged
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
-                if (!fogLayer && styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas, weights ? weights.enhancePct : null);   // <-- Levels and sharpen at this viewport's strength: the whitecard greys go to paper white. Never on a fog image: levels would bend its alpha-carrying colour
+                if (!fogLayer && !plantsLayer && styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas, weights ? weights.enhancePct : null);   // <-- Levels and sharpen at this viewport's strength: the whitecard greys go to paper white. Never on a fog image: levels would bend its alpha-carrying colour
                 return { dataUrl : result.canvas.toDataURL('image/png'), widthPx : result.width, heightPx : result.height };
             } catch (renderError) {
                 console.warn('[ValeVision3D LayoutEditor] 2D ' + (fogLayer ? 'depth fog layer' : 'underlay') + ' render failed:', renderError);
                 return null;
             } finally {
                 Na__ElevFog__SetSource(fogWas);                                                      // <-- Whoever had a drawing on screen has its fog back
+                Na__Vegetation__HoldDrawings(false);
                 if (contextSaved) Na__ModelToggle__ApplySceneLayerVisibility(contextSaved);
                 Na__DrawView__MaterialPreset__Exit();
                 Na__DrawView__RenderPreset__Exit();

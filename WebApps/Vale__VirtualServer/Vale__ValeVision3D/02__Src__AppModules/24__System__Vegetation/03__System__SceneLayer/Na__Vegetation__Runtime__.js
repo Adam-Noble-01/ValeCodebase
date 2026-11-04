@@ -23,17 +23,32 @@
 // - BUILT A SLICE AT A TIME. A plant takes about 2.3 ms to build from its rules and seed,
 //   so a thousand would stop the page for over two seconds. The page keeps going, and
 //   the plants arrive over a few frames.
+// - THE PICTURE IS BROUGHT INTO LINE, NOT REBUILT. What should be drawn is worked out
+//   afresh from the object (its plops, and each path's plants from its rules and seed),
+//   and compared by what each would draw with what is in the scene. Only the difference
+//   is built or taken out, so every edit, from a dragged grip to an undo, goes this one
+//   way, and a long path stays smooth.
 //
 // INTEGRATION:
 // - Started by Na__Vegetation__.js when a project is enabled, or switched on.
-// - Called by ../10__Ui__Panels/Na__Vegetation__DevControls__.js.
+// - Called by the panels in ../10__Ui__Panels and the tools in ../20__System__Tools.
 // - @delegate: ./Na__Vegetation__SceneLayer__.js
+// - @delegate: ../01__Core__Engine/Na__Vegetation__PathModel__.js
 // - @delegate: ../02__Core__Data/Na__Vegetation__SceneData__.js
 // - @delegate: ../02__Core__Data/Na__Vegetation__Library__.js
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
+// - The walls' colour goes to the layer, with its share from the line rules, for a fill
+//   that has their brightness. A palette item's plant scale goes to the models.
+//
+// 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.85.0)
+// - Paths draw from their rules and seed. Everything goes through one comparison, so only
+//   what changed is built. Show, transparency, Rendered / Proxy / Both, the line rules
+//   applied live, and an asset's plants brought up to date when its copy changes.
+//
 // 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.84.0)
 // - Initial build: Stage 2 of ValeVision__PLAN__VegetationSystem__.md.
 //
@@ -68,8 +83,21 @@
     // MODULE IMPORTS | Vegetation
     // ------------------------------------------------------------
     import { Na__VegLayer__Create } from './Na__Vegetation__SceneLayer__.js';
-    import { Na__VegData__LoadConfig, Na__VegData__PlopToBuild } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
+    import { Na__VegPath__PlantsFor } from '../01__Core__Engine/Na__Vegetation__PathModel__.js';
+    import {
+        Na__VegData__LoadConfig,
+        Na__VegData__PlopToBuild,
+        Na__VegData__PlopSizeMm,
+        Na__VegData__FindPalette,
+        Na__VegData__LineRulesToStyle,
+        Na__VegData__LineRulesToFactors
+    } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
     import { Na__VegLib__ResolveRecipe, Na__VegLib__PinAsset } from '../02__Core__Data/Na__Vegetation__Library__.js';
+    import {
+        Na__Vegetation__SetContentStamp,
+        Na__Vegetation__AreDrawingsHeld,
+        Na__Vegetation__SetDrawingLayer
+    } from '../Na__Vegetation__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -82,16 +110,20 @@
     // MODULE CONSTANTS | How Long Building May Hold the Page at a Time
     // ------------------------------------------------------------
     const Na__VegRun__BUILD_SLICE_MS = 12;
+    const Na__VegRun__UNKNOWN_SIZE_MM = [1200, 1000, 1000];                    // <-- A plant whose asset cannot be read still shows somewhere to select
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | What Is Running on This Page
     // ------------------------------------------------------------
     const Na__VegRun__State = {
-        context   : null,
-        layer     : null,
-        sceneData : null,
-        recipes   : new Map(),
-        syncRun   : 0                                                          // <-- A newer sync stops an older one still building
+        context      : null,
+        layer        : null,
+        sceneData    : null,
+        recipes      : new Map(),
+        syncRun      : 0,                                                      // <-- A newer sync stops an older one still building
+        shown        : true,
+        mode         : 'rendered',
+        transparency : 0
     };
     // ------------------------------------------------------------
 
@@ -99,17 +131,15 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Keeping the Plants the Same as the Project's Object
+// REGION | Recipes
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Make Sure Every Asset These Plops Use Has Its Recipe Read
+    // HELPER FUNCTION | Make Sure These Assets Have Their Recipes Read
     // ------------------------------------------------------------
     // A project's own copy first, else the library. One that neither holds is said
     // once, and its plants are left out by the layer, which finds no recipe for them.
     // ------------------------------------------------------------
-    async function Na__VegRun__ReadRecipes(plops) {
-        const ids = new Set();
-        plops.forEach((plop) => { ids.add(plop.Vegetation__Plop__AssetId); });
+    async function Na__VegRun__ReadRecipes(ids) {
         for (const id of ids) {
             if (Na__VegRun__State.recipes.has(id)) continue;
             try {
@@ -119,25 +149,157 @@
                 console.warn('[ValeVision3D Vegetation] ' + id + ' cannot be drawn, so its plants are left out:', error && error.message);
             }
         }
-        Na__VegRun__State.layer.setRecipes(Array.from(Na__VegRun__State.recipes.values()).filter(Boolean));
+        if (Na__VegRun__State.layer) {
+            Na__VegRun__State.layer.setRecipes(Array.from(Na__VegRun__State.recipes.values()).filter(Boolean));
+        }
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Draw Exactly What the Project's Object Holds
+    // HELPER FUNCTION | Every Asset the Object Names
+    // ------------------------------------------------------------
+    function Na__VegRun__NamedAssets() {
+        const sceneData = Na__VegRun__State.sceneData;
+        const ids = new Set();
+        sceneData.Vegetation__SceneData__Plops.forEach((plop) => { ids.add(plop.Vegetation__Plop__AssetId); });
+        sceneData.Vegetation__SceneData__Palettes.forEach((palette) => {
+            (palette.Vegetation__Palette__Items || []).forEach((item) => { ids.add(item.Vegetation__PaletteItem__AssetId); });
+        });
+        return ids;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | An Asset's Recipe, Once Read, or Null
+    // ------------------------------------------------------------
+    function Na__VegRun__RecipeFor(assetId) {
+        return Na__VegRun__State.recipes.get(assetId) || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Plant Really Measures, in Mm, Its Recipe Read or Not
+    // ------------------------------------------------------------
+    function Na__VegRun__SizeOf(plop) {
+        const recipe = Na__VegRun__RecipeFor(plop.Vegetation__Plop__AssetId);
+        const own = recipe ? [recipe.Asset__Size.Size__WidthMm, recipe.Asset__Size.Size__DepthMm, recipe.Asset__Size.Size__HeightMm] : Na__VegRun__UNKNOWN_SIZE_MM;
+        return Na__VegData__PlopSizeMm(plop, own);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw a Plant's Proxy with a Tool's Pen
+    // ------------------------------------------------------------
+    // At the size it really is, and the shape its asset asks for.
+    // ------------------------------------------------------------
+    function Na__VegRun__PaintProxy(pen, plop, colour) {
+        const recipe = Na__VegRun__RecipeFor(plop.Vegetation__Plop__AssetId);
+        const shape  = recipe && recipe.Asset__Proxy ? recipe.Asset__Proxy.Proxy__Shape : 'Dome';
+        pen.dome(plop.Vegetation__Plop__PositionMm, Na__VegRun__SizeOf(plop), plop.Vegetation__Plop__YawDeg, colour, shape);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read an Asset's Recipe If It Has Not Been, and Hand It Over
+    // ------------------------------------------------------------
+    async function Na__VegRun__EnsureRecipe(assetId) {
+        await Na__VegRun__ReadRecipes([assetId]);
+        return Na__VegRun__RecipeFor(assetId);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Palette's Items, with Their Recipes, as the Models Want Them
+    // ------------------------------------------------------------
+    function Na__VegRun__PaletteItems(paletteUid) {
+        const palette = Na__VegData__FindPalette(Na__VegRun__State.sceneData, paletteUid);
+        if (!palette) return [];
+        return (palette.Vegetation__Palette__Items || []).map((item) => ({
+            assetId : item.Vegetation__PaletteItem__AssetId,
+            weight  : item.Vegetation__PaletteItem__Weight,
+            scale   : item.Vegetation__PaletteItem__PlantScale,
+            recipe  : Na__VegRun__RecipeFor(item.Vegetation__PaletteItem__AssetId)
+        }));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Keep a Copy of Every Asset the Object Now Uses
+    // ------------------------------------------------------------
+    // Called by whatever has just planted something (plan, D14). An asset only on a
+    // palette no plant has drawn from is copied too: a path can draw from it at any time.
+    // ------------------------------------------------------------
+    async function Na__VegRun__PinInUse() {
+        const sceneData = Na__VegRun__State.sceneData;
+        for (const id of Na__VegRun__NamedAssets()) {
+            await Na__VegLib__PinAsset(sceneData, id);
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Keeping the Plants the Same as the Project's Object
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | One Path's Plants, Worked Out from Its Rules and Seed
+    // ------------------------------------------------------------
+    function Na__VegRun__PathPlants(path) {
+        return Na__VegPath__PlantsFor(path, Na__VegRun__PaletteItems(path.Vegetation__Path__PaletteUid));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Everything That Should Be Drawn, in the Shape of Saved Plops
+    // ------------------------------------------------------------
+    // Recipes must have been read: a path's plants cannot be worked out without them.
+    // ------------------------------------------------------------
+    function Na__VegRun__WantedPlants() {
+        const sceneData = Na__VegRun__State.sceneData;
+        const wanted = sceneData.Vegetation__SceneData__Plops.slice();
+        sceneData.Vegetation__SceneData__Paths.forEach((path) => {
+            wanted.push(...Na__VegRun__PathPlants(path));
+        });
+        return wanted;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bring the Picture into Line with the Project's Object
     // ------------------------------------------------------------
     async function Na__VegRun__SyncPlants() {
-        if (!Na__VegRun__State.layer) return;
-        const run   = ++Na__VegRun__State.syncRun;
-        const plops = Na__VegRun__State.sceneData.Vegetation__SceneData__Plops;
-        await Na__VegRun__ReadRecipes(plops);
+        const layer = Na__VegRun__State.layer;
+        if (!layer) return;
+        const run = ++Na__VegRun__State.syncRun;
+        await Na__VegRun__ReadRecipes(Na__VegRun__NamedAssets());
         if (run !== Na__VegRun__State.syncRun) return;
 
-        const layer = Na__VegRun__State.layer;
-        layer.setPlops([]);
+        // THE DIFFERENCE | A plant already drawing what is wanted stays, and is told its
+        // current name: a path's plants renumber when an earlier one goes.
+        const missing = new Map();
+        Na__VegRun__WantedPlants().forEach((plop) => {
+            const build = Na__VegData__PlopToBuild(plop);
+            missing.set(build.key, build);
+        });
+        const stale = [];
+        layer.plops().forEach((existing) => {
+            const wanted = missing.get(existing.key);
+            if (wanted) {
+                existing.uid       = wanted.uid;
+                existing.pathUid   = wanted.pathUid;
+                existing.strokeUid = wanted.strokeUid;
+                missing.delete(existing.key);
+            } else {
+                stale.push(existing);
+            }
+        });
+        if (stale.length > 0) layer.removePlops(stale);
+
         let sliceStartedAt = performance.now();
-        for (let p = 0; p < plops.length; p++) {
-            layer.addPlops([Na__VegData__PlopToBuild(plops[p])]);
+        for (const build of missing.values()) {
+            layer.addPlops([build]);
             if (performance.now() - sliceStartedAt >= Na__VegRun__BUILD_SLICE_MS) {
                 Na__RenderLoop__RequestRender();
                 await new Promise((resolve) => { setTimeout(resolve, 0); });
@@ -145,24 +307,70 @@
                 sliceStartedAt = performance.now();
             }
         }
+        Na__VegRun__NoteContent();
         Na__RenderLoop__RequestRender();
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Add Plants to the Project's Object and to the Picture
+    // HELPER FUNCTION | Say What the Plants on the Page Add Up To
     // ------------------------------------------------------------
-    // Each asset is pinned first, so the project keeps its own copy from now on. The
-    // plants already drawn are left alone. Saving is the caller's.
+    // Kept by the door for a sheet to read. Nothing drawn is an empty stamp.
     // ------------------------------------------------------------
-    async function Na__VegRun__AddPlops(savedPlops) {
-        const sceneData = Na__VegRun__State.sceneData;
-        for (const plop of savedPlops) {
-            await Na__VegLib__PinAsset(sceneData, plop.Vegetation__Plop__AssetId);
+    function Na__VegRun__NoteContent() {
+        const state = Na__VegRun__State;
+        const layer = state.layer;
+        const keys  = layer && state.shown ? layer.plops().map((plop) => plop.key).sort() : [];
+        if (keys.length === 0) {
+            Na__Vegetation__SetContentStamp('');
+            return;
         }
-        await Na__VegRun__ReadRecipes(savedPlops);
-        sceneData.Vegetation__SceneData__Plops.push(...savedPlops);
-        Na__VegRun__State.layer.addPlops(savedPlops.map(Na__VegData__PlopToBuild));
+        const text = keys.join(';') + JSON.stringify(state.sceneData.Vegetation__SceneData__LineRules) + state.transparency;
+        let hash = 0x811c9dc5;
+        for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 0x01000193);
+        Na__Vegetation__SetContentStamp(keys.length + '-' + (hash >>> 0).toString(16));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | An Asset's Copy Has Changed: Draw Its Plants Again
+    // ------------------------------------------------------------
+    // The comparison above reads what a plant was asked to draw, not what from.
+    // ------------------------------------------------------------
+    async function Na__VegRun__RefreshAsset(assetId) {
+        const layer = Na__VegRun__State.layer;
+        if (!layer) return;
+        Na__VegRun__State.recipes.delete(assetId);
+        layer.removePlops(layer.plops().filter((plop) => plop.assetId === assetId));
+        await Na__VegRun__SyncPlants();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply the Object's Line Rules to What Is Drawn
+    // ------------------------------------------------------------
+    // Called as a Linework slider moves. The two that change the plants themselves rebuild
+    // every plant, so the panel asks for those when the slider is let go.
+    // ------------------------------------------------------------
+    function Na__VegRun__ApplyLineRules() {
+        const layer = Na__VegRun__State.layer;
+        if (!layer) return;
+        const rules    = Na__VegRun__State.sceneData.Vegetation__SceneData__LineRules;
+        const advanced = rules.Vegetation__LineRules__Advanced;
+        const weight   = rules.Vegetation__LineRules__LineWeightPx;
+
+        Object.assign(layer.style, Na__VegData__LineRulesToStyle(rules));
+        layer.setLineWeights(weight, weight * rules.Vegetation__LineRules__InnerWeightShare);
+        layer.setDepthBias(advanced.Vegetation__LineRulesAdvanced__DepthBias);
+        layer.setFillTone(advanced.Vegetation__LineRulesAdvanced__FillTone);
+        layer.setFillWallShare(advanced.Vegetation__LineRulesAdvanced__FillWallShare);
+        Na__LineworkSettings__SetLineworkFactor(Na__LineworkSettings__GetLineworkFactor());   // <-- The user's own line weight, on top of the new base
+
+        const factors = Na__VegData__LineRulesToFactors(rules);
+        const rebuilt = factors.scallop !== layer.factors.scallop || factors.nubs !== layer.factors.nubs;
+        Object.assign(layer.factors, factors);
+        if (rebuilt) layer.rebuildAll(); else layer.markDirty();
+        Na__VegRun__NoteContent();
         Na__RenderLoop__RequestRender();
     }
     // ------------------------------------------------------------
@@ -176,22 +384,25 @@
 
     // FUNCTION | Put the Project's Plants in the Scene
     // ------------------------------------------------------------
-    // context: { scene, camera, renderer, modelRoot, lineColour, getPipeline, showToast }
+    // context : { scene, camera, renderer, modelRoot, lineColour, wallColour, getPipeline, showToast }
+    // starting: { shown, transparencyPercent }, what this device starts from
     // ------------------------------------------------------------
-    async function Na__VegRun__Start(context, sceneData) {
+    async function Na__VegRun__Start(context, sceneData, starting) {
         Na__VegRun__State.context   = context;
         Na__VegRun__State.sceneData = sceneData;
 
         if (!Na__VegRun__State.layer) {
             const config = await Na__VegData__LoadConfig();
             Na__VegRun__State.layer = Na__VegLayer__Create({
-                scene       : context.scene,
-                recipes     : [],
-                lineRules   : sceneData.Vegetation__SceneData__LineRules,
-                lineColour  : context.lineColour,
-                resolution  : new THREE.Vector2(window.innerWidth, window.innerHeight),
-                frameBudget : config.Vegetation__FrameBudget__Config,
-                host        : {
+                scene             : context.scene,
+                recipes           : [],
+                lineRules         : sceneData.Vegetation__SceneData__LineRules,
+                lineColour        : context.lineColour,
+                wallColour        : context.wallColour,
+                resolution        : new THREE.Vector2(window.innerWidth, window.innerHeight),
+                frameBudget       : config.Vegetation__FrameBudget__Config,
+                seeThroughPercent : config.Vegetation__Transparency__Config.Vegetation__Transparency__SeeThroughFromPercent,
+                host              : {
                     getLiveFrame     : Na__InteractiveOverlays__GetLiveFrameNumber,
                     getExportScale   : Na__LineworkSettings__GetLineworkExportScale,
                     getClipList      : Na__SectionClipping__GetClipList,
@@ -201,10 +412,12 @@
                         return !!(pipeline && pipeline.aoPassRef && pipeline.aoPassRef.enabled);
                     },
                     registerOverlay  : Na__InteractiveOverlays__Register,
-                    setOverlayWanted : Na__InteractiveOverlays__SetWanted
+                    setOverlayWanted : Na__InteractiveOverlays__SetWanted,
+                    liveDrawingsWantPlants : () => !Na__Vegetation__AreDrawingsHeld() && Na__VegRun__State.sceneData.Vegetation__SceneData__ShowOnLiveDrawings === true
                 }
             });
             Na__VegRun__State.layer.installRenderHook();
+            Na__Vegetation__SetDrawingLayer((camera) => Na__VegRun__State.layer.renderDrawingLayer(context.renderer, camera));
 
             // TWO THINGS THAT ALREADY RAN WITHOUT US | The user's line weight, which the
             // lines have just missed, and the profile pass's list of the scene's objects.
@@ -213,7 +426,10 @@
             if (pipeline && pipeline.invalidateProfileLinesCache) pipeline.invalidateProfileLinesCache();
         }
 
-        Na__VegRun__State.layer.setVisible(sceneData.Vegetation__SceneData__ShowByDefault !== false);
+        const shown        = starting ? starting.shown !== false : sceneData.Vegetation__SceneData__ShowByDefault !== false;
+        const transparency = starting ? starting.transparencyPercent : sceneData.Vegetation__SceneData__DefaultTransparencyPercent;
+        Na__VegRun__SetShown(shown);
+        Na__VegRun__SetTransparency(transparency);
         await Na__VegRun__SyncPlants();
     }
     // ------------------------------------------------------------
@@ -223,7 +439,46 @@
     // ------------------------------------------------------------
     function Na__VegRun__Stop() {
         if (Na__VegRun__State.layer) Na__VegRun__State.layer.setVisible(false);
+        Na__Vegetation__SetContentStamp('');
         Na__RenderLoop__RequestRender();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show or Hide the Plants, for This Device
+    // ------------------------------------------------------------
+    function Na__VegRun__SetShown(shown) {
+        Na__VegRun__State.shown = (shown === true);
+        if (Na__VegRun__State.layer) Na__VegRun__State.layer.setVisible(Na__VegRun__State.shown);
+        Na__VegRun__NoteContent();
+        Na__RenderLoop__RequestRender();
+    }
+    function Na__VegRun__IsShown() {
+        return Na__VegRun__State.shown;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fade the Plants, for This Device
+    // ------------------------------------------------------------
+    function Na__VegRun__SetTransparency(percent) {
+        Na__VegRun__State.transparency = Number(percent) || 0;
+        if (Na__VegRun__State.layer) Na__VegRun__State.layer.setTransparency(Na__VegRun__State.transparency);
+        Na__VegRun__NoteContent();
+        Na__RenderLoop__RequestRender();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Rendered, Proxy or Both in the Model
+    // ------------------------------------------------------------
+    function Na__VegRun__SetMode(mode) {
+        Na__VegRun__State.mode = mode;
+        if (Na__VegRun__State.layer) Na__VegRun__State.layer.setMode(mode);
+        Na__RenderLoop__RequestRender();
+    }
+    function Na__VegRun__GetMode() {
+        return Na__VegRun__State.mode;
     }
     // ------------------------------------------------------------
 
@@ -236,7 +491,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Layer Itself, for a Later Panel and for Checks
+    // FUNCTION | The Layer Itself, for a Panel and for Checks
     // ------------------------------------------------------------
     function Na__VegRun__GetLayer() {
         return Na__VegRun__State.layer;
@@ -244,10 +499,18 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | What the Door Was Given, for a Later Panel and for Checks
+    // FUNCTION | What the Door Was Given, for a Panel and for Checks
     // ------------------------------------------------------------
     function Na__VegRun__GetContext() {
         return Na__VegRun__State.context;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Object the Picture Is Drawn From
+    // ------------------------------------------------------------
+    function Na__VegRun__GetSceneData() {
+        return Na__VegRun__State.sceneData;
     }
     // ------------------------------------------------------------
 
@@ -264,10 +527,25 @@
         Na__VegRun__Start,
         Na__VegRun__Stop,
         Na__VegRun__SyncPlants,
-        Na__VegRun__AddPlops,
+        Na__VegRun__RefreshAsset,
+        Na__VegRun__ApplyLineRules,
+        Na__VegRun__RecipeFor,
+        Na__VegRun__EnsureRecipe,
+        Na__VegRun__SizeOf,
+        Na__VegRun__PaintProxy,
+        Na__VegRun__PaletteItems,
+        Na__VegRun__PinInUse,
+        Na__VegRun__PathPlants,
+        Na__VegRun__WantedPlants,
+        Na__VegRun__SetShown,
+        Na__VegRun__IsShown,
+        Na__VegRun__SetTransparency,
+        Na__VegRun__SetMode,
+        Na__VegRun__GetMode,
         Na__VegRun__GetStats,
         Na__VegRun__GetLayer,
-        Na__VegRun__GetContext
+        Na__VegRun__GetContext,
+        Na__VegRun__GetSceneData
     };
     // ------------------------------------------------------------
 

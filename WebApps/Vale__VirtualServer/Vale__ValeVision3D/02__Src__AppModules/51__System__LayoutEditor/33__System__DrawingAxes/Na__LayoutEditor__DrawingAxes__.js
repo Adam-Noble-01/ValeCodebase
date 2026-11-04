@@ -73,7 +73,7 @@
 // - Ported on     : 02-Oct-2026 for ValeVision3D v2.71.4, landed inert:
 //                   nothing imports this controller until the drafting aids are switched
 //                   on - F9 in the sheet tools' keyboard (W3-03), Attach / Detach in the
-//                   mode controller (W3-05), the toolbar's Axes button (W5-01). It reads
+//                   mode controller (W3-05), the toolbar's Axes button (Toolbar 1.9.6, v2.83.4). It reads
 //                   the object snap marker landed with W2-19.
 //                   TrueVision's own note said "not yet ported - it waits for Adam's
 //                   sign-off";

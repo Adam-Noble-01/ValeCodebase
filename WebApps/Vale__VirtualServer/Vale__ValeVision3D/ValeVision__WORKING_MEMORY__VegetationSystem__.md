@@ -10,13 +10,14 @@
 | Plan | Written, and Adam said start | | `ValeVision__PLAN__VegetationSystem__.md` |
 | 1. Foundations | **Done** | v2.83.0 | Engine, library, the record's key and the door are in. Nothing draws. `24__System__Vegetation`, not the 94 the plan first said |
 | 2. Plants in the model | **Done, live since 04-Nov-2026 15:19 UTC** | v2.84.0 | Pilot: `63403__Thrower` (its real record not yet written: Adam switches it on, which on the live server writes the real record). PC target met. **Open: 100 plants at 30 fps on a real iPad.** The API's ledger row is live: `vale@ValeVision3D` restarted at that push |
-| 3. The menu | **Next** | | |
-| 4. Asset browser | Not started | | |
-| 5. Linear Tool | Not started | | |
-| 6. Bush Tool | Not started | | |
-| 7. Pictures finished | Not started | | |
-| 8. Drawings | Not started | | Off by default per view: no existing sheet may move |
-| 9. SketchUp both ways | Not started | | In the 2027 Plugins repo; can be brought forward |
+| 3. The menu | **Built** | v2.85.0 | Tools & Settings > Vegetation; Show and Transparency for everyone, device memory; an author's rows are built for an author only |
+| 4. Asset browser | **Built** | v2.85.0 | Cards drawn live, Rendered, Proxy or Both, click then model, In This Project, move, turn, remove, pinning, undo, Save |
+| 5. Linear Tool | **Built** | v2.85.0 | BVH pick, a 2D canvas for its aids, grips, curved, Advanced, Bake |
+| 6. Bush Tool | **Built** | v2.85.0 | Palette with shares, paint and erase, stroke undo, proxies while painting |
+| 7. Pictures finished | **Built** | v2.85.0 | The plants' stamp in a sheet's fingerprint; a preview frame takes the live budget; inner lines stay lighter under a sheet's edge width |
+| 8. Drawings | **Built** | v2.85.0 | A viewport's Vegetation tick (off by default) and a project's Show on Live Drawings. On screen and in the PDF, opaque over the vectors |
+| 9. SketchUp both ways | **Built, not run on real entities** | v2.85.0, Cloud Sync 0.6.0 | Its DEVLOG lists what to try. No empty window could be reached: the listing's untitled pid 97292 holds an unsaved model |
+| Adam's look after trying it | **Live since 04-Nov-2026 21:19 UTC** | v2.86.0, Cloud Sync 0.6.1 | The fill at the walls' brightness; Plant scale and sizes everywhere; Clipped Hedge, Box Ball, Standard Bay, Yew Cone, Mophead Hydrangea; `ClippedForm`; a box proxy |
 
 ## Decisions in Force
 
@@ -29,12 +30,14 @@ Adam's answers D01 to D07 and the defaults D08 to D22 are in the plan, section 1
 - **Transparency fades lines and fill together** (D03). At 0% the opaque path runs unchanged.
 - **ValeVision wins a clash** with SketchUp (section 5), as AURA does.
 
-## What Stage 2 Left for Stage 3
+## What Is Left
 
-- **The panel in Dev Tools is a stand-in.** `10__Ui__Panels/Na__Vegetation__DevControls__.js` has the one switch, Add Test Row and Remove Test Plants. The switch stays; the two test buttons go when the real tools arrive.
-- **The layer already has what Stage 3 needs:** `setVisible` for Show Vegetation, and `setLineWeights`, `markDirty`, `rebuildAll`, `style` and `factors` for the Linework panel, used by the prototype's panel today. `ShowByDefault` is read at start. Transparency is not built.
-- **`Na__VegRun__GetLayer` and `GetContext`** are how a panel, and a check, reach it.
-- **Left for Stage 7:** the Video Studio preview is not a live frame, so it draws in full each frame and will crawl with many plants. A sheet's own edge width (`LineworkBaseOverride`) gives inner lines the outlines' weight. Export Render Layers has no plants. Default export anti-aliasing should be looked at with these lines: at 1 sample, 0.6 px inner lines look dotted.
+- **Run Stage 9 on real SketchUp entities,** in an empty window or a throwaway copy of a model: Cloud Sync's DEVLOG 0.6.0 and 0.6.1 have the list. `na_build_box` has not run at all.
+- **Adam's verdict on the new plants and the fill:** Adam has seen pictures, and has not yet tried the panels.
+- **100 plants at 30 fps on a real iPad,** and a real phone generally. Only estimated so far.
+- **Export Render Layers has no plants,** and default export anti-aliasing at 1 sample makes 0.6 px inner lines look dotted: both noted at Stage 2 and not touched.
+- **A real Video Studio preview** has not been played with plants: a preview frame is numbered and takes the live budget, checked at the function.
+- **`Na__VegRun__GetLayer` and `GetContext`** are how a panel, and a check, reach the layer.
 
 ## How to Prove Nothing Moved
 
@@ -43,7 +46,8 @@ Keep these green at every stage, from the scratch scripts' method (their logic i
 - **Engine hash:** every lobe, table and buffer over 3 assets, 12 seeds and 3 views: `7f585d5fddf5f48e2650cc3d75903051`. A change means a saved plant has changed, which D15 forbids.
 - **Prototype pixels, `?clean=1` at 1400 x 800:** closeup `0ef2e4c8`, elevation `da745e1d`, perspective `a1ac3204`, birdseye `c1dafc00`, lineup `424c6d1f`.
 - **Boot graph:** 313 modules, through `vv3d_check.py graph`. It should not grow: everything but the door loads by `import()`.
-- **On the real app (v2.84.0):** no key, switched off, and on with no plants are one and the same picture. A settled view after an orbit is identical to the view before it and to a clean rebuild. A drawing is identical with plants and with them hidden. Under Max, a project without plants has the same pixels with and without the AO line, but only with `Math.random` seeded first: the AO kernel is random per load, so two loads never match otherwise.
+- **On the real app (v2.84.0, and again at v2.85.0: `45759d6bafcf` at 1400 x 800 on software rendering):** no key, switched off, and on with no plants are one and the same picture. A settled view after an orbit is identical to the view before it and to a clean rebuild. A drawing is identical with plants and with them hidden. Under Max, a project without plants has the same pixels with and without the AO line, but only with `Math.random` seeded first: the AO kernel is random per load, so two loads never match otherwise.
+- **Python and JavaScript agree:** the sync's `na_plants_for` against `Na__VegPath__PlantsFor` in Node, 121 plants of 9 paths identical. Any change to the path model or the generator is a change to both.
 
 ## Traps Already Hit
 
@@ -67,6 +71,10 @@ Keep these green at every stage, from the scratch scripts' method (their logic i
 - **`pg.evaluate` calls a function it is handed:** a script string ending in a function assignment gets run. End it with `true;`.
 - **`wait_for_function` twice hung for 240 s** with the page perfectly well: poll with `evaluate` in a loop. `ERR_NO_BUFFER_SPACE` after many runs is Windows sockets running out: wait two minutes.
 - **An install card sits over the model on a first visit,** and swallows a test click.
+- **The window listing's empty title does not mean an empty window.** `sketchup_status` showed pid 97292 with no title, and selecting it reported `MCP__FancyFascia__`, modified. Read the `model` block after selecting, before running anything that changes a model. Pure maths (`Geom`, compiling a file) touches no model.
+- **A stand-in harness can run in SketchUp's own Ruby without touching a model:** `load(path, true)` wraps it in an anonymous module, and `BOX.module_eval(File.read(target))` loads a plugin file under it without disturbing the loaded plugin. Real `Geom`, fake entities, no undo step (`transaction: false`).
+- **`wait_loaded` that treats no overlay as loaded** looks too early: the overlay is not there at the very start. Wait for its `hidden` class.
+- **On Max, the AO mark at the see-through share cut the wall's shadow out behind every plant,** leaving dashes in the gaps. From that share the fill is in neither AO pass, so the mark stops.
 
 ## Checks and How to Run Them
 

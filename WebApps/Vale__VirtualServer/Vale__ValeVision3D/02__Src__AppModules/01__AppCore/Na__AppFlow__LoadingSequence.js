@@ -95,6 +95,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.8.1 (ValeVision3D v2.85.0)
+// - A Video Studio preview frame calls Na__InteractiveOverlays__BeginPreviewFrame: no overlays, as before, but
+//   numbered, so plants take a live frame's budget in a preview instead of a full redraw.
+//
 // 06-Oct-2026 - Version 1.8.0 (the move to app.valegardenhouses.com)
 // - The project comes from the ValeVision 3D API: the server places ?project=
 //   in the Projects Master Library (Na__AppUtils__InitProjectLocation) and the
@@ -522,6 +526,7 @@
     // ------------------------------------------------------------
     import {
         Na__InteractiveOverlays__BeginFrame,
+        Na__InteractiveOverlays__BeginPreviewFrame,
         Na__InteractiveOverlays__EndFrame
     } from '../05__RenderPipeline/Na__RenderLoop__InteractiveOverlays__.js';
     // ------------------------------------------------------------
@@ -1515,6 +1520,8 @@
             // they stay out of the video export.
             if (!Na__VideoStudio__Preview__IsPlaying()) {
                 Na__InteractiveOverlays__BeginFrame();
+            } else {
+                Na__InteractiveOverlays__BeginPreviewFrame();                // <-- No overlays, but the plants' budget: a preview must not crawl
             }
 
             if (Na__VideoStudio__Preview__IsPlaying()) {

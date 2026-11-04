@@ -53,6 +53,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.85.0)
+// - BeginPreviewFrame: a Video Studio preview frame counts as a live frame for the plants'
+//   budget, so a preview over a planted project does not crawl, and it still shows no
+//   authoring overlay, because the preview is the video being made.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.84.0)
 // - GetLiveFrameNumber, for the linework plants' frame budget: which interactive
 //   frame is being drawn, and 0 on every other render.
@@ -72,6 +77,7 @@
     const Na__InteractiveOverlays__Objects = new Set();   // <-- Object3D roots, each invisible outside a frame
     let   Na__InteractiveOverlays__InFrame = false;       // <-- True between BeginFrame and EndFrame
     let   Na__InteractiveOverlays__FrameNumber = 0;       // <-- Counts interactive frames, so one frame's several renders can be told from the next frame's
+    let   Na__InteractiveOverlays__InPreview   = false;   // <-- True between BeginPreviewFrame and EndFrame
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -148,13 +154,26 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Video Studio Preview Frame Is About to Be Drawn
+    // ------------------------------------------------------------
+    // Numbered like an interactive frame, because it may do less while the camera moves
+    // just as that may. No overlay shows: the preview is the video being made.
+    // ------------------------------------------------------------
+    function Na__InteractiveOverlays__BeginPreviewFrame() {
+        Na__InteractiveOverlays__InPreview = true;
+        Na__InteractiveOverlays__FrameNumber++;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Frame Is Done - Everything Goes Back to Invisible
     // ------------------------------------------------------------
     // Safe to call when Begin was not: a held loop and a 2D drawing both
     // return before Begin, and the tick ends here on every path.
     // ------------------------------------------------------------
     function Na__InteractiveOverlays__EndFrame() {
-        Na__InteractiveOverlays__InFrame = false;
+        Na__InteractiveOverlays__InFrame   = false;
+        Na__InteractiveOverlays__InPreview = false;
         Na__InteractiveOverlays__Objects.forEach((object) => {
             object.visible = false;
         });
@@ -170,7 +189,7 @@
     // other render is a picture somebody will keep, and 0 is what keeps it whole.
     // ------------------------------------------------------------
     function Na__InteractiveOverlays__GetLiveFrameNumber() {
-        return Na__InteractiveOverlays__InFrame ? Na__InteractiveOverlays__FrameNumber : 0;
+        return (Na__InteractiveOverlays__InFrame || Na__InteractiveOverlays__InPreview) ? Na__InteractiveOverlays__FrameNumber : 0;
     }
     // ------------------------------------------------------------
 
@@ -189,6 +208,7 @@
         Na__InteractiveOverlays__SetWanted,
         Na__InteractiveOverlays__IsWanted,
         Na__InteractiveOverlays__BeginFrame,
+        Na__InteractiveOverlays__BeginPreviewFrame,
         Na__InteractiveOverlays__EndFrame,
         Na__InteractiveOverlays__GetLiveFrameNumber
     };

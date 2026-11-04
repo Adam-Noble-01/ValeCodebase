@@ -39,7 +39,7 @@
 // PORT NOTE:
 // - Ported from   : TrueVision3D 02__Src__AppModules/53__Data__Layout__PublishedSchema/Na__PublishedSchema__Paths__.js
 // - Source version: 1.1.0 (TrueVision3D v2.166.0, 29-Sep-2026; read at b2aa9151)
-// - Ported on     : 02-Oct-2026 for ValeVision3D {{VVREL:W4-01}} (parity package W4-01)
+// - Ported on     : 02-Oct-2026 after ValeVision3D v2.71.5 (parity package W4-01; first carried by v2.72.0)
 // - Parity        : adapted
 // - Divergences   :
 //   - Banner and console prefix read ValeVision3D ([ValeVision3D PublishedSchema]).

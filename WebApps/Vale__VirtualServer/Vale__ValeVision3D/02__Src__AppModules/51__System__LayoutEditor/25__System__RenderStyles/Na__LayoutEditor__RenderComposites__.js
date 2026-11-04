@@ -84,6 +84,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.4.0 (ValeVision3D v2.85.0)
+// - A Vegetation row in the built-in inventory (__Config__.json, Order 4), beside Depth Fog.
+//
 // 20-Sep-2026 - Version 1.3.0
 // - A Depth Fog row, first in the built-in inventory as it is in the config:
 //   the one layer that sits over the projected linework. A toggle with no
@@ -132,6 +135,7 @@
     // weights fall back to these.
     // ------------------------------------------------------------
     const Na__LeComposite__FALLBACK = [
+        { key : 'vegetation',        label : 'Vegetation',              twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
         { key : 'depthFog',          label : 'Depth Fog',               twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
         { key : 'projectedLinework', label : 'Projected Linework',      twoDOnly : true,  toggle : true,  weight : { kind : 'factor', value : 1.00, min : 0.10, max : 3.00, step : 0.05, label : 'Weight'  } },
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false, toggle : true,  weight : { kind : 'pixels', value : 1.00, min : 0.10, max : 4.00, step : 0.05, label : 'Edge px', twoDOnly : true } },

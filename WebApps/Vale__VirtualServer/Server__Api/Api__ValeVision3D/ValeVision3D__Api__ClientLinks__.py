@@ -27,15 +27,17 @@
 # - THE DOOR: GET api/projects/<id>/client-link?share=<token> checks the link.
 #   A live one lets this browser in: the cookie vale_vv3d_client (HttpOnly, the
 #   API's own path only) holds the tokens it opened, newest first, up to eight,
-#   and the cookie vale_vv3d_files (HttpOnly, that project's library folder
-#   only) holds this link's token for the model files nginx sends.
+#   and the cookie vale_vv3d_files (HttpOnly, that project's model folder only)
+#   holds this link's token for the model files nginx sends.
 #   ?view=1 counts one view (the page asks once per browser session) and puts it
 #   in the activity ledger; a dead link tried is recorded too.
 # - THE GUARD (Na__Vv3dClientLinks__Install, before every request): a GET or
-#   HEAD of a ValeVision 3D route needs a signed-in Vale account, or a live
-#   client link for THE PROJECT IT NAMES (the cookie, the X-ValeVision-Share
-#   header or ?share=). A route that names no project needs a sign-in. Open:
-#   health, the door, the shared sign-in and activity routes.
+#   HEAD of a ValeVision 3D route needs a signed-in Vale account. A live client
+#   link (the cookie, the X-ValeVision-Share header or ?share=) opens only the
+#   reads in CLIENT_READ_ENDPOINTS, the three the client's page makes, and only
+#   for THE PROJECT IT NAMES. So a new GET is shut to clients until it is named
+#   there (Adam, 04-Nov-2026). Open: health, the door, the shared sign-in and
+#   activity routes.
 # - A CLIENT LINK OPENS READS ONLY. Every write keeps its own decorator, and
 #   every one needs a signed-in account at its level (AppAdmin for authoring),
 #   so no client link can ever reach an admin feature.
@@ -48,8 +50,11 @@
 #   folders (the valevision route's LibraryProtected list in the Server
 #   Manager's routes file) only after asking GET api/library-access
 #   (auth_request). It answers 204 for any signed-in Vale account, as the guard
-#   reads, or for a live client link to that very project in vale_vv3d_files;
-#   401 otherwise (403: an account that must choose a new password first).
+#   reads. A live client link to that very project gets 204 for a GLB directly in
+#   its model folder and nothing else (CLIENT_MODEL_FILE): not the record, the site
+#   plan data, the model archive or AURA's folders. 401 otherwise (403: an account
+#   that must choose a new password first). The path is checked as well as the
+#   cookie, because a cookie's Path only tells a browser when to send it.
 #   ValeShared__LibraryGate__ reads the question and sets the cookie.
 #
 # ROUTES:
@@ -62,6 +67,15 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 04-Nov-2026 - Version 1.2.0
+# - The guard opens only CLIENT_READ_ENDPOINTS to a client link. Before it, a link read every
+#   undecorated GET naming its project, ?project=<its id> included: the app-wide scrapbook and
+#   spelling dictionary, and that project's drawing notes, statements, published documents, sheet
+#   picture list and Layout Editor files. The client's page asks for none of them.
+# - The library gate gives a client link only a GLB directly in its model folder, and vale_vv3d_files
+#   narrows to that folder (the door clears the old whole-project cookie). Before it, a link also
+#   opened the record file, the site plan data, the model archive and AURA's three gated folders.
+#
 # 28-Oct-2026 - Version 1.1.0
 # - The library gate: GET api/library-access answers nginx's auth_request for a
 #   project's model files and record, and the door sets vale_vv3d_files on the
@@ -110,7 +124,9 @@ SHARE_RECORDS            = 'ValeVision3DShare__Links__Records'
 SHARE_HEADER             = 'X-ValeVision-Share'                                   # <-- A token may come as a header instead of ?share=
 CLIENT_COOKIE            = 'vale_vv3d_client'                                     # <-- The tokens this browser opened, newest first
 CLIENT_COOKIE_TOKENS     = 8
-FILES_COOKIE             = 'vale_vv3d_files'                                      # <-- One project's library folder only: the link that opens its model files
+FILES_COOKIE             = 'vale_vv3d_files'                                      # <-- One project's model folder only: the link that opens its model files
+CLIENT_MODEL_FOLDER      = f'{vv_shared.APP_BUCKET}/{vv_shared.MODELS_DIR}/'      # <-- Inside the project: FILES_COOKIE's path
+CLIENT_MODEL_FILE        = re.compile(rf'^{re.escape(CLIENT_MODEL_FOLDER)}[^/]+\.glb$')   # <-- All a client link opens through the library gate: Na__AppUtils__ModelUrl never asks for more
 CLIENT_COOKIE_MAX_AGE_S  = 30 * 24 * 3600                                         # <-- Renewed by every visit; a link switched off stops at once anyway
 TOKEN_BYTES              = 18                                                     # <-- 24 URL-safe characters, as Theia's
 TOKEN_PATTERN            = re.compile(r'^[A-Za-z0-9_-]{16,64}$')
@@ -128,6 +144,13 @@ OPEN_ENDPOINTS           = frozenset({
     'valevision_email_api.email_health',
     'valevision_client_links_api.open_client_link',                               # <-- The door itself
     'valevision_client_links_api.library_access',                                 # <-- nginx's question: it decides for itself
+})
+
+# THE GUARD | What a live client link reads, for its own project: the three the client's page asks for. Opt-in, as the client's menu is
+CLIENT_READ_ENDPOINTS    = frozenset({
+    'valevision_projects_api.get_project',                                        # <-- The record, less the Projects blueprint's CLIENT_HIDDEN_KEYS
+    'valevision_projects_api.project_location',                                   # <-- Where the project's model files are served from
+    'valevision_projects_api.project_drawings_fingerprint',                       # <-- Na__DrawData__LearnBase asks as the project loads: a digest, no content
 })
 
 # KEYS | One link's record
@@ -308,6 +331,12 @@ def _with_client_cookie(response, tokens):
         response.delete_cookie(CLIENT_COOKIE, path=path)
     return response
 
+
+def _with_files_cookie(response, folder, token):
+    """Set (or clear) the cookie that opens this project's model files. The whole-project cookie of a link opened before 04-Nov-2026 always goes."""
+    Na__LibraryGate__SetCookie(response, FILES_COOKIE, folder, None)
+    return Na__LibraryGate__SetCookie(response, FILES_COOKIE, folder, token, sub=CLIENT_MODEL_FOLDER)
+
 # endregion -------------------------------------------------------------------
 
 
@@ -336,7 +365,7 @@ def _guard():
             return _fail('choose a new password first', 403, mustChangePassword=True)
         return None                                                            # <-- Any Vale account reads, as the project list
     try:
-        folder = _request_project()
+        folder = _request_project() if endpoint in CLIENT_READ_ENDPOINTS else None   # <-- Every other read: a sign-in, whatever project it names
         if folder is not None and client_may_read(folder):
             return None
     except Exception as error:                                                 # noqa: BLE001  <-- A guard that cannot decide refuses
@@ -474,7 +503,7 @@ def open_client_link(token):
     ?share=<token> (or the X-ValeVision-Share header), ?view=1 to count a visit,
     ?path=<the page's API path> for the cookie. A live link answers the project's
     name and the link's end date and lets this browser in (the API's cookie, and
-    the project folder's for its model files); a dead one answers 404
+    the model folder's for its model files); a dead one answers 404
     { shareInvalid } and leaves both cookies without it.
     """
     folder, missing = _project_or_404(token)
@@ -489,7 +518,7 @@ def open_client_link(token):
                       link=share_token[:64], ok=False)
         response, status = _fail(DEAD_LINK_MESSAGE, 404, shareInvalid=True)
         response.headers['Cache-Control'] = 'no-store'
-        Na__LibraryGate__SetCookie(response, FILES_COOKIE, folder, None)
+        _with_files_cookie(response, folder, None)
         return _with_client_cookie(response, [t for t in _cookie_tokens() if t != share_token]), status
     if view:
         note_share_view(folder, share_token)
@@ -497,7 +526,7 @@ def open_client_link(token):
                   link=share_token)
     response = jsonify({'ok': True, 'project': _project_public(folder), 'share': {'expiresIso': record.get(KEY_EXPIRES_ISO)}})
     response.headers['Cache-Control'] = 'no-store'
-    Na__LibraryGate__SetCookie(response, FILES_COOKIE, folder, share_token)    # <-- The model files nginx sends: this project's folder only
+    _with_files_cookie(response, folder, share_token)                          # <-- The model files nginx sends: this project's model folder only
     return _with_client_cookie(response, [share_token] + [t for t in _cookie_tokens() if t != share_token])
 
 # endregion -------------------------------------------------------------------
@@ -512,16 +541,17 @@ def library_access():
     """
     auth_request for a protected file of a project (its record, its model
     folders), the file's path in X-Vale-Library-Path: 204 for any signed-in Vale
-    account, as the guard reads; 204 for a live client link to that very
-    project; 403 for an account that must choose a new password first; else 401.
-    Never another code: nginx would turn it into a 500.
+    account, as the guard reads; 204 for a live client link to that very project
+    when the file is a GLB directly in its model folder; 403 for an account that
+    must choose a new password first; else 401. Never another code: nginx would
+    turn it into a 500.
     """
     user = Na__Auth__CurrentUser()
     if user:
         return Na__LibraryGate__Answer(403 if user['mustChangePassword'] else 204)
     try:
-        folder, _rest = Na__LibraryGate__Target()
-        if folder is not None and client_may_read(folder):
+        folder, rest = Na__LibraryGate__Target()
+        if folder is not None and CLIENT_MODEL_FILE.match(rest) and client_may_read(folder):
             return Na__LibraryGate__Answer(204)
     except Exception as error:                                                 # noqa: BLE001  <-- A check that cannot decide refuses
         vv_shared.log(f' [CLIENT LINKS] library check refused ({type(error).__name__}: {error})')

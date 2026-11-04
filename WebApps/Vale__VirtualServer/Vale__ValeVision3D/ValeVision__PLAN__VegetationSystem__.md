@@ -1,6 +1,6 @@
 # ValeVision 3D - Vegetation System: Linework Plants, Their Menu, Library and Placement Tools
 
-**Status**: Stages 1 and 2 done (v2.83.0, v2.84.0, 04-Nov-2026), live on the server since 15:19 UTC that day. Plants draw in the model, in every picture and on both engines, switched on per project from Dev Tools, and no real project holds the key yet. Next is Stage 3, the menu. One target stays open: 100 plants at 30 fps on a real iPad.
+**Status**: All nine stages built (v2.83.0, v2.84.0, v2.85.0, 04-Nov-2026), the last seven in one release at Adam's word: "go back and read my first message and dont stop until feature is complete". Stages 1 and 2 are live on the server since 15:19 UTC that day; v2.85.0 is on the PC until pushed. No real project holds the key yet. Still open: 100 plants at 30 fps on a real iPad, and Stage 9 has not touched a real SketchUp entity (section 8).
 **Created**: 04-Nov-2026
 **Owner**: Adam Noble
 **Base**: ValeVision3D v2.82.0. Line numbers below are as of that version: use them to find the place, then read the code.
@@ -410,7 +410,28 @@ Pure and Max; orbit, walk and fly; a section on; an engine switch; a window resi
 | AO on the fill under MaxEngine | Closed at Stage 2 | The smudges were real, and layer 1 was no answer. The fill marks itself with alpha 0 while AO runs. Tried on Thrower through the live switch; not yet on one of the 9 Max projects |
 | Stale lines visible while orbiting | Measured at Stage 2 | The worst plant is tens of pixels out at 60 degrees a second, in step with the speed. A captured moving frame reads as plants; how it feels in the hand is Adam's call. All config, and on a settled frame they are always exact |
 | Record growth | Stages 5, 6 | Warning at 1,000 plops; sidecar behind `Na__VegData` if needed |
-| Two admins saving at once | Stage 4 | Last writer wins on this object until Stage 9's guard. AppAdmins are two people, and revisions keep the last 50 |
+| Two admins saving at once | Closed at v2.85.0, as a comparison | A save compares with the server first and refuses if the object has changed. Not a lock: section 8 |
 | Sheets caching old pictures | Stage 7 | A plant change must bump what `Na__ContentStamp` says, or Adam's rule "ANY NEW MODEL UPDATES... must force re render" breaks. Traced at that stage |
 | A real model is not a neat planter | Stage 5 | The pick surface may be a soffit or a coping. Max slope and a "this surface only" option are the first answers |
 | Is the look right at a real project's scale? | Stage 2 | The test bed is made up. The Linework panel saved per project is the answer if not |
+
+---
+
+## 8. What Was Built Differently
+
+Written at v2.85.0. Where this and the sections above disagree, this is what is there.
+
+| Plan said | Built | Why |
+|---|---|---|
+| The tools' aids as registered overlays (section 3) | A 2D canvas over the model, `.na-veg-overlay`, pointer events off | Not being scene objects, they cannot reach any picture, whatever render path comes next. Painting shows proxies on it and builds real plants on release |
+| A per-key guard in the API, following the Drawings one (section 5) | A comparison just before the write, from both sides: `Na__VegData__Save` and the sync | The API file holds other sessions' open work, and it needs no restart. A save landing in the moment between the read and the write could still be overwritten; its revision is kept. Moving it into the API later changes nothing else |
+| `Na__VegData__RemoveAll` writing a null | It takes the key out with the PATCH's `_unset` | "Delete should mean delete", and `_unset` was already there |
+| Activity events of their own | `settings.change` from the two controls for everyone | The ledger's own word for it |
+| Show Vegetation tick per plan and elevation | A viewport's Vegetation tick on a sheet (a composite row beside Depth Fog), and a project's Show on Live Drawings for its live views | A sheet's plants are a layer over the vectors, a twin of the fog, so the picture under them never moves. Vector linework does not hide what plants cover: they sit over it, opaque |
+| A path's plants as read-only proxies | The same, and locked in SketchUp | Read-only means it. Unlocked and moved anyway, the next sync puts it back and names it |
+| Moving a planter in SketchUp noted in the report if cheap | A known limit, not detected | A path's points live in the app |
+| The fill one unlit tone (section 3) | Unlit, its colour worked out for each render from the scene's lights (v2.86.0) | Adam: "It should be the same brightness as the building walls and change as you move". The one tone stays for a sheet |
+| Size variation only | A whole-plant scale besides, on plops, paths, the brush, the next dropped plant and palette items (v2.86.0) | Adam: "I would set a scale of 0.5". It changes no draw, so a slider never reshuffles a plant |
+| One generator to start | `ClippedForm` version 1 beside `BallCluster` (v2.86.0) | Adam: "a more managed hedge-looking plant". Asset__Form, Placement__Clipped and a Box proxy are additions to the schema, all optional |
+
+**Stage 9, as far as it has been run.** The merge, the frames and the path port by numbers; the Python live against a sandbox of the real API; the Ruby in SketchUp's own interpreter with its real `Geom` maths against stand-in entities; the tab's page in a browser with a stand-in bridge. Real entities (faces, tags, locks, scene visibility, the component tool, the observer, Undo) have not been run: no empty SketchUp window could be reached. Cloud Sync's DEVLOG 0.6.0 lists what to try.

@@ -1,5 +1,7 @@
 # ValeVision 3D - TrueVision Re-Alignment: Drawing Systems, Projected Linework, Layout Editor
 
+**Retired, 04-Nov-2026 (dated note; everything below is kept as written).** Adam retired the TrueVision parity programme on 04-Nov-2026, choosing the option worded "The programme is over: a later job can clear the tokens and the ledger's open items". This plan is history. How far it got: Waves 0 to 3 landed (ValeVision3D v2.71.1 to v2.71.5); Wave 4 stopped part-way, after v2.71.5, with no release of its own; Waves 5 and 6 and the TrueVision lane never ran. The Status line and section 5 below are dated snapshots. A difference from TrueVision is no longer drift, and a port happens only when Adam asks for one. See the note at the top of `ValeVision__PARITY__TrueVisionLedger__.md`.
+
 **Status**: Wave 0 under way (01-Oct-2026). ValeVision's drawing folders carry TrueVision's numbers (W0-02) and its hotkey
 files TrueVision's names (W0-03), in the working tree; the records are restructured (W0-06). Nothing is committed yet.
 **Created**: 01-Oct-2026

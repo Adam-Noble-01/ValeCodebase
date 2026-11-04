@@ -6,7 +6,7 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 
 ## Where It Stands
 
-**Stage 2 of 9: plants draw in the model, in every picture and on both engines,** switched on per project from Dev Tools > Vegetation, with a test row to look at until the real tools arrive. There is no menu yet. Everything below `Na__Vegetation__.js` loads only on a project with `Vegetation__SceneData__Enabled` true, apart from the Dev section and what it needs, for an author alone.
+**All nine stages are built (v2.85.0), and plants size and scale, and have the walls' brightness (v2.86.0).** One switch per project in Dev Tools > Vegetation. Switched on, Tools & Settings has a Vegetation section: Show Vegetation and Transparency for everyone, client links and phones included, and for an author the Asset Browser, the Linear Placement Tool, the Bush Tool, the Linework panel and Save. Plants draw in the live view, stills, thumbnails, video and a sheet's 3D pictures on both engines; on a plan or elevation only when asked, by a viewport's Vegetation tick or a project's Show on Live Drawings. Cloud Sync's Sync Vegetation tab keeps SketchUp proxies and the planting in lockstep. Everything below `Na__Vegetation__.js` loads only on a project with `Vegetation__SceneData__Enabled` true, apart from the Dev section and what it needs, for an author alone.
 
 ## Files
 
@@ -15,14 +15,28 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 | `Na__Vegetation__.js` | `Na__Vegetation` | The one door in, and the only module on the start-up path |
 | `Na__Vegetation__AppConfig__.json` | | Defaults, whose keys are the keys a project saves; the list of generators |
 | `01__Core__Engine/Na__Vegetation__Random__.js` | `Na__VegRand` | A seeded generator: one seed, one bush, on every machine |
-| `01__Core__Engine/Na__Vegetation__BushBuilder__.js` | `Na__VegBuild` | Recipe + seed + size = balls in 3D, in world metres |
+| `01__Core__Engine/Na__Vegetation__BushBuilder__.js` | `Na__VegBuild` | Recipe + seed + size = balls in 3D, in world metres. The generators: `BallCluster` and `ClippedForm` |
 | `01__Core__Engine/Na__Vegetation__Contour__.js` | `Na__VegContour` | Balls + camera = outline, T-junctions, hooks and a few arcs, as vector lines |
 | `02__Core__Data/Na__Vegetation__SceneData__.js` | `Na__VegData` | The project's object: defaults, reading, saving |
+| `01__Core__Engine/Na__Vegetation__PathModel__.js` | `Na__VegPath` | A path's rules and seed = its plants. Cloud Sync has a Python port: change one, change both |
+| `01__Core__Engine/Na__Vegetation__BrushModel__.js` | `Na__VegBrush` | Palette draws, keeping plants apart, one brushed plant |
 | `02__Core__Data/Na__Vegetation__Library__.js` | `Na__VegLib` | The asset library: the catalogue, recipes, a project's pinned copies |
+| `02__Core__Data/Na__Vegetation__History__.js` | `Na__VegHist` | Undo and redo: whole JSON pictures of what the tools change |
 | `03__System__SceneLayer/Na__Vegetation__SceneLayer__.js` | `Na__VegLayer` | The objects in the scene, each plant's slot in the shared buffers, the render hook |
 | `03__System__SceneLayer/Na__Vegetation__FrameBudget__.js` | `Na__VegBudget` | What may be redrawn this frame, and how: full, moving or settling. No three.js |
 | `03__System__SceneLayer/Na__Vegetation__Runtime__.js` | `Na__VegRun` | Joins the layer to the app, and keeps its plants the same as the project's object |
-| `10__Ui__Panels/Na__Vegetation__DevControls__.js` | `Na__VegDev` | The Dev section: the one switch, and the test row |
+| `10__Ui__Panels/Na__Vegetation__DevControls__.js` | `Na__VegDev` | The Dev section: the one switch, where a viewer starts, Remove All |
+| `10__Ui__Panels/Na__Vegetation__MenuSection__.js` | `Na__VegMenu` | The Tools & Settings section; device memory; an author's rows are built for an author only |
+| `10__Ui__Panels/Na__Vegetation__PanelShell__.js` | `Na__VegShell` | One panel a side, the controls, Save, undo keys, the close guard |
+| `10__Ui__Panels/Na__Vegetation__LineworkPanel__.js` | `Na__VegLine` | The demo's Vegetation Linework panel |
+| `10__Ui__Panels/Na__Vegetation__AssetBrowser__.js` | `Na__VegCards` | Cards drawn live, search, filters, click to place, In This Project, move, turn, remove |
+| `10__Ui__Panels/Na__Vegetation__PaletteEditor__.js` | `Na__VegPalUi` | A palette's items and their shares, shared by both tools |
+| `10__Ui__Panels/Na__Vegetation__Styles__Panels__.css` | | The panels |
+| `20__System__Tools/Na__Vegetation__ToolHost__.js` | `Na__VegTools` | One tool armed at a time, the pointer, the door hold, orbit while painting |
+| `20__System__Tools/Na__Vegetation__ToolOverlay__.js` | `Na__VegOverlay` | Tools' aids on a 2D canvas over the model, so they can never print |
+| `20__System__Tools/Na__Vegetation__SurfacePick__.js` | `Na__VegPick` | What is under the pointer, by BVH, as the eye sees it |
+| `20__System__Tools/Na__Vegetation__LinearTool__.js` | `Na__VegLinear` | Draw and edit paths, Advanced, Bake |
+| `20__System__Tools/Na__Vegetation__BushTool__.js` | `Na__VegBushTool` | Paint and erase from a palette |
 
 The library itself is `53__Vegetation__AssetLibrary` at the app's root.
 
@@ -33,11 +47,18 @@ The library itself is `53__Vegetation__AssetLibrary` at the app's root.
 - **A generator is never edited** once a project can hold its plants: a saved seed must draw the same bush for ever. `BallCluster` version 1 is `Na__VegBuild__Bush`. A new look is a new version beside it, listed in the config.
 - **The order of random draws is part of that promise.** Adding, removing or reordering one `rng` call in a generator changes every plant it has ever made, without any error.
 - **A change to what `Contour` draws changes the look of every project.** It is not versioned plant by plant, so such a change is Adam's call.
+- **Scale is not size.** `Plop__Scale` is the whole plant, on top of `Plop__SizeMm`, with no draw changed. What a plant really measures is the two together: `Na__VegData__PlopSizeMm`, or `Na__VegRun__SizeOf`. Never read `SizeMm` alone as what is on the ground.
+- **The fill's colour is set for each render,** from the scene's lights, in `toneFillForCamera`. A material change to the walls' sums needs the same change there. `FillTone` is the sheet's.
+- **A flat shell behaves differently.** Every ball's outline lies under its neighbours, so inner arcs never show: a clipped form has marks. Gaps between its discs let lines through: a box has a core. A step beyond an outline must land on some ball, or it draws as a hole: hence the body behind the shell.
+- **A clipped run's ends are behind and ahead along its path,** so it is never flipped, and `Plop__Ends` is in its key.
 - **Fit moves centres, never radii,** so a stretched proxy never stretches a scallop. It also means a narrow bed can bury clumps inside a mass, which is why a mass never hides what grows on it (`Na__VegContour__IsHidden`).
 - **Saved values are integer mm, Y up.** The builder converts to metres once, on the way in.
 - **The scene layer imports nothing of the app's.** It takes a small host object from `Na__Vegetation__Runtime__.js`, so the test bench can draw through it. Without a host every draw is a full one.
 - **A fat line is never hidden with `.visible`:** empty its count, or hide the root group.
-- **Alpha 0 on the fill is only ever written while MaxEngine's AO runs,** and the AO blur sets it back to 1. It must never reach the page or a still.
+- **Alpha 0 on the fill is only ever written while MaxEngine's AO runs,** and the AO blur sets it back to 1. It must never reach the page or a still. From the see-through share up the fill is in neither of AO's passes, so it stops: the mark then only cut the wall's own shadow out behind the plant.
+- **`Na__VegPath` has a twin.** Cloud Sync's `Na__ValeVisionCloudSync__VegetationSync__.py` ports it, draw for draw, so SketchUp shows a path's plants where the app draws them. Checked against each other by numbers (its DEVLOG, 0.6.0).
+- **The object is written whole,** so `Na__VegData__Save` first asks whether the server still holds what this window read, and refuses if not: a SketchUp sync or another window may have changed it.
+- **A sheet's plants are a layer of their own,** a twin of the depth fog, never in its base picture. Only a viewport's Vegetation tick brings them in, so no existing sheet moves.
 
 ## Checks
 

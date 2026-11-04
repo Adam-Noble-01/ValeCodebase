@@ -12,7 +12,7 @@
 
 **Tested** by AURA's own `Na__EngineHost__Boot` on the new pin, the page served statically, not signed in: it boots and refines the demo cottage (18 of 20 passes, 2037 edges, 6560 strokes, the Standalone's figures), the import map names v0.8.41, the pin's catalogue lists 52 assets with both, and their DAT, MOD, PXY and RND are served. The script's `--check`: 560 files untouched, the repository the same as the newest copy. The app's own start-up stops there at the sign-in script, which a static server of this folder does not have. Not looked at in AURA itself, signed in, with a project's drawing set.
 
-**Not pushed:** Adam's word was commit and sync. The server still has v0.8.40, at 243da99 unless a push has carried the re-pin before this.
+**Live:** on the server since 17:10:01 UTC, stamp 20261103-170958 (the sync log: aura +494 ~3 -0), by a push under the account adam, very likely Adam's own from the Server Manager, not confirmed, and neither of the sessions on this work. The engine's 7ea3bbe and this sync's a2a7d750 are on GitHub, pushed by the coordinating session at Adam's word: "Yes, push v0.8.41". Checked signed out on the live site: the import map names v0.8.41, the lock reads Commit 7ea3bbe and `WorkingTreeClean` true, the worker's cache version is 2026-11-03-18, and both new DATs are served. Not looked at signed in.
 
 ## Engine Sync, 03-Nov-2026: PainterlyNPR v0.8.40 Re-pinned in Place, the Library's Pictures Redrawn (No App Version of Its Own)
 

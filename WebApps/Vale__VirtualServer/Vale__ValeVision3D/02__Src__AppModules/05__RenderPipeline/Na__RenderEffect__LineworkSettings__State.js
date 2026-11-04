@@ -65,6 +65,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 04-Nov-2026 - Version 1.4.0 (v2.84.0)
+// - GetLineworkExportScale: linework plants keep their detail in step with the line
+//   weight, so a big export has the screen's picture, only sharper.
+//
 // 09-Oct-2026 - Version 1.3.0 (v2.75.0)
 // - GetLineworkFactor and GetSillyAmplitude: the Page Layout re-render reads the
 //   user's three values before it sets a layout's own and puts them back after.
@@ -399,6 +403,18 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Get the Linework Export Scale (1 Outside an Export)
+    // ------------------------------------------------------------
+    // For what must keep its detail in step with the line weight: linework
+    // plants ask for the view at the size it would be if their lines were the
+    // screen's, so a big export has the same picture, only sharper.
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__GetLineworkExportScale() {
+        return Na__LineworkSettings__LineworkExportScale;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Set the Base Width Override (Called by the Layout Editor Snapshot Renderer)
     // ------------------------------------------------------------
     // Set before a viewport render, cleared with null in its finally. No render
@@ -491,6 +507,7 @@
         Na__LineworkSettings__SetExportScales,
         Na__LineworkSettings__SetLineworkBaseOverride,
         Na__LineworkSettings__GetProfileExportScale,
+        Na__LineworkSettings__GetLineworkExportScale,
         Na__LineworkSettings__ModifierRuleFor                                 // <-- Exported to be verifiable headlessly; the renderer passes rules, it never matches
     };
     // ------------------------------------------------------------

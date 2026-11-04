@@ -846,6 +846,14 @@
                     }));
                 }
 
+                // LOAD PER-PROJECT VEGETATION (nothing loads and nothing draws when the key is absent)
+                // @delegate: ../24__System__Vegetation/Na__Vegetation__.js
+                if (projectData.Vegetation__SceneData) {
+                    window.dispatchEvent(new CustomEvent('na-vegetation-scenedata-loaded', {
+                        detail: { sceneData: projectData.Vegetation__SceneData }
+                    }));
+                }
+
                 // LOAD DRAWINGS DATA (floor plans, elevations, sheets; absent block = empty skeleton)
                 // sceneConfig is the raw presentation block, as TrueVision sends it:
                 // the migration source for drawings saved inside it before

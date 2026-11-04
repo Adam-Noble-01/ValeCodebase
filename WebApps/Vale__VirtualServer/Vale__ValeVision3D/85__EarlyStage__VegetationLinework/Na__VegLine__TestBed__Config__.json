@@ -1,0 +1,28 @@
+{
+    "VegetationLinework__TestBed__Meta": {
+        "Meta__FileName"    : "Na__VegLine__TestBed__Config__.json",
+        "Meta__Description" : "The plops on the demo's made-up terrace. The assets themselves now come from 53__Vegetation__AssetLibrary and their line rules from Na__Vegetation__AppConfig__.json. Only this stays the demo's own.",
+        "Meta__Version"     : "0.2.0",
+        "Meta__Created"     : "04-Nov-2026",
+        "Meta__Author"      : "Adam Noble - Noble Architecture"
+    },
+
+    "VegetationLinework__TestBed__Plops": [
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 41027, "Plop__PositionMm": [-6950, 1120, 2510], "Plop__YawDeg": 6,   "Plop__SizeMm": [1400, 620, 1020] },
+        { "Plop__AssetId": "VVL_07_1011", "Plop__Seed": 73391, "Plop__PositionMm": [-5780, 1120, 2470], "Plop__YawDeg": -8,  "Plop__SizeMm": [1080, 600, 1300] },
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 19283, "Plop__PositionMm": [-4700, 1120, 2540], "Plop__YawDeg": 182, "Plop__SizeMm": [1300, 600, 960] },
+        { "Plop__AssetId": "VVL_07_1021", "Plop__Seed": 55127, "Plop__PositionMm": [-3240, 1120, 2520], "Plop__YawDeg": 2,   "Plop__SizeMm": [2000, 580, 640] },
+        { "Plop__AssetId": "VVL_07_1011", "Plop__Seed": 90211, "Plop__PositionMm": [-2230, 1120, 2470], "Plop__YawDeg": 5,   "Plop__SizeMm": [960, 580, 1180] },
+
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 28461, "Plop__PositionMm": [2300, 1120, 2530],  "Plop__YawDeg": -5,  "Plop__SizeMm": [1250, 600, 980] },
+        { "Plop__AssetId": "VVL_07_1021", "Plop__Seed": 64002, "Plop__PositionMm": [3560, 1120, 2520],  "Plop__YawDeg": 178, "Plop__SizeMm": [1800, 580, 620] },
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 33718, "Plop__PositionMm": [4900, 1120, 2500],  "Plop__YawDeg": 7,   "Plop__SizeMm": [1420, 620, 1060] },
+        { "Plop__AssetId": "VVL_07_1011", "Plop__Seed": 12874, "Plop__PositionMm": [5960, 1120, 2470],  "Plop__YawDeg": -4,  "Plop__SizeMm": [1020, 580, 1250] },
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 80955, "Plop__PositionMm": [6980, 1120, 2530],  "Plop__YawDeg": 186, "Plop__SizeMm": [1250, 600, 1000] },
+
+        { "Plop__AssetId": "VVL_07_1021", "Plop__Seed": 47311, "Plop__PositionMm": [-7150, 1120, 1120], "Plop__YawDeg": 90,  "Plop__SizeMm": [1700, 580, 640] },
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 62290, "Plop__PositionMm": [-7150, 1120, -340], "Plop__YawDeg": 86,  "Plop__SizeMm": [1250, 600, 980] },
+        { "Plop__AssetId": "VVL_07_1001", "Plop__Seed": 15548, "Plop__PositionMm": [7150, 1120, 1250],  "Plop__YawDeg": 272, "Plop__SizeMm": [1300, 600, 1000] },
+        { "Plop__AssetId": "VVL_07_1021", "Plop__Seed": 38806, "Plop__PositionMm": [7150, 1120, -160],  "Plop__YawDeg": 270, "Plop__SizeMm": [1700, 580, 620] }
+    ]
+}

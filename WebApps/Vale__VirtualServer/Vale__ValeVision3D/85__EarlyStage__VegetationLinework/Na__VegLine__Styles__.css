@@ -1,0 +1,454 @@
+/* =============================================================================
+ * VALEVISION3D - VEGETATION LINEWORK PROTOTYPE - STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__VegLine__Styles__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Prototype - Vegetation Linework
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The demo's bar, panels and cards, in the app's own look: white
+ *              floating panels and Vale navy over a full-window canvas
+ * CREATED    : 04-Nov-2026
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Page and Canvas
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        --Vale_PrimaryBrand                : #172b3a;
+        --Vale_HeaderHeight                : 60px;
+        --na-veg-muted                     : #5c6b78;
+        --na-veg-rule                      : rgba(23, 43, 58, 0.12);
+        --na-veg-active                    : #e7eef4;
+        --na-veg-shadow                    : 0 4px 16px rgba(0, 0, 0, 0.14);
+    }
+
+    * {
+        box-sizing                         : border-box;
+    }
+
+    html, body {
+        margin                             : 0;
+        height                             : 100%;
+        overflow                           : hidden;
+        background                         : #ffffff;
+        color                              : var(--Vale_PrimaryBrand);
+        font-family                        : 'Open Sans', 'Segoe UI', sans-serif;
+        font-size                          : 13px;
+    }
+
+    #renderCanvas {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : block;
+        outline                            : none;
+    }
+
+    .na-veg-placing #renderCanvas {
+        cursor                             : crosshair;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header
+ * ----------------------------------------------------------------------------- */
+
+    .na-veg-header {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        height                             : var(--Vale_HeaderHeight);
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 16px;
+        padding                            : 0 20px;
+        background                         : #ffffff;
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);
+        z-index                            : 20;
+    }
+
+    .na-veg-header__logo {
+        height                             : 42px;
+        width                              : auto;
+    }
+
+    .na-veg-header__chip {
+        padding                            : 3px 9px;
+        border                             : 1px solid var(--na-veg-rule);
+        border-radius                      : 5px;
+        color                              : var(--na-veg-muted);
+        font-size                          : 11px;
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+    }
+
+    .na-veg-header__title {
+        margin                             : 0 0 0 auto;
+        font-size                          : 20px;
+        font-weight                        : 600;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    .na-veg-bar {
+        position                           : fixed;
+        top                                : calc(var(--Vale_HeaderHeight) + 12px);
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 2px;
+        padding                            : 5px 8px;
+        background                         : #ffffff;
+        border                             : 1px solid rgba(23, 43, 58, 0.08);
+        border-radius                      : 12px;
+        box-shadow                         : var(--na-veg-shadow);
+        z-index                            : 15;
+        white-space                        : nowrap;
+    }
+
+    .na-veg-bar__btn {
+        padding                            : 7px 12px;
+        border                             : none;
+        border-radius                      : 8px;
+        background                         : transparent;
+        color                              : var(--Vale_PrimaryBrand);
+        font                               : inherit;
+        cursor                             : pointer;
+    }
+
+    .na-veg-bar__btn:hover {
+        background                         : #f2f5f8;
+    }
+
+    .na-veg-bar__btn--active,
+    .na-veg-bar__btn--active:hover {
+        background                         : var(--na-veg-active);
+        font-weight                        : 600;
+    }
+
+    .na-veg-bar__btn--strong {
+        font-weight                        : 600;
+    }
+
+    .na-veg-bar__divider {
+        width                              : 1px;
+        height                             : 20px;
+        margin                             : 0 6px;
+        background                         : var(--na-veg-rule);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Panels
+ * ----------------------------------------------------------------------------- */
+
+    .na-veg-panel {
+        position                           : fixed;
+        top                                : calc(var(--Vale_HeaderHeight) + 12px);
+        bottom                             : 12px;
+        display                            : flex;
+        flex-direction                     : column;
+        background                         : #ffffff;
+        border                             : 1px solid rgba(23, 43, 58, 0.08);
+        border-radius                      : 12px;
+        box-shadow                         : var(--na-veg-shadow);
+        z-index                            : 14;
+        overflow                           : hidden;
+    }
+
+    .na-veg-panel--left {
+        left                               : 12px;
+        width                              : 276px;
+    }
+
+    .na-veg-panel--right {
+        right                              : 12px;
+        width                              : 212px;
+        bottom                             : auto;
+        max-height                         : calc(100% - var(--Vale_HeaderHeight) - 24px);
+    }
+
+    .na-veg-panel__head {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        padding                            : 10px 12px;
+        border-bottom                      : 1px solid var(--na-veg-rule);
+    }
+
+    .na-veg-panel__title {
+        margin                             : 0;
+        padding                            : 0;
+        border                             : none;
+        background                         : none;
+        color                              : inherit;
+        font                               : inherit;
+        font-size                          : 14px;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+    .na-veg-panel__title::before {
+        content                            : '\25BE';                        /* <-- A small arrow: the title folds the panel */
+        display                            : inline-block;
+        width                              : 14px;
+        color                              : var(--na-veg-muted);
+    }
+
+    .na-veg-panel--folded {
+        bottom                             : auto;
+    }
+
+    .na-veg-panel--folded .na-veg-panel__title::before {
+        content                            : '\25B8';
+    }
+
+    .na-veg-panel--folded .na-veg-panel__scroll {
+        display                            : none;
+    }
+
+    .na-veg-panel--folded .na-veg-panel__head {
+        border-bottom                      : none;
+    }
+
+    .na-veg-panel__scroll {
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        padding                            : 10px 12px 12px;
+        overflow-y                         : auto;
+        scrollbar-width                    : thin;
+    }
+
+    .na-veg-panel__section {
+        margin                             : 2px 0 8px;
+        color                              : var(--na-veg-muted);
+        font-size                          : 11px;
+        letter-spacing                     : 0.05em;
+        text-transform                     : uppercase;
+    }
+
+    .na-veg-panel__hint {
+        margin                             : 2px 0 12px;
+        color                              : var(--na-veg-muted);
+        font-size                          : 12px;
+    }
+
+    .na-veg-toggle {
+        display                            : flex;
+        padding                            : 2px;
+        border-radius                      : 7px;
+        background                         : #f1f4f7;
+    }
+
+    .na-veg-toggle__btn {
+        padding                            : 3px 9px;
+        border                             : none;
+        border-radius                      : 5px;
+        background                         : transparent;
+        color                              : var(--na-veg-muted);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .na-veg-toggle__btn--active {
+        background                         : #ffffff;
+        color                              : var(--Vale_PrimaryBrand);
+        font-weight                        : 600;
+        box-shadow                         : 0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+
+    .na-veg-small-btn {
+        padding                            : 4px 10px;
+        border                             : 1px solid var(--na-veg-rule);
+        border-radius                      : 6px;
+        background                         : #ffffff;
+        color                              : var(--Vale_PrimaryBrand);
+        font                               : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .na-veg-small-btn:hover {
+        background                         : #f2f5f8;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Asset Cards
+ * ----------------------------------------------------------------------------- */
+
+    .na-veg-card {
+        display                            : block;
+        width                              : 100%;
+        margin                             : 0 0 10px;
+        padding                            : 4px 4px 8px;
+        border                             : 1px solid var(--na-veg-rule);
+        border-radius                      : 9px;
+        background                         : #ffffff;
+        color                              : inherit;
+        font                               : inherit;
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .na-veg-card:hover {
+        border-color                       : rgba(23, 43, 58, 0.35);
+    }
+
+    .na-veg-card--armed,
+    .na-veg-card--armed:hover {
+        border-color                       : var(--Vale_PrimaryBrand);
+        box-shadow                         : inset 0 0 0 1px var(--Vale_PrimaryBrand);
+    }
+
+    .na-veg-card__picture {
+        display                            : block;
+    }
+
+    .na-veg-card__name {
+        margin                             : 4px 6px 0;
+        font-weight                        : 600;
+    }
+
+    .na-veg-card__meta {
+        margin                             : 1px 6px 0;
+        color                              : var(--na-veg-muted);
+        font-size                          : 11px;
+    }
+
+    .na-veg-record__json {
+        margin                             : 0 0 8px;
+        padding                            : 8px;
+        border-radius                      : 7px;
+        background                         : #f5f7f9;
+        font-family                        : Consolas, 'Courier New', monospace;
+        font-size                          : 11px;
+        white-space                        : pre-wrap;
+        word-break                         : break-word;
+    }
+
+    .na-veg-record__actions {
+        display                            : flex;
+        gap                                : 6px;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Sliders and Numbers
+ * ----------------------------------------------------------------------------- */
+
+    .na-veg-slider {
+        display                            : block;
+        margin                             : 0 0 10px;
+    }
+
+    .na-veg-slider__top {
+        display                            : flex;
+        justify-content                    : space-between;
+        margin-bottom                      : 2px;
+    }
+
+    .na-veg-slider__value {
+        color                              : var(--na-veg-muted);
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .na-veg-slider__input {
+        width                              : 100%;
+        margin                             : 0;
+        accent-color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .na-veg-stats__row {
+        display                            : flex;
+        justify-content                    : space-between;
+        margin-bottom                      : 3px;
+        font-size                          : 12px;
+    }
+
+    .na-veg-stats__value {
+        font-weight                        : 600;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    /* Beside each shelf of the line-up; placed by the demo as the camera moves */
+    .na-veg-label {
+        position                           : fixed;
+        transform                          : translate(0, 8px);
+        pointer-events                     : none;
+        z-index                            : 5;
+    }
+
+    .na-veg-label__name {
+        font-weight                        : 600;
+    }
+
+    .na-veg-label__note {
+        color                              : var(--na-veg-muted);
+        font-size                          : 11px;
+    }
+
+    .na-veg-keys {
+        position                           : fixed;
+        bottom                             : 12px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        padding                            : 4px 12px;
+        border-radius                      : 7px;
+        background                         : rgba(255, 255, 255, 0.82);
+        color                              : var(--na-veg-muted);
+        font-size                          : 12px;
+        white-space                        : pre;
+        pointer-events                     : none;
+        z-index                            : 13;
+    }
+
+    /* A narrow window: the bar goes above the panels, not over their titles */
+    @media (max-width: 1320px) {
+        .na-veg-panel {
+            top                            : calc(var(--Vale_HeaderHeight) + 66px);
+        }
+
+        .na-veg-panel--right {
+            max-height                     : calc(100% - var(--Vale_HeaderHeight) - 78px);
+        }
+    }
+
+    .na-veg-clean .na-veg-panel,
+    .na-veg-clean .na-veg-bar,
+    .na-veg-clean .na-veg-keys {
+        display                            : none;
+    }
+
+    .na-veg-error {
+        position                           : fixed;
+        top                                : 90px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        padding                            : 12px 16px;
+        border-radius                      : 8px;
+        background                         : #fff4f2;
+        color                              : #8a2b1c;
+        z-index                            : 30;
+    }
+
+/* endregion ------------------------------------------------------------------- */

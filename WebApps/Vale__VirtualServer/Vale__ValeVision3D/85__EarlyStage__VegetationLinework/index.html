@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ValeVision 3D: Vegetation Linework Prototype</title>
+
+    <!-- ================================================================= -->
+    <!-- ISOLATED DEMO. 85__EarlyStage never pushes to the server (the     -->
+    <!-- sync map's rule), and nothing in the app imports from this folder. -->
+    <!-- It reads the app's config and imports its PureEngine composer and  -->
+    <!-- refiner, read only. The import map is the app's, one folder up.    -->
+    <!-- ================================================================= -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three"         : "../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/" : "../04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <link rel="stylesheet" href="../03__Style__AppStylesheets/Na__CoreUi__Styles__Fonts__.css">
+    <link rel="stylesheet" href="./Na__VegLine__Styles__.css">
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+
+    <header class="na-veg-header">
+        <img class="na-veg-header__logo" src="../../AppAssets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png" alt="Vale Garden Houses">
+        <span class="na-veg-header__chip">Vegetation Linework Prototype</span>
+        <h1 class="na-veg-header__title">ValeVision 3D</h1>
+    </header>
+
+    <script type="module" src="./Na__VegLine__Demo__.js"></script>
+</body>
+</html>

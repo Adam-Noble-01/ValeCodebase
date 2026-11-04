@@ -1,0 +1,528 @@
+/* =============================================================================
+ * VALEVISION3D - TESTING SERVER OVERLAY STYLES
+ * =============================================================================
+ *
+ * FILE       : ValeVision__TestServer__Styles__Overlay__.css
+ * NAMESPACE  : ValeVision__TestServer
+ * MODULE     : TestServer - Overlay Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The testing server's frame, header label, badge and panel
+ * CREATED    : 04-Nov-2026
+ *
+ * DESCRIPTION:
+ * - Never part of the app: injected by ValeVision__TestServer__LocalServer__.py
+ *   with ValeVision__TestServer__Overlay__.js, and this folder never syncs.
+ * - Amber for sandbox data, red for the real mirror: a glance says which.
+ * - The frame and the header label never take a click (pointer-events: none);
+ *   only the badge and the open panel do. Above every app layer, modals too.
+ * - Its own tokens, scoped to the overlay root, so the app's :root is untouched.
+ *   Hidden in print.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * TOKENS | Overlay Colours and Layers
+ * ----------------------------------------------------------------------------- */
+
+    /* TOKENS | Scoped to the Overlay Root */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Root {
+        --ValeVision_TestServer_Sandbox    : #e39b17;                     /* <-- Amber: sandbox data */
+        --ValeVision_TestServer_Real       : #c62828;                     /* <-- Red: the real mirror */
+        --ValeVision_TestServer_Accent     : var(--ValeVision_TestServer_Sandbox);
+        --ValeVision_TestServer_OnAccent   : #172b3a;                     /* <-- Vale navy, as --Vale_PrimaryBrand */
+        --ValeVision_TestServer_Ink        : #172b3a;
+        --ValeVision_TestServer_Muted      : #5b6b78;
+        --ValeVision_TestServer_Paper      : #ffffff;
+        --ValeVision_TestServer_Rule       : #d9dee3;
+        --ValeVision_TestServer_Good       : #2e7d32;
+        --ValeVision_TestServer_Bad        : #c62828;
+        --ValeVision_TestServer_Down       : #6b6b6b;
+        --ValeVision_TestServer_Layer      : 2147483000;                  /* <-- Above everything the app draws */
+        --ValeVision_TestServer_FrameWidth : 4px;
+        position                           : fixed;                       /* <-- Out of the page flow: the app's layout never moves */
+        top                                : 0;
+        left                               : 0;
+        width                              : 0;
+        height                             : 0;
+        z-index                            : var(--ValeVision_TestServer_Layer);
+        font-family                        : var(--Vale_FontFamily, 'Open Sans', sans-serif);
+    }
+
+    .ValeVision__TestServer__Root--real {
+        --ValeVision_TestServer_Accent     : var(--ValeVision_TestServer_Real);
+        --ValeVision_TestServer_OnAccent   : #ffffff;
+    }
+
+    .ValeVision__TestServer__Root--down {
+        --ValeVision_TestServer_Accent     : var(--ValeVision_TestServer_Down);
+        --ValeVision_TestServer_OnAccent   : #ffffff;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Frame and Header Label
+ * ----------------------------------------------------------------------------- */
+
+    /* FRAME | Round the Whole Window, Never Taking a Click */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Frame {
+        position                           : fixed;
+        inset                              : 0;
+        box-sizing                         : border-box;
+        border                             : var(--ValeVision_TestServer_FrameWidth) solid var(--ValeVision_TestServer_Accent);
+        pointer-events                     : none;
+        z-index                            : var(--ValeVision_TestServer_Layer);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | In the Empty Centre of the App Header (logo left, title right) */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__HeaderLabel {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        padding                            : 4px 16px 5px;
+        border-radius                      : 0 0 8px 8px;
+        background                         : var(--ValeVision_TestServer_Accent);
+        color                              : var(--ValeVision_TestServer_OnAccent);
+        font-size                          : 12px;
+        font-weight                        : 700;
+        letter-spacing                     : 0.08em;
+        text-transform                     : uppercase;
+        white-space                        : pre;
+        pointer-events                     : none;
+        z-index                            : var(--ValeVision_TestServer_Layer);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Dock and Badge
+ * ----------------------------------------------------------------------------- */
+
+    /* DOCK | Bottom Corner (left by default: the app's toasts are bottom right) */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Dock {
+        position                           : fixed;
+        bottom                             : 14px;
+        left                               : 14px;
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : flex-start;
+        gap                                : 8px;
+        max-width                          : calc(100vw - 28px);
+        z-index                            : var(--ValeVision_TestServer_Layer);
+    }
+
+    .ValeVision__TestServer__Root--right .ValeVision__TestServer__Dock {
+        left                               : auto;
+        right                              : 14px;
+        align-items                        : flex-end;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Testing Server, the Data Mode, the Problem Count */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Badge {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 10px;
+        margin                             : 0;
+        padding                            : 7px 8px 7px 14px;
+        border                             : 0;
+        border-radius                      : 999px;
+        background                         : var(--ValeVision_TestServer_Accent);
+        color                              : var(--ValeVision_TestServer_OnAccent);
+        box-shadow                         : 0 2px 10px rgba(0, 0, 0, 0.25);
+        font-family                        : inherit;
+        font-size                          : 12px;
+        line-height                        : 1;
+        cursor                             : pointer;
+    }
+
+    .ValeVision__TestServer__Badge:focus-visible {
+        outline                            : 3px solid var(--ValeVision_TestServer_Ink);
+        outline-offset                     : 2px;
+    }
+
+    .ValeVision__TestServer__BadgeTitle {
+        font-weight                        : 700;
+        letter-spacing                     : 0.08em;
+        text-transform                     : uppercase;
+    }
+
+    .ValeVision__TestServer__BadgeMode {
+        opacity                            : 0.85;
+    }
+
+    .ValeVision__TestServer__BadgeCount {
+        min-width                          : 22px;
+        padding                            : 4px 7px;
+        border-radius                      : 999px;
+        background                         : var(--ValeVision_TestServer_Paper);
+        font-weight                        : 700;
+        text-align                         : center;
+    }
+
+    .ValeVision__TestServer__BadgeCount--clear {
+        color                              : var(--ValeVision_TestServer_Good);
+    }
+
+    .ValeVision__TestServer__BadgeCount--issues {
+        background                         : var(--ValeVision_TestServer_Bad);
+        color                              : var(--ValeVision_TestServer_Paper);
+        box-shadow                         : 0 0 0 2px var(--ValeVision_TestServer_Paper);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | Above the Badge */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Panel {
+        box-sizing                         : border-box;
+        width                              : 420px;
+        max-width                          : 100%;
+        max-height                         : 72vh;
+        overflow-y                         : auto;
+        padding                            : 14px 16px 16px;
+        border                             : 2px solid var(--ValeVision_TestServer_Accent);
+        border-radius                      : 8px;
+        background                         : var(--ValeVision_TestServer_Paper);
+        color                              : var(--ValeVision_TestServer_Ink);
+        box-shadow                         : 0 8px 28px rgba(0, 0, 0, 0.28);
+        font-size                          : 12px;
+        line-height                        : 1.45;
+        text-align                         : left;
+    }
+
+    .ValeVision__TestServer__Panel[hidden] {
+        display                            : none;
+    }
+
+    .ValeVision__TestServer__PanelHead {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : 12px;
+        margin-bottom                      : 10px;
+    }
+
+    .ValeVision__TestServer__PanelTitle {
+        margin                             : 0;
+        font-size                          : 14px;
+        font-weight                        : 700;
+    }
+
+    .ValeVision__TestServer__Warning {
+        margin                             : 0 0 10px;
+        padding                            : 8px 10px;
+        border-left                        : 4px solid var(--ValeVision_TestServer_Bad);
+        background                         : rgba(198, 40, 40, 0.08);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FACTS | Data, App, Git, Deploy Check */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Facts {
+        display                            : grid;
+        grid-template-columns              : max-content 1fr;
+        gap                                : 3px 12px;
+        margin                             : 0 0 12px;
+    }
+
+    .ValeVision__TestServer__Facts dt {
+        color                              : var(--ValeVision_TestServer_Muted);
+        font-weight                        : 600;
+    }
+
+    .ValeVision__TestServer__Facts dd {
+        margin                             : 0;
+        overflow-wrap                      : anywhere;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUPS | Test Accounts and the Problem Lists */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__Group {
+        padding-top                        : 10px;
+        margin-top                         : 10px;
+        border-top                         : 1px solid var(--ValeVision_TestServer_Rule);
+    }
+
+    .ValeVision__TestServer__GroupTitle {
+        margin                             : 0 0 2px;
+        font-size                          : 12px;
+        font-weight                        : 700;
+    }
+
+    .ValeVision__TestServer__GroupNote,
+    .ValeVision__TestServer__Empty {
+        margin                             : 0 0 6px;
+        color                              : var(--ValeVision_TestServer_Muted);
+    }
+
+    .ValeVision__TestServer__Accounts {
+        width                              : 100%;
+        border-collapse                    : collapse;
+    }
+
+    .ValeVision__TestServer__Accounts th,
+    .ValeVision__TestServer__Accounts td {
+        padding                            : 3px 6px 3px 0;
+        font-weight                        : 400;
+        text-align                         : left;
+        vertical-align                     : middle;
+    }
+
+    .ValeVision__TestServer__Accounts th {
+        color                              : var(--ValeVision_TestServer_Muted);
+        white-space                        : nowrap;
+    }
+
+    .ValeVision__TestServer__Accounts td:last-child {
+        text-align                         : right;
+    }
+
+    .ValeVision__TestServer__List {
+        margin                             : 0;
+        padding                            : 0;
+        list-style                         : none;
+    }
+
+    .ValeVision__TestServer__Item {
+        padding                            : 5px 0;
+        border-bottom                      : 1px dashed var(--ValeVision_TestServer_Rule);
+    }
+
+    .ValeVision__TestServer__Item:last-child {
+        border-bottom                      : 0;
+    }
+
+    .ValeVision__TestServer__ItemPath {
+        overflow-wrap                      : anywhere;
+        font-weight                        : 600;
+    }
+
+    .ValeVision__TestServer__ItemDetail {
+        overflow-wrap                      : anywhere;
+    }
+
+    .ValeVision__TestServer__ItemMeta {
+        color                              : var(--ValeVision_TestServer_Muted);
+        font-size                          : 11px;
+    }
+
+    .ValeVision__TestServer__Mono {
+        font-family                        : Consolas, 'Courier New', monospace;
+        font-size                          : 11.5px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTONS | Close, Copy, Clear, Move */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__PanelClose,
+    .ValeVision__TestServer__Small {
+        padding                            : 3px 9px;
+        border                             : 1px solid var(--ValeVision_TestServer_Ink);
+        border-radius                      : 4px;
+        background                         : var(--ValeVision_TestServer_Paper);
+        color                              : var(--ValeVision_TestServer_Ink);
+        font-family                        : inherit;
+        font-size                          : 11px;
+        cursor                             : pointer;
+    }
+
+    .ValeVision__TestServer__PanelClose:hover,
+    .ValeVision__TestServer__Small:hover {
+        background                         : var(--ValeVision_TestServer_Ink);
+        color                              : var(--ValeVision_TestServer_Paper);
+    }
+
+    .ValeVision__TestServer__Actions {
+        display                            : flex;
+        gap                                : 8px;
+        margin-top                         : 14px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Sandbox Sign-In Box (beside the badge while the sign-in card shows)
+ * ----------------------------------------------------------------------------- */
+
+    /* SIGN-IN BOX | Test Accounts, One Click Each */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__SignInHelp {
+        box-sizing                         : border-box;
+        width                              : 340px;
+        max-width                          : 100%;
+        padding                            : 12px 14px 12px;
+        border                             : 2px solid var(--ValeVision_TestServer_Accent);
+        border-radius                      : 8px;
+        background                         : var(--ValeVision_TestServer_Paper);
+        color                              : var(--ValeVision_TestServer_Ink);
+        box-shadow                         : 0 8px 28px rgba(0, 0, 0, 0.28);
+        font-size                          : 12px;
+        line-height                        : 1.45;
+        text-align                         : left;
+    }
+
+    .ValeVision__TestServer__SignInHelp[hidden] {
+        display                            : none;
+    }
+
+    .ValeVision__TestServer__SignInTitle {
+        margin                             : 0 0 4px;
+        font-size                          : 13px;
+        font-weight                        : 700;
+    }
+
+    .ValeVision__TestServer__SignInText,
+    .ValeVision__TestServer__SignInFoot {
+        margin                             : 0 0 8px;
+    }
+
+    .ValeVision__TestServer__SignInFoot {
+        margin-bottom                      : 0;
+        color                              : var(--ValeVision_TestServer_Muted);
+        font-size                          : 11px;
+        overflow-wrap                      : anywhere;
+    }
+
+    .ValeVision__TestServer__SignInButtons {
+        display                            : grid;
+        grid-template-columns              : 1fr 1fr;
+        gap                                : 6px;
+        margin-bottom                      : 8px;
+    }
+
+    .ValeVision__TestServer__SignInButton {
+        padding                            : 7px 8px;
+        border                             : 0;
+        border-radius                      : 4px;
+        background                         : var(--ValeVision_TestServer_Ink);
+        color                              : var(--ValeVision_TestServer_Paper);
+        font-family                        : inherit;
+        font-size                          : 12px;
+        font-weight                        : 600;
+        cursor                             : pointer;
+    }
+
+    .ValeVision__TestServer__SignInButton:hover {
+        background                         : var(--ValeVision_TestServer_Accent);
+        color                              : var(--ValeVision_TestServer_OnAccent);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * MEDIA | Print and Phone Width
+ * ----------------------------------------------------------------------------- */
+
+    /* PRINT | Never on Paper */
+    /* ------------------------------------------------------------ */
+    @media print {
+        .ValeVision__TestServer__Root {
+            display                        : none !important;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PHONE | The Header Label Gives Way to the Header; the Badge Stays */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 480px) {
+        .ValeVision__TestServer__HeaderLabel {
+            display                        : none;
+        }
+
+        .ValeVision__TestServer__BadgeMode {
+            display                        : none;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Fake Users and Projects
+ * ----------------------------------------------------------------------------- */
+
+    /* BADGE | Who Is Looking */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__BadgeUser {
+        font-size                          : 12px;
+        font-weight                        : 700;
+        opacity                            : 0.95;
+    }
+
+    .ValeVision__TestServer__BadgeUser:empty {
+        display                            : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | The Fake User Already Signed In */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__SignInButton--current,
+    .ValeVision__TestServer__SignInButton--current:disabled {
+        background                         : var(--ValeVision_TestServer_Accent);
+        color                              : var(--ValeVision_TestServer_OnAccent);
+        border-color                       : var(--ValeVision_TestServer_Accent);
+        opacity                            : 1;
+        cursor                             : default;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LINKS | The Projects That Open Here */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__ProjectLinks {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+    }
+
+    .ValeVision__TestServer__ProjectLink {
+        padding                            : 3px 8px;
+        border                             : 1px solid #c9cdd2;
+        border-radius                      : 6px;
+        color                              : #172b3a;
+        font-size                          : 12px;
+        text-decoration                    : none;
+    }
+
+    .ValeVision__TestServer__ProjectLink:hover {
+        border-color                       : var(--ValeVision_TestServer_Accent);
+    }
+
+    .ValeVision__TestServer__ProjectLink--current {
+        border-color                       : var(--ValeVision_TestServer_Accent);
+        font-weight                        : 700;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -1,0 +1,49 @@
+{
+    "ValeVision__TestServer__Config": {
+        "__Description": "Settings for the ValeVision 3D testing server (ValeVision__TestServer__LocalServer__.py in the app root, started by Start__ValeVision__TestServer__8032__.bat). It runs the app on this PC exactly as app.valegardenhouses.com runs it, on sandbox data with fake users, so work can be tried at every permission level before it is pushed. This whole folder is PC-only: the sync map's 8?__Testing*/ rule never sends it to the server.",
+
+        "ValeVision__TestServer__Config__Server": {
+            "Port"                    : 8032,
+            "PortNote"                : "8030 is the shared Vale dev server (the whole mirror), 8031 the Lantern Designer's testing server, 8020 the Server Manager, 8033 the sandbox port in the skill notes, 8037 the vegetation prototype. Agents run their own copy from 8040 up.",
+            "BindHost"                : "127.0.0.1",
+            "BindHostNote"            : "Only this PC can reach it. Never 0.0.0.0: the sandbox's test passwords are shown by the overlay.",
+            "BrowserHost"             : "localhost",
+            "BrowserHostNote"         : "The browser opens http://localhost:<port>/ rather than 127.0.0.1. Cookies ignore the port, so on 127.0.0.1 a test sign-in here would replace the vale_session cookie of the 8030 dev server (and sign you out there). localhost is a different host, so the two keep their own sign-ins, service workers and storage. The Lantern Designer's testing server shares localhost, and so shares its sign-in cookie: fake users are the same names in both, in different sandboxes.",
+            "AppRoute"                : "/valevision/",
+            "AppRouteNote"            : "The route the browser opens, with the trailing slash: every API call is page-relative (api/...).",
+            "StartProject"            : "63403__Thrower",
+            "StartProjectNote"        : "The project the browser opens. The vegetation pilot, Adam, 04-Nov-2026: \"Use Thrower\".",
+            "ReloadOnPythonChange"    : true,
+            "ReloadOnPythonChangeNote": "Restart the server by itself when a .py file it runs changes (the ValeVision API, Api__Shared, the shared dev server, this server). Static files are read fresh on every request anyway. Turn off for one run with --no-reload."
+        },
+
+        "ValeVision__TestServer__Config__Sandbox": {
+            "RootPath"                : "%LOCALAPPDATA%\\ValeVision__TestServer\\Sandbox",
+            "RootPathNote"            : "Outside the repo (public) and outside every folder a server serves. It holds generated test accounts and copies of the records below, and is reused between runs. --reset-sandbox deletes and rebuilds it (only a folder that carries the sandbox marker file is ever deleted).",
+            "Projects"                : [ "63403__Thrower", "3047__Doous", "64135__Washington", "64348__Mathison" ],
+            "ProjectsNote"            : "Records copied into the sandbox: each project's ProjectData file, nothing else, so a save here never reaches the real one. A named list, never a pattern, so a project is never copied by accident. A name added here is copied at the next start. Thrower is the vegetation pilot, Doous a MaxEngine project with drawings, Washington the skill's usual example, Mathison a PureEngine project with drawings. Models and pictures still show: the dev server serves library content from the sandbox when it has the file, else from the mirror. Any other project answers 'not found' here.",
+            "AccountEmailDomain"      : "sandbox.test",
+            "AccountEmailDomainNote"  : ".test is reserved for testing and never reaches a real mailbox.",
+            "Accounts"                : [
+                { "Code": "USR90000001", "Level": "AppAdmin",   "First": "Test", "Last": "AppAdmin",  "Email": "appadmin"  },
+                { "Code": "USR90000002", "Level": "Management", "First": "Test", "Last": "Manager",   "Email": "manager"   },
+                { "Code": "USR90000003", "Level": "Employee",   "First": "Test", "Last": "Employee",  "Email": "employee"  },
+                { "Code": "USR90000004", "Level": "Affiliate",  "First": "Test", "Last": "Affiliate", "Email": "affiliate" }
+            ],
+            "AccountsNote"            : "One fake user per permission level. The codes start USR9 so they never meet a real one. The password is generated when the sandbox is built, kept in the sandbox's TestServer__Sandbox__.json, printed in the console and shown in the overlay. A client has no account: the overlay makes a client link instead."
+        },
+
+        "ValeVision__TestServer__Config__Checks": {
+            "DeployCheck"             : true,
+            "DeployCheckNote"         : "Answer 404 for every file the Server Manager would NOT push (its sync map: NeverSync, KindExcludes and each mapping's Exclude, judged by the engine's own Na__Walk__Classify), the way the live server would, and list it in the overlay. Catches the 'works on the PC, 404 on the server' kind of bug, such as runtime data saved as .md.",
+            "ExpectedMissing"         : [
+                "/ValeApps__DeployStamp__.json"
+            ],
+            "ExpectedMissingNote"     : "Paths that are allowed to 404 here without being reported: the deploy stamp only exists on the server (the Server Manager writes it at each push).",
+            "StatusPollMs"            : 4000,
+            "StatusPollMsNote"        : "How often the overlay asks the server for its lists while the tab is visible.",
+            "KeepEntries"             : 200,
+            "KeepEntriesNote"         : "The most entries each overlay list keeps (server and browser side)."
+        }
+    }
+}

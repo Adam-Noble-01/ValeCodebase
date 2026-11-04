@@ -29,7 +29,7 @@ The rules are the audit's K2 rulebook (N1-N9) and its section 8 table, with R1 A
 | --- | --- | --- | --- |
 | `shared` | TrueVision names the folder and ValeVision mirrors it at the same number and name - now, or when the port that brings the folder lands. One shared number carries two engines on purpose (41, DIV-2). | Yes, with TrueVision's name | Yes (it owns the name) |
 | `TV-only` | TrueVision's: a TrueVision folder ValeVision never ports (62 aside, see its row; 75, 76), or a number left free for TrueVision's growth. | Since 04-Nov-2026, yes if free and in the band for what the folder is; it then moves to `VV-reserved` | Yes |
-| `VV-reserved` | ValeVision's own systems (28, 29, 31, 36, 60-65, 69, 71) and the ValeVision band 92-99. | Yes | No - a new TrueVision folder skips these |
+| `VV-reserved` | ValeVision's own systems (24, 28, 29, 31, 36, 60-65, 69, 71) and the ValeVision band 92-99. | Yes | No - a new TrueVision folder skips these |
 | `legacy` | A ValeVision legacy tool due to retire (35, 91). Burnt once retired. | Only the folder already there | No |
 | `burnt` | Used once and retired. Never reused by either app. | No | No |
 
@@ -81,7 +81,7 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 21 | `21__System__PresentationMode` | `21__System__PresentationMode` | - | shared | Shared: same system, same name and number in both apps |
 | 22 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 23 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
-| 24 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
+| 24 | - | `24__System__Vegetation` | - | VV-reserved | VV-only `24__System__Vegetation` (linework plants, v2.83.0). In the band for systems that put objects in the 3D scene, beside 25 to 29 (rule 1) |
 | 25 | `25__System__3dObject__InteractionSystem` | `25__System__3dObject__InteractionSystem` | - | shared | Shared: same system, same name and number in both apps |
 | 26 | `26__System__ToggleModelElements` | `26__System__ToggleModelElements` | - | shared | Shared: same system, same name and number in both apps |
 | 27 | `27__System__ContextMenuSystem` | - | - | shared | TV folder; VV gains TV's folder with its port - partial content by design: the menu renderer only (W4-11; DR-44; R1 A.4 #12) |
@@ -158,7 +158,7 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 98 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 99 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 
-Totals: shared 34, TV-only 42, VV-reserved 20, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 48 now, ValeVision Gallery 14.
+Totals: shared 34, TV-only 41, VV-reserved 21, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 49 now, ValeVision Gallery 14.
 
 ### 2.2 The bands at a glance
 
@@ -167,8 +167,8 @@ Totals: shared 34, TV-only 42, VV-reserved 20, legacy 2, burnt 1 (99 numbers). T
 | Shared now (same system, same name and number) | 01-07, 10, 11, 15, 20, 21, 25, 26, 30, 40, 42-46, 50, 51, 70; and 41 with two engines (DIV-2) |
 | Shared, landing with its port | 27 (menu renderer only, W4-11), 47, 48, 49, 52, 53, 54, 55, 80 (VV facade body) |
 | TrueVision folders ValeVision never ports | 75, 76; 62 (TrueVision's and ValeVision Gallery's AppInstallability - see 62) |
-| TrueVision growth, free for a VV folder in its band since 04-Nov-2026 | 08, 09, 12-14, 16-19 (Q-REG (a)), 22-24, 32-34, 37-39, 56-59, 66-68, 72-74, 77-79, 81-89 |
-| ValeVision-reserved | 28, 29, 31, 36, 60, 61, 62 (nominal collision kept), 63, 64, 65, 69, 71; the band 92-99 (92 earmarked, 93 ClientLinks, 94-99 free) |
+| TrueVision growth, free for a VV folder in its band since 04-Nov-2026 | 08, 09, 12-14, 16-19 (Q-REG (a)), 22, 23, 32-34, 37-39, 56-59, 66-68, 72-74, 77-79, 81-89 |
+| ValeVision-reserved | 24, 28, 29, 31, 36, 60, 61, 62 (nominal collision kept), 63, 64, 65, 69, 71; the band 92-99 (92 earmarked, 93 ClientLinks, 94-99 free) |
 | ValeVision legacy, burnt once retired | 35, 91 |
 | Burnt | 90 |
 
@@ -246,7 +246,7 @@ TrueVision has 34 Layout Editor subfolders at the pin; ValeVision has 18 now (17
 | --- | --- | --- | --- | --- |
 | Vendors `04__Lib__ThirdParty__VersionLocked/NN__Vendor__*` | 01 ThreeJs v0.184.0, 02 ThreeMeshBvh v0.9.9, 03 Clipper2Js v0.9.0, 04 ThreeEdgeProjection v0.0.10 (byte-identical in both apps, DIV-5 closed); 05 JsPdf v4.1.0 and 06 Html2Canvas v1.4.1 land in ValeVision with W0-16 (K2 TF-R05, TF-R06) | - | 07 PdfJs v3.11.174 (VV-first, W0-16; offering it to TrueVision is one of DR-42's back-ports, none of which happens on the default) | Index files keep each app's prefix: `Vale__Dependencies__*` / `TrueVision__Dependencies__*` (K2 N8) |
 | Asset subfolders `01__AppAssets__<App>/NN__AppAssets__*` | 05 SkyDomes; 06 TitleBlocks (ValeVision gains it with W0-16, holding Vale's own Classic scan, never TrueVision's) | - | the unnumbered `MeasureToolIcons` | Each app's asset root carries its own token (K2 N7, N8) |
-| App root | 01 (token swapped), 02, 03, 04, 50 (token swapped: `50__ValeVision__UserConfig/`, W0-18), 51 `51__LayoutEditor__UserScrapbookContent/`, 52 `52__LayoutEditor__HatchPatternLibrary/` (W1-17), 60 `60__DistributionEmails/`, 79 `79__Testing__GenerateObjects/`, 80 `80__Testing__PrototypeEnvironment/` | the second 80, `80__CloudflareIntegration/` (TrueVision's worker; ValeVision's worker stays in `WebApps/ValeVisionGallery/CloudflareWorker`, K2 N9); 90 `90__rubyScript__SketchUpSisterTools__ToolsAndUtils/` | `04__Lib__ThirdParty__Three/` (legacy, retires with W6-03, FR-23); 95 `95__SketchUpSisterTools__ToolsAndUtils/` | Archives at 00 in both: `00__ArchivedVersions/` (TrueVision), `00__Archive/` (ValeVision) |
+| App root | 01 (token swapped), 02, 03, 04, 50 (token swapped: `50__ValeVision__UserConfig/`, W0-18), 51 `51__LayoutEditor__UserScrapbookContent/`, 52 `52__LayoutEditor__HatchPatternLibrary/` (W1-17), 60 `60__DistributionEmails/`, 79 `79__Testing__GenerateObjects/`, 80 `80__Testing__PrototypeEnvironment/` | the second 80, `80__CloudflareIntegration/` (TrueVision's worker; ValeVision's worker stays in `WebApps/ValeVisionGallery/CloudflareWorker`, K2 N9); 90 `90__rubyScript__SketchUpSisterTools__ToolsAndUtils/` | `04__Lib__ThirdParty__Three/` (legacy, retires with W6-03, FR-23); 53 `53__Vegetation__AssetLibrary/` (v2.83.0); 80 `80__Testing__LocalTestServer/` (v2.84.1, PC only); 95 `95__SketchUpSisterTools__ToolsAndUtils/` | Archives at 00 in both: `00__ArchivedVersions/` (TrueVision), `00__Archive/` (ValeVision) |
 | Project content beside `project.json` (R2 `VaApps/Projects/<folderId>/`, locally `WebApps/ValeVisionGallery/Projects/<yyyy>/<folder>/`) | `05__Layout__DrawingDocs__Images/`, `06__Layout__PublishedDocuments/`, `10__StatementDocs/` - TrueVision's relative names verbatim (K2 R3; DR-29 (A), D69) | - | the existing object names stay: `project.json`, `ValeVision__DrawingNotes__.json`, `LayoutEditor/Linework/`, `LayoutEditor/Snapshots/`, `PresentationMode/Thumbnails/` (K2 R2) | Nothing is written into the new folders on R2 until Adam has applied the W0-07 sync fix and deployed worker 1.6.0 (swarm rule R8) |
 
 ---
@@ -257,4 +257,6 @@ TrueVision has 34 Layout Editor subfolders at the pin; ValeVision has 18 now (17
 | --- | --- | --- | --- |
 | 01-Oct-2026 | Registry created. Drawing folders renumbered to TrueVision's numbers in the working tree: 42 -> 40 DrawingViewCore, 43 -> 42 FloorPlanViews, 44 -> 43 PlanAnnotations, 45 -> 44 PlanDimensions, 46 -> 45 ElevationViews, 47 -> 46 NorthDirection, and the legacy 40 2dElevationsView -> 91. Numbers 08, 09, 12-14 and 16-19 registered as TrueVision growth. 63 kept VV-reserved while TrueVision's branch is unmerged | W0-02 (moves), W0-06 (registry) | DR-02 / D42, DR-03 / D43, Q-REG / D88, Q-63 / D86 |
 | 04-Nov-2026 | The parity programme is retired, and a new folder takes a free number in the band for what it is (rules 1 to 3 and 5 rewritten). 36 `36__System__AppPages` (v2.76.0) and 65 `65__Feature__PhoneUi` (v2.81.0) registered as `VV-reserved` where they stand | Adam, asked directly | "Retired"; "Band numbers are fine" |
+| 04-Nov-2026 | 24 `24__System__Vegetation` registered as `VV-reserved`, under rule 1 (systems that put objects in the 3D scene are the 20s); it was TrueVision growth, free. App root: `53__Vegetation__AssetLibrary/` | Vegetation plan, Stage 1 | Adam: "Yes, start Stage 1"; the number under his "Band numbers are fine" |
+| 04-Nov-2026 | App root: `80__Testing__LocalTestServer/`, the testing server's config and overlay, the same name as the Lantern Designer's. PC only: the sync map's `8?__Testing*/` | Testing server, v2.84.1 | Adam: "Create a dev mode like the lantern designer with fake users" |
 

@@ -102,6 +102,7 @@ NA__VV3D__KEYS           = {
     'Camera__DefaultPosition'             : ('default camera', 'settings.save'),
     'valeVision_Camera__DefaultPosition'  : ('default camera', 'settings.save'),
     'GridLine__Grid__Offset__Config'      : ('grid', 'settings.save'),
+    'Vegetation__SceneData'               : ('vegetation', 'settings.save'),
     'ValeVison3D__SketchUpCameraData'     : ('SketchUp cameras', 'project.sync'),
     'valeVision_ModelUrls'                : ('3D model files', 'project.sync'),
     'valeVision_ModelUrl'                 : ('3D model files', 'project.sync'),

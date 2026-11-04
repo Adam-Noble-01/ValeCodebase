@@ -1,0 +1,79 @@
+{
+    "Vegetation__AppConfig__Meta": {
+        "Meta__FileName"    : "Na__Vegetation__AppConfig__.json",
+        "Meta__Description" : "The vegetation system's defaults. A project's Vegetation__SceneData is born with a full copy of these, and from then on the project's own values win. Plants are never loaded on a project that is not enabled, so nor is this file.",
+        "Meta__Version"     : "1.1.0",
+        "Meta__Created"     : "04-Nov-2026",
+        "Meta__Author"      : "Adam Noble - Noble Architecture",
+
+        "Meta__WhySameKeys" : "The keys of Vegetation__LineRules__Config and Vegetation__LineRulesAdvanced__Config are exactly the keys in a project's record, so a default is one grep from where it is saved. Adam, 04-Nov-2026: \"save all parameters to a new json object with nested keys eetc in my style per file that we enable the vegeation on\".",
+        "Meta__Plan"        : "ValeVision__PLAN__VegetationSystem__.md at the app's root."
+    },
+
+    "Vegetation__SceneData__Config": {
+        "Vegetation__SceneData__Description"                : "What a project's object starts with. ShowByDefault and DefaultTransparencyPercent are where a viewer starts on a device that has not chosen.",
+        "Vegetation__SceneData__SchemaVersion"              : 1,
+        "Vegetation__SceneData__ShowByDefault"              : true,
+        "Vegetation__SceneData__DefaultTransparencyPercent" : 0
+    },
+
+    "Vegetation__LineRules__Config": {
+        "Vegetation__LineRules__Description"       : "The Vegetation Linework panel's sliders. Weights are screen pixels, as RenderConfig__Linework__LineWidth is. Each Factor scales the asset's own number: 1.00 leaves the asset as written.",
+        "Vegetation__LineRules__LineWeightPx"      : 0.80,
+        "Vegetation__LineRules__InnerWeightShare"  : 0.80,
+        "Vegetation__LineRules__InnerArcsFactor"   : 1.00,
+        "Vegetation__LineRules__HooksFactor"       : 1.00,
+        "Vegetation__LineRules__CurlsFactor"       : 1.00,
+        "Vegetation__LineRules__PenLiftsFactor"    : 1.00,
+        "Vegetation__LineRules__ScallopSizeFactor" : 1.00,
+        "Vegetation__LineRules__SmallBumpsFactor"  : 1.00
+    },
+
+    "Vegetation__LineRulesAdvanced__Config": {
+        "Vegetation__LineRulesAdvanced__Description"    : "The panel's Advanced dropdown. The Lod values are the screen radius in pixels below which a ball stops drawing that detail, so a far bush is a clean outline and not a smudge.",
+        "Vegetation__LineRulesAdvanced__SegmentPx"      : 4.0,
+        "Vegetation__LineRulesAdvanced__LodSkipPx"      : 1.0,
+        "Vegetation__LineRulesAdvanced__LodInnerArcsPx" : 6.0,
+        "Vegetation__LineRulesAdvanced__LodHooksPx"     : 3.0,
+        "Vegetation__LineRulesAdvanced__LodCurlsPx"     : 5.0,
+        "Vegetation__LineRulesAdvanced__LodBladesPx"    : 7.0,
+        "Vegetation__LineRulesAdvanced__FillTone"       : 0.975,
+        "Vegetation__LineRulesAdvanced__DepthBias"      : 0.00003,
+        "Vegetation__LineRulesAdvanced__DepthBiasNote"  : "Log depth, as RenderConfig__Linework__DepthBias, but a fifth of it. The model's 0.00015 is about 15 cm at 150 m, which let one bush's lines show through the fill of the bush in front of it on a long lens."
+    },
+
+    "Vegetation__FrameBudget__Config": {
+        "Vegetation__FrameBudget__Description"          : "What may be redrawn while the camera moves on a live frame. Every other render, and the frame after the camera stops, draws everything, whatever these say.",
+        "Vegetation__FrameBudget__MovingMs"             : 5,
+        "Vegetation__FrameBudget__MovingMsNote"         : "Time per moving frame for drawing plants' lines, in milliseconds. At least one plant is always drawn.",
+        "Vegetation__FrameBudget__SettlingMs"           : 12,
+        "Vegetation__FrameBudget__SettlingMsNote"       : "Time per frame for the exact drawing once the camera stops, so a pause in a slow drag never costs a long frame. The refiner waits for it to finish.",
+        "Vegetation__FrameBudget__StaleErrorPx"         : 0.6,
+        "Vegetation__FrameBudget__StaleErrorPxNote"     : "A plant less wrong than this, in pixels, waits while the camera moves.",
+        "Vegetation__FrameBudget__ZoomErrorPx"          : 8,
+        "Vegetation__FrameBudget__ZoomErrorPxNote"      : "How many pixels of error count against a plant that has doubled in size on screen since it was drawn: its lines are in the right place, but drawn too coarsely.",
+        "Vegetation__FrameBudget__MovingBallSkipPx"     : 3,
+        "Vegetation__FrameBudget__MovingBallSkipPxNote" : "While the camera moves, a clump or nub under this radius on screen is left out. Masses never are. The exact drawing comes back when it stops.",
+        "Vegetation__FrameBudget__MovingSegmentPx"      : 6,
+        "Vegetation__FrameBudget__MovingMinK"           : 10,
+        "Vegetation__FrameBudget__MovingBisectSteps"    : 2,
+        "Vegetation__FrameBudget__MovingSamplesNote"    : "Coarser line segments, fewer samples round a small ball, and T-junctions found less exactly, while the camera moves."
+    },
+
+    "Vegetation__DevTools__Config": {
+        "Vegetation__DevTools__Description"                 : "The Dev section's test row: a stand-in for the Linear Tool, to try plants on a real model.",
+        "Vegetation__DevTools__TestRowCount"                : 7,
+        "Vegetation__DevTools__TestRowSpacingMm"            : 1100,
+        "Vegetation__DevTools__TestRowSizeVariationPercent" : 8,
+        "Vegetation__DevTools__TestRowYawVariationDeg"      : 12,
+        "Vegetation__DevTools__TestRowStrokeUid"            : "TESTROW",
+        "Vegetation__DevTools__ClickThresholdPx"            : 5
+    },
+
+    "Vegetation__Generators__Config": {
+        "Vegetation__Generators__Description" : "What can build a plant, by name and version. A saved seed must draw the same bush for ever, so a generator is never edited once a project can hold its plants: a new look is a new version, and the old one stays. The build util refuses an asset naming one not listed here.",
+        "Vegetation__Generators__List"        : [
+            { "Generator__Name": "BallCluster", "Generator__Versions": [1], "Generator__Note": "Masses, clumps and nubs, each a ball with a chain of arcs for an outline, and strap leaves. Na__Vegetation__BushBuilder__.js" }
+        ]
+    }
+}

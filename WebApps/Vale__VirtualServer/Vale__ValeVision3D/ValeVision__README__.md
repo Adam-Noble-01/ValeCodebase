@@ -475,6 +475,14 @@ As of v0.1.4, this shared helper also synchronizes profile-lines normal-buffer r
 
 # -----------------------------------------------------------------------------
 
+## Testing Server With Fake Users (v2.84.1, PC only)
+
+Double-click `Start__ValeVision__TestServer__8032__.bat`: the app on <http://localhost:8032/valevision/?project=63403__Thrower>, in an amber frame, on sandbox data. The badge in the bottom corner signs in as a fake user of any permission level in one click, opens a real client link, and lists every problem found. Your own Vale account does not exist there, and the real mirror is never written. `--real` runs on the real mirror with your own account, in a red frame; `--reset-sandbox` starts the sandbox again. Settings: `80__Testing__LocalTestServer/Na__TestServer__Config.json`. None of it ever reaches the server.
+
+## Vegetation (from v2.83.0, being built: plants draw since v2.84.0)
+
+Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight, switched on project by project from Dev Tools > Vegetation, which also has a test row to look at until the placing tools arrive. They draw in the live view, stills, thumbnails, video and a sheet's 3D pictures, on both engines, and not through a plan or elevation. There is no menu yet, so a switched-on project shows them to everyone. Plan of record: `ValeVision__PLAN__VegetationSystem__.md`. Code: `02__Src__AppModules/24__System__Vegetation` (its README). Library: `53__Vegetation__AssetLibrary`. A project's settings, every parameter of them, live in its record as `Vegetation__SceneData`. A project without that key costs one module and one listener.
+
 ## Per-Scene Lighting (v2.71.0)
 
 Any Presentation Mode scene can carry its own lighting, so a view whose subject faces away from the sun can be lit properly without changing any other scene. Every scene that is not given its own lighting keeps using the default.

@@ -2,11 +2,12 @@
 
 **Kept by:** the TrueVision parity programme's records package W0-06, then each wave's Parity Scribe (W0-99 to W6-04)
 **Created:** 01-Oct-2026
+**Since 04-Nov-2026:** the parity programme is retired (Adam). Whoever adds a folder adds its row
 **Decisions:** DR-03 registry (i) (VV plan D43), Q-REG (a) (D88), Q-63 default (D86), DR-02 (D42), DR-26 (D66) - all on their
 defaults, unanswered by Adam on 01-Oct-2026 (`ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md`, section 2A)
 
 Every two-digit folder number at the top of `02__Src__AppModules/`, and the numbers inside the Layout Editor, the vendor
-folder and the app root, with who may use each one. TrueVision is the numbering authority: a ValeVision folder that holds
+folder and the app root, with who may use each one. It was built with TrueVision as the numbering authority (since 04-Nov-2026 the rules in section 1 apply): a ValeVision folder that holds
 the same system as a TrueVision folder takes TrueVision's exact `NN__Category__Name`, and a ValeVision-only folder never
 takes a number TrueVision uses now or has used (K2 rulebook N1-N3). This file is how a new folder - in either app - picks
 its number without colliding, and it is what the parity naming lint reads (`80__Testing__PrototypeEnvironment/
@@ -27,23 +28,20 @@ The rules are the audit's K2 rulebook (N1-N9) and its section 8 table, with R1 A
 | Class | Meaning | May ValeVision use it? | May TrueVision use it? |
 | --- | --- | --- | --- |
 | `shared` | TrueVision names the folder and ValeVision mirrors it at the same number and name - now, or when the port that brings the folder lands. One shared number carries two engines on purpose (41, DIV-2). | Yes, with TrueVision's name | Yes (it owns the name) |
-| `TV-only` | TrueVision's: a TrueVision folder ValeVision never ports (62 aside, see its row; 75, 76), or a number left free for TrueVision's growth. | No | Yes |
-| `VV-reserved` | ValeVision's own systems (28, 29, 31, 60-64, 69, 71) and the ValeVision band 92-99. | Yes | No - a new TrueVision folder skips these |
+| `TV-only` | TrueVision's: a TrueVision folder ValeVision never ports (62 aside, see its row; 75, 76), or a number left free for TrueVision's growth. | Since 04-Nov-2026, yes if free and in the band for what the folder is; it then moves to `VV-reserved` | Yes |
+| `VV-reserved` | ValeVision's own systems (28, 29, 31, 36, 60-65, 69, 71) and the ValeVision band 92-99. | Yes | No - a new TrueVision folder skips these |
 | `legacy` | A ValeVision legacy tool due to retire (35, 91). Burnt once retired. | Only the folder already there | No |
 | `burnt` | Used once and retired. Never reused by either app. | No | No |
 
-**Rules** (K2 rulebook section 1, unchanged):
+**Rules** (Adam, 04-Nov-2026, replacing the K2 rulebook's N1-N3, which remain in git):
 
-1. TrueVision is the numbering authority. A ValeVision folder holding a TrueVision system takes TrueVision's exact
-   `NN__Category__Name`, at the top level, in Layout Editor subfolders and in nested subfolders (N1).
-2. A ValeVision-only folder never takes a number TrueVision uses now or has used, TrueVision's devlog history included (N2).
-3. A new ValeVision-only top-level folder takes the lowest free number in 93-99. A new TrueVision folder skips every
-   `VV-reserved` and `legacy` number (N3). Legacy ValeVision tools live in the 9x band.
+1. A new top-level folder takes a free number in the band for what it is: pages at 35-36, features in the 60s, and so on.
+2. A folder ported from TrueVision keeps TrueVision's exact `NN__Category__Name` if that number is free.
+3. Every folder has its row in section 2.1 and a dated row in section 5. Legacy ValeVision tools live in the 9x band.
 4. A folder's number never changes silently: a change is a dated row here, made by the package that moves the folder,
    and old paths stay as written in history documents (K2 section 13).
-5. TrueVision holds the twin of this table as `TrueVision__NOTES__FolderNumberRegistry__.md` once the TrueVision-lane
-   package WT-08 lands (held until Adam approves it, DR-36). Until then the rule binds ValeVision only; TrueVision itself
-   reassigned its own 52 and 53 in v2.155.0 (TV devlog :1284).
+5. TrueVision's twin of this table (package WT-08) never landed and, with the programme retired, will not. These rules
+   bind ValeVision only.
 
 **Machine reading.** Section 2.1 has exactly one row per number 01-99, each row starting `| NN |`, with these columns
 in this order: number, TrueVision folder at `b2aa9151`, ValeVision folder now, ValeVision Gallery folder now, class, rule.
@@ -95,7 +93,7 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 33 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 34 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 35 | - | `35__System__PageLayoutSystem` | - | legacy | VV legacy `35__System__PageLayoutSystem` (the old Create Drawing / Layout View). Kept and reserved until W6-03 retires it (held until Adam confirms the removals, DR-03; D43), after W0-16 has copied jsPDF and Vale's Classic scan out of it; then BURNT, never reused (K2 TF-T19, FR-21). TV's copy of the same system lived at 90 |
-| 36 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
+| 36 | - | `36__System__AppPages` | - | VV-reserved | VV-only `36__System__AppPages` (the app's page system, v2.76.0). Took a band number; kept by Adam's word, 04-Nov-2026 |
 | 37 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 38 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 39 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
@@ -124,7 +122,7 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 62 | `62__Feature__AppInstallability` | `62__Feature__EmailWorkers` | `62__Feature__AppInstallability` | VV-reserved | VV `62__Feature__EmailWorkers` keeps 62 - a NOMINAL COLLISION, recorded: TV's and WCP's 62 is `62__Feature__AppInstallability`, which VV never ports (VV runs under WCP's PWA; K2 TF-T46). Moves to 92 only if Adam asks, after its tracked node_modules are removed (FR-22, W6-03; DR-03 default "62 unchanged"). WCP's 62 is the PWA ValeVision runs under (section 2.3) |
 | 63 | - | `63__Feature__AppNotificationEmail` | - | VV-reserved | VV-only `63__Feature__AppNotificationEmail`; reserved for VV. Q-63 (D86): TV's UNMERGED branch `claude/westfarm-intro-notes-37b804` (commit `4db73420`, 22-Sep-2026; not in `b2aa9151` and not in TV HEAD on 01-Oct-2026) adds `63__System__LocalFileParity`. Nothing moves while it is unmerged. If it merges as 63 first, VV's folder moves to 94 with W6-03 (Q-63 (b); 93 until `93__Feature__ClientLinks` took it in v2.77.0) and this row records it; recommended to Adam instead: rename the branch folder to a TV-growth number such as 65 before it merges (Q-63 (a)) |
 | 64 | - | `64__Feature__BreadcrumbNav` | - | VV-reserved | VV-only `64__Feature__BreadcrumbNav`; reserved for VV |
-| 65 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
+| 65 | - | `65__Feature__PhoneUi` | - | VV-reserved | VV-only `65__Feature__PhoneUi` (the Phone Layout, v2.81.0). Took a band number; kept by Adam's word, 04-Nov-2026 |
 | 66 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 67 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
 | 68 | - | - | - | TV-only | TV growth (K2 N3): free for TrueVision's next folders; VV never takes it |
@@ -153,14 +151,14 @@ Folder cells hold back-quoted folder names or `-`. Section 3 has one row per Lay
 | 91 | - | `91__System__2dElevationsView` | - | legacy | VV legacy `91__System__2dElevationsView` (the Tools-menu Elevation View), moved here from 40 by W0-02 on 01-Oct-2026 (FR-01; DR-03 (a)) so TV's 40 DrawingViewCore could take 40. Retires with W6-03 (FR-25), then BURNT. 91 was never used by TV (K2 section 8 proof) |
 | 92 | - | - | - | VV-reserved | VV band, reserved (empty): earmarked for `92__Feature__EmailWorkers` if Adam asks for the 62 move (FR-22, W6-03). Never used by TV (K2 section 8 proof) |
 | 93 | - | `93__Feature__ClientLinks` | - | VV-reserved | VV-only `93__Feature__ClientLinks` (client links: the External Client Sharing tab, the client's view and its first-launch tour; v2.77.0, 28-Oct-2026). Was free and earmarked for `93__Feature__AppNotificationEmail` only if Q-63 (b) applied: that earmark moves to 94 |
-| 94 | - | - | - | VV-reserved | VV band, free: the lowest free number for the next VV-only top-level folder (K2 N3). Earmarked for `94__Feature__AppNotificationEmail` only if Q-63 (b) applies (see 63; was 93 until v2.77.0) |
+| 94 | - | - | - | VV-reserved | VV band, free. Earmarked for `94__Feature__AppNotificationEmail` only if Q-63 (b) applies (see 63; was 93 until v2.77.0) |
 | 95 | - | - | - | VV-reserved | VV band, free (future VV-only folders). Not to be confused with the app-root `95__SketchUpSisterTools__ToolsAndUtils/` (outside 02__Src__AppModules) |
 | 96 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 97 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 98 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 | 99 | - | - | - | VV-reserved | VV band, free (future VV-only folders) |
 
-Totals: shared 34, TV-only 44, VV-reserved 18, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 38 now (93 added in v2.77.0), ValeVision Gallery 14.
+Totals: shared 34, TV-only 42, VV-reserved 20, legacy 2, burnt 1 (99 numbers). TrueVision has 37 top-level folders at the pin, ValeVision 48 now, ValeVision Gallery 14.
 
 ### 2.2 The bands at a glance
 
@@ -169,8 +167,8 @@ Totals: shared 34, TV-only 44, VV-reserved 18, legacy 2, burnt 1 (99 numbers). T
 | Shared now (same system, same name and number) | 01-07, 10, 11, 15, 20, 21, 25, 26, 30, 40, 42-46, 50, 51, 70; and 41 with two engines (DIV-2) |
 | Shared, landing with its port | 27 (menu renderer only, W4-11), 47, 48, 49, 52, 53, 54, 55, 80 (VV facade body) |
 | TrueVision folders ValeVision never ports | 75, 76; 62 (TrueVision's and ValeVision Gallery's AppInstallability - see 62) |
-| TrueVision growth | 08, 09, 12-14, 16-19 (Q-REG (a)), 22-24, 32-34, 36-39, 56-59, 65-68, 72-74, 77-79, 81-89 |
-| ValeVision-reserved | 28, 29, 31, 60, 61, 62 (nominal collision kept), 63, 64, 69, 71; the band 92-99 (92 earmarked, 93 ClientLinks, 94-99 free) |
+| TrueVision growth, free for a VV folder in its band since 04-Nov-2026 | 08, 09, 12-14, 16-19 (Q-REG (a)), 22-24, 32-34, 37-39, 56-59, 66-68, 72-74, 77-79, 81-89 |
+| ValeVision-reserved | 28, 29, 31, 36, 60, 61, 62 (nominal collision kept), 63, 64, 65, 69, 71; the band 92-99 (92 earmarked, 93 ClientLinks, 94-99 free) |
 | ValeVision legacy, burnt once retired | 35, 91 |
 | Burnt | 90 |
 
@@ -258,4 +256,5 @@ TrueVision has 34 Layout Editor subfolders at the pin; ValeVision has 18 now (17
 | Date | Change | By | Decision |
 | --- | --- | --- | --- |
 | 01-Oct-2026 | Registry created. Drawing folders renumbered to TrueVision's numbers in the working tree: 42 -> 40 DrawingViewCore, 43 -> 42 FloorPlanViews, 44 -> 43 PlanAnnotations, 45 -> 44 PlanDimensions, 46 -> 45 ElevationViews, 47 -> 46 NorthDirection, and the legacy 40 2dElevationsView -> 91. Numbers 08, 09, 12-14 and 16-19 registered as TrueVision growth. 63 kept VV-reserved while TrueVision's branch is unmerged | W0-02 (moves), W0-06 (registry) | DR-02 / D42, DR-03 / D43, Q-REG / D88, Q-63 / D86 |
+| 04-Nov-2026 | The parity programme is retired, and a new folder takes a free number in the band for what it is (rules 1 to 3 and 5 rewritten). 36 `36__System__AppPages` (v2.76.0) and 65 `65__Feature__PhoneUi` (v2.81.0) registered as `VV-reserved` where they stand | Adam, asked directly | "Retired"; "Band numbers are fine" |
 

@@ -9,7 +9,7 @@
 | Prototype | Done, look agreed by Adam ("These look good") | none: `85__EarlyStage__VegetationLinework`, never pushes | |
 | Plan | Written, and Adam said start | | `ValeVision__PLAN__VegetationSystem__.md` |
 | 1. Foundations | **Done** | v2.83.0 | Engine, library, the record's key and the door are in. Nothing draws. `24__System__Vegetation`, not the 94 the plan first said |
-| 2. Plants in the model | **Done, not pushed when written** | v2.84.0 | Pilot: `63403__Thrower` (its real record not yet written: Adam switches it on). PC target met. **Open: 100 plants at 30 fps on a real iPad.** The API's ledger row means restarting `vale@ValeVision3D` at that push |
+| 2. Plants in the model | **Done, live since 04-Nov-2026 15:19 UTC** | v2.84.0 | Pilot: `63403__Thrower` (its real record not yet written: Adam switches it on, which on the live server writes the real record). PC target met. **Open: 100 plants at 30 fps on a real iPad.** The API's ledger row is live: `vale@ValeVision3D` restarted at that push |
 | 3. The menu | **Next** | | |
 | 4. Asset browser | Not started | | |
 | 5. Linear Tool | Not started | | |

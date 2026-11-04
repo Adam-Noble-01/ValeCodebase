@@ -1,6 +1,6 @@
 # ValeVision 3D - Vegetation System: Linework Plants, Their Menu, Library and Placement Tools
 
-**Status**: Stages 1 and 2 done (v2.83.0, v2.84.0, 04-Nov-2026). Plants draw in the model, in every picture and on both engines, switched on per project from Dev Tools, and no real project holds the key yet. Next is Stage 3, the menu. One target stays open: 100 plants at 30 fps on a real iPad.
+**Status**: Stages 1 and 2 done (v2.83.0, v2.84.0, 04-Nov-2026), live on the server since 15:19 UTC that day. Plants draw in the model, in every picture and on both engines, switched on per project from Dev Tools, and no real project holds the key yet. Next is Stage 3, the menu. One target stays open: 100 plants at 30 fps on a real iPad.
 **Created**: 04-Nov-2026
 **Owner**: Adam Noble
 **Base**: ValeVision3D v2.82.0. Line numbers below are as of that version: use them to find the place, then read the code.

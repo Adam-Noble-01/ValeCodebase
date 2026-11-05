@@ -1,6 +1,42 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.87.0 - 04-Nov-2026 - An MCP Server Opens, Looks At, Changes and Publishes a Project, and Garnett's Planting Is Small to Medium and 60% Transparent
+### Adam: "Push to the Vale server and to GitHub. After that, I want you to, on the Garnet project, correct the bushes so they are smaller, so those planting beds feature small-to-medium attractive planted shrubbery. Set the vegetation transparency at 60%, then save the model and tell me when I can look at it. You will need to push it to the server. Create MCP tools to orchestrate and control ValeVision 3D if the tools don't already exist, to allow you to access it."
+
+**No file the app or its API serves changed.** The record of `64616__Garnett` did, and the MCP server is PC only.
+
+**The MCP server,** `96__Dev__McpServer__Python`: none existed, so agents had only SketchUp's. 23 tools, registered in `~/.claude.json` as `valevision3d`, on the Na SketchUp MCP's pattern. It reads a project and its planting as the app will draw it, by the app's own path and data modules in Node. It runs its own testing server on port 8042, opens the real app there in headless Edge as a fake user, moves the camera, takes pictures and measures the surface. It writes a record with the API's own `Na__Library__WriteJson`: the lock, the kept revision and `_rev`. It compares, collects and pushes through the Server Manager's engine, and never deletes or forces. Writing real data asks for `confirm_real_data` and refuses a server copy that is newer; a push is a dry run unless told otherwise. Its README has the tools and the usual jobs.
+
+**What was wrong at Garnett.** Adam's four paths held 24 Rounded Shrubs at full size: 1,229 to 1,455 mm across and 938 to 1,249 mm high, in beds measured at 600 mm of soil between copings of 120 to 145. They hung off both sides of the planters. Two of the clicks were not on the soil either: one point on a coping at y 375, several up to 60 mm off the bed's centre.
+
+**What changed, all in `Vegetation__SceneData`:**
+- **Transparency 60%** (`Vegetation__SceneData__DefaultTransparencyPercent`).
+- **Plant scale 0.60 on all four paths, spacing 600,** with less side offset (25 mm) so a plant stays in a 600 mm bed. The Linear Tool's saved settings follow, so a path drawn later matches.
+- **A mix in the palette, Mixed Planting:** Rounded Shrub 45, Mophead Hydrangea 20, Upright Shrub 15 at its own 0.85, Low Border Drift 20. It was Rounded Shrub alone. The hydrangea joins the project's pinned copies.
+- **The points on the beds' measured centre lines** at the soil's own height, ends 30 mm in from the copings.
+- **New seeds, searched with the app's path model:** a stretched plant runs straight, so a Low Border Drift across a path's corner poked 300 mm past the outer wall. These seeds have nothing past a planter's outer face, the mix in balance, no two alike side by side but the mounds, and an Upright Shrub either side of every set of steps.
+- **Now:** 29 plants (13 Rounded, 6 Hydrangea, 6 Upright, 4 Drift), 376 to 890 mm high. The mounds are 472 to 883 mm across; a Drift is up to 1,691 mm long and about 400 mm deep.
+
+**A device keeps its own Transparency** (plan, D19): 60% is where a device starts until it has moved the slider on this project.
+
+**Modules:** new `96__Dev__McpServer__Python`, `Na__ValeVisionMcp__*`, version 1.0.0. No module of the app.
+
+**Checked,** on the MCP's own testing server (fake users, a copy of the record), through the server's real stdio protocol:
+- The real record, opened in headless Edge as Client, Employee and AppAdmin on new devices: 29 plants and the slider at 60 each time. Looked at from Main Shot, Closer 01, Birds-eye 01, a plan from above and a low view of the front bed, at 60% and opaque.
+- **The app's own Save takes it:** no conflict, and the key it writes back is identical to the one the tool wrote, every other key the same.
+- The server's copy read back after the push: `_rev` 4, transparency 60, scale 0.6 on all four paths, four pinned assets. A compare since shows nothing to move but the PC-only revision.
+- `Na__ValeVisionMcp__Selftest__.py`: 30 checks of the protocol and the refusals. A stop closes its browser and its testing server, with no headless Edge left behind.
+
+**Not checked:**
+- **Seen signed in on the live site.** An agent never signs in on real data. Signed out, the page answers 200 and the record 401, as it should.
+- **Software rendering, a phone or an iPad.** The pictures were taken on this PC's graphics card.
+- **Whether a Claude Code session loads it.** It was registered in the session that built it, which keeps the tools it started with, so the protocol was driven by a small client over stdio.
+- **SketchUp:** a Sync Vegetation of Garnett has not been run. Its next sync brings these paths in as proxies; that sync is still untried on real entities.
+
+**Live (Adam: "You will need to push it to the server"), 04-Nov-2026 21:43 UTC:** `projects`, scoped to `ValeProjects__2026/64616__Garnett` (stamp `20261104-214324`, the record replaced, nothing else). No service restarted. Undo: `engine undo projects`. The kept revision on this PC is `20261104-214257__rev3__ValeVisionMcp.json`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.86.1 - 04-Nov-2026 - The Vegetation Menu Icon Is a Leaf and a Flower
 ### Adam: "Load your graphic designer skill and create a better vegetation graphic. Make it more in line with the established style, and instead of a bush, create a leaf and a flower or something."
 

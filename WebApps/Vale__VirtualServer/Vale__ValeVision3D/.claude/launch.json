@@ -1,0 +1,11 @@
+{
+    "version": "0.0.1",
+    "configurations": [
+        {
+            "name": "vegetation-linework",
+            "runtimeExecutable": "python",
+            "runtimeArgs": ["85__EarlyStage__VegetationLinework/Na__VegLine__LocalServer__.py", "8037"],
+            "port": 8037
+        }
+    ]
+}

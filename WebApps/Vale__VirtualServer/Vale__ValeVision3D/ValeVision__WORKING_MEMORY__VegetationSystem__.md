@@ -76,10 +76,13 @@ Keep these green at every stage, from the scratch scripts' method (their logic i
 - **`wait_loaded` that treats no overlay as loaded** looks too early: the overlay is not there at the very start. Wait for its `hidden` class.
 - **On Max, the AO mark at the see-through share cut the wall's shadow out behind every plant,** leaving dashes in the gaps. From that share the fill is in neither AO pass, so the mark stops.
 
+- **A stretched plant runs straight, and only a clipped one stops at a corner of a path.** A `BallCluster` run across a corner pokes past the wall: on Garnett a 1.7 m Low Border Drift stood 300 mm outside the planter. A path's seed decides what lands where, so search seeds with `Na__VegPath__PlantsFor` in Node (60,000 in a second), or draw the two legs as two paths. Look at the plan from above: it does not show from the saved scenes.
+
 ## Checks and How to Run Them
 
 - **Demo:** `python 85__EarlyStage__VegetationLinework/Na__VegLine__LocalServer__.py 8037`, then `http://127.0.0.1:8037/Vale__ValeVision3D/85__EarlyStage__VegetationLinework/`. It has `?view=`, `?mode=`, `?clean=1`, and sets `document.documentElement.dataset.naVegReady` and `naVegSettled` for a scripted capture.
 - **The real app, on fake data (since v2.84.1):** the testing server. Adam's is `Start__ValeVision__TestServer__8032__.bat`; an agent runs `scripts/vv3d_test_server.py start --port 8040 --hold` as a background command, then `smoke`, and `look --as Employee --shot x.png`. Note 19, section 7.7 of the skill. Thrower is in its sandbox.
+- **Working a real project as an agent:** the `valevision3d` MCP server, `96__Dev__McpServer__Python`. It reads a planting as the app will draw it, measures a bed with `vv3d_probe_surface`, tries a change on its own sandbox and publishes it. `64616__Garnett` was done this way.
 - **Headless:** Playwright with `channel='msedge'` and `--use-angle=swiftshader --use-gl=angle --enable-unsafe-swiftshader --ignore-gpu-blocklist` draws the real PureEngine, about 5 s to a settled view. For a frame rate, `--use-angle=d3d11 --use-gl=angle --ignore-gpu-blocklist --enable-gpu` reaches the real graphics card, with a 60 Hz rAF.
 - **Standing rule:** Adam tests the app. Browser checks here have been for judging a look or measuring, and are reported as such.
 

@@ -1042,3 +1042,200 @@
 [REQUEST] 30-Oct-2026 - 18:06 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
 [REQUEST] 30-Oct-2026 - 18:44 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
 [REQUEST] 30-Oct-2026 - 18:44 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.98:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================
+[REQUEST] 03-Nov-2026 - 08:43 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 08:43 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 10:25 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 10:25 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:11 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:11 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:17 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:17 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:29 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:29 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:34 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:34 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:40 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:40 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:45 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:45 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:45 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:45 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 11:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:08 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:08 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:41 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:41 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:43 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:43 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:52 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:52 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:53 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 12:53 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:37 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:37 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:40 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:40 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 13:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:02 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:02 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:04 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:04 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:07 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:09 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:09 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:12 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:12 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:12 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:12 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:14 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:14 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:14 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:14 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:15 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:15 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:24 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 14:24 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:04 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:04 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:05 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:05 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:09 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:09 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:26 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:26 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:30 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:30 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:31 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:31 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.98:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================
+[REQUEST] 03-Nov-2026 - 15:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:38 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:42 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:42 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:44 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:44 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:46 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:47 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:48 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:48 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:49 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:51 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:53 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:53 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:56 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 15:56 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:01 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:05 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:05 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:06 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:06 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:15 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:15 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:20 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:20 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:21 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:21 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:21 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:21 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:22 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:22 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:23 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:23 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:25 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:25 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:31 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:31 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:36 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:37 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:37 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:54 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:55 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:56 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:56 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 16:57 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 17:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png HTTP/1.1" 200 -
+[REQUEST] 03-Nov-2026 - 17:00 | 127.0.0.1 | "GET /01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.98:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================

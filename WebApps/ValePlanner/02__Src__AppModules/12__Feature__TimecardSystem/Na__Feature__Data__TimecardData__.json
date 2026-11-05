@@ -885,8 +885,16 @@
     {
       "Timecard__Date": "2026-10-28",
       "Timcard__Clock-In__": "07:20",
-      "Timcard__Clock-Out__": "07:55",
-      "Timecard__AuthHash": "sha256__8903fd58141ebb62b5f4a21425bce6e39e0625a8f54300fff16ff21279256e8b"
+      "Timcard__Clock-Out__": "17:55",
+      "Timecard__AuthHash": "sha256__9cc8409ef61ae3431e5b8b30a3ce566a8d96305a3239b5ee5e6234eb08849997",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-11-03T08:18:04.643054Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "07:20",
+        "Timecard__OriginalClockOut": "07:55"
+      }
     },
     {
       "Timecard__Date": "2026-10-29",
@@ -897,8 +905,44 @@
     {
       "Timecard__Date": "2026-10-30",
       "Timcard__Clock-In__": "08:00",
+      "Timcard__Clock-Out__": "19:00",
+      "Timecard__AuthHash": "sha256__d1f09ad2e1dda789baf7d553cfcdd77c3af4d821752fb1b6dad1f0696fb29e4a",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-11-03T08:17:44.536753Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:00",
+        "Timecard__OriginalClockOut": ""
+      }
+    }
+  ],
+  "Timecard__November-2026": [
+    {
+      "Timecard__Date": "2026-11-03",
+      "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-Out__": "18:40",
+      "Timecard__AuthHash": "sha256__71fac7c36ac334519afd36751845a817d03a919e08f8b500b566379de650f5eb"
+    },
+    {
+      "Timecard__Date": "2026-11-04",
+      "Timcard__Clock-In__": "08:00",
+      "Timcard__Clock-Out__": "18:40",
+      "Timecard__AuthHash": "sha256__0216e81c083aff9cf5f59ae9d8cc07e9712e2b9e94d9ba83655ffa96694a558d",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-11-04T18:42:09.875428Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "18:40",
+        "Timecard__OriginalClockOut": "18:40"
+      }
+    },
+    {
+      "Timecard__Date": "2026-11-05",
+      "Timcard__Clock-In__": "07:55",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__9f46e21f1d5e7e5829a1e23be7a93116d381fb2a9cae84f217d4e36d2abf8659"
+      "Timecard__AuthHash": "sha256__d8aa0190fb3b14b19b2a3d6d0bdfb42e43fb06e306589c01ae58a3f6698b94e9"
     }
   ]
 }

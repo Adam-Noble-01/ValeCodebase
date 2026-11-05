@@ -481,6 +481,10 @@ As of v0.1.4, this shared helper also synchronizes profile-lines normal-buffer r
 
 Double-click `Start__ValeVision__TestServer__8032__.bat`: the app on <http://localhost:8032/valevision/?project=63403__Thrower>, in an amber frame, on sandbox data. The badge in the bottom corner signs in as a fake user of any permission level in one click, opens a real client link, and lists every problem found. Your own Vale account does not exist there, and the real mirror is never written. `--real` runs on the real mirror with your own account, in a red frame; `--reset-sandbox` starts the sandbox again. Settings: `80__Testing__LocalTestServer/Na__TestServer__Config.json`. None of it ever reaches the server.
 
+## An MCP Server for Agents (v2.87.0, PC only)
+
+`96__Dev__McpServer__Python`, registered in `~/.claude.json` as `valevision3d`: an agent opens a project in the real app on its own sandbox, looks at it, measures it, changes its planting and publishes it through named tools. Real data asks for a confirmation each time, and nothing deletes or forces on the server. Its README lists the tools.
+
 ## Vegetation (v2.83.0 to v2.86.0)
 
 Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight, switched on project by project from Dev Tools > Vegetation.

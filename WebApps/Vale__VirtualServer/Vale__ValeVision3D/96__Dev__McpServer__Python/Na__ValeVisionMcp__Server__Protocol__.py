@@ -77,6 +77,10 @@ class Na__McpProtocol:
         """Run something on the tool thread and wait: how shutdown closes the browser it owns."""
         return self.na_executor.submit(work).result(timeout=30)
 
+    def Na__McpProtocol__NotifyToolsChanged(self):
+        """The tool files have been read again: the client should ask for the list."""
+        self.na_write({'jsonrpc': '2.0', 'method': 'notifications/tools/list_changed'})
+
     def Na__McpProtocol__Shutdown(self):
         self.na_executor.shutdown(wait=False, cancel_futures=True)
 
@@ -143,7 +147,7 @@ class Na__McpProtocol:
     # --- lifecycle ------------------------------------------------------------------
 
     def na_capabilities(self, modern):
-        return {'tools': {} if modern else {'listChanged': False}}
+        return {'tools': {} if modern else {'listChanged': True}}
 
     def na_initialize(self, params):
         requested = params.get('protocolVersion')

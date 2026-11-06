@@ -23,14 +23,13 @@
 // - A READ NEVER LOSES ANYTHING. A missing key takes its default; a key this version
 //   does not know is kept, so an older page saving never strips a newer one's data.
 // - SWITCHED OFF KEEPS EVERYTHING. Enabled false is not deleted data (plan, section 2).
-// - SAVING IS A MERGE, never a whole-record POST (note 13, section 4.5): this key only,
-//   under the server's lock. The server decides again who may (AppAdmin).
-// - THE KEY IS WRITTEN WHOLE, so a save first asks whether it is still what this window
-//   read. A SketchUp sync (Cloud Sync's Sync Vegetation) or another window may have
-//   changed it, and a stale window would otherwise put those plants back or lose them,
-//   and the next sync would take that as a change made here. The sync compares from its
-//   side too. It is a comparison and not a lock: the plan asked for a guard in the API,
-//   whose file holds other sessions' open work. A revision of every save is kept.
+// - THE RECORD IS WHAT IS APPROVED, AND IT IS ALL A CLIENT EVER READS (05-Nov-2026). Staff work on
+//   that with what is waiting laid over it, read from the server when a project opens.
+// - A SAVE SAYS WHAT CHANGED, not the whole key. It sends what this window read and what it holds
+//   now, and the server works out the difference item by item, under its lock, so a SketchUp sync
+//   (Cloud Sync's Sync Vegetation) or somebody else's work since is never overwritten. It also decides
+//   whether the change goes straight in, for an admin, or waits, for anyone else:
+//   22__System__SceneAssets, and the API's Logic file. A revision of every save is kept.
 // - THE RECORD'S FILE IS MACHINE WRITTEN. The API rewrites it with json.dumps(indent=4)
 //   on every save, so nothing here tries to lay it out.
 //
@@ -46,6 +45,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
+// - Staff open and save through the placed-assets routes, with who did what alongside. On by default.
+//
 // 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
 // - A plop's scale reaches the builder, and counts in its key only when it is not 1, so a
 //   plant saved before it existed keeps its key. PlopSizeMm says what a plant really
@@ -75,6 +77,8 @@
     const Na__VegData__K_ROOT       = 'Vegetation__SceneData';                 // <-- Joins ProjectData__EditorOwnedKeys__Keys, so a SketchUp sync keeps it
     const Na__VegData__CONFIG_URL   = new URL('../Na__Vegetation__AppConfig__.json', import.meta.url);
     const Na__VegData__DIRTY_EVENT  = 'na-vegetation-dirty-changed';
+    const Na__VegData__WORK_EVENT   = 'na-vegetation-work-changed';            // <-- Who did what has changed: a menu row or a panel reads it again
+    const Na__VegData__SYSTEM       = 'Vegetation';                            // <-- What the placed-assets routes call this system
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -90,7 +94,10 @@
         configPromise : null,
         current       : null,
         dirty         : false,
-        baseline      : 'null'                                                 // <-- The object on the server as this window last knew it, as one string
+        base          : 'null',                                                // <-- The object as this window last read it, as one string: what a save is measured against
+        summary       : null,                                                  // <-- Who did what, as the server last said: { Owners, Waiting, People, History }
+        me            : null,                                                  // <-- { code, name }
+        isAdmin       : false
     };
     // ------------------------------------------------------------
 
@@ -165,7 +172,7 @@
         rules.Vegetation__LineRules__Advanced = Na__VegData__ValuesOf(config.Vegetation__LineRulesAdvanced__Config);
         return {
             Vegetation__SceneData__SchemaVersion              : scene.Vegetation__SceneData__SchemaVersion,
-            Vegetation__SceneData__Enabled                    : false,
+            Vegetation__SceneData__Enabled                    : scene.Vegetation__SceneData__EnabledByDefault !== false,
             Vegetation__SceneData__ShowByDefault              : scene.Vegetation__SceneData__ShowByDefault,
             Vegetation__SceneData__DefaultTransparencyPercent : scene.Vegetation__SceneData__DefaultTransparencyPercent,
             Vegetation__SceneData__ShowOnLiveDrawings         : scene.Vegetation__SceneData__ShowOnLiveDrawings,
@@ -373,12 +380,81 @@
 
     // FUNCTION | Open a Project's Object
     // ------------------------------------------------------------
+    // raw: the record's own object, or null with no key. Staff read what they work on from the
+    // server, and if that cannot be asked they work from the record.
+    // ------------------------------------------------------------
     async function Na__VegData__Open(raw) {
+        const state  = Na__VegData__State;
         const config = await Na__VegData__LoadConfig();
-        Na__VegData__State.current  = Na__VegData__Normalise(raw, config);
-        Na__VegData__State.dirty    = false;
-        Na__VegData__State.baseline = Na__VegData__Canon(raw && Object.keys(raw).length > 0 ? raw : null);
-        return Na__VegData__State.current;
+        let source = raw;
+        const gate = await import('../../03__AppUtils/Na__AppUtils__DevGate__.js');
+        if (gate.Na__DevGate__IsStaff()) {
+            const api = await import('../../22__System__SceneAssets/Na__SceneAssets__Api__.js');
+            const answer = await api.Na__SceneApi__ReadWorking(Na__VegData__SYSTEM);
+            if (answer.ok) {
+                if (answer.object) source = answer.object;
+                Na__VegData__KeepWork(answer);
+            } else {
+                console.warn('[ValeVision3D Vegetation] What staff are working on could not be read, so this shows what is approved:', answer.error);
+            }
+        }
+        state.current = Na__VegData__Normalise(source, config);
+        state.dirty   = false;
+        state.base    = Na__VegData__Canon(state.current);
+        return state.current;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Keep What the Server Says About Who Did What
+    // ------------------------------------------------------------
+    function Na__VegData__KeepWork(answer) {
+        const state = Na__VegData__State;
+        state.summary = answer.summary || null;
+        state.me      = answer.me || null;
+        state.isAdmin = answer.isAdmin === true;
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(Na__VegData__WORK_EVENT));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Who Did What, as the Server Last Said: { summary, me, isAdmin }
+    // ------------------------------------------------------------
+    function Na__VegData__Work() {
+        const state = Na__VegData__State;
+        return { summary : state.summary, me : state.me, isAdmin : state.isAdmin };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Take What the Server Now Says Is True
+    // ------------------------------------------------------------
+    // answer: from any of the placed-assets routes. sent: what a save sent, as one string, or
+    // nothing after an approval or a put back. True if the object changed, so the caller can bring
+    // the picture and the panels into line. It stays the one object: everything holds it.
+    // ------------------------------------------------------------
+    async function Na__VegData__TakeAnswer(answer, sent) {
+        const state  = Na__VegData__State;
+        const config = await Na__VegData__LoadConfig();
+        Na__VegData__KeepWork(answer);
+        if (!state.current) return false;
+
+        // CHANGED DURING THE SAVE | What was sent is what the server knows, and the rest stays unsaved
+        if (sent !== undefined && Na__VegData__Canon(state.current) !== sent) {
+            state.base = sent;
+            return false;
+        }
+
+        const fresh     = Na__VegData__Normalise(answer.object, config);
+        const freshText = Na__VegData__Canon(fresh);
+        const differs   = freshText !== Na__VegData__Canon(state.current);
+        if (differs) {
+            Object.keys(state.current).forEach((key) => { delete state.current[key]; });
+            Object.assign(state.current, fresh);
+        }
+        state.base = freshText;
+        Na__VegData__SetDirty(false);
+        return differs;
     }
     // ------------------------------------------------------------
 
@@ -425,8 +501,8 @@
             const mirror = await import('../../03__AppUtils/Na__AppUtils__LocalProjectMirror__.js');
             const result = await mirror.Na__LocalMirror__MergeKeys({ _unset : [Na__VegData__K_ROOT] });
             if (result && result.ok) {
-                Na__VegData__State.current  = null;
-                Na__VegData__State.baseline = 'null';
+                Na__VegData__State.current = null;
+                Na__VegData__State.base    = 'null';
                 Na__VegData__SetDirty(false);
             }
             return result;
@@ -439,30 +515,23 @@
 
     // FUNCTION | Save the Object into the Project's File
     // ------------------------------------------------------------
-    // Resolves as Na__LocalMirror__MergeKeys does, { ok, error, ... }, and never
-    // rejects. The gate here only decides what the page offers: the server's own
-    // AppAdmin check is what protects the file (note 14, section 6).
+    // Resolves to { ok, error, merged, approvedNow, counts }, and never rejects. merged: the
+    // object changed, because somebody else's work came back with it. The gate here only decides what
+    // the page offers: the server's own check is what protects the file (note 14, section 6).
     // ------------------------------------------------------------
     async function Na__VegData__Save() {
-        if (!Na__VegData__State.current) return { ok : false, error : 'this project has no vegetation to save' };
+        const state = Na__VegData__State;
+        if (!state.current) return { ok : false, error : 'this project has no vegetation to save' };
         try {
             const gate = await import('../../03__AppUtils/Na__AppUtils__DevGate__.js');
-            if (!gate.Na__DevGate__IsAuthoringEnabled()) return { ok : false, error : 'saving vegetation is for app admins' };
+            if (!gate.Na__DevGate__IsStaff()) return { ok : false, error : 'saving vegetation is for staff' };
 
-            const mirror = await import('../../03__AppUtils/Na__AppUtils__LocalProjectMirror__.js');
-            // STILL WHAT THIS WINDOW READ? | Not being able to ask is no reason to refuse: the write will say what is wrong
-            const onServer = await mirror.Na__LocalMirror__ReadKey(Na__VegData__K_ROOT);
-            if (onServer.ok && Na__VegData__Canon(onServer.value) !== Na__VegData__State.baseline) {
-                return { ok : false, conflict : true, error : 'the planting was changed elsewhere since this window loaded it (a SketchUp sync, or another window): reload to pick that up' };
-            }
-
-            const sent   = Na__VegData__Canon(Na__VegData__State.current);
-            const result = await mirror.Na__LocalMirror__MergeKeys({ [Na__VegData__K_ROOT] : Na__VegData__State.current });
-            if (result && result.ok) {
-                Na__VegData__State.baseline = sent;                            // <-- As sent: a change made during the save stays unsaved, and compares clean next time
-                Na__VegData__SetDirty(false);
-            }
-            return result;
+            const api    = await import('../../22__System__SceneAssets/Na__SceneAssets__Api__.js');
+            const sent   = Na__VegData__Canon(state.current);
+            const answer = await api.Na__SceneApi__Save(Na__VegData__SYSTEM, JSON.parse(state.base), state.current);
+            if (!answer.ok) return answer;
+            const merged = await Na__VegData__TakeAnswer(answer, sent);
+            return { ok : true, error : null, merged, approvedNow : answer.approvedNow === true, counts : answer.counts || null };
         } catch (error) {
             return { ok : false, error : (error && error.message) || 'the vegetation was not saved' };
         }
@@ -481,6 +550,8 @@
     export {
         Na__VegData__K_ROOT,
         Na__VegData__DIRTY_EVENT,
+        Na__VegData__WORK_EVENT,
+        Na__VegData__SYSTEM,
         Na__VegData__DefaultsFromConfig,
         Na__VegData__Normalise,
         Na__VegData__LineRulesToStyle,
@@ -497,6 +568,8 @@
         Na__VegData__Current,
         Na__VegData__IsDirty,
         Na__VegData__SetDirty,
+        Na__VegData__Work,
+        Na__VegData__TakeAnswer,
         Na__VegData__RemoveAll,
         Na__VegData__Save
     };

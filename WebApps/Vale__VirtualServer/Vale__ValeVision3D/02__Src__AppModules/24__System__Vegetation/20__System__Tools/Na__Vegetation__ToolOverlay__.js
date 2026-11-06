@@ -31,6 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.88.0)
+// - A filled shape, a filled ring and a dot on the pen, for the ring under a figure. Nothing the plants draw changed.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - A box for a plant whose asset asks for one: a hedge.
 //
@@ -294,12 +297,72 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | A Closed Shape Through World Points, Filled and Outlined
+    // ------------------------------------------------------------
+    // style: { fill, colour, width, dash }. One point behind the camera and it is not drawn:
+    // this is for what stands in front of whoever is working.
+    // ------------------------------------------------------------
+    function Na__VegOverlay__Polygon(points, style) {
+        const ctx = Na__VegOverlay__State.ctx;
+        ctx.beginPath();
+        for (let i = 0; i < points.length; i++) {
+            const screen = Na__VegOverlay__ToScreen(points[i][0], points[i][1], points[i][2]);
+            if (!screen) return;
+            if (i === 0) ctx.moveTo(screen.x, screen.y);
+            else ctx.lineTo(screen.x, screen.y);
+        }
+        ctx.closePath();
+        if (style.fill) {
+            ctx.fillStyle = style.fill;
+            ctx.fill();
+        }
+        if (style.colour) {
+            ctx.strokeStyle = style.colour;
+            ctx.lineWidth   = style.width || 1;
+            ctx.setLineDash(style.dash || []);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Ring Lying Level Round a World Point, Filled
+    // ------------------------------------------------------------
+    function Na__VegOverlay__Disc(x, y, z, radiusM, style) {
+        const points = [];
+        for (let k = 0; k < Na__VegOverlay__RING_STEPS; k++) {
+            const angle = (k / Na__VegOverlay__RING_STEPS) * Math.PI * 2;
+            points.push([x + Math.cos(angle) * radiusM, y, z + Math.sin(angle) * radiusM]);
+        }
+        Na__VegOverlay__Polygon(points, style);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Dot at a World Point, Its Radius in Pixels
+    // ------------------------------------------------------------
+    function Na__VegOverlay__Dot(point, radiusPx, colour) {
+        const screen = Na__VegOverlay__ToScreen(point[0], point[1], point[2]);
+        if (!screen) return;
+        const ctx = Na__VegOverlay__State.ctx;
+        ctx.fillStyle = colour;
+        ctx.beginPath();
+        ctx.arc(screen.x, screen.y, radiusPx, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | What a Tool's Painter Is Handed
     // ------------------------------------------------------------
     const Na__VegOverlay__Pen = {
         polyline : Na__VegOverlay__Polyline,
+        polygon  : Na__VegOverlay__Polygon,
         grip     : Na__VegOverlay__Grip,
         ring     : Na__VegOverlay__Ring,
+        disc     : Na__VegOverlay__Disc,
+        dot      : Na__VegOverlay__Dot,
         dome     : Na__VegOverlay__Dome,
         toScreen : Na__VegOverlay__ToScreen,
         LINE       : Na__VegOverlay__LINE,

@@ -102,6 +102,18 @@
             "Note": "ValeVision AURA, pen and wash drawings round the PainterlyNPR engine; Managers and App Admins only (API vale@ValeVision__AuraRender on 8006, added 30-Oct-2026)"
         },
         {
+            "Id": "distoapp",
+            "Enabled": true,
+            "Type": "app",
+            "Path": "disto-app",
+            "Target": "Vale__UtilityApps/MiniApp__DistoImageMapper",
+            "Entry": "DistoImageMapper__AppIndex__.html",
+            "ExampleQuery": "",
+            "Api": false,
+            "ApiPort": 8010,
+            "Note": "Disto Image Mapper: a DISTO survey folder as a 3D photo atlas (static, no API, no sign-in; files stay on the device)"
+        },
+        {
             "Id": "p",
             "Enabled": false,
             "Type": "link",
@@ -113,8 +125,8 @@
         }
     ],
     "Applied": {
-        "Hash": "607291531112",
-        "Utc": "2026-10-30T18:56:09Z",
+        "Hash": "9ee33cb82d32",
+        "Utc": "2026-11-05T18:01:41Z",
         "Codes": {
             "/": "200",
             "/valevision/": "200",
@@ -124,6 +136,7 @@
             "/help/": "200",
             "/theia/": "200",
             "/aura/": "200",
+            "/disto-app/": "200",
             "/Server__Api/": "404",
             "/Server__DeveloperTools/": "404",
             "/Server__UserAccountData/": "404",

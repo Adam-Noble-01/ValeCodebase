@@ -163,7 +163,7 @@
         if (/^email\./.test(a)) return 'email';
         if (/^file\.download$/.test(a)) return 'download';
         if (/^(tool|search|report)\.|^file\.print$|^video\.preview$/.test(a)) return 'tool';
-        if (a === 'image.export') return 'export';
+        if (a === 'image.export' || a === 'drawing.export') return 'export';
         if (/^(camera|layer|settings)\.|^view\.(fullscreen|reset)$/.test(a)) return 'setting';
         if (/^(help|tour)\./.test(a)) return 'guide';
         if (a === 'visit.summary') return 'visit';
@@ -727,6 +727,7 @@
         ['Opened a 3D model',            'model.open',        Vsm__Is('model.open')],
         ['Viewed a presentation scene',  'scene.view',        Vsm__Is('scene.view')],
         ['Exported an image',            'image.export',      Vsm__Is('image.export')],
+        ['Exported a drawing PDF',       'drawing.export',    Vsm__Is('drawing.export')],
         ['Changed the camera lens',      'camera.lens',       Vsm__Is('camera.lens')],
         ['Perspective correction',       'camera.correction', Vsm__Is('camera.correction')],
         ['Showed or hid a model layer',  'layer.toggle',      Vsm__Is('layer.toggle')],
@@ -1029,7 +1030,9 @@
                 '<section class="Vsm__InsCard"><h3>What people use</h3>' + (features.length ? features.map(function(x) {
                     return Vsm__InsRow(x.label, x.c, x.s, fmax, x.find);
                 }).join('') : '<div class="Vsm__InsEmpty">' + Vsm__EmptyText() + '</div>') + '</section>' +
-                '<section class="Vsm__InsCard"><h3>Images exported</h3>' + Vsm__InsList(events, Vsm__Is('image.export'), function(e) { return e.Target || 'image'; }) +
+                '<section class="Vsm__InsCard"><h3>What people produced</h3>' + Vsm__InsList(events, function(e) { return e.Action === 'image.export' || e.Action === 'drawing.export'; },
+                    function(e) { var k = (e.Detail && e.Detail.Kind) || ''; return (k ? k + ': ' : '') + (e.Target || 'a file'); }) +
+                    '<h3 class="Vsm__InsSub">Images exported</h3>' + Vsm__InsList(events, Vsm__Is('image.export'), function(e) { return e.Target || 'image'; }) +
                     '<h3 class="Vsm__InsSub">Camera lenses chosen</h3>' + Vsm__InsList(events, Vsm__Is('camera.lens'), function(e) { return e.Target; }) + '</section>' +
                 '<section class="Vsm__InsCard is-wide"><h3>Client links</h3>' + Vsm__InsLinks(f) + '</section>' +
                 '<section class="Vsm__InsCard is-wide"><h3>Projects clients opened</h3>' + Vsm__InsProjects(events) + '</section>' +

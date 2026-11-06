@@ -277,6 +277,7 @@
     } from './Na__LayoutEditor__Viewport2d__Frame__.js';
     import { Na__LeVp2d__FogFor } from './Na__LayoutEditor__Viewport2d__DepthFog__.js';
     import { Na__Vegetation__GetContentStamp } from '../../24__System__Vegetation/Na__Vegetation__.js';
+    import { Na__Entourage__GetContentStamp } from '../../23__System__Entourage/Na__Entourage__.js';
     import {
         Na__LeVp2d__EnsureLinework,
         Na__LeVp2d__StyleToken,
@@ -451,7 +452,7 @@
         // lines stop where a bush stands in front. Off unless this viewport ticks it,
         // and it costs nothing then: no existing plan or elevation moves. The stamp is
         // what the plants add up to, so moving one redraws this and only this.
-        const plantsStamp = styles.vegetation === true ? Na__Vegetation__GetContentStamp() : '';
+        const plantsStamp = Na__LeVp2d__AssetLayerStamp(styles);
         if (!plantsStamp) {
             Na__LeVp2d__ClearPlants(state);
         } else {
@@ -624,7 +625,7 @@
         }
 
         // PLANTS | And the fourth, for the same reason
-        if (styles.vegetation === true && Na__Vegetation__GetContentStamp()) {
+        if (Na__LeVp2d__AssetLayerStamp(styles)) {
             if (state.plantsTimer) { window.clearTimeout(state.plantsTimer); state.plantsTimer = null; }
             state.plantsRenderedKey = null; state.plantsRenderedWindow = null;
             await Na__LeVp2d__RenderPlants(state, viewport.Viewport__Id, viewport, described, state.plantsWantedKey, Na__LeRaster__Working());
@@ -675,6 +676,20 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | What This Viewport's Plants and People Add Up To
+    // ------------------------------------------------------------
+    // People share the plants' layer: one image over the linework, so a person stands among
+    // the planting, each with its own tick. With plants alone this is the stamp it always was,
+    // so no ticked viewport redraws for it. Empty means no layer at all.
+    // ------------------------------------------------------------
+    function Na__LeVp2d__AssetLayerStamp(styles) {
+        const plants = styles.vegetation === true ? Na__Vegetation__GetContentStamp() : '';
+        const people = styles.entourage === true ? Na__Entourage__GetContentStamp() : '';
+        return plants + (people ? '|people:' + people : '');
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | A Fresh Plants Image at Export Resolution (not cached)
     // ------------------------------------------------------------
     // RenderFogForExport's twin, for the layer the PDF lays over a viewport's vectors.
@@ -683,7 +698,7 @@
     // ------------------------------------------------------------
     async function Na__LeVp2d__RenderPlantsForExport(viewport) {
         if (Na__LeModel__IsSitePlanViewport(viewport)) return null;
-        if (viewport.Viewport__Styles.vegetation !== true || !Na__Vegetation__GetContentStamp()) return null;
+        if (!Na__LeVp2d__AssetLayerStamp(viewport.Viewport__Styles)) return null;
         const described = Na__LeVp2d__Describe(viewport);
         if (!described.definition) return null;
         if (!(await Na__LeSource__WaitFor(described.modelSource.renderId))) return null;

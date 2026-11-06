@@ -38,15 +38,32 @@ Agents never sign in on real data. The real record is written with the API's own
 | `vv3d_vegetation_library` | Every plant that can be planted, with what it measures |
 | `vv3d_vegetation_get` | The planting as the app will draw it: per path, how many of what, measuring what. `include_plants` for each plant |
 | `vv3d_vegetation_edit` | Transparency, palettes, paths, new paths, the Linear Tool's defaults. `dry_run` writes nothing. Sandbox by default |
+| `vv3d_entourage_library` | Every figure that can be placed, with what it measures and the SketchUp component it came from |
+| `vv3d_entourage_import_skp` | Read flat figure components through the running SketchUp into `54__Entourage__AssetLibrary`, then index and validate. The open model is left as it was |
+| `vv3d_entourage_get`, `vv3d_entourage_edit` | A project's people as the app will draw them; switch on, place, move, scale, swap, remove, line rules. `dry_run` writes nothing. Sandbox by default |
+| `vv3d_entourage_preview` | Show or Transparency for people on the page, saving nothing |
 | `vv3d_promote_to_real` | Copy named keys from the sandbox record to the real one |
 | `vv3d_sandbox_start`, `_stop`, `_load_project` | The testing server, and a copy of a project in it |
-| `vv3d_open`, `vv3d_close` | The real app in headless Edge, as AppAdmin, Management, Employee, Affiliate, Client or Nobody. `gpu: true` opens in seconds; software rendering takes about a minute |
+| `vv3d_open`, `vv3d_close` | The real app in headless Edge, as AppAdmin, Management, Employee, Affiliate, Client or Nobody. `gpu: true` opens in seconds; software rendering takes about a minute. `phone: true` for a phone |
 | `vv3d_view` | A saved scene by name, or a camera in integer mm |
-| `vv3d_screenshot` | A picture, the app's panels hidden unless `hide_ui` is false |
-| `vv3d_page_state` | The plants on the page, the overlay's lists, script errors and failed requests |
+| `vv3d_screenshot` | A picture, the app's panels hidden unless `hide_ui` is false. `selector` or `clip` takes just that part |
+| `vv3d_page_state` | The plants on the page; what is open: Tools & Settings sections unfolded, the Vegetation and Entourage panels with their open section, and the tool on the model; the overlay's lists, script errors and failed requests |
 | `vv3d_vegetation_preview` | Show or Transparency on the page, saving nothing |
 | `vv3d_probe_surface` | The real surface at plan spots: height and object. How a bed's edges are found |
 | `vv3d_eval` | JavaScript in the sandbox page, for anything else |
+| `vv3d_mouse`, `vv3d_key` | A real pointer and keyboard. Aim by client pixels or a spot in the model. Move, click, right-click, press, release, drag, wheel, each saying what the pointer ended up over |
+| `vv3d_click` | Clicks like a person: refuses, naming what is on top, when something covers it |
+| `vv3d_ui_read` | What is really on screen: its words and state, what is clipped or runs past its panel, and any panel scrolling sideways |
+| `vv3d_world_to_screen` | A spot in the model as client pixels, and what would really be pressed there |
+| `vv3d_run_module` | A scratch `.js` served among the app's modules, so its relative imports reach the app's own instances. No CORS server |
+| `vv3d_level_walk` | A project opened afresh at every level: the sections and rows each gets, files fetched, failures. `phone: true` for a phone |
+| `vv3d_api_call` | One request to the sandbox's API as any level, a client link or signed out |
+| `vv3d_shot_compare`, `vv3d_contact_sheet` | Two pictures with what differs in red and how many pixels, or several on one labelled sheet. No page needed |
+| `vv3d_scene_changes` | Who placed what and what waits for an admin. Reads sandbox or real. Approve and revert on the sandbox only |
+| `vv3d_consumers` | Every file naming a key, function or event: the app, API, developer tools, Gallery, Server Manager, Cloud Sync, GLB Builder |
+| `vv3d_patch_file` | Anchored edits keeping each file's line endings, every anchor checked before anything is written. Refuses client data |
+| `vv3d_check` | The skill's static checks and the libraries' validators, in one call |
+| `vv3d_reload_tools` | Reads the tool files again, new ones too, and tells the client, so a tool written in a session can be used in it |
 | `vv3d_server_compare` | What would move, for a project, the app or its API |
 | `vv3d_server_collect_project` | Bring a project's newer files down |
 | `vv3d_server_push_project`, `vv3d_server_push_app` | `dry_run` by default. Refuse a delete, and a server copy newer than the PC's |
@@ -62,8 +79,16 @@ Agents never sign in on real data. The real record is written with the API's own
 4. `vv3d_server_collect_project`, then the same edit with `target: real` and `confirm_real_data: true`.
 5. `vv3d_server_push_project`: read the list, then `dry_run: false`.
 
+**Test a change as each person would** (Adam tests too, but this finds what a synthetic event hides):
+
+1. `vv3d_check`, and `vv3d_consumers` for any key or function that changed.
+2. `vv3d_open` with `gpu: true` and `as_level`, `vv3d_click` to the panel, `vv3d_mouse` on the model, `vv3d_ui_read` for what shows.
+3. `vv3d_level_walk`: who gets what, and did a client fetch anything they should not.
+4. `vv3d_screenshot` before and after, then `vv3d_shot_compare`.
+
 ## Rules That Bite
 
+- **Staff's changes wait; the record is what is approved.** `vv3d_vegetation_edit` and `vv3d_entourage_edit` write the record directly, as a SketchUp sync does, and are noted in the changes file under this server's name. They do not wait for an admin, so on a real project they are only for when the person has asked.
 - **Tools run one at a time, on one thread.** Playwright's sync API belongs to the thread that started it, and only one job may ever talk to the server.
 - **The server is reached only through the Server Manager's engine,** never ssh. A gateway refusal is final for now: say so, do not retry.
 - **Nothing here deletes on the server or forces a push.** Those take the person's own word, through the `vgh-app-server` skill. An API push is not here: it needs a service restart.
@@ -81,10 +106,16 @@ Agents never sign in on real data. The real record is written with the API's own
 | `Na__ValeVisionMcp__Server__Core__.py` | Paths, the tool registry, results, the record, the engine |
 | `Na__ValeVisionMcp__Tools__Project__.py` | Status and reading records |
 | `Na__ValeVisionMcp__Tools__Vegetation__.py` | Reading and changing planting |
+| `Na__ValeVisionMcp__Tools__Entourage__.py` | The people's library, reading and changing a project's figures, bringing new figures in from SketchUp |
+| `Na__ValeVisionMcp__EntourageSkpReader__.rb` | Run inside SketchUp: reads a folder of `.skp` components as JSON, changing nothing |
 | `Na__ValeVisionMcp__Tools__LiveApp__.py` | The testing server and the browser |
 | `Na__ValeVisionMcp__Tools__Server__.py` | Compare, collect, push |
+| `Na__ValeVisionMcp__Tools__Testing__.py` | A real mouse and keyboard, what is on screen, every level, the API as any level, comparing pictures |
+| `Na__ValeVisionMcp__Tools__SceneAssets__.py` | Who placed what |
+| `Na__ValeVisionMcp__Tools__Workshop__.py` | Consumers of a name, anchored edits, the checks, reloading the tools |
 | `Na__ValeVisionMcp__PageHelpers__.js` | What runs on the page |
 | `Na__ValeVisionMcp__VegetationSums__.mjs` | The app's plant sums, in Node |
+| `Na__ValeVisionMcp__EntourageSums__.mjs` | The app's figure sums, in Node |
 | `Na__ValeVisionMcp__Selftest__.py` | The protocol and the refusals |
 
-A new tool is one `@Na__Tool` function in the file for its subject. Its description is what an agent reads to choose it, so say what it does and what it refuses.
+A new tool is one `@Na__Tool` function in the file for its subject, or a new `Na__ValeVisionMcp__Tools__*.py`, and then `vv3d_reload_tools`. Add a new file to the imports in `Server__Main` too, so the next start has it. Its description is what an agent reads to choose it, so say what it does and what it refuses.

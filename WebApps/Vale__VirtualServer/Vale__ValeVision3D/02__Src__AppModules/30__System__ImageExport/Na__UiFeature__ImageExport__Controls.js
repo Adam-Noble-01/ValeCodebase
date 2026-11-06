@@ -38,6 +38,7 @@
 
     // MODULE IMPORTS | Post Process Pipeline
     // ------------------------------------------------------------
+    import { Na__ExportReport__Send, Na__ExportReport__SizeMb } from '../03__AppUtils/Na__AppUtils__ExportReport__.js';   // <-- Activity ledger: what was produced
     import { Na__PostProcess__RunPipeline } from './Na__ImageExport__PostProcessEffects__Pipeline.js';
     // ------------------------------------------------------------
 
@@ -211,6 +212,24 @@
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);                 // <-- Free memory immediately after triggering download
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Report a Downloaded Image to the Activity Ledger (never throws)
+    // ------------------------------------------------------------
+    // Called after the save, with the size actually made: no click listening,
+    // so a long 4K render is reported however long it took. Target keeps the
+    // panel's words ("4K 16:9 image"), as reported since v2.78.0.
+    // ------------------------------------------------------------
+    function Na__UiFeature__ImageExport__Report(filename, blob, result, enhance, custom) {
+        const words = (id) => { const el = document.getElementById(id); return el ? String(el.textContent || '').replace(/\s+/g, ' ').trim() : ''; };
+        const ratio = words('naImageExportRatioValue'), res = words('naImageExportResolutionValue');
+        Na__ExportReport__Send('image.export', ((res ? res + ' ' : '') + (ratio ? ratio + ' ' : '') + 'image').trim(), {
+            Kind: 'Download Image', File: filename, Width: result && result.width, Height: result && result.height,
+            SizeMb: Na__ExportReport__SizeMb(blob && blob.size), Ratio: ratio, Resolution: res,
+            Enhance: !!enhance, Custom: !!custom, Lens: words('naCameraLensValue'), Reduced: !!(result && result.wasClamped)
+        });
     }
     // ------------------------------------------------------------
 
@@ -591,6 +610,7 @@
                     ? `ValeVision3D__${result.width}x${result.height}.png`
                     : 'ValeVision3D__Viewport.png';
                 Na__UiFeature__DownloadBlob(blob, filename);               // <-- Trigger download via object URL
+                Na__UiFeature__ImageExport__Report(filename, blob, result, isEnhanceEnabled, isCustomEnabled);   // <-- Activity ledger
 
                 Na__RenderLoop__RequestRender();                           // <-- Refresh viewport
                 const doneMessage = result.wasClamped

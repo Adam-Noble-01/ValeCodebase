@@ -1,5 +1,48 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.16.2, 06-Nov-2026: Exports Listed in Insights
+
+**Asked:** report Download Image, the Drawing Editor PDF and the Layout Editor sheet PDF, and no other export.
+
+**Changes:**
+- A Layout Editor sheet PDF now arrives as `drawing.export` (was `file.download`), with Detail.Kind "Layout Editor
+  sheet"; the Drawing Editor's PDF has Kind "Full layout" or "Image only". Download Image stays `image.export`.
+- Insights has a "What people produced" card (Kind: what) above the images list.
+- Reported by ValeVision 3D v2.90.0's `Na__AppUtils__ExportReport__.js`. No ledger change: `ValeShared__Activity__.py`
+  1.2.2 (live since 08:27 UTC) already takes both actions.
+
+## Version 0.16.1, 06-Nov-2026: Drawing PDF Exports in Tab 05
+
+**Asked:** an action for when someone exports a PDF from ValeVision 3D's Drawing Editor (the simple page layout that
+bakes one picture).
+
+**Changes:**
+- The ledger's new action `drawing.export` ("Exported a drawing PDF"; Target the layout name; Detail Kind "Full layout"
+  or "Image only", and File) shows with the Export badge, so the "Image and PDF exports" filter (was "Image exports") finds it.
+- Insights lists "Exported a drawing PDF" among the features used.
+- Reported by `Na__PageLayoutSystem__PdfExport__A3__.js` 2.4.0 and taken by `ValeShared__Activity__.py` 1.2.2.
+
+## Version 0.16.0, 05-Nov-2026: A Route Can Point Into a Folder of Apps
+
+**Asked:** "Make a proxy for this so this URL loads the app: https://app.valegardenhouses.com/disto-app". The app is
+`Vale__UtilityApps/MiniApp__DistoImageMapper`, and a route's target had to be a folder at the top of the mirror.
+
+**Changes:**
+- `Na__Routes__Validate`: a target may be a path of folders, each segment still plain characters with no leading dot, the
+  first never `Server__`. So `..`, hidden folders and every `Server__` path are still refused (17 cases checked).
+- The agent's `deploy_note`: a changed file takes the route of the longest route folder that holds it, so a nested app's
+  stamp lists `/disto-app/...`. Without this, `ValeShared__AppUpdate__.js` would never see its pushes. Top-level apps are
+  unchanged.
+- `Na__Server__Routes` (tab 03's folder list): a top-level folder with no page of its own also lists its sub-folders
+  that have one, so the nested target shows in the dropdown rather than the first option showing against it.
+- `Na__Engine__UnmappedFolders` (tab 02's "not synced yet" buttons): a folder that holds a mapping is no longer offered. The
+  button "+ Vale__UtilityApps" would have mapped the whole folder, and so pushed `100__TesttingInput`, which only the app's own
+  mapping excludes. The unmapped apps inside are offered by their path instead.
+- New mapping `distoimagemapper`, new route `/disto-app/`.
+
+**Checked** in a sandbox with a fake ssh, through the real engine and agent: the push reaches the nested folder and leaves
+`100__TesttingInput`, `.md`, `.py` and `.bat` behind, and the stamp names the nested and a top-level app by their routes.
+
 ## Version 0.15.0, 28-Oct-2026: Restart Manager (One-Click Restart From the App)
 
 **Asked:** after the version banner said "restart the server", Adam wanted a button by Server status / Snapshot

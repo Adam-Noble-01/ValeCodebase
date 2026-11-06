@@ -11,19 +11,22 @@
 // CREATED    : 04-Nov-2026
 //
 // DESCRIPTION:
-// - A PROJECT WITHOUT THE KEY COSTS THIS FILE AND ONE LISTENER, by design: most
-//   projects will never have plants, and a client on a phone should not fetch a
-//   plant engine to look at a house. So this file imports nothing statically, and
-//   everything else comes through import(), as the Layout Editor's loader does.
-// - ONE SWITCH (Adam, 04-Nov-2026). Enabled false keeps the project's object, but
-//   nothing loads and nothing draws, exactly as if it had none. On brings the plants and
-//   the Vegetation section of Tools & Settings together: the Dev section only ever decides
-//   whether there is a menu, and the menu is where everything else lives.
-// - IT LISTENS, IT DOES NOT FETCH. The loading sequence already holds the record, and
-//   dispatches this key as it does its other per-project blocks, so there is no second
-//   read and no question of whose resilience settings the shared fetch took. Those
-//   events fire once, after the first await in the sequence, by when index.html has
-//   finished its Initialize calls (note 10, section 1.2): armed there, it cannot miss.
+// - ON FOR EVERY PROJECT, AND THE ADMIN'S SWITCH STAYS (Adam, 05-Nov-2026: "Any Project, make the
+//   admin ticked on boxes on by default now, i gated it initially whilst testing but its ready
+//   to roll out, keep those gates so i can disable though"). Only a saved Enabled false turns a
+//   project off: its object is kept, but nothing loads and nothing draws. No key is on.
+// - WHO GETS WHAT. Staff, on a computer or a tablet, get the menu on any project, to plant. Everyone
+//   else gets it only when there is something to see: a client on a project with no plants
+//   approved costs this file and one test, and fetches no plant engine. So this file imports
+//   nothing statically, and everything else comes through import(), as the Layout Editor's loader does.
+// - NOTHING IS BUILT UNTIL IT IS NEEDED. A layer holds about 13 MB of scratch, so with no plants
+//   yet the menu shows and no layer is made. Na__Vegetation__EnsureStarted does that the first
+//   time a panel or tool opens.
+// - IT LISTENS, IT DOES NOT FETCH. The loading sequence already holds the record, and tells this
+//   door with or without a key, so there is no second read of the record and no question of whose
+//   resilience settings the shared fetch took. Those events fire once, after the first await in
+//   the sequence, by when index.html has finished its Initialize calls (note 10, section 1.2):
+//   armed there, it cannot miss. Staff then read what they work on, in the data module.
 // - THE DEV SECTION IS ALSO BEHIND A DOOR. It is how a project is switched on, so it
 //   must be offered on a project with no key at all, yet a client or an Employee never
 //   fetches it: the gate is asked first, and only an author imports the section.
@@ -32,7 +35,7 @@
 //
 // INTEGRATION:
 // - Initialized from index.html, beside the north system, with the scene and friends.
-// - Dispatched to from Na__AppFlow__LoadingSequence.js, when the record holds the key.
+// - Dispatched to from Na__AppFlow__LoadingSequence.js, for every project.
 // - @delegate: ./03__System__SceneLayer/Na__Vegetation__Runtime__.js
 // - @delegate: ./02__Core__Data/Na__Vegetation__SceneData__.js
 // - @delegate: ./10__Ui__Panels/Na__Vegetation__DevControls__.js
@@ -41,6 +44,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
+// - On by default, for staff on any project, and only a saved Enabled false turns it off. The layer is
+//   made when first needed. After Remove All the project is as one with no key: on.
+//
 // 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.85.0)
 // - The Vegetation section of Tools & Settings comes and goes with the switch, and what
 //   this device last chose is where the plants start. Remove All.
@@ -76,7 +83,9 @@
     // ------------------------------------------------------------
     const Na__Vegetation__State = {
         armed   : false,
-        active  : false,
+        active  : false,                                                       // <-- The menu is up
+        started : false,                                                       // <-- The layer has been made and has the plants
+        startPromise : null,
         raw     : null,                                                        // <-- The record's own object, kept even while switched off
         context : null,                                                        // <-- { scene, camera, renderer, modelRoot, lineColour, getPipeline, showToast }
         stamp   : '',                                                          // <-- What the plants on the page add up to, or nothing with none
@@ -98,24 +107,62 @@
         const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
         const sceneData = data.Na__VegData__Current() || await data.Na__VegData__Open(raw);
         const menu = await import('./10__Ui__Panels/Na__Vegetation__MenuSection__.js');
-        const starting = menu.Na__VegMenu__StartingState(sceneData);
-        const runtime = await import('./03__System__SceneLayer/Na__Vegetation__Runtime__.js');
-        await runtime.Na__VegRun__Start(Na__Vegetation__State.context, sceneData, starting);
+        if (Na__Vegetation__HasPlants(sceneData)) await Na__Vegetation__EnsureStarted();
         Na__Vegetation__State.active = true;
-        menu.Na__VegMenu__Show(Na__Vegetation__State.context, starting);
+        menu.Na__VegMenu__Show(Na__Vegetation__State.context, menu.Na__VegMenu__StartingState(sceneData));
         return sceneData;
     }
     // ------------------------------------------------------------
 
 
-    // HANDLER | The Record Holds a Vegetation Key
+    // HELPER FUNCTION | Does This Object Hold Anything to Draw?
+    // ------------------------------------------------------------
+    function Na__Vegetation__HasPlants(sceneData) {
+        const count = (list) => (Array.isArray(list) ? list.length : 0);
+        return !!sceneData && (count(sceneData.Vegetation__SceneData__Plops) + count(sceneData.Vegetation__SceneData__Paths)) > 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Make the Layer and Draw the Plants, If That Has Not Been Done
+    // ------------------------------------------------------------
+    // Asked by a menu row before it opens a panel or a tool. They need the layer, even with no plants yet.
+    // ------------------------------------------------------------
+    function Na__Vegetation__EnsureStarted() {
+        const state = Na__Vegetation__State;
+        if (state.started) return Promise.resolve();
+        if (!state.startPromise) {
+            state.startPromise = (async () => {
+                const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
+                const menu = await import('./10__Ui__Panels/Na__Vegetation__MenuSection__.js');
+                const runtime = await import('./03__System__SceneLayer/Na__Vegetation__Runtime__.js');
+                const sceneData = data.Na__VegData__Current();
+                await runtime.Na__VegRun__Start(state.context, sceneData, menu.Na__VegMenu__StartingState(sceneData));
+                state.started = true;
+            })().finally(() => { state.startPromise = null; });
+        }
+        return state.startPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // HANDLER | The Loading Sequence Has Read the Record
+    // ------------------------------------------------------------
+    // Told for every project: raw is null with no key.
     // ------------------------------------------------------------
     async function Na__Vegetation__OnDataLoaded(event) {
         const raw = event && event.detail ? event.detail.sceneData : null;
         Na__Vegetation__State.raw = raw;
-        if (!raw || raw.Vegetation__SceneData__Enabled !== true) return;       // <-- Switched off: as if it were not there
+        if (raw && raw.Vegetation__SceneData__Enabled === false) return;       // <-- The admin's switch: as if it were not there
 
         try {
+            const gate = await import('../03__AppUtils/Na__AppUtils__DevGate__.js');
+            if (!Na__Vegetation__HasPlants(raw) && !gate.Na__DevGate__IsStaff()) return;   // <-- Nothing to see, and no way of adding any
+            if (gate.Na__DevGate__IsStaff()) {
+                const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
+                const working = await data.Na__VegData__Open(raw);
+                if (!Na__Vegetation__HasPlants(working) && !gate.Na__DevGate__CanCreateAssets()) return;   // <-- Staff on a phone only look
+            }
             await Na__Vegetation__StartFrom(raw);
         } catch (error) {
             console.warn('[ValeVision3D Vegetation] Could not start, and the model is unaffected:', error && error.message);
@@ -210,7 +257,7 @@
     // ------------------------------------------------------------
     async function Na__Vegetation__SetEnabled(enabled) {
         const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
-        const sceneData = data.Na__VegData__Current() || await data.Na__VegData__Open(Na__Vegetation__State.raw || {});
+        const sceneData = data.Na__VegData__Current() || await data.Na__VegData__Open(Na__Vegetation__State.raw);
         sceneData.Vegetation__SceneData__Enabled = (enabled === true);
 
         if (enabled === true) {
@@ -231,7 +278,8 @@
         menu.Na__VegMenu__Hide();
         const runtime = await import('./03__System__SceneLayer/Na__Vegetation__Runtime__.js');
         runtime.Na__VegRun__Stop();
-        Na__Vegetation__State.active = false;
+        Na__Vegetation__State.active  = false;
+        Na__Vegetation__State.started = false;
     }
     // ------------------------------------------------------------
 
@@ -239,7 +287,8 @@
     // FUNCTION | Delete Everything This Project Holds for Vegetation: Final
     // ------------------------------------------------------------
     // Resolves as Na__VegData__RemoveAll does, { ok, error, ... }. The plants stay until
-    // the file has really lost them, so a failed save leaves things as they were.
+    // the file has really lost them, so a failed save leaves things as they were. Then the
+    // project is as one with no key: on, with nothing planted.
     // ------------------------------------------------------------
     async function Na__Vegetation__RemoveAll() {
         const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
@@ -255,6 +304,7 @@
         }
         if (Na__Vegetation__State.active) await Na__Vegetation__TakeDown();
         Na__Vegetation__State.raw = null;
+        await Na__Vegetation__StartFrom(null);
         return result;
     }
     // ------------------------------------------------------------
@@ -272,6 +322,7 @@
         Na__Vegetation__LOADED_EVENT,
         Na__Vegetation__Initialize,
         Na__Vegetation__IsActive,
+        Na__Vegetation__EnsureStarted,
         Na__Vegetation__SetEnabled,
         Na__Vegetation__RemoveAll,
         Na__Vegetation__GetContentStamp,

@@ -1,0 +1,231 @@
+/* =============================================================================
+ * DISTO IMAGE MAPPER - PANEL MENU STYLES
+ * =============================================================================
+ *
+ * FILE       : DistoImageMapper__UiFeature__Styles__PanelMenu__.css
+ * NAMESPACE  : DistoImageMapper
+ * MODULE     : Panel Menu Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The right-hand menu: its folding rows, the groups nested in them,
+ *              the grip on its left edge, and the footer pinned under it
+ * CREATED    : 06-Nov-2026
+ *
+ * DESCRIPTION:
+ * - The rows are ValeVision 3D's Tools & Settings rows (.na-dropdown-menu__button,
+ *   __panel): icon, label and a small arrow; an open row's content sits in a faintly
+ *   tinted box beneath it
+ * - Nested groups are details elements with a turning arrow, as ValeVision 3D's
+ *   Grid Style and Advanced Linework Settings are
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Menu's Frame
+ * ----------------------------------------------------------------------------- */
+
+    /* FRAME | The Scrolling Middle, the Pinned Footer */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__Scroll {
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        overflow-y                         : auto;
+    }
+
+    .DistoImageMapper__Panel__Section--Footer {
+        flex                               : none;
+        border-top                         : 1px solid #e6e8ea;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GRIP | Drag Left to Widen */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__Grip {
+        position                           : absolute;
+        top                                : 0;
+        bottom                             : 0;
+        left                               : -4px;
+        width                              : 9px;
+        z-index                            : 5;
+        cursor                             : ew-resize;
+        touch-action                       : none;
+    }
+
+    .DistoImageMapper__Panel__Grip::after {
+        content                            : '';
+        position                           : absolute;
+        top                                : 0;
+        bottom                             : 0;
+        left                               : 3px;
+        width                              : 3px;
+        background                         : transparent;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Panel__Grip:hover::after,
+    .DistoImageMapper__Panel__Grip:focus-visible::after,
+    .DistoImageMapper__Stage.is-resizing-panel .DistoImageMapper__Panel__Grip::after {
+        background                         : var(--Vale_PrimaryBrand);
+    }
+
+    .DistoImageMapper__Panel__Grip:focus-visible {
+        outline                            : none;
+    }
+
+    .DistoImageMapper__Stage.is-resizing-panel,
+    .DistoImageMapper__Stage.is-resizing-panel * {
+        cursor                             : ew-resize !important;         /* <-- One cursor while the grip is held, wherever the pointer strays */
+        user-select                        : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | The Panel Button at the Right End, Beside the Menu It Folds */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Toolbar__Button--Panel {
+        margin-left                        : auto;
+    }
+
+    .DistoImageMapper__Toolbar__Button--Panel .DistoImageMapper__Icon {
+        transform                          : scaleX(-1);                   /* <-- The icon's panel on the right, as the menu now is */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Rows
+ * ----------------------------------------------------------------------------- */
+
+    /* ROWS | Icon, Label, Arrow */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Menu {
+        margin                             : 0;
+        padding                            : 6px 0 10px;
+        list-style                         : none;
+        border-bottom                      : 1px solid #e6e8ea;
+    }
+
+    .DistoImageMapper__Menu__Item {
+        padding                            : 1px 8px;
+    }
+
+    .DistoImageMapper__Menu__Button {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+        width                              : 100%;
+        padding                            : 9px 8px;
+        border                             : none;
+        border-radius                      : 6px;
+        background                         : transparent;
+        color                              : var(--Vale_TextPrimary);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .DistoImageMapper__Menu__Button:hover {
+        background                         : rgba(23, 43, 58, 0.06);
+    }
+
+    .DistoImageMapper__Menu__Button:focus-visible {
+        outline                            : 2px solid var(--Vale_PrimaryBrand);
+        outline-offset                     : -2px;
+    }
+
+    .DistoImageMapper__Menu__Item.is-open > .DistoImageMapper__Menu__Button {
+        background                         : rgba(23, 43, 58, 0.08);
+    }
+
+    .DistoImageMapper__Menu__Button .DistoImageMapper__Icon {
+        opacity                            : 0.8;
+    }
+
+    .DistoImageMapper__Menu__Label {
+        flex                               : 1;
+    }
+
+    .DistoImageMapper__Menu__Arrow {
+        font-size                          : 0.75rem;
+        transition                         : transform var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Menu__Item.is-open .DistoImageMapper__Menu__Arrow {
+        transform                          : rotate(180deg);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ROWS | An Open Row's Content, in a Faintly Tinted Box */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Menu__Panel {
+        margin                             : 4px 0 8px;
+        padding                            : 10px 12px;
+        border-radius                      : 6px;
+        background                         : rgba(23, 43, 58, 0.05);
+    }
+
+    .DistoImageMapper__Menu__Panel[hidden] {
+        display                            : none;
+    }
+
+    .DistoImageMapper__Menu__Panel > :last-child {
+        margin-bottom                      : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Nested Groups
+ * ----------------------------------------------------------------------------- */
+
+    /* GROUPS | Folded Until Wanted, Each on Its Own */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Menu__Group {
+        margin-top                         : 8px;
+        padding-top                        : 6px;
+        border-top                         : 1px solid rgba(23, 43, 58, 0.1);
+    }
+
+    .DistoImageMapper__Menu__Group > summary {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        padding                            : 4px 0;
+        list-style                         : none;
+        color                              : var(--Vale_TextPrimary);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+    }
+
+    .DistoImageMapper__Menu__Group > summary::-webkit-details-marker {
+        display                            : none;
+    }
+
+    .DistoImageMapper__Menu__Group > summary::before {
+        content                            : '\25B8';
+        font-size                          : 0.7rem;
+        transition                         : transform var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Menu__Group[open] > summary::before {
+        transform                          : rotate(90deg);
+    }
+
+    .DistoImageMapper__Menu__Group[open] > summary {
+        margin-bottom                      : 6px;
+    }
+
+    .DistoImageMapper__Menu__Group:not(:has(> :not(summary):not([hidden]))) {
+        display                            : none;                         /* <-- Every row in it hidden (As Shot hides Size and Opacity): no empty group */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

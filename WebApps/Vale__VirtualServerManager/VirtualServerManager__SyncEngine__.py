@@ -63,6 +63,12 @@ USAGE (CLI, used by Claude):
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+05-Nov-2026 - Version 0.16.0
+- An app route's target may sit in a folder of apps (Vale__UtilityApps/MiniApp__DistoImageMapper),
+  not only at the top of the mirror. Its deploy stamp names its files by the route as well.
+- The Parity tab's "not synced yet" list never offers a folder that holds a mapping: mapping the whole
+  folder would carry what its apps' mappings exclude. It offers the unmapped apps inside instead.
+
 28-Oct-2026 - Version 0.14.0
 - The library gate. An app route may name LibraryProtected paths (inside every library project:
   "ValeVision3D/Content__3dModel__GlbFiles/", "ProjectData__*.json") and LibraryHidden paths. Each
@@ -726,11 +732,11 @@ def deploy_note(kind, plans, rules):
             if lane_of(rel, r) != "code":
                 continue                                                       # <-- Content and data are not code a browser holds
             full = f"{prefix}/{rel}" if prefix else rel
-            top, _, rest = full.partition("/")
-            if top.startswith("Server__") or full == name:
+            if full.startswith("Server__") or full == name:
                 continue                                                       # <-- Never web-served
-            bases = routes.get(top) if rest else None
-            urls += [b + rest for b in bases] if bases else ["/" + full]
+            folder = max((f for f in routes if full.startswith(f + "/")), key=len, default="")   # <-- A route's folder may sit in a folder of apps
+            rest = full[len(folder) + 1:] if folder else ""
+            urls += [b + rest for b in routes[folder]] if folder else ["/" + full]
     if not urls:
         return
     path = ROOT / name
@@ -1734,14 +1740,24 @@ def Na__Parity__Verdict(lane: str, local, remote, deep: bool = False, made: bool
 # ------------------------------------------------------------
 def Na__Engine__UnmappedFolders(cfg: dict) -> list:
     root = Path(cfg["Local"]["MirrorRoot"])
+    if not root.is_dir():
+        return []
     mapped = set()
     for m in cfg["Mappings"]:
         try:
             mapped.add(Na__Config__LocalPath(cfg, m).resolve())
         except OSError:
             pass
-    return sorted(p.name for p in root.iterdir() if p.is_dir() and p.resolve() not in mapped
-                  and not p.name.startswith(".")) if root.is_dir() else []
+    out = []
+    for p in root.iterdir():
+        if not p.is_dir() or p.name.startswith(".") or p.resolve() in mapped:
+            continue
+        if any(p.resolve() in m.parents for m in mapped):                      # <-- A folder of apps: offer its unmapped apps, never the whole folder (it would carry what their mappings exclude)
+            out += [f"{p.name}/{c.name}" for c in p.iterdir()
+                    if c.is_dir() and not c.name.startswith(".") and c.resolve() not in mapped]
+        else:
+            out.append(p.name)
+    return sorted(out)
 # ---------------------------------------------------------------
 
 # FUNCTION | PC Overview of Every Mapping (no connection)
@@ -2228,8 +2244,9 @@ def Na__Routes__Validate(routes: dict, cfg: dict) -> list:
             seen[key] = rid
         if r.get("Type") == "app":
             target = r.get("Target", "")
-            if not re.match(r"^[A-Za-z0-9_.\-]+$", target) or target.startswith(("Server__", ".")):
-                errs.append(f"{rid}: target must be an app folder at the top of the mirror")
+            parts = target.split("/")                                          # <-- An app at the top of the mirror, or in a folder of apps (Vale__UtilityApps/MiniApp__X)
+            if not all(re.match(r"^[A-Za-z0-9_.\-]+$", p) and not p.startswith(".") for p in parts) or parts[0].startswith("Server__"):
+                errs.append(f"{rid}: target must be an app folder in the mirror")
             elif not (mirror / target).is_dir():
                 errs.append(f"{rid}: {target} is not a folder in the mirror")
             if not re.match(r"^[A-Za-z0-9_.\-]+\.html?$", r.get("Entry", "index.html")):

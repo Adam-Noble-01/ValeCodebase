@@ -6,7 +6,7 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 
 ## Where It Stands
 
-**All nine stages are built (v2.85.0), and plants size and scale, and have the walls' brightness (v2.86.0).** One switch per project in Dev Tools > Vegetation. Switched on, Tools & Settings has a Vegetation section: Show Vegetation and Transparency for everyone, client links and phones included, and for an author the Asset Browser, the Linear Placement Tool, the Bush Tool, the Linework panel and Save. Plants draw in the live view, stills, thumbnails, video and a sheet's 3D pictures on both engines; on a plan or elevation only when asked, by a viewport's Vegetation tick or a project's Show on Live Drawings. Cloud Sync's Sync Vegetation tab keeps SketchUp proxies and the planting in lockstep. Everything below `Na__Vegetation__.js` loads only on a project with `Vegetation__SceneData__Enabled` true, apart from the Dev section and what it needs, for an author alone.
+**All nine stages are built (v2.85.0), and plants size and scale, and have the walls' brightness (v2.86.0).** One switch per project in Dev Tools > Vegetation. Switched on, Tools & Settings has a Vegetation section: Show Vegetation and Transparency for everyone, client links and phones included, and for an author the Asset Browser, the Linear Placement Tool, the Bush Tool, the Linework panel and Save. Since v2.91.0 staff's placing and editing is one panel on the left, the Vegetation panel, which opens when that section is unfolded and shuts when it is folded: Assets, Line Tool, Brush Tool, In This Project and Changes as dropdown sections, one open at a time (`../22__System__SceneAssets/Na__SceneAssets__Hub__.js`); the section itself keeps Show, Transparency and an admin's rows. Plants draw in the live view, stills, thumbnails, video and a sheet's 3D pictures on both engines; on a plan or elevation only when asked, by a viewport's Vegetation tick or a project's Show on Live Drawings. Cloud Sync's Sync Vegetation tab keeps SketchUp proxies and the planting in lockstep. Everything below `Na__Vegetation__.js` loads only on a project with `Vegetation__SceneData__Enabled` true, apart from the Dev section and what it needs, for an author alone.
 
 ## Files
 
@@ -26,24 +26,25 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 | `03__System__SceneLayer/Na__Vegetation__FrameBudget__.js` | `Na__VegBudget` | What may be redrawn this frame, and how: full, moving or settling. No three.js |
 | `03__System__SceneLayer/Na__Vegetation__Runtime__.js` | `Na__VegRun` | Joins the layer to the app, and keeps its plants the same as the project's object |
 | `10__Ui__Panels/Na__Vegetation__DevControls__.js` | `Na__VegDev` | The Dev section: the one switch, where a viewer starts, Remove All |
-| `10__Ui__Panels/Na__Vegetation__MenuSection__.js` | `Na__VegMenu` | The Tools & Settings section; device memory; an author's rows are built for an author only |
+| `10__Ui__Panels/Na__Vegetation__MenuSection__.js` | `Na__VegMenu` | The Tools & Settings section; device memory; unfolding it opens the Vegetation panel for staff and folding it shuts it (v2.91.0); an admin's rows for an admin (v2.89.0: on by default, `../22__System__SceneAssets` for who planted what) |
+| `20__System__Tools/Na__Vegetation__PlantMenu__.js` | `Na__VegPlantMenu` | Right-click a plant while the Vegetation panel is open: move, size, copy, swap, delete. A plant of a path changes alone |
 | `10__Ui__Panels/Na__Vegetation__PanelShell__.js` | `Na__VegShell` | One panel a side, the controls, Save, undo keys, the close guard |
 | `10__Ui__Panels/Na__Vegetation__LineworkPanel__.js` | `Na__VegLine` | The demo's Vegetation Linework panel |
-| `10__Ui__Panels/Na__Vegetation__AssetBrowser__.js` | `Na__VegCards` | Cards drawn live, search, filters, click to place, In This Project, move, turn, remove |
+| `10__Ui__Panels/Na__Vegetation__AssetBrowser__.js` | `Na__VegCards` | The Vegetation panel (v2.91.0): its sections, cards drawn live, search, filters, click to place, In This Project, move, turn, remove, Changes |
 | `10__Ui__Panels/Na__Vegetation__PaletteEditor__.js` | `Na__VegPalUi` | A palette's items and their shares, shared by both tools |
 | `10__Ui__Panels/Na__Vegetation__Styles__Panels__.css` | | The panels |
 | `20__System__Tools/Na__Vegetation__ToolHost__.js` | `Na__VegTools` | One tool armed at a time, the pointer, the door hold, orbit while painting |
 | `20__System__Tools/Na__Vegetation__ToolOverlay__.js` | `Na__VegOverlay` | Tools' aids on a 2D canvas over the model, so they can never print |
 | `20__System__Tools/Na__Vegetation__SurfacePick__.js` | `Na__VegPick` | What is under the pointer, by BVH, as the eye sees it |
-| `20__System__Tools/Na__Vegetation__LinearTool__.js` | `Na__VegLinear` | Draw and edit paths, Advanced, Bake |
-| `20__System__Tools/Na__Vegetation__BushTool__.js` | `Na__VegBushTool` | Paint and erase from a palette |
+| `20__System__Tools/Na__Vegetation__LinearTool__.js` | `Na__VegLinear` | Draw and edit paths, Advanced, Bake. Its rows are the panel's Line Tool section (v2.91.0) |
+| `20__System__Tools/Na__Vegetation__BushTool__.js` | `Na__VegBushTool` | Paint and erase from a palette. Its rows are the panel's Brush Tool section, and Escape folds it (v2.91.0) |
 
 The library itself is `53__Vegetation__AssetLibrary` at the app's root.
 
 ## Rules That Bite
 
 - **Nothing here imports three.js in `01__Core__Engine`,** so it can run in a worker, and in Node for checks.
-- **Nothing outside this folder imports anything but `Na__Vegetation__.js`.** The one exception is the prototype, `85__EarlyStage__VegetationLinework`, which is the test bench and never ships.
+- **Nothing outside this folder imports anything but `Na__Vegetation__.js`.** Two exceptions: the prototype, `85__EarlyStage__VegetationLinework`, the test bench that never ships, and `23__System__Entourage`, whose figure tool shares the tool host, overlay and pick, and whose panels share the stylesheet, because only one tool may have the clicks. They are lazily loaded on both sides.
 - **A generator is never edited** once a project can hold its plants: a saved seed must draw the same bush for ever. `BallCluster` version 1 is `Na__VegBuild__Bush`. A new look is a new version beside it, listed in the config.
 - **The order of random draws is part of that promise.** Adding, removing or reordering one `rng` call in a generator changes every plant it has ever made, without any error.
 - **A change to what `Contour` draws changes the look of every project.** It is not versioned plant by plant, so such a change is Adam's call.

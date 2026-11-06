@@ -190,6 +190,7 @@
 
     // MODULE IMPORTS | Config, Layout, Model, Chrome, Markup, Viewports, Assets
     // ------------------------------------------------------------
+    import { Na__ExportReport__Send } from '../../03__AppUtils/Na__AppUtils__ExportReport__.js';   // <-- Activity ledger: what was produced
     import { Na__LeCfg__GetPdfSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LePdfFonts__EnsureLoaded, Na__LePdfFonts__Install } from './Na__LayoutEditor__PdfFonts__.js';
     import { Na__LeFileName__Build } from './Na__LayoutEditor__PdfFilename__.js';   // <-- Shared with the specification download, so both name their files alike
@@ -595,7 +596,8 @@
             await Promise.race([ Na__LeSpec__EnsureLoaded(), new Promise((resolve) => { window.setTimeout(resolve, cap); }) ]);   // <-- The notes margin prints its notes, not an empty column
             const built = await Na__LePdf__BuildDocument(sheet, options);
             await built.doc.save(built.filename, { returnPromise : true });
-            window.ValeActivity && window.ValeActivity.Log('file.download', { target: built.filename });   // <-- Activity ledger (jsPDF's link is never on the page)
+            Na__ExportReport__Send('drawing.export', sheet.Sheet__Name || built.filename,   // <-- Activity ledger (jsPDF's link is never on the page)
+                { Kind: 'Layout Editor sheet', File: built.filename });
             const margin = Na__LeMargin__Report(sheet, null);
             if (margin.overflow > 0) toast(Na__LeCfg__FormatLabel('PdfMarginOverflow', 'PDF downloaded, but {count} note(s) did not fit and were left out. Widen the notes margin, enlarge a note region or make the text smaller.', { count : margin.overflow }), true);   // <-- Every note that fitted nowhere: the margin's, or a note region's with the margin off
             else toast(Na__LeCfg__GetLabel('PdfReadyMessage', 'PDF downloaded.'), false);

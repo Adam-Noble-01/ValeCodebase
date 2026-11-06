@@ -144,7 +144,8 @@ So:
 
 **03 URL configurator:**
 - **App routes:** a short public path (`/valevision/`) serves an app folder's entry page. Queries
-  pass straight through (`?project=64135`). An API proxy and port can be added per route.
+  pass straight through (`?project=64135`). An API proxy and port can be added per route. The folder
+  may be at the top of the mirror or in a folder of apps (`Vale__UtilityApps/MiniApp__DistoImageMapper`).
 - **Short links:** a tiny path with `{placeholders}` (`/p/{project}`) redirects to a full app URL
   (302 by default, so printed QR codes can be re-targeted). Each card shows the full URL and its
   length, because shorter means a smaller QR code.

@@ -839,6 +839,432 @@
                     "Tufts__BladesMax": 0,
                     "Tufts__BladeWidthMm": 0
                 }
+            },
+            "VVL_07_1002": {
+                "Asset__Id": "VVL_07_1002",
+                "Asset__Name": "Rounded Shrub (No Grass)",
+                "Asset__Description": "A rounded evergreen mound with large billows, in the manner of the hand drawn shrubs, with no grass tufts at its foot. The everyday planter shrub where the bed should read clean.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "100",
+                    "Identity__Item": 2,
+                    "Identity__Name": "RoundedShrub",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 10,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 900,
+                    "Placement__DefaultWeight": 50
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "evergreen",
+                        "mound",
+                        "rounded",
+                        "planter"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1350,
+                    "Size__DepthMm": 1150,
+                    "Size__HeightMm": 1080,
+                    "Size__JitterShare": 0.1
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Mound",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 70,
+                    "Masses__ScallopChordMaxMm": 250,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 75,
+                    "Clumps__RadiusMaxMm": 155,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 26,
+                    "Nubs__RadiusMaxMm": 52
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.22,
+                    "Line__InteriorSpanDeg": 95,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 1,
+                    "Line__CurlChance": 0.26,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.42,
+                    "Line__CuspHookMinMm": 45,
+                    "Line__CuspHookMaxMm": 150,
+                    "Line__SpurShare": 0.14
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 300,
+                    "Tufts__HeightMaxMm": 480,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_1012": {
+                "Asset__Id": "VVL_07_1012",
+                "Asset__Name": "Upright Shrub (No Grass)",
+                "Asset__Description": "A taller, looser shrub with a broken outline: smaller clumps, leaf tips on the edge and deep notches, with no grass tufts at its foot. Lifts the rhythm of a planter run.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "101",
+                    "Identity__Item": 2,
+                    "Identity__Name": "UprightShrub",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 12,
+                    "Placement__HeightVariationPercent": 10,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 700,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "upright",
+                        "tall",
+                        "loose",
+                        "leafy"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1050,
+                    "Size__DepthMm": 950,
+                    "Size__HeightMm": 1500,
+                    "Size__JitterShare": 0.12
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Upright",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.58,
+                    "Masses__ScallopSkew": 1.4,
+                    "Masses__TipShare": 0.45
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 120,
+                    "Clumps__Skew": 1.35,
+                    "Clumps__Spacing": 0.9,
+                    "Clumps__ReachMin": 0.98,
+                    "Clumps__ReachMax": 1.3,
+                    "Clumps__ScallopDepth": 0.26,
+                    "Clumps__TipShare": 0.45,
+                    "Clumps__Ellipse": 0.12,
+                    "Clumps__Wobble": 0.02
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.4,
+                    "Nubs__RadiusMinMm": 22,
+                    "Nubs__RadiusMaxMm": 42
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.12,
+                    "Line__InteriorSpanDeg": 80,
+                    "Line__TailChance": 0.7,
+                    "Line__TailMinRad": 0.3,
+                    "Line__TailMaxRad": 1.25,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.62,
+                    "Line__BreakChance": 0.08,
+                    "Line__CuspHookChance": 0.5,
+                    "Line__CuspHookMinMm": 40,
+                    "Line__CuspHookMaxMm": 130,
+                    "Line__SpurShare": 0.26
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 260,
+                    "Tufts__HeightMaxMm": 420,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 7,
+                    "Tufts__BladeWidthMm": 30
+                }
+            },
+            "VVL_07_1022": {
+                "Asset__Id": "VVL_07_1022",
+                "Asset__Name": "Low Border Drift (No Grass)",
+                "Asset__Description": "A low spreading mass for long planter beds, with no strap leaf tufts at its foot. Its proxy stretches to the bed: the length changes how many clumps it has, never how big they are.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "102",
+                    "Identity__Item": 2,
+                    "Identity__Name": "LowBorderDrift",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 8,
+                    "Placement__ScaleVariationPercent": 6,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": true,
+                    "Placement__StretchAlongPath": true,
+                    "Placement__MinSpacingMm": 1200,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "border",
+                        "drift",
+                        "low",
+                        "spreading",
+                        "planter",
+                        "no grass"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1800,
+                    "Size__DepthMm": 680,
+                    "Size__HeightMm": 640,
+                    "Size__JitterShare": 0.06
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Run",
+                    "Masses__CountMin": 2,
+                    "Masses__CountMax": 3,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 115,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 20,
+                    "Nubs__RadiusMaxMm": 38
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.16,
+                    "Line__InteriorSpanDeg": 85,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 0.95,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.4,
+                    "Line__CuspHookMinMm": 38,
+                    "Line__CuspHookMaxMm": 125,
+                    "Line__SpurShare": 0.12
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 320,
+                    "Tufts__HeightMaxMm": 540,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_2021": {
+                "Asset__Id": "VVL_07_2021",
+                "Asset__Name": "Yew Cone",
+                "Asset__Description": "A clipped cone: an upright formal accent for a corner, or a rhythm along a wall.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "04-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Topiary",
+                    "Identity__Family": "202",
+                    "Identity__Item": 1,
+                    "Identity__Name": "YewCone",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "ClippedForm",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 0,
+                    "Placement__ScaleVariationPercent": 0,
+                    "Placement__HeightVariationPercent": 0,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__Clipped": true,
+                    "Placement__MinSpacingMm": 900,
+                    "Placement__DefaultWeight": 0
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "ornamental",
+                        "topiary",
+                        "cone",
+                        "clipped",
+                        "formal",
+                        "accent"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Form": {
+                    "Form__Shape": "Cone",
+                    "Form__Inset": 0.6,
+                    "Form__Waver": 0.14,
+                    "Form__EdgeShare": 0,
+                    "Form__MarkShare": 0.18
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 760,
+                    "Size__DepthMm": 760,
+                    "Size__HeightMm": 1500,
+                    "Size__JitterShare": 0
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Mound",
+                    "Masses__CountMin": 1,
+                    "Masses__CountMax": 1,
+                    "Masses__ScallopChordMinMm": 40,
+                    "Masses__ScallopChordMaxMm": 90,
+                    "Masses__ScallopDepth": 0.25,
+                    "Masses__ScallopSkew": 1.2,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 38,
+                    "Clumps__RadiusMaxMm": 66,
+                    "Clumps__Skew": 1.1,
+                    "Clumps__Spacing": 0.9,
+                    "Clumps__ReachMin": 1,
+                    "Clumps__ReachMax": 1,
+                    "Clumps__ScallopDepth": 0.14,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.05,
+                    "Clumps__Wobble": 0.01
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.12,
+                    "Nubs__RadiusMinMm": 12,
+                    "Nubs__RadiusMaxMm": 20
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.22,
+                    "Line__InteriorSpanDeg": 80,
+                    "Line__TailChance": 0.32,
+                    "Line__TailMinRad": 0.16,
+                    "Line__TailMaxRad": 0.7,
+                    "Line__CurlChance": 0.12,
+                    "Line__CurlAmount": 0.45,
+                    "Line__BreakChance": 0.04,
+                    "Line__CuspHookChance": 0.2,
+                    "Line__CuspHookMinMm": 16,
+                    "Line__CuspHookMaxMm": 40,
+                    "Line__SpurShare": 0.06
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 0,
+                    "Tufts__HeightMaxMm": 0,
+                    "Tufts__BladesMin": 0,
+                    "Tufts__BladesMax": 0,
+                    "Tufts__BladeWidthMm": 0
+                }
             }
         },
         "Vegetation__SceneData__Palettes": [
@@ -847,7 +1273,7 @@
                 "Vegetation__Palette__Name": "Mixed Planting",
                 "Vegetation__Palette__Items": [
                     {
-                        "Vegetation__PaletteItem__AssetId": "VVL_07_1001",
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1002",
                         "Vegetation__PaletteItem__Weight": 68
                     },
                     {
@@ -855,12 +1281,12 @@
                         "Vegetation__PaletteItem__Weight": 49
                     },
                     {
-                        "Vegetation__PaletteItem__AssetId": "VVL_07_1011",
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1012",
                         "Vegetation__PaletteItem__Weight": 15,
                         "Vegetation__PaletteItem__PlantScale": 0.85
                     },
                     {
-                        "Vegetation__PaletteItem__AssetId": "VVL_07_1021",
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1022",
                         "Vegetation__PaletteItem__Weight": 55
                     },
                     {
@@ -1008,7 +1434,7 @@
         ],
         "Vegetation__SceneData__Plops": []
     },
-    "_rev": 17,
+    "_rev": 19,
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -1025,5 +1451,39 @@
             "FogPlane__Config__PlaneB__NormalX": 1,
             "FogPlane__Config__PlaneB__NormalZ": 0
         }
+    },
+    "Entourage__SceneData": {
+        "Entourage__SceneData__SchemaVersion": 1,
+        "Entourage__SceneData__Enabled": true,
+        "Entourage__SceneData__ShowByDefault": true,
+        "Entourage__SceneData__DefaultTransparencyPercent": 60,
+        "Entourage__SceneData__ShowOnLiveDrawings": false,
+        "Entourage__SceneData__LineRules": {
+            "Entourage__LineRules__LineWeightPx": 0.6,
+            "Entourage__LineRules__InnerWeightShare": 0.55,
+            "Entourage__LineRules__HooksFactor": 1,
+            "Entourage__LineRules__PenLiftsFactor": 1,
+            "Entourage__LineRules__SmoothingPasses": 2,
+            "Entourage__LineRules__Advanced": {
+                "Entourage__LineRulesAdvanced__CornerDeg": 50,
+                "Entourage__LineRulesAdvanced__CornerSpanMm": 24,
+                "Entourage__LineRulesAdvanced__PenLiftEveryMm": 700,
+                "Entourage__LineRulesAdvanced__PenLiftGapMm": 24,
+                "Entourage__LineRulesAdvanced__HookNotchDeg": 55,
+                "Entourage__LineRulesAdvanced__HookChance": 0.8,
+                "Entourage__LineRulesAdvanced__HookMinMm": 50,
+                "Entourage__LineRulesAdvanced__HookMaxMm": 130,
+                "Entourage__LineRulesAdvanced__FillWallShare": 1,
+                "Entourage__LineRulesAdvanced__FillTone": 0.975,
+                "Entourage__LineRulesAdvanced__DepthBias": 3e-05
+            }
+        },
+        "Entourage__SceneData__Tools": {
+            "Entourage__Tools__Place": {
+                "Entourage__Place__Scale": 1
+            }
+        },
+        "Entourage__SceneData__Assets": {},
+        "Entourage__SceneData__Figures": []
     }
 }

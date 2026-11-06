@@ -32,7 +32,7 @@ Adam's words, 04-Nov-2026:
 | # | Question | Answer | What it means |
 |---|---|---|---|
 | D01 | Is the look right? | "These look good" | The demo's line language is the target. Tuning continues through the Linework panel, not by rewriting the method |
-| D02 | Dev switch off: do plants still draw? | One switch | Dev Tools has one Enable switch per project. Off: no menu, no plants, no cost. On: plants and menu for everyone |
+| D02 | Dev switch off: do plants still draw? | One switch. **Since v2.89.0 on by default** (Adam: "make the admin ticked on boxes on by default now ... keep those gates so i can disable though"): the entourage plan, E15 | Dev Tools has one switch per project. Off: no menu, no plants, no cost, for everyone. On: the menu for staff on any project, for others when there are plants |
 | D03 | What does transparency fade? | Whole plant | Lines and fill fade together, evenly, with the building showing through |
 | D04 | How far beyond live 3D? | 3D pictures, drawings later | Stills, video and thumbnails show plants from the start. Plans and elevations get their own Show Vegetation tick as a late stage |
 | D05 | SketchUp? | Both ways, like Sync Aura | Proxies appear in SketchUp and sync back, by a three-way merge. Stage 9 |

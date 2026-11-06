@@ -95,6 +95,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - ValeVision3D v2.89.0
+// - Tells the plants' and people's doors for every project, null with no key: staff can place them anywhere.
+//
 // 04-Nov-2026 - Version 1.8.1 (ValeVision3D v2.85.0)
 // - A Video Studio preview frame calls Na__InteractiveOverlays__BeginPreviewFrame: no overlays, as before, but
 //   numbered, so plants take a live frame's budget in a preview instead of a full redraw.
@@ -851,13 +854,17 @@
                     }));
                 }
 
-                // LOAD PER-PROJECT VEGETATION (nothing loads and nothing draws when the key is absent)
+                // LOAD PER-PROJECT VEGETATION AND ENTOURAGE. Told with or without a key, because staff
+                // can place them on any project (Adam, 05-Nov-2026): null is no key, and each door
+                // decides. For a client with no key that is one test and nothing fetched.
                 // @delegate: ../24__System__Vegetation/Na__Vegetation__.js
-                if (projectData.Vegetation__SceneData) {
-                    window.dispatchEvent(new CustomEvent('na-vegetation-scenedata-loaded', {
-                        detail: { sceneData: projectData.Vegetation__SceneData }
-                    }));
-                }
+                window.dispatchEvent(new CustomEvent('na-vegetation-scenedata-loaded', {
+                    detail: { sceneData: projectData.Vegetation__SceneData || null }
+                }));
+                // @delegate: ../23__System__Entourage/Na__Entourage__.js
+                window.dispatchEvent(new CustomEvent('na-entourage-scenedata-loaded', {
+                    detail: { sceneData: projectData.Entourage__SceneData || null }
+                }));
 
                 // LOAD DRAWINGS DATA (floor plans, elevations, sheets; absent block = empty skeleton)
                 // sceneConfig is the raw presentation block, as TrueVision sends it:

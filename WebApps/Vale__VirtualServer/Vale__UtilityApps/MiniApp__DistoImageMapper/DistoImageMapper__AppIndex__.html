@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<!--
+     =============================================================================
+     DISTO IMAGE MAPPER - APP PAGE
+     =============================================================================
+
+     FILE       : DistoImageMapper__AppIndex__.html
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Turns a Leica DISTO survey folder into an interactive 3D photo atlas
+     CREATED    : 05-Nov-2026
+
+     DESCRIPTION:
+     - Choose a folder. The 3D CAD file gives the space, the 2DG plan and 2DW elevation
+       go on their planes in that space, and every photo loads onto its point. Click a
+       photo to expand it.
+     - An installable app that works offline. No server and no sign-in: files are only
+       read in this browser and nothing leaves this device.
+     - Plain ES modules, no build step. Paths are relative, so it runs on any route.
+
+     =============================================================================
+-->
+<html lang="en-GB">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                      -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#172b3a">
+    <meta name="description" content="Turns a Leica DISTO survey folder into an interactive 3D photo atlas.">
+    <title>Disto Image Mapper |  3D Survey Photo Atlas</title>
+
+    <!-- PWA - Apple Standalone Behaviour (iOS ignores the manifest for these) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Disto Mapper">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Disto Image Mapper">
+
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/svg+xml" href="01__AppAssets/DistoImageMapper__AppIcon__.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="01__AppAssets/DistoImageMapper__AppIcon__192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="01__AppAssets/DistoImageMapper__AppIcon__192x192.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="DistoImageMapper__Pwa__Manifest__.webmanifest">
+
+    <!-- Install the app: the shared Vale card for this device, the guide at /help/install-app/ -->
+    <link rel="stylesheet" href="/AppAssets__CommonApplicationAssets/Shared__AppInstall/ValeShared__AppInstall__.css">
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppInstall/ValeShared__AppInstall__.js"
+            data-app-key="distoimagemapper" data-app-name="Disto Image Mapper"
+            data-app-icon="01__AppAssets/DistoImageMapper__AppIcon__192x192.png"
+            data-app-avoid="#DistoImageMapper__Filmstrip" data-app-show-after-ms="1000"></script>
+
+    <!-- After a push: every browser takes the new files at once (the server's deploy stamp). Does nothing on the test server -->
+    <script src="/AppAssets__CommonApplicationAssets/Shared__AppUpdate/ValeShared__AppUpdate__.js"
+            data-app-base="/disto-app/" data-app-name="Disto Image Mapper"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__CoreUi__Styles__Variables__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__CoreUi__Styles__Fonts__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__CoreUi__Styles__BaseLayout__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__UiFeature__Styles__Landing__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__UiFeature__Styles__Stage__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__UiFeature__Styles__Lightbox__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__UiFeature__Styles__ClipBox__.css">
+    <link rel="stylesheet" href="02__AppModules/06__Style__AppStylesheets/DistoImageMapper__UiFeature__Styles__PanelMenu__.css">
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Version-Locked Vendor Import Map                         -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- Bare specifiers resolve to the locked copy in                             -->
+    <!-- 03__VersionLocked__VenderedDependencies. Declared before any module       -->
+    <!-- script: the three.js addons themselves import from the bare 'three'.      -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three"         : "./03__VersionLocked__VenderedDependencies/01__Vendor__ThreeJs__v0.184.0/build/three.module.min.js",
+            "three/addons/" : "./03__VersionLocked__VenderedDependencies/01__Vendor__ThreeJs__v0.184.0/examples/jsm/"
+        }
+    }
+    </script>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Header - Vale Branding                       -->
+    <!-- ----------------------------------------------------------------- -->
+    <header class="app-header">
+        <div class="app-header__logo-container">
+            <img src="01__AppAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                 class="app-header__logo-left"
+                 alt="Vale Garden Houses">
+        </div>
+        <h1 class="app-header__title">Disto Image Mapper</h1>
+    </header>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Landing Screen - Choose a Survey Folder                  -->
+    <!-- ----------------------------------------------------------------- -->
+    <section id="DistoImageMapper__Landing" class="DistoImageMapper__Landing">
+        <div class="DistoImageMapper__Landing__Card">
+
+            <img class="DistoImageMapper__Landing__Graphic" src="01__AppAssets/DistoImageMapper__AppGraphic__DistoDevice__.svg" alt="A DISTO laser distance meter">
+            <h2 class="DistoImageMapper__Landing__Title">Open a DISTO Survey</h2>
+            <p class="DistoImageMapper__Landing__Lead">
+                Choose a survey folder and it becomes a 3D photo atlas: the points in their true
+                positions, the plan and elevation on their planes, and every photo on its point.
+            </p>
+
+            <div id="DistoImageMapper__Landing__Actions" class="DistoImageMapper__Landing__Actions">
+                <button id="DistoImageMapper__Landing__ChooseFolder" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Primary"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__OpenFolder__.svg" alt=""><span>Select Survey Folder</span></button>
+                <button id="DistoImageMapper__Landing__Reopen" type="button" class="DistoImageMapper__Button" hidden></button>
+                <p class="DistoImageMapper__Landing__Hint">
+                    Or drag the folder onto this window, or
+                    <button id="DistoImageMapper__Landing__ChooseFiles" type="button" class="DistoImageMapper__Landing__LinkButton">select the files one by one</button>
+                    on a device without folders.
+                </p>
+            </div>
+
+            <div id="DistoImageMapper__Landing__Chooser" class="DistoImageMapper__Landing__Chooser" hidden>
+                <h3>This folder holds several surveys</h3>
+                <div id="DistoImageMapper__Landing__ChooserList" class="DistoImageMapper__Landing__ChooserList"></div>
+                <button id="DistoImageMapper__Landing__ChooserCancel" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small">Cancel</button>
+            </div>
+
+            <p id="DistoImageMapper__Landing__Error" class="DistoImageMapper__Landing__Error" role="alert" hidden></p>
+
+            <table class="DistoImageMapper__Landing__Files">
+                <caption>What a survey folder holds</caption>
+                <tbody>
+                    <tr><th>3D_ .dxf</th><td>The 3D space: every point in true position</td></tr>
+                    <tr><th>2DG_ .dxf</th><td>The plan, laid flat under the points</td></tr>
+                    <tr><th>2DW_ .dxf</th><td>The elevation, stood up behind the points</td></tr>
+                    <tr><th>.csv</th><td>The shot log: angles and distances, which locate the tripod</td></tr>
+                    <tr><th>IMG_ .jpg</th><td>The photo taken at each point</td></tr>
+                </tbody>
+            </table>
+
+            <div class="DistoImageMapper__Landing__Footer">
+                <span>Everything stays on this device. Nothing is uploaded.</span>
+                <button type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small" data-install-app hidden><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__InstallApp__.svg" alt=""><span>Install App</span></button>
+            </div>
+
+            <input id="DistoImageMapper__Landing__FolderInput" type="file" webkitdirectory directory multiple hidden>
+            <input id="DistoImageMapper__Landing__FilesInput" type="file" multiple accept=".csv,.dxf,.jpg,.jpeg,.png,.webp" hidden>
+        </div>
+    </section>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Stage - Panel, 3D Viewport and Filmstrip                 -->
+    <!-- ----------------------------------------------------------------- -->
+    <main id="DistoImageMapper__Stage" class="DistoImageMapper__Stage" hidden>
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Control Panel                                            -->
+        <!-- ----------------------------------------------------------------- -->
+        <aside id="DistoImageMapper__Panel" class="DistoImageMapper__Panel" aria-label="Survey menu">
+
+            <div id="DistoImageMapper__Panel__Grip" class="DistoImageMapper__Panel__Grip" role="separator" aria-orientation="vertical" aria-label="Menu width: drag left to widen" tabindex="0" title="Drag left to widen the menu. Double-click for the usual width."></div>
+
+            <div class="DistoImageMapper__Panel__Scroll">
+
+                <section class="DistoImageMapper__Panel__Section">
+                    <h2 id="DistoImageMapper__Panel__SurveyName" class="DistoImageMapper__Panel__SurveyName">Survey</h2>
+                    <dl id="DistoImageMapper__Panel__Stats" class="DistoImageMapper__Panel__Stats"></dl>
+                    <button id="DistoImageMapper__Panel__OpenAnother" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__OpenFolder__.svg" alt=""><span>Open Another Folder</span></button>
+                </section>
+
+                <ul class="DistoImageMapper__Menu">
+                <li class="DistoImageMapper__Menu__Item">
+                    <button type="button" class="DistoImageMapper__Menu__Button" data-menu="Layers" aria-expanded="false" aria-controls="DistoImageMapper__Menu__Layers">
+                        <img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Layers__.svg" alt=""><span class="DistoImageMapper__Menu__Label">Layers</span><span class="DistoImageMapper__Menu__Arrow" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div id="DistoImageMapper__Menu__Layers" class="DistoImageMapper__Menu__Panel" hidden>
+                        <div class="DistoImageMapper__Panel__Checks">
+                            <label><input type="checkbox" data-layer="Photos"> Photos</label>
+                            <label><input type="checkbox" data-layer="Chain3d"> 3D Survey Line</label>
+                            <label><input type="checkbox" data-layer="Plan"> Plan Sheet</label>
+                            <label><input type="checkbox" data-layer="Elevation"> Elevation Sheet</label>
+                            <label><input type="checkbox" data-layer="Projectors"> Drop Lines</label>
+                            <label><input type="checkbox" data-layer="Sight"> Tripod Sight Lines</label>
+                            <label><input type="checkbox" data-layer="Axes"> Axes</label>
+                        </div>
+                    </div>
+                </li>
+                <li class="DistoImageMapper__Menu__Item">
+                    <button type="button" class="DistoImageMapper__Menu__Button" data-menu="Photos" aria-expanded="false" aria-controls="DistoImageMapper__Menu__Photos">
+                        <img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Photos__.svg" alt=""><span class="DistoImageMapper__Menu__Label">Photos</span><span class="DistoImageMapper__Menu__Arrow" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div id="DistoImageMapper__Menu__Photos" class="DistoImageMapper__Menu__Panel" hidden>
+                        <label class="DistoImageMapper__Panel__Field">
+                            <span>Arrangement</span>
+                            <select id="DistoImageMapper__Panel__Arrangement">
+                                <option value="OnPoint">On the Point: crosshair on the point</option>
+                                <option value="Atlas">Atlas: spread and readable</option>
+                                <option id="DistoImageMapper__Panel__ArrangementAsShot" value="AsShot">As Shot: true size, facing the tripod</option>
+                            </select>
+                        </label>
+                        <p id="DistoImageMapper__Panel__ArrangementHint" class="DistoImageMapper__Panel__Hint" hidden>The Tripod view shows the photos alone, as shot. Drag the Field of View slider until they line up.</p>
+                        <label id="DistoImageMapper__Panel__FieldOfViewRow" class="DistoImageMapper__Panel__Range">
+                            <span>Field of View</span>
+                            <input id="DistoImageMapper__Panel__FieldOfView" type="range" min="1" max="30" step="0.1">
+                            <output id="DistoImageMapper__Panel__FieldOfViewOut"></output>
+                        </label>
+                        <details class="DistoImageMapper__Menu__Group" data-menu-group="PhotoSize">
+                            <summary>Size and See-Through</summary>
+                            <label id="DistoImageMapper__Panel__SizeRow" class="DistoImageMapper__Panel__Range">
+                                <span>Size</span>
+                                <input id="DistoImageMapper__Panel__Size" type="range" min="0.5" max="2.5" step="0.05">
+                                <output id="DistoImageMapper__Panel__SizeOut"></output>
+                            </label>
+                            <label id="DistoImageMapper__Panel__OpacityRow" class="DistoImageMapper__Panel__Range">
+                                <span>Opacity</span>
+                                <input id="DistoImageMapper__Panel__Opacity" type="range" min="0.2" max="1" step="0.05">
+                                <output id="DistoImageMapper__Panel__OpacityOut"></output>
+                            </label>
+                            <label id="DistoImageMapper__Panel__LiftRow" class="DistoImageMapper__Panel__Range">
+                                <span>Lift</span>
+                                <input id="DistoImageMapper__Panel__Lift" type="range" min="0" max="160" step="2">
+                                <output id="DistoImageMapper__Panel__LiftOut"></output>
+                            </label>
+                        </details>
+                    </div>
+                </li>
+                <li class="DistoImageMapper__Menu__Item">
+                    <button type="button" class="DistoImageMapper__Menu__Button" data-menu="Sheets" aria-expanded="false" aria-controls="DistoImageMapper__Menu__Sheets">
+                        <img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Sheets__.svg" alt=""><span class="DistoImageMapper__Menu__Label">Sheets</span><span class="DistoImageMapper__Menu__Arrow" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div id="DistoImageMapper__Menu__Sheets" class="DistoImageMapper__Menu__Panel" hidden>
+                        <label class="DistoImageMapper__Panel__Range">
+                            <span>Plan Below</span>
+                            <input id="DistoImageMapper__Panel__PlanOffset" type="range" min="0" max="12000" step="100">
+                            <output id="DistoImageMapper__Panel__PlanOffsetOut"></output>
+                        </label>
+                        <label class="DistoImageMapper__Panel__Range">
+                            <span>Elevation Behind</span>
+                            <input id="DistoImageMapper__Panel__ElevationOffset" type="range" min="0" max="12000" step="100">
+                            <output id="DistoImageMapper__Panel__ElevationOffsetOut"></output>
+                        </label>
+                        <label class="DistoImageMapper__Panel__CheckRow"><input id="DistoImageMapper__Panel__Parallel" type="checkbox"> Parallel Projection in 3D View</label>
+                    </div>
+                </li>
+                <li class="DistoImageMapper__Menu__Item">
+                    <button type="button" class="DistoImageMapper__Menu__Button" data-menu="Box" aria-expanded="false" aria-controls="DistoImageMapper__Menu__Box">
+                        <img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__ClipBox__.svg" alt=""><span class="DistoImageMapper__Menu__Label">Clipping Box</span><span class="DistoImageMapper__Menu__Arrow" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div id="DistoImageMapper__Menu__Box" class="DistoImageMapper__Menu__Panel" hidden>
+                        <label class="DistoImageMapper__Panel__Field">
+                            <span>Points</span>
+                            <select id="DistoImageMapper__Box__Mode">
+                                <option value="All">All points</option>
+                                <option value="Inside">Inside the box</option>
+                                <option value="Outside">Outside the box</option>
+                            </select>
+                        </label>
+                        <p id="DistoImageMapper__Box__Count" class="DistoImageMapper__Panel__Hint"></p>
+                        <label class="DistoImageMapper__Panel__CheckRow"><input id="DistoImageMapper__Box__Shown" type="checkbox"> Show the Box</label>
+                        <label class="DistoImageMapper__Panel__CheckRow" title="On: what the box leaves out is gone from the view, sheets included, as it will be from the drawings. Off: see everything round the box"><input id="DistoImageMapper__Box__ClipView" type="checkbox"> Clip the View to the Box</label>
+                        <div class="DistoImageMapper__Box__Buttons">
+                            <button id="DistoImageMapper__Box__Square" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small" title="Click two photos on one wall: the box turns square to it"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__SquareToPoints__.svg" alt=""><span>Square to Points</span></button>
+                            <button id="DistoImageMapper__Box__Fit" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small" title="Fit the box round every point, as it is turned"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__FrameAll__.svg" alt=""><span>Fit to Points</span></button>
+                        </div>
+                        <details class="DistoImageMapper__Menu__Group" data-menu-group="BoxTurn">
+                            <summary>Turn and Snap</summary>
+                            <label class="DistoImageMapper__Panel__Range">
+                                <span>Turn</span>
+                                <input id="DistoImageMapper__Box__Yaw" type="range" min="-180" max="180" step="0.5">
+                                <output id="DistoImageMapper__Box__YawOut"></output>
+                            </label>
+                            <label class="DistoImageMapper__Panel__Field">
+                                <span>Faces Snap To</span>
+                                <select id="DistoImageMapper__Box__Snap"></select>
+                            </label>
+                        </details>
+                        <details class="DistoImageMapper__Menu__Group" data-menu-group="BoxFaces">
+                            <summary>Faces and Their Names</summary>
+                            <p class="DistoImageMapper__Panel__Hint">Drag a face by its name or a corner grip. Name a face to name its view and its drawing.</p>
+                            <div id="DistoImageMapper__Box__Faces" class="DistoImageMapper__Box__Faces"></div>
+                        </details>
+                        <button id="DistoImageMapper__Box__Export" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Primary DistoImageMapper__Box__ExportButton"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__ExportDxf__.svg" alt=""><span>Export DXF</span></button>
+                    </div>
+                </li>
+                <li class="DistoImageMapper__Menu__Item">
+                    <button type="button" class="DistoImageMapper__Menu__Button" data-menu="Checks" aria-expanded="false" aria-controls="DistoImageMapper__Menu__Checks">
+                        <img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__SurveyCheck__.svg" alt=""><span class="DistoImageMapper__Menu__Label">Survey Check</span><span class="DistoImageMapper__Menu__Arrow" aria-hidden="true">&#9662;</span>
+                    </button>
+                    <div id="DistoImageMapper__Menu__Checks" class="DistoImageMapper__Menu__Panel" hidden>
+                        <ul id="DistoImageMapper__Panel__Checks" class="DistoImageMapper__Panel__CheckList"></ul>
+                    </div>
+                </li>
+                </ul>
+
+            </div>
+
+            <section class="DistoImageMapper__Panel__Section DistoImageMapper__Panel__Section--Footer">
+                <span id="DistoImageMapper__Panel__Version"></span>
+                <button type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small" data-install-app hidden><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__InstallApp__.svg" alt=""><span>Install App</span></button>
+            </section>
+
+        </aside>
+        <!-- ---------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | 3D Viewport and Its Toolbar                              -->
+        <!-- ----------------------------------------------------------------- -->
+        <div id="DistoImageMapper__ViewportFrame" class="DistoImageMapper__ViewportFrame">
+
+            <div id="DistoImageMapper__Viewport" class="DistoImageMapper__Viewport"></div>
+
+            <div class="DistoImageMapper__Toolbar" role="toolbar" aria-label="Views and tools">
+                <button data-view="ThreeD" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__View3d__.svg" alt=""><span>3D View</span></button>
+                <button data-view="Plan" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Plan__.svg" alt=""><span>Plan</span></button>
+                <button data-view="Elevation" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Elevation__.svg" alt=""><span>Elevation</span></button>
+                <button data-view="Tripod" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Tripod__.svg" alt=""><span>Tripod</span></button>
+                <span id="DistoImageMapper__Toolbar__ZoomGroup" class="DistoImageMapper__Toolbar__Group" hidden>
+                    <button id="DistoImageMapper__Toolbar__ZoomIn" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__ZoomIn__.svg" alt=""><span>Zoom In</span></button>
+                    <button id="DistoImageMapper__Toolbar__ZoomOut" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__ZoomOut__.svg" alt=""><span>Zoom Out</span></button>
+                </span>
+                <span class="DistoImageMapper__Toolbar__Gap"></span>
+                <button id="DistoImageMapper__Toolbar__Frame" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__FrameAll__.svg" alt=""><span>Frame All</span></button>
+                <button id="DistoImageMapper__Toolbar__Measure" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Measure__.svg" alt=""><span>Measure</span></button>
+                <button id="DistoImageMapper__Toolbar__SaveImage" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__SaveImage__.svg" alt=""><span>Save Image</span></button>
+                <button id="DistoImageMapper__Toolbar__Help" type="button" class="DistoImageMapper__Toolbar__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Controls__.svg" alt=""><span>Controls</span></button>
+                <button id="DistoImageMapper__Toolbar__Panel" type="button" class="DistoImageMapper__Toolbar__Button DistoImageMapper__Toolbar__Button--Panel" aria-expanded="true"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Panel__.svg" alt=""><span>Panel</span></button>
+            </div>
+
+            <div id="DistoImageMapper__MeasureHint" class="DistoImageMapper__MeasureHint" hidden></div>
+            <div id="DistoImageMapper__BoxHint" class="DistoImageMapper__MeasureHint DistoImageMapper__MeasureHint--Box" hidden></div>
+            <div id="DistoImageMapper__MeasureLabel" class="DistoImageMapper__MeasureLabel" hidden></div>
+            <div id="DistoImageMapper__Status" class="DistoImageMapper__Status" role="status" hidden></div>
+
+            <div id="DistoImageMapper__Help" class="DistoImageMapper__Help" hidden>
+                <button id="DistoImageMapper__Help__Close" type="button" class="DistoImageMapper__Help__Close" aria-label="Close"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Close__.svg" alt=""></button>
+                <h3>PC Controls (Mouse &amp; Keyboard)</h3>
+                <dl>
+                    <dt>Left drag</dt><dd>Orbit (at the Tripod: look round)</dd>
+                    <dt>Right drag</dt><dd>Pan</dd>
+                    <dt>Wheel</dt><dd>Zoom to the pointer (at the Tripod: close the lens)</dd>
+                    <dt>Click a photo</dt><dd>Expand it</dd>
+                    <dt>Left, Right</dt><dd>Previous and next photo, when expanded</dd>
+                    <dt>1, 2, 3, 4</dt><dd>3D View, Plan, Elevation, Tripod</dd>
+                    <dt>F</dt><dd>Frame All</dd>
+                    <dt>M</dt><dd>Measure</dd>
+                    <dt>B</dt><dd>Show or hide the clipping box</dd>
+                    <dt>Drag a face</dt><dd>By its name or a corner grip: in or out along its own direction</dd>
+                    <dt>Esc</dt><dd>Close, or clear the selection</dd>
+                </dl>
+                <h3>Touch Controls</h3>
+                <dl>
+                    <dt>One finger</dt><dd>Orbit</dd>
+                    <dt>Two fingers</dt><dd>Pinch to zoom, drag to pan</dd>
+                    <dt>Tap a photo</dt><dd>Expand it, then swipe to step through</dd>
+                </dl>
+            </div>
+        </div>
+        <!-- ---------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Filmstrip                                                -->
+        <!-- ----------------------------------------------------------------- -->
+        <div id="DistoImageMapper__Filmstrip" class="DistoImageMapper__Filmstrip"></div>
+        <!-- ---------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Export DXF                                               -->
+        <!-- ----------------------------------------------------------------- -->
+        <div id="DistoImageMapper__Export" class="DistoImageMapper__Export" hidden>
+            <div class="DistoImageMapper__Export__Card" role="dialog" aria-modal="true" aria-labelledby="DistoImageMapper__Export__Title">
+                <h3 id="DistoImageMapper__Export__Title"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__ExportDxf__.svg" alt="">Export DXF for AutoCAD</h3>
+                <p id="DistoImageMapper__Export__Summary" class="DistoImageMapper__Export__Summary"></p>
+                <fieldset class="DistoImageMapper__Export__Group">
+                    <legend>Drawings</legend>
+                    <label class="DistoImageMapper__Export__Face"><input id="DistoImageMapper__Export__Include3d" type="checkbox"> 3D: the points in place, photos facing the tripod</label>
+                    <div id="DistoImageMapper__Export__Faces" class="DistoImageMapper__Export__Faces"></div>
+                </fieldset>
+                <label class="DistoImageMapper__Panel__CheckRow"><input id="DistoImageMapper__Export__Photos" type="checkbox"> Include the photos, each on its point at true size</label>
+                <p class="DistoImageMapper__Export__Note">
+                    One zip. Extract it before opening a drawing: the photos are linked, not inside the DXF
+                    (no DXF can hold a picture), and AutoCAD finds each one beside the drawing.
+                </p>
+                <p id="DistoImageMapper__Export__Status" class="DistoImageMapper__Export__Status" role="status"></p>
+                <div class="DistoImageMapper__Export__Buttons">
+                    <button id="DistoImageMapper__Export__Cancel" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Small">Cancel</button>
+                    <button id="DistoImageMapper__Export__Go" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Primary DistoImageMapper__Button--Small">Export</button>
+                </div>
+            </div>
+        </div>
+        <!-- ---------------------------------------------------------------- -->
+
+    </main>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Lightbox - The Expanded Photo                            -->
+    <!-- ----------------------------------------------------------------- -->
+    <section id="DistoImageMapper__Lightbox" class="DistoImageMapper__Lightbox" role="dialog" aria-modal="true" aria-label="Expanded photo" tabindex="-1" hidden>
+        <div id="DistoImageMapper__Lightbox__Scrim" class="DistoImageMapper__Lightbox__Scrim"></div>
+
+        <div class="DistoImageMapper__Lightbox__Body">
+            <figure id="DistoImageMapper__Lightbox__Figure" class="DistoImageMapper__Lightbox__Figure">
+                <img id="DistoImageMapper__Lightbox__Image" class="DistoImageMapper__Lightbox__Image" alt="" draggable="false">
+                <div id="DistoImageMapper__Lightbox__NoPhoto" class="DistoImageMapper__Lightbox__NoPhoto" hidden>No photo for this point</div>
+                <figcaption id="DistoImageMapper__Lightbox__Size" class="DistoImageMapper__Lightbox__Size"></figcaption>
+            </figure>
+
+            <aside class="DistoImageMapper__Lightbox__Info">
+                <div class="DistoImageMapper__Lightbox__Heading">
+                    <h2 id="DistoImageMapper__Lightbox__Title"></h2>
+                    <span id="DistoImageMapper__Lightbox__Count"></span>
+                </div>
+                <div id="DistoImageMapper__Lightbox__File" class="DistoImageMapper__Lightbox__File"></div>
+
+                <dl id="DistoImageMapper__Lightbox__Details" class="DistoImageMapper__Lightbox__Details"></dl>
+
+                <div class="DistoImageMapper__Lightbox__Locators">
+                    <div class="DistoImageMapper__Lightbox__Locator">
+                        <span>Plan</span>
+                        <svg id="DistoImageMapper__Lightbox__PlanMap" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                    <div class="DistoImageMapper__Lightbox__Locator">
+                        <span>Elevation</span>
+                        <svg id="DistoImageMapper__Lightbox__ElevationMap" preserveAspectRatio="xMidYMid meet"></svg>
+                    </div>
+                </div>
+
+                <div class="DistoImageMapper__Lightbox__Actions">
+                    <button id="DistoImageMapper__Lightbox__Previous" type="button" class="DistoImageMapper__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Previous__.svg" alt=""><span>Previous</span></button>
+                    <button id="DistoImageMapper__Lightbox__Next" type="button" class="DistoImageMapper__Button"><span>Next</span><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Next__.svg" alt=""></button>
+                    <button id="DistoImageMapper__Lightbox__ShowIn3d" type="button" class="DistoImageMapper__Button"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__View3d__.svg" alt=""><span>Show in 3D</span></button>
+                    <button id="DistoImageMapper__Lightbox__Close" type="button" class="DistoImageMapper__Button DistoImageMapper__Button--Primary"><img class="DistoImageMapper__Icon" src="01__AppAssets/UiIcons__MenuIcons__DistoMapper/Icon__DistoMapper__Close__.svg" alt=""><span>Close</span></button>
+                </div>
+            </aside>
+        </div>
+    </section>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | Pointer Tooltip and Drop Veil                            -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="DistoImageMapper__Tooltip" class="DistoImageMapper__Tooltip" hidden>
+        <strong id="DistoImageMapper__Tooltip__Title"></strong>
+        <span id="DistoImageMapper__Tooltip__Detail"></span>
+    </div>
+
+    <div id="DistoImageMapper__DropVeil" class="DistoImageMapper__DropVeil" hidden>
+        <div>Drop the survey folder</div>
+    </div>
+    <!-- ---------------------------------------------------------------- -->
+
+
+    <!-- App entry: every other module is imported from here -->
+    <script type="module" src="02__AppModules/01__AppCore/DistoImageMapper__AppCore__Init__.mjs"></script>
+
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+
+</html>

@@ -33,9 +33,13 @@
 // - A click that misses the model lands on the level of the path's last point, so a path can
 //   cross open ground.
 //
+// - A SECTION OF THE VEGETATION PANEL (Adam, 06-Nov-2026: "we currently have multiple places for
+//   creating things"). Its rows are drawn into the Line Tool section on the left, not a panel of
+//   its own on the right, and it is armed on the model only while that section is open.
+//
 // INTEGRATION:
-// - Opened from Tools & Settings > Vegetation (../10__Ui__Panels/Na__Vegetation__MenuSection__.js),
-//   and from In This Project in the asset browser.
+// - Mounted by the Vegetation panel's Line Tool section (../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js),
+//   which a card's Draw Path and a path's Edit in In This Project open too.
 // - @delegate: ./Na__Vegetation__ToolHost__.js
 // - @delegate: ../01__Core__Engine/Na__Vegetation__PathModel__.js
 // - @delegate: ../10__Ui__Panels/Na__Vegetation__PaletteEditor__.js
@@ -43,6 +47,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
+// - A section of the Vegetation panel: Mount draws into it. Toggle, OpenOn and DrawWith open that
+//   section, so every way in still works.
+//
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
+// - Called the Line Tool on screen. New Seed clears a path's plants changed by hand, which were of plants no longer there.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - Plant scale and Height. Draw With, a card's way in to a path of one plant. Proxies at the
 //   size a plant really is, and a baked plant keeps its scale.
@@ -83,9 +94,6 @@
         Na__VegShell__PlantScaleSlider,
         Na__VegShell__Tick,
         Na__VegShell__Choice,
-        Na__VegShell__Open,
-        Na__VegShell__Close,
-        Na__VegShell__IsOpen,
         Na__VegShell__MarkChanged,
         Na__VegShell__BeforeChange,
         Na__VegShell__Toast,
@@ -115,9 +123,8 @@
 // REGION | Module Constants and Variables
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | The Panel and Its Rows
+    // MODULE CONSTANTS | The Section's Rows
     // ------------------------------------------------------------
-    const Na__VegLinear__PANEL_ID   = 'naVegetationLinearPanel';
     const Na__VegLinear__SEED_RANGE = 1000000000;
     const Na__VegLinear__HOVER_MS   = 40;
     const Na__VegLinear__ADVANCED   = [
@@ -302,6 +309,7 @@
             path.Vegetation__Path__Name     = 'Path ' + uid.replace(/^P0*/, '');
             path.Vegetation__Path__PointsMm = [];
             path.Vegetation__Path__Seed     = Math.floor(Math.random() * Na__VegLinear__SEED_RANGE);
+            delete path.Vegetation__Path__PlantChanges;                        // <-- A new path of its own: another's plants changed by hand are not its
             path.Vegetation__Path__PaletteUid = defaults.Vegetation__Path__PaletteUid || await Na__VegPalUi__Ensure();
             sceneData.Vegetation__SceneData__Paths.push(path);
             state.drawingUid = uid;
@@ -756,6 +764,7 @@
             shapeRow.appendChild(Na__VegShell__Button('New Seed', '', () => {
                 Na__VegShell__BeforeChange('');
                 selected.Vegetation__Path__Seed = Math.floor(Math.random() * Na__VegLinear__SEED_RANGE);
+                delete selected.Vegetation__Path__PlantChanges;                // <-- Different plants: a change by hand was to one that is no longer there
                 Na__VegLinear__Changed();
             }, 'The same rules, different plants'));
         }
@@ -830,9 +839,11 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Open the Panel on a Project
+    // FUNCTION | Draw the Tool's Rows into Its Section, and Arm It on the Model
     // ------------------------------------------------------------
-    async function Na__VegLinear__Open(context) {
+    // Called by the Vegetation panel when its Line Tool section opens. Returns what stops it.
+    // ------------------------------------------------------------
+    async function Na__VegLinear__Mount(context, holder) {
         await Na__VegShell__Prepare(context);
         await Na__VegTools__Prepare(context);
         const state = Na__VegLinear__State;
@@ -842,22 +853,33 @@
         const defaults = Na__VegLinear__Defaults();
         if (!defaults.Vegetation__Path__PaletteUid) defaults.Vegetation__Path__PaletteUid = await Na__VegPalUi__Ensure();
 
-        const panel = Na__VegShell__Open({ id : Na__VegLinear__PANEL_ID, title : 'Linear Tool', side : 'right', onClose : Na__VegLinear__OnClose });
-        state.body = panel.body;
+        state.body = holder;
         window.removeEventListener('na-vegetation-object-replaced', Na__VegLinear__OnObjectReplaced);
         window.addEventListener('na-vegetation-object-replaced', Na__VegLinear__OnObjectReplaced);
         if (Na__VegTools__Current() !== Na__VegLinear__Tool) Na__VegTools__Arm(Na__VegLinear__Tool);
         Na__VegLinear__PaintPanel();
+        return () => {
+            if (state.body === holder) Na__VegLinear__OnClose();
+        };
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Open the Panel, or Close It If It Is Open
+    // FUNCTION | Open the Vegetation Panel on the Line Tool
+    // ------------------------------------------------------------
+    async function Na__VegLinear__Open(context) {
+        const panel = await import('../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js');
+        await panel.Na__VegCards__OpenOn(context, 'line');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open the Line Tool, or Fold It If It Is Open
     // ------------------------------------------------------------
     async function Na__VegLinear__Toggle(context) {
-        await Na__VegShell__Prepare(context);
-        if (Na__VegShell__IsOpen(Na__VegLinear__PANEL_ID)) {
-            Na__VegShell__Close(Na__VegLinear__PANEL_ID);
+        const panel = await import('../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js');
+        if (panel.Na__VegCards__CurrentSection() === 'line') {
+            panel.Na__VegCards__FoldSection('line');
             return;
         }
         await Na__VegLinear__Open(context);
@@ -899,6 +921,7 @@
     // MODULE EXPORTS | Linear Tool API
     // ------------------------------------------------------------
     export {
+        Na__VegLinear__Mount,
         Na__VegLinear__Toggle,
         Na__VegLinear__OpenOn,
         Na__VegLinear__DrawWith

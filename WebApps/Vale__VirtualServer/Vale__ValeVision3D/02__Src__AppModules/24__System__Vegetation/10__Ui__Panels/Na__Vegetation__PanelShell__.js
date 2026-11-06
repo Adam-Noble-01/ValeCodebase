@@ -17,8 +17,9 @@
 //   Every panel shows the same state, because they are all one object. Tools change the
 //   object freely, and undo works, until somebody means it.
 // - CLOSING WITH UNSAVED CHANGES ASKS FIRST, with the browser's own question.
-// - A PANEL OPENING SHUTS TOOLS & SETTINGS. The menu is over the model's right side, and a
-//   panel means work on the model.
+// - A PANEL OPENING ON THE RIGHT SHUTS TOOLS & SETTINGS: it would sit on the menu. The panel on
+//   the left is opened by unfolding Vegetation in that menu (Adam, 06-Nov-2026), so it leaves the
+//   menu as it is, and says when it closes so the menu's section folds with it.
 // - AN UNDONE STEP BRINGS THE PICTURE BACK INTO LINE through the runtime, whichever panel
 //   the key was pressed in.
 //
@@ -30,6 +31,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
+// - A panel can carry an icon in its title and be the dropdown sections' panel. Only a panel on the
+//   right shuts Tools & Settings. Closing a panel says so (CLOSED_EVENT).
+//
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
+// - A save tells an Employee that it waits for an admin. AfterReplaced brings the picture, the undo steps and the panels into line when somebody else's work comes back. The right-click menu's stylesheet is added too.
+//
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.88.0)
+// - One panel a side across plants and people: each shell says when it opens one, and closes its own on that side when the other does. An undo key taken by one is not taken again by the other.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - PlantScaleSlider, the one Plant scale row every panel has, its range from the config.
 //
@@ -79,7 +90,11 @@
     // MODULE CONSTANTS | The Stylesheet, and How Long Saved Stays Green
     // ------------------------------------------------------------
     const Na__VegShell__STYLES_URL = new URL('./Na__Vegetation__Styles__Panels__.css', import.meta.url);
+    const Na__VegShell__MENU_STYLES_URL = new URL('../../23__System__Entourage/10__Ui__Panels/Na__Entourage__Styles__Panels__.css', import.meta.url);   // <-- The right-click menu is the people's
     const Na__VegShell__SAVED_MS   = 2000;
+    const Na__VegShell__OPENING_EVENT = 'na-asset-panel-opening';              // <-- Entourage's shell says and hears this too: one panel a side, whoever opened it
+    const Na__VegShell__CLOSED_EVENT  = 'na-vegetation-panel-closed';          // <-- detail { id, side }: the menu section folds when the panel on the left goes
+    const Na__VegShell__OWNER      = 'vegetation';
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | The Open Panels and the Buttons Showing Save State
@@ -264,14 +279,36 @@
         Na__VegShell__PaintSave();
         const result = await Na__VegData__Save();
         state.saving = false;
-        if (result && result.ok) {
+        const saved = !!(result && result.ok);
+        if (saved) {
             state.savedUntil = Date.now() + Na__VegShell__SAVED_MS;
             window.clearTimeout(state.savedTimer);
             state.savedTimer = window.setTimeout(Na__VegShell__PaintSave, Na__VegShell__SAVED_MS + 20);
+            if (result.merged) await Na__VegShell__AfterReplaced();
+            const counts = result.counts || {};
+            if (!result.approvedNow && (counts.added || counts.changed || counts.removed)) {
+                Na__VegShell__Toast('Saved. An admin will approve it before clients see it.', false);
+            }
         } else {
             Na__VegShell__Toast('Vegetation not saved: ' + ((result && result.error) || 'the server did not answer') + '.', true);
         }
         Na__VegShell__PaintSave();
+        return saved;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Object Has Been Replaced from the Server: Bring Everything into Line
+    // ------------------------------------------------------------
+    // Somebody else's work came back with a save, or an approval or a put back has landed. The undo
+    // steps are of something that is no longer so, and an undo would quietly undo somebody else.
+    // ------------------------------------------------------------
+    async function Na__VegShell__AfterReplaced() {
+        const state = Na__VegShell__State;
+        if (state.config) Na__VegHist__Reset(Na__VegRun__GetSceneData(), state.config.Vegetation__DevTools__Config.Vegetation__DevTools__UndoDepth);
+        Na__VegRun__ApplyLineRules();
+        await Na__VegRun__SyncPlants();
+        window.dispatchEvent(new CustomEvent('na-vegetation-object-replaced'));
     }
     // ------------------------------------------------------------
 
@@ -279,7 +316,7 @@
     // FUNCTION | A Save Vegetation Button
     // ------------------------------------------------------------
     function Na__VegShell__MakeSaveButton() {
-        const button = Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Writes every plant and parameter into this project\'s file');
+        const button = Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project. Clients see them once an admin has approved them');
         Na__VegShell__State.saveButtons.add(button);
         Na__VegShell__PaintSave();
         return button;
@@ -327,7 +364,7 @@
     // HELPER FUNCTION | Undo and Redo Keys, While a Panel Is Open on the 3D Model Tab
     // ------------------------------------------------------------
     function Na__VegShell__OnKeyDown(event) {
-        if (Na__VegShell__State.panels.size === 0) return;
+        if (Na__VegShell__State.panels.size === 0 || event.defaultPrevented) return;
         if (!Na__KeyScope__Is(Na__KeyScope__MODEL)) return;
         if (Na__KeyScope__IsTypingTarget(event.target)) return;
         if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
@@ -376,6 +413,7 @@
         entry.root.querySelectorAll('.na-veg-redo').forEach((button) => Na__VegShell__State.redoButtons.delete(button));
         entry.root.remove();
         if (entry.onClose) entry.onClose();
+        window.dispatchEvent(new CustomEvent(Na__VegShell__CLOSED_EVENT, { detail : { id, side : entry.side } }));
     }
     // ------------------------------------------------------------
 
@@ -388,9 +426,22 @@
     // ------------------------------------------------------------
 
 
+    // HANDLER | Another System Is Opening a Panel on a Side
+    // ------------------------------------------------------------
+    function Na__VegShell__OnOtherOpening(event) {
+        const detail = event.detail || {};
+        if (detail.owner === Na__VegShell__OWNER) return;
+        Na__VegShell__State.panels.forEach((entry, id) => {
+            if (entry.side === detail.side) Na__VegShell__Close(id);
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Open a Panel
     // ------------------------------------------------------------
-    // options: { id, title, side : 'left' | 'right', width, onClose }
+    // options: { id, title, side : 'left' | 'right', width, onClose, icon, hub }
+    // icon: an element for the title. hub: the body holds dropdown sections (Na__SceneAssets__Hub__.js).
     // Returns { root, head, body, foot }, or the open one's if it is already up.
     // ------------------------------------------------------------
     function Na__VegShell__Open(options) {
@@ -401,13 +452,16 @@
         state.panels.forEach((entry, id) => {
             if (entry.side === options.side) Na__VegShell__Close(id);
         });
+        window.dispatchEvent(new CustomEvent(Na__VegShell__OPENING_EVENT, { detail : { side : options.side, owner : Na__VegShell__OWNER } }));
 
-        const root = Na__VegShell__El('aside', 'na-veg-panel na-veg-panel--' + options.side);
+        const root = Na__VegShell__El('aside', 'na-veg-panel na-veg-panel--' + options.side + (options.hub ? ' na-veg-panel--hub' : ''));
         root.id = options.id;
         if (options.width) root.style.width = options.width + 'px';
 
         const head  = Na__VegShell__El('div', 'na-veg-panel__head');
-        const title = Na__VegShell__El('button', 'na-veg-panel__title', options.title);
+        const title = Na__VegShell__El('button', 'na-veg-panel__title');
+        if (options.icon) title.appendChild(options.icon);
+        title.appendChild(Na__VegShell__El('span', '', options.title));
         title.type  = 'button';
         title.title = 'Fold this panel away';
         title.addEventListener('click', () => root.classList.toggle('na-veg-panel--folded'));
@@ -432,7 +486,7 @@
         document.body.appendChild(root);
         const parts = { root, head, body, foot };
         state.panels.set(options.id, { root, side : options.side, onClose : options.onClose, parts });
-        Na__VegShell__ShutToolsMenu();
+        if (options.side === 'right') Na__VegShell__ShutToolsMenu();             // <-- The left one came from the menu, which stays as it is
         Na__VegShell__PaintHistory();
         return parts;
     }
@@ -469,6 +523,7 @@
     async function Na__VegShell__Prepare(context) {
         const state = Na__VegShell__State;
         state.context = context;
+        if (!state.config) state.config = await Na__VegData__LoadConfig();
 
         // A NEW OBJECT, A NEW HISTORY | After Remove All and Switch On, the old steps belong to nothing
         const sceneData = Na__VegRun__GetSceneData();
@@ -479,17 +534,20 @@
         if (state.prepared) return;
         state.prepared  = true;
         state.sceneData = sceneData;
-        state.config    = await Na__VegData__LoadConfig();
 
-        const link = document.createElement('link');
-        link.rel  = 'stylesheet';
-        link.href = Na__VegShell__STYLES_URL.href;
-        document.head.appendChild(link);
+        [Na__VegShell__STYLES_URL, Na__VegShell__MENU_STYLES_URL].forEach((url) => {
+            if (document.querySelector('link[href="' + url.href + '"]')) return;
+            const link = document.createElement('link');
+            link.rel  = 'stylesheet';
+            link.href = url.href;
+            document.head.appendChild(link);
+        });
 
         Na__VegHist__Reset(sceneData, state.config.Vegetation__DevTools__Config.Vegetation__DevTools__UndoDepth);
 
         window.addEventListener(Na__VegData__DIRTY_EVENT, Na__VegShell__PaintSave);
         window.addEventListener(Na__VegHist__EVENT, Na__VegShell__PaintHistory);
+        window.addEventListener(Na__VegShell__OPENING_EVENT, Na__VegShell__OnOtherOpening);
         window.addEventListener('keydown', Na__VegShell__OnKeyDown, true);     // <-- Capture: before the 3D tab's own keys
         window.addEventListener('beforeunload', (event) => {
             if (!Na__VegData__IsDirty()) return;
@@ -509,6 +567,8 @@
     // MODULE EXPORTS | Panel Shell API
     // ------------------------------------------------------------
     export {
+        Na__VegShell__OPENING_EVENT,
+        Na__VegShell__CLOSED_EVENT,
         Na__VegShell__El,
         Na__VegShell__Button,
         Na__VegShell__Slider,
@@ -517,6 +577,7 @@
         Na__VegShell__Choice,
         Na__VegShell__Save,
         Na__VegShell__MakeSaveButton,
+        Na__VegShell__AfterReplaced,
         Na__VegShell__MarkChanged,
         Na__VegShell__StepHistory,
         Na__VegShell__IsOpen,

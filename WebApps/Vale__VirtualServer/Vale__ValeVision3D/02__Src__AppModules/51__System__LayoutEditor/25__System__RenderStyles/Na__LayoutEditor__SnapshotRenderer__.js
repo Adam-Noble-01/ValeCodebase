@@ -277,6 +277,11 @@
         Na__Vegetation__HoldDrawings,
         Na__Vegetation__RenderDrawingLayer
     } from '../../24__System__Vegetation/Na__Vegetation__.js';
+    import {
+        Na__Entourage__GetContentStamp,
+        Na__Entourage__HoldDrawings,
+        Na__Entourage__RenderDrawingLayer
+    } from '../../23__System__Entourage/Na__Entourage__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | The Drawing's Depth Fog Layer
@@ -580,7 +585,8 @@
             Na__LeSnap__ModelFp = Na__LeSnap__ModelHash(described);
         }
         const plants = Na__Vegetation__GetContentStamp();                        // <-- Plants are in a sheet's 3D pictures, so a change to them redraws one. None: exactly the fingerprint it always was
-        return plants ? Na__LeSnap__ModelFp + '|plants:' + plants : Na__LeSnap__ModelFp;
+        const people = Na__Entourage__GetContentStamp();                         // <-- Figures are in those pictures too. None: exactly the fingerprint it always was
+        return Na__LeSnap__ModelFp + (plants ? '|plants:' + plants : '') + (people ? '|people:' + people : '');
     }
     function Na__LeSnap__GetPipelineFingerprint(modelSourceId) {
         if (modelSourceId && !Na__PhaseLib__IsLive(modelSourceId)) {
@@ -833,6 +839,13 @@
     // picture itself stays on the composer route, DIV-1), and the Enhance pass
     // is skipped. The png's alpha IS the fog.
     // ------------------------------------------------------------
+    function Na__LeSnap__AssetLayerFrame(camera, styles) {
+        const people = !!styles && styles.entourage === true && !!Na__Entourage__GetContentStamp();
+        const plants = !!styles && styles.vegetation === true && !!Na__Vegetation__GetContentStamp();
+        if (plants) Na__Vegetation__RenderDrawingLayer(camera);                 // <-- Clears, and leaves the model's depth and its own
+        if (people) Na__Entourage__RenderDrawingLayer(camera, plants);          // <-- Over the plants, behind what stands in front of it. Alone, it clears for itself
+        return plants || people;
+    }
     function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, modelSourceId, stillWanted, depthFog, plantsLayer) {
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
@@ -854,6 +867,7 @@
             const fogLayer    = depthFog || null;                                  // <-- A fog source: this render is the viewport's fog image, not its picture
             const fogWas      = Na__ElevFog__SetSource(fogLayer);                  // <-- Borrowed for this render; null for a picture, so nothing fogs it. Handed back in the finally
             Na__Vegetation__HoldDrawings(true);                                    // <-- No plants in a picture or a fog: they come as a layer of their own, over the vectors, when a viewport ticks them
+            Na__Entourage__HoldDrawings(true);                                     // <-- Nor figures, which share that layer
             const lightingWas = Na__SceneLighting__GetLive();                      // <-- The light a 3D scene may have left on; put back after
             try {
                 // A DRAWING IS ALWAYS LIT BY THE DEFAULT, as it is in the viewer,
@@ -888,7 +902,7 @@
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
                     elevationOverrides     : Na__DrawView__RenderPreset__GetExportOverrides(),
                     renderFrame            : plantsLayer
-                        ? (cam) => Na__Vegetation__RenderDrawingLayer(cam)                            // <-- The plants alone on a transparent ground, hidden by the model where it stands in front, through the same tiles as the picture
+                        ? (cam) => Na__LeSnap__AssetLayerFrame(cam, styles)                            // <-- The plants alone on a transparent ground, hidden by the model where it stands in front, through the same tiles as the picture
                         : (fogLayer
                             ? (cam) => Na__ElevFog__RenderLayerFrame(cam)                             // <-- The fog alone, premultiplied on a transparent ground, through the same tiles and the same jitter as the picture
                             : null),                                                                  // <-- The picture: the composer route, as always (DIV-1)
@@ -903,6 +917,7 @@
             } finally {
                 Na__ElevFog__SetSource(fogWas);                                                      // <-- Whoever had a drawing on screen has its fog back
                 Na__Vegetation__HoldDrawings(false);
+                Na__Entourage__HoldDrawings(false);
                 if (contextSaved) Na__ModelToggle__ApplySceneLayerVisibility(contextSaved);
                 Na__DrawView__MaterialPreset__Exit();
                 Na__DrawView__RenderPreset__Exit();

@@ -32,8 +32,12 @@
 // FRAMES:
 // - Picks are world metres, and everything saved is integer mm in three.js axes, once, here.
 //
+// - A SECTION OF THE VEGETATION PANEL (Adam, 06-Nov-2026: "we currently have multiple places for
+//   creating things"). Its rows are drawn into the Brush Tool section on the left, not a panel of
+//   its own on the right. It is armed only while that section is open, and Escape folds it.
+//
 // INTEGRATION:
-// - Opened from Tools & Settings > Vegetation (../10__Ui__Panels/Na__Vegetation__MenuSection__.js).
+// - Mounted by the Vegetation panel's Brush Tool section (../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js).
 // - @delegate: ./Na__Vegetation__ToolHost__.js
 // - @delegate: ../01__Core__Engine/Na__Vegetation__BrushModel__.js
 // - @delegate: ../10__Ui__Panels/Na__Vegetation__PaletteEditor__.js
@@ -41,6 +45,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 06-Nov-2026 - Version 1.3.0 (ValeVision3D v2.91.0)
+// - A section of the Vegetation panel: Mount draws into it, Escape folds it. Toggle opens that section.
+//
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.89.0)
+// - Called the Brush Tool on screen.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - Plant scale, with Density and Minimum spacing following. Proxies at the size a plant really
 //   is. Density goes up to 20 per square metre, for small plants.
@@ -85,9 +95,6 @@
         Na__VegShell__PlantScaleSlider,
         Na__VegShell__Tick,
         Na__VegShell__Choice,
-        Na__VegShell__Open,
-        Na__VegShell__Close,
-        Na__VegShell__IsOpen,
         Na__VegShell__MarkChanged,
         Na__VegShell__BeforeChange,
         Na__VegShell__Toast,
@@ -115,10 +122,9 @@
 // REGION | Module Constants and Variables
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | The Panel, and the Stroke's Pace
+    // MODULE CONSTANTS | The Stroke's Pace
     // ------------------------------------------------------------
-    const Na__VegBushTool__PANEL_ID     = 'naVegetationBushPanel';
-    const Na__VegBushTool__TICK_MS      = 30;                                  // <-- A pick no oftener than this
+    const Na__VegBushTool__TICK_MS      = 30;                                 // <-- A pick no oftener than this
     const Na__VegBushTool__STEP_SHARE   = 0.25;                                // <-- Of the radius: how far the brush travels before it paints again
     const Na__VegBushTool__TRIES_A_PLANT = 6;                                  // <-- Spots tried for each plant owed, before it gives up for this stamp
     const Na__VegBushTool__SEED_RANGE   = 2147483647;
@@ -132,6 +138,7 @@
     const Na__VegBushTool__State = {
         context    : null,
         body       : null,
+        fold       : null,                                                     // <-- Folds the Brush Tool section: what Escape does
         unmountPal : null,
         erase      : false,
         ringAt     : null,                                                     // <-- World metres under the pointer, and the ring is drawn there
@@ -288,7 +295,7 @@
         if (stroke.erasing) {
             if (stroke.changed) Na__VegShell__MarkChanged();
             if (stroke.skippedPathPlants) {
-                Na__VegShell__Toast('A path\'s plants come from its rules, so they stay. Edit the path in the Linear Tool, or bake it into single plants.', false);
+                Na__VegShell__Toast('A path\'s plants come from its rules, so they stay. Edit the path in the Line Tool, or bake it into single plants.', false);
             }
             await Na__VegRun__SyncPlants();
             Na__VegTools__Repaint();
@@ -380,7 +387,8 @@
                 return false;
             }
             if (event.key === 'Escape') {
-                Na__VegShell__Close(Na__VegBushTool__PANEL_ID);
+                const fold = Na__VegBushTool__State.fold;                    // <-- Stop brushing: its section folds, and the tool with it
+                if (fold) fold();
                 return true;
             }
             return false;
@@ -490,7 +498,7 @@
             Na__VegTools__Repaint();
         }).row);
         body.appendChild(mode);
-        body.appendChild(Na__VegShell__El('p', 'na-veg-panel__hint', 'Drag on the model to paint. Hold Alt to erase. The middle button orbits while this is open, and the wheel zooms. Escape closes.'));
+        body.appendChild(Na__VegShell__El('p', 'na-veg-panel__hint', 'Drag on the model to paint. Hold Alt to erase. The middle button orbits while this is open, and the wheel zooms. Escape stops brushing.'));
 
         body.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', 'Palette'));
         const mix = Na__VegShell__El('div', '');
@@ -543,40 +551,57 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Stop What the Panel Was Doing
+    // HELPER FUNCTION | Stop What the Section Was Doing
     // ------------------------------------------------------------
     function Na__VegBushTool__OnClose() {
         const state = Na__VegBushTool__State;
         if (state.unmountPal) { state.unmountPal(); state.unmountPal = null; }
         state.body = null;
+        state.fold = null;
         window.removeEventListener('na-vegetation-object-replaced', Na__VegBushTool__OnObjectReplaced);
         if (Na__VegTools__Current() === Na__VegBushTool__Tool) Na__VegTools__Disarm();
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Open the Panel, or Close It If It Is Open
+    // FUNCTION | Draw the Tool's Rows into Its Section, and Arm It on the Model
     // ------------------------------------------------------------
-    async function Na__VegBushTool__Toggle(context) {
+    // Called by the Vegetation panel when its Brush Tool section opens. controls.fold folds that
+    // section, which is what Escape does. Returns what stops it.
+    // ------------------------------------------------------------
+    async function Na__VegBushTool__Mount(context, holder, controls) {
         await Na__VegShell__Prepare(context);
         await Na__VegTools__Prepare(context);
         const state = Na__VegBushTool__State;
         state.context = context;
-        if (Na__VegShell__IsOpen(Na__VegBushTool__PANEL_ID)) {
-            Na__VegShell__Close(Na__VegBushTool__PANEL_ID);
-            return;
-        }
 
         const palette = await Na__VegPalUi__Ensure();
         const brush = Na__VegBushTool__Brush();
         if (!brush.Vegetation__Brush__PaletteUid) brush.Vegetation__Brush__PaletteUid = palette;
         await Na__VegBushTool__ReadPaletteRecipes();
 
-        const panel = Na__VegShell__Open({ id : Na__VegBushTool__PANEL_ID, title : 'Bush Tool', side : 'right', onClose : Na__VegBushTool__OnClose });
-        state.body = panel.body;
+        state.body = holder;
+        state.fold = controls && controls.fold ? controls.fold : null;
+        window.removeEventListener('na-vegetation-object-replaced', Na__VegBushTool__OnObjectReplaced);
         window.addEventListener('na-vegetation-object-replaced', Na__VegBushTool__OnObjectReplaced);
         Na__VegTools__Arm(Na__VegBushTool__Tool);
         Na__VegBushTool__PaintPanel();
+        return () => {
+            if (state.body === holder) Na__VegBushTool__OnClose();
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open the Brush Tool, or Fold It If It Is Open
+    // ------------------------------------------------------------
+    async function Na__VegBushTool__Toggle(context) {
+        const panel = await import('../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js');
+        if (panel.Na__VegCards__CurrentSection() === 'brush') {
+            panel.Na__VegCards__FoldSection('brush');
+            return;
+        }
+        await panel.Na__VegCards__OpenOn(context, 'brush');
     }
     // ------------------------------------------------------------
 
@@ -590,6 +615,7 @@
     // MODULE EXPORTS | Bush Tool API
     // ------------------------------------------------------------
     export {
+        Na__VegBushTool__Mount,
         Na__VegBushTool__Toggle
     };
     // ------------------------------------------------------------

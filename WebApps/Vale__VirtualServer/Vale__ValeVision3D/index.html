@@ -740,6 +740,40 @@
                 </li>
                 <!-- endregion ----------------------------------------------------------------- -->
 
+                <!-- ---------------------------------------------------------------- -->
+                <!-- UI MENU | Entourage (Per-project feature - hidden unless Dev Tools switched it on) -->
+                <!-- Show Entourage and Transparency are for everyone, clients included. The dev rows are built by JS for an author only. -->
+                <!-- @delegate: ./02__Src__AppModules/23__System__Entourage/10__Ui__Panels/Na__Entourage__MenuSection__.js -->
+                <!-- ---------------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item" id="naEntourageMenuItem" style="display:none;" data-na-client-menu>
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naEntourageToggle">
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Entourage__.svg" alt="" />
+                        <span class="na-dropdown-menu__btn-label">Entourage</span>
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naEntouragePanel">
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Show Entourage</span>
+                            <input type="checkbox" id="naEntourageShowToggle" class="na-dropdown-menu__checkbox" checked />
+                        </div>
+                        <div class="na-dropdown-menu__panel-title">Transparency</div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <input
+                                type="range"
+                                id="naEntourageTransparencySlider"
+                                class="na-dropdown-menu__slider"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value="60"
+                            />
+                            <span class="na-dropdown-menu__value" id="naEntourageTransparencyValue">60%</span>
+                        </div>
+                        <div id="naEntourageDevRows" hidden></div>
+                    </div>
+                </li>
+                <!-- endregion ----------------------------------------------------------------- -->
+
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--send-email" id="naSendEmailMenuItem">
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
@@ -1077,16 +1111,50 @@
                 </li>
                 <!-- -------------------------------------------------------- -->
                 <!-- -------------------------------------------------------- -->
-                <!-- VEGETATION (authoring only, loaded for an author alone)  -->
+                <!-- ASSETS (authoring only): entourage, vegetation and furnishings, nested, each with its own switch -->
                 <!-- -------------------------------------------------------- -->
-                <!-- @delegate: ./02__Src__AppModules/24__System__Vegetation/10__Ui__Panels/Na__Vegetation__DevControls__.js -->
-                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naVegetationDevItem" style="display:none;">
-                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naVegetationDevToggle" aria-expanded="false">
-                        Vegetation
+                <!-- @delegate: ./02__Src__AppModules/70__System__DevTools/Na__UiFeature__AssetsSection__DevControls__.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naAssetsDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naAssetsDevToggle" aria-expanded="false">
+                        Assets
                         <span class="na-dropdown-menu__subarrow">&#9662;</span>
                     </button>
-                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naVegetationDevPanel">
-                        <!-- Controls generated dynamically by Na__Vegetation__DevControls__.js -->
+                    <div class="na-dropdown-menu__panel na-assets-dev" id="naAssetsDevPanel">
+                        <!-- @delegate: ./02__Src__AppModules/23__System__Entourage/10__Ui__Panels/Na__Entourage__DevControls__.js -->
+                        <div class="na-assets-dev__section" id="naEntourageDevItem" style="display:none;">
+                            <div class="na-assets-dev__head">
+                                <button class="na-assets-dev__open" type="button" id="naEntourageDevToggle" aria-expanded="false">
+                                    <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                                    <img class="na-assets-dev__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Entourage__.svg" alt="" />
+                                    Entourage
+                                </button>
+                                <input type="checkbox" class="na-dropdown-menu__checkbox" id="naEntourageDevEnable" title="Switch entourage on or off for this project" />
+                            </div>
+                            <div class="na-dropdown-menu__panel na-pm-dev__panel na-assets-dev__body" id="naEntourageDevPanel">
+                                <!-- Controls generated dynamically by Na__Entourage__DevControls__.js -->
+                            </div>
+                        </div>
+                        <!-- @delegate: ./02__Src__AppModules/24__System__Vegetation/10__Ui__Panels/Na__Vegetation__DevControls__.js -->
+                        <div class="na-assets-dev__section" id="naVegetationDevItem" style="display:none;">
+                            <div class="na-assets-dev__head">
+                                <button class="na-assets-dev__open" type="button" id="naVegetationDevToggle" aria-expanded="false">
+                                    <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                                    <img class="na-assets-dev__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Vegetation__.svg" alt="" />
+                                    Vegetation
+                                </button>
+                                <input type="checkbox" class="na-dropdown-menu__checkbox" id="naVegetationDevEnable" title="Switch vegetation on or off for this project" />
+                            </div>
+                            <div class="na-dropdown-menu__panel na-pm-dev__panel na-assets-dev__body" id="naVegetationDevPanel">
+                                <!-- Controls generated dynamically by Na__Vegetation__DevControls__.js -->
+                            </div>
+                        </div>
+                        <!-- Furnishings: Adam, 05-Nov-2026: "funiture assets to come". A greyed row until they do. -->
+                        <div class="na-assets-dev__section na-assets-dev__section--later" id="naFurnishingsDevItem">
+                            <div class="na-assets-dev__head">
+                                <span class="na-assets-dev__open"><img class="na-assets-dev__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Furnishings__.svg" alt="" /> Furnishings <span class="na-assets-dev__later">to come</span></span>
+                                <input type="checkbox" class="na-dropdown-menu__checkbox" id="naFurnishingsDevEnable" disabled title="Furniture assets are still to come" />
+                            </div>
+                        </div>
                     </div>
                 </li>
                 <!-- -------------------------------------------------------- -->
@@ -1608,6 +1676,7 @@
     import { Na__North__DevMenu__Initialize } from './02__Src__AppModules/46__System__NorthDirection/Na__North__DevMenu__Editor__.js';
     import { Na__NorthGizmo__Initialize } from './02__Src__AppModules/46__System__NorthDirection/Na__North__CompassGizmo__.js';
     import { Na__Vegetation__Initialize } from './02__Src__AppModules/24__System__Vegetation/Na__Vegetation__.js';
+    import { Na__Entourage__Initialize } from './02__Src__AppModules/23__System__Entourage/Na__Entourage__.js';
     import { Na__NorthPick__Initialize } from './02__Src__AppModules/46__System__NorthDirection/Na__North__PickTool__.js';
     import { Na__ElevFog__Initialise } from './02__Src__AppModules/49__System__ElevationDepthFog/Na__ElevationDepthFog__RenderLayer__.js';
     // ------------------------------------------------------------
@@ -2511,6 +2580,17 @@
         modelRoot   : Na__ModelGroup__Root,
         lineColour  :(Na__Config__Models && Na__Config__Models.RenderConfig__Linework) ? Na__Config__Models.RenderConfig__Linework.RenderConfig__Linework__EdgeColor : 0x000000,
         wallColour  : Na__Config__Models.baseMesh.material.whiteColor,          // <-- A plant's fill has the walls' brightness
+        getPipeline : () => Na__AppFlow__PipelineRef.current,
+        showToast   : Na__UiFeature__ShowToast
+    });
+    Na__Entourage__Initialize({                                                 // <-- Only the door, as the plants': the rest loads if this project is enabled
+        scene       : Na__Scene__Main,
+        camera      : Na__Camera__Main,
+        renderer    : Na__Renderer__Main,
+        controls    : Na__Controls__Orbit,
+        modelRoot   : Na__ModelGroup__Root,
+        lineColour  :(Na__Config__Models && Na__Config__Models.RenderConfig__Linework) ? Na__Config__Models.RenderConfig__Linework.RenderConfig__Linework__EdgeColor : 0x000000,
+        wallColour  : Na__Config__Models.baseMesh.material.whiteColor,          // <-- A figure's fill has the walls' brightness
         getPipeline : () => Na__AppFlow__PipelineRef.current,
         showToast   : Na__UiFeature__ShowToast
     });

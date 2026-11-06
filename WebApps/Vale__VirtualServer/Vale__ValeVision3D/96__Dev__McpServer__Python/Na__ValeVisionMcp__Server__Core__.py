@@ -45,6 +45,10 @@ NA_APP_DIR              = NA_HERE.parent                                        
 NA_MIRROR_DIR           = NA_APP_DIR.parent                                     # <-- Vale__VirtualServer, the same as /srv/vale
 NA_LIBRARY_DIR          = NA_MIRROR_DIR / 'Vale__Projects__MasterLibrary'
 NA_SHARED_LIBRARY_FILE  = NA_MIRROR_DIR / 'Server__Api' / 'Api__Shared' / 'ValeShared__Library__.py'
+NA_SCENE_ASSETS_LOGIC_FILE = NA_MIRROR_DIR / 'Server__Api' / 'Api__ValeVision3D' / 'ValeVision3D__Api__SceneAssets__Logic__.py'
+NA_SCENE_ASSETS_DIR     = 'UserData__SceneAssets'                               # <-- <project>/ValeVision3D/<this>: the API's CHANGES_DIR
+NA_SCENE_ASSETS_FILE    = 'ValeVision__SceneAssets__Changes__.json'             # <-- The API's CHANGES_FILE
+NA_SCENE_ASSETS_KEYS    = ('Entourage__SceneData', 'Vegetation__SceneData')
 NA_ENGINE_FILE          = NA_MIRROR_DIR.parent / 'Vale__VirtualServerManager' / 'VirtualServerManager__SyncEngine__.py'
 NA_DEVLOG_FILE          = NA_APP_DIR / 'ValeVision__DEVLOG__.md'
 NA_VEG_LIBRARY_DIR      = NA_APP_DIR / '53__Vegetation__AssetLibrary'
@@ -92,6 +96,36 @@ def Na__Result__Error(message, hint=''):
 # -----------------------------------------------------------------------------
 
 NA_TOOLS = {}
+NA_KEPT = {}                                                                    # <-- What must outlive a reload of the tool files
+NA_NOTIFY_TOOLS_CHANGED = None                                                  # <-- Set by Main: tells the client the list has changed
+
+
+def Na__Keep(name, default):
+    """A module's state that a reload must not lose: the browser, the testing server."""
+    return NA_KEPT.setdefault(name, default)
+
+
+def Na__Tools__Reload():
+    """Read every tool file again, new ones included, and tell the client. Core and Protocol stay as they are."""
+    before = set(NA_TOOLS)
+    files = sorted(path.stem for path in NA_HERE.glob('Na__ValeVisionMcp__Tools__*.py'))
+    saved = dict(NA_TOOLS)
+    NA_TOOLS.clear()
+    try:
+        import Na__ValeVisionMcp__Tools__LiveApp__                              # noqa: F401  (others import it: it goes first)
+        ordered = ['Na__ValeVisionMcp__Tools__LiveApp__'] + [name for name in files if name != 'Na__ValeVisionMcp__Tools__LiveApp__']
+        for name in ordered:
+            if name in sys.modules:
+                importlib.reload(sys.modules[name])
+            else:
+                importlib.import_module(name)
+    except Exception as error:
+        NA_TOOLS.clear()
+        NA_TOOLS.update(saved)                                                  # <-- A slip in a file being written must not take every tool away
+        raise Na__ToolError('The tools were left as they were: %s: %s' % (type(error).__name__, error), 'Fix the file and call this again.')
+    if NA_NOTIFY_TOOLS_CHANGED:
+        NA_NOTIFY_TOOLS_CHANGED()
+    return {'tools': len(NA_TOOLS), 'added': sorted(set(NA_TOOLS) - before), 'removed': sorted(before - set(NA_TOOLS)), 'files': files, 'clientTold': bool(NA_NOTIFY_TOOLS_CHANGED)}
 
 
 def Na__Tool(name, title, description, properties=None, required=None, read_only=False, destructive=False):
@@ -202,7 +236,60 @@ def Na__Record__Merge(folder, change):
         merged.update(keys)
         for name in unset:
             merged.pop(name, None)
-        return library.Na__Library__WriteJson(path, merged, user_code=NA_WRITER_CODE, project_folder=Path(folder))
+        written = library.Na__Library__WriteJson(path, merged, user_code=NA_WRITER_CODE, project_folder=Path(folder))
+        Na__SceneAssets__NoteWrite(folder, current, merged, unset)
+        return written
+
+
+# -----------------------------------------------------------------------------
+# REGION | Who Placed What
+# -----------------------------------------------------------------------------
+
+def Na__SceneAssets__Logic():
+    """The API's own sums, from its own file: no copy to keep in step."""
+    module = sys.modules.get('na_vale_scene_assets_logic')
+    if module is None:
+        spec = importlib.util.spec_from_file_location('na_vale_scene_assets_logic', str(NA_SCENE_ASSETS_LOGIC_FILE))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules['na_vale_scene_assets_logic'] = module
+        spec.loader.exec_module(module)
+    return module
+
+
+def Na__SceneAssets__ChangesPath(folder):
+    return Path(folder) / 'ValeVision3D' / NA_SCENE_ASSETS_DIR / NA_SCENE_ASSETS_FILE
+
+
+def Na__SceneAssets__ReadChanges(folder):
+    path = Na__SceneAssets__ChangesPath(folder)
+    if path.is_file():
+        found = json.loads(path.read_text(encoding='utf-8'))
+        if isinstance(found, dict):
+            return found
+    return Na__SceneAssets__Logic().na_new_changes()
+
+
+def Na__SceneAssets__NoteWrite(folder, before, after, removed):
+    """An agent's change is on the record of who did what too, as the API's own record route notes a sync. It never costs the save."""
+    try:
+        if not any(key in removed or before.get(key) != after.get(key) for key in NA_SCENE_ASSETS_KEYS):
+            return
+        logic = Na__SceneAssets__Logic()
+        changes = Na__SceneAssets__ReadChanges(folder)
+        who = {'code': NA_WRITER_CODE, 'name': 'ValeVision MCP (an agent)'}
+        for system, settings in logic.NA_SYSTEMS.items():
+            key = settings['Key']
+            if key in removed:
+                changes.get('SceneAssets__Changes__Systems', {}).pop(system, None)
+            elif before.get(key) != after.get(key):
+                logic.na_note_direct(system, before.get(key), after.get(key), changes, who)
+        path = Na__SceneAssets__ChangesPath(folder)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Na__Library().Na__Library__WriteJson(path, changes, user_code=NA_WRITER_CODE, project_folder=Path(folder))
+    except Exception as error:                                                  # <-- Who did what must never cost anyone their save
+        sys.stderr.write('[valevision3d-mcp] who did what was not noted: %r\n' % (error,))
+
+# endregion -------------------------------------------------------------------
 
 
 def Na__Require__RealDataConfirmed(arguments):

@@ -133,7 +133,7 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.15.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.16.2"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root
@@ -416,6 +416,10 @@ def Na__Server__Routes() -> dict:
         if d.is_dir() and not d.name.startswith((".", "Server__")):
             entries = sorted(f.name for f in d.glob("*.htm*") if f.is_file())
             apps.append({"folder": d.name, "entries": entries})
+            for sub in sorted(d.iterdir()) if not entries else []:              # <-- No page of its own: a folder of apps (Vale__UtilityApps)
+                pages = sorted(f.name for f in sub.glob("*.htm*") if f.is_file()) if sub.is_dir() else []
+                if pages:
+                    apps.append({"folder": f"{d.name}/{sub.name}", "entries": pages})
     return {"routes": routes, "errors": errors, "conf": conf, "hash": digest, "apps": apps,
             "root": cfg["Server"]["Root"], "applied": routes.get("Applied", {})}
 # ---------------------------------------------------------------

@@ -54,7 +54,7 @@
     // MODULE VARIABLES | Shared State
     // ------------------------------------------------------------
     var Vsm = window.Vsm = {
-        PageVersion: '0.15.0',                                                 // <-- Must match the local server's version
+        PageVersion: '0.16.2',                                               // <-- Must match the local server's version
         State      : null,                                                     // <-- Last /api/state payload
         Running    : false,                                                    // <-- A job request is in flight
         Restarting : false,                                                    // <-- Restart manager: waiting for the next copy

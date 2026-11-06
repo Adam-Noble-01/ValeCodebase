@@ -39,6 +39,10 @@
 //   corners each run laps the next, by the asset's Form__LapMm at each end. It says what its
 //   two ends meet (Plop__Ends, behind and ahead along the path), and the builder sinks a lapped
 //   end into the next run's fill, so the hedge has no joints.
+// - ONE PLANT OF A PATH CAN BE CHANGED BY HAND (Adam, 05-Nov-2026: "Add the same right click swap for
+//   vegetation too"). Vegetation__Path__PlantChanges is keyed by the plant's number, the one its uid
+//   ends in: a different asset, a scale, or removed. It is laid over the plant after every draw is made,
+//   so no other plant moves. A path with none draws what it drew, number for number. New Seed clears it.
 //
 // FRAMES:
 // - Points and results are integer mm in three.js axes, as every saved value is. A turn of
@@ -53,6 +57,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.89.0)
+// - A single plant of a path can be swapped, scaled or removed, with no other plant moving. Cloud
+//   Sync's Python is a port of this: change both.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - Plant scale, Height, clipped plants and their corners. A path with none of them draws what
 //   it drew, number for number. Cloud Sync's Python is a port of this: change both.
@@ -251,10 +259,11 @@
     // FUNCTION | Every Plant of a Path
     // ------------------------------------------------------------
     // items: [{ assetId, weight, scale, recipe }], the palette's assets with their recipes
-    // read. Returns records in the shape of a saved plop, with the path's uid on each, and
-    // an empty list for a path too short or with nothing to plant.
+    // read. recipeOf(assetId): a swapped plant's recipe, optional, and a plant whose swap it cannot
+    // find stays as drawn. Returns records in the shape of a saved plop, with the path's uid on each,
+    // and an empty list for a path too short or with nothing to plant.
     // ------------------------------------------------------------
-    function Na__VegPath__PlantsFor(path, items) {
+    function Na__VegPath__PlantsFor(path, items, recipeOf) {
         const usable = (items || []).filter((item) => item.recipe && (item.weight || 0) > 0);
         const line   = Na__VegPath__Line(path.Vegetation__Path__PointsMm, path.Vegetation__Path__Curved === true);
         if (usable.length === 0 || line.total <= 0) return [];
@@ -272,6 +281,7 @@
         const depthFit   = rules.Vegetation__PathAdvanced__DepthAcrossMm || 0;
         const heightFit  = rules.Vegetation__PathAdvanced__HeightFitMm || 0;
         const pathZoom   = path.Vegetation__Path__PlantScale > 0 ? path.Vegetation__Path__PlantScale : 1;
+        const changes    = path.Vegetation__Path__PlantChanges || null;
 
         const wanted = fit ? Math.round(line.total / spacing) : Math.ceil(line.total / spacing);
         const cells  = Math.max(1, Math.min(Na__VegPath__MAX_PLANTS, wanted));
@@ -364,7 +374,31 @@
             };
             if (zoom !== 1) plant.Vegetation__Plop__Scale = Math.round(zoom * 1000) / 1000;
             if (ends) plant.Vegetation__Plop__Ends = ends;
-            plants.push(plant);
+
+            // CHANGED BY HAND | After every draw, so what follows does not depend on this
+            const change = changes ? changes[String(number + 1)] : null;
+            if (change) {
+                const other = change.Vegetation__PlantChange__AssetId && recipeOf ? recipeOf(change.Vegetation__PlantChange__AssetId) : null;
+                if (other) {
+                    const clipped = other.Asset__Placement && other.Asset__Placement.Placement__Clipped === true;
+                    const otherScale  = clipped ? 1 : drawnScale;
+                    const otherHigher = clipped ? 1 : drawnHigher;
+                    const otherSize   = other.Asset__Size;
+                    plant.Vegetation__Plop__AssetId = change.Vegetation__PlantChange__AssetId;
+                    plant.Vegetation__Plop__SizeMm  = [
+                        Math.round(otherSize.Size__WidthMm * otherScale),
+                        Math.round(depthFit > 0 ? depthFit / zoom : otherSize.Size__DepthMm * otherScale),
+                        Math.round((heightFit > 0 ? heightFit / zoom : otherSize.Size__HeightMm) * otherScale * otherHigher)
+                    ];
+                    delete plant.Vegetation__Plop__Ends;
+                }
+                if (change.Vegetation__PlantChange__Scale > 0) {
+                    const hand = Math.round(zoom * change.Vegetation__PlantChange__Scale * 1000) / 1000;
+                    if (hand !== 1) plant.Vegetation__Plop__Scale = hand;
+                    else delete plant.Vegetation__Plop__Scale;
+                }
+            }
+            if (!(change && change.Vegetation__PlantChange__Removed === true)) plants.push(plant);
 
             at += span;
             number++;

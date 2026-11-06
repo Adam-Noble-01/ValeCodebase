@@ -50,8 +50,11 @@ NA_LOAD_WAIT_S = 300
 NA_ROUTE = '/valevision/'
 NA_STATUS_PATH = '/_testserver/api/status'
 
-NA_STATE = {'server': None, 'port': None, 'log': None, 'playwright': None, 'browser': None, 'context': None, 'page': None,
-            'open': None, 'errors': []}
+NA_PHONE = {'viewport': {'width': 390, 'height': 800}, 'is_mobile': True, 'has_touch': True,
+            'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'}
+
+NA_STATE = Na__Core.Na__Keep('liveapp', {'server': None, 'port': None, 'log': None, 'playwright': None, 'browser': None, 'context': None, 'page': None,
+                                         'open': None, 'errors': []})     # <-- Kept in Core, so vv3d_reload_tools leaves the browser and the server running
 
 
 # -----------------------------------------------------------------------------
@@ -221,6 +224,12 @@ def Na__Browser__Call(expression, *values):
         raise Na__ToolError('The page answered: %s' % str(error).splitlines()[0][:600])
 
 
+def Na__Browser__ContextOptions(phone, width=None, height=None):
+    if phone:
+        return dict(NA_PHONE, service_workers='block')
+    return {'viewport': {'width': int(width or 1600), 'height': int(height or 900)}, 'service_workers': 'block'}
+
+
 def Na__Browser__WaitLoaded(page):
     deadline = time.time() + NA_LOAD_WAIT_S
     while time.time() < deadline:
@@ -237,6 +246,7 @@ def Na__Browser__WaitLoaded(page):
            'as_level': {'type': 'string', 'enum': ['AppAdmin', 'Management', 'Employee', 'Affiliate', 'Client', 'Nobody'], 'description': 'Default AppAdmin.'},
            'width': {'type': 'integer', 'description': 'Default 1600.'},
            'height': {'type': 'integer', 'description': 'Default 900.'},
+           'phone': {'type': 'boolean', 'description': 'A phone: touch, small, and <html data-na-device="phone">. width and height are then ignored.'},
            'gpu': {'type': 'boolean', 'description': 'The real graphics card, for a frame rate. Default swiftshader, for pixels.'},
            'settle_ms': {'type': 'integer', 'description': 'Wait after the loading screen goes. Default 4000.'}},
           required=['project'])
@@ -260,8 +270,7 @@ def Na__Tool__Open(arguments):
     started = time.time()
     playwright = sync_playwright().start()
     browser = playwright.chromium.launch(channel='msedge', headless=True, args=NA_GPU_ARGS if arguments.get('gpu') else NA_SOFT_ARGS)
-    context = browser.new_context(viewport={'width': int(arguments.get('width') or 1600), 'height': int(arguments.get('height') or 900)},
-                                  service_workers='block')
+    context = browser.new_context(**Na__Browser__ContextOptions(arguments.get('phone') is True, arguments.get('width'), arguments.get('height')))
     NA_STATE.update(playwright=playwright, browser=browser, context=context, errors=[])
     page = context.new_page()
     page.add_init_script(NA_HIDE_INSTALL_CARD)
@@ -294,6 +303,7 @@ def Na__Tool__Open(arguments):
         answer['camera'] = Na__Browser__Call('getCamera')
         answer['savedScenes'] = Na__Browser__Call('listScenes')
         answer['vegetation'] = Na__Browser__Call('vegetation')
+        answer['entourage'] = Na__Browser__Call('entourage')
         answer['overlay'] = Na__Browser__Call('problems')
     return Na__Result__Data(answer)
 
@@ -324,20 +334,31 @@ def Na__Tool__View(arguments):
 
 
 @Na__Tool('vv3d_screenshot', 'Take a picture of the page',
-          'Takes a picture of the open page and returns it. The app\'s panels are hidden unless hide_ui is false. Saved as a PNG too: at path if given, else in the temp folder.',
+          'Takes a picture of the open page and returns it. The app\'s panels are hidden unless hide_ui is false. Saved as a PNG too: at path if given, else in the temp folder. selector or clip takes just that part, and a small picture costs far less to look at.',
           {'path': {'type': 'string'},
            'hide_ui': {'type': 'boolean', 'description': 'Default true: the model alone.'},
+           'selector': {'type': 'string', 'description': 'Only this element, such as #naVegetationAssetsPanel. Implies hide_ui false.'},
+           'clip': {'type': 'array', 'items': {'type': 'number'}, 'minItems': 4, 'maxItems': 4, 'description': '[x, y, width, height] in client pixels.'},
            'settle_ms': {'type': 'integer', 'description': 'Default 800.'},
            'return_image': {'type': 'boolean', 'description': 'Default true.'}})
 def Na__Tool__Screenshot(arguments):
     page = Na__Browser__RequirePage()
-    hide = arguments.get('hide_ui') is not False
+    hide = arguments.get('hide_ui') is not False and not arguments.get('selector')
     if hide:
         Na__Browser__Call('hideUi', True)
     page.wait_for_timeout(int(arguments.get('settle_ms') or 800))
     path = arguments.get('path') or os.path.join(tempfile.gettempdir(), 'na_vv3d_shot_%d.png' % int(time.time() * 1000))
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-    page.screenshot(path=path)
+    if arguments.get('selector'):
+        target = page.locator(arguments['selector'])
+        if target.count() != 1:
+            raise Na__ToolError('%d things match that selector.' % target.count(), 'A picture of one thing: make it narrower.')
+        target.screenshot(path=path)
+    elif arguments.get('clip'):
+        box = arguments['clip']
+        page.screenshot(path=path, clip={'x': box[0], 'y': box[1], 'width': box[2], 'height': box[3]})
+    else:
+        page.screenshot(path=path)
     if hide:
         Na__Browser__Call('hideUi', False)
     images = None
@@ -348,11 +369,24 @@ def Na__Tool__Screenshot(arguments):
 
 
 @Na__Tool('vv3d_page_state', 'What the page sees',
-          'The plants as the page holds them, what the testing server\'s overlay saw, and script errors so far.', read_only=True)
+          'The plants and people as the page holds them; what is open: the Tools & Settings sections unfolded, the Vegetation and Entourage panels '
+          'with their open section, and the tool that has the model\'s clicks; what the testing server\'s overlay saw, and script errors so far.', read_only=True)
 def Na__Tool__PageState(_arguments):
     Na__Browser__RequirePage()
-    return Na__Result__Data({'page': NA_STATE['open'], 'vegetation': Na__Browser__Call('vegetation'), 'overlay': Na__Browser__Call('problems'),
+    return Na__Result__Data({'page': NA_STATE['open'], 'vegetation': Na__Browser__Call('vegetation'), 'entourage': Na__Browser__Call('entourage'),
+                             'open': Na__Browser__Call('panels'), 'overlay': Na__Browser__Call('problems'),
                              'scriptProblems': NA_STATE['errors'][-30:], 'sandbox': Na__Sandbox__Describe()})
+
+
+@Na__Tool('vv3d_entourage_preview', 'Try people\'s transparency or show on the page',
+          'Sets Show Entourage or Transparency on the open page only. Nothing is saved: to save them use vv3d_entourage_edit.',
+          {'transparency_percent': {'type': 'number', 'minimum': 0, 'maximum': 100}, 'shown': {'type': 'boolean'},
+           'settle_ms': {'type': 'integer', 'description': 'Default 1500.'}})
+def Na__Tool__EntouragePreview(arguments):
+    page = Na__Browser__RequirePage()
+    answer = Na__Browser__Call('setEntourage', {key: arguments[key] for key in ('transparency_percent', 'shown') if key in arguments})
+    page.wait_for_timeout(int(arguments.get('settle_ms') or 1500))
+    return Na__Result__Data(answer)
 
 
 @Na__Tool('vv3d_vegetation_preview', 'Try transparency or show on the page',

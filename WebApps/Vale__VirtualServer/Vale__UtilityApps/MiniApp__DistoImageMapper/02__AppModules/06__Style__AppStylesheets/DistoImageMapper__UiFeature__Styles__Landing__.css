@@ -1,0 +1,228 @@
+/* =============================================================================
+ * DISTO IMAGE MAPPER - LANDING SCREEN STYLES
+ * =============================================================================
+ *
+ * FILE       : DistoImageMapper__UiFeature__Styles__Landing__.css
+ * NAMESPACE  : DistoImageMapper
+ * MODULE     : Landing Screen Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The first screen, the survey chooser and the drop veil
+ * CREATED    : 05-Nov-2026
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Landing Screen
+ * ----------------------------------------------------------------------------- */
+
+    /* LANDING | Full Screen Below the Header */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Landing {
+        position                           : fixed;
+        top                                : var(--Vale_HeaderHeight);
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        display                            : flex;
+        padding                            : var(--Vale_Spacing_Large);
+        overflow-y                         : auto;
+        background                         : var(--Vale_BackgroundLight);
+        z-index                            : 500;
+    }
+
+    .DistoImageMapper__Landing__Card {
+        width                              : 100%;
+        max-width                          : 620px;
+        margin                             : auto;                         /* <-- Centres, and still scrolls when taller than the screen */
+        padding                            : 32px;
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundWhite);
+        box-shadow                         : 0 2px 12px rgba(0, 0, 0, 0.08);
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LANDING | Icon, Title and Lead */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Landing__Graphic {
+        display                            : block;
+        width                              : 190px;
+        height                             : 190px;
+        margin                             : -12px auto 0;
+    }
+
+    .DistoImageMapper__Landing__Title {
+        margin-top                         : var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__Landing__Lead {
+        margin-top                         : var(--Vale_Spacing_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.55;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LANDING | The Ways In */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Landing__Actions {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        justify-content                    : center;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-top                         : var(--Vale_Spacing_Large);
+    }
+
+    .DistoImageMapper__Landing__Hint {
+        flex-basis                         : 100%;
+        margin-top                         : var(--Vale_Spacing_Small);
+        color                              : var(--Vale_TextSecondary);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .DistoImageMapper__Landing__LinkButton {
+        border                             : none;
+        background                         : none;
+        color                              : var(--Vale_PrimaryBrand);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-decoration                    : underline;
+        cursor                             : pointer;
+    }
+
+    .DistoImageMapper__Landing__Error {
+        margin-top                         : var(--Vale_Spacing_Medium);
+        padding                            : 10px 14px;
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : #fbeaea;
+        color                              : #a32222;
+        text-align                         : left;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LANDING | Choosing Between Several Surveys */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Landing__Chooser {
+        margin-top                         : var(--Vale_Spacing_Large);
+    }
+
+    .DistoImageMapper__Landing__Chooser h3 {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__Landing__ChooserList {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 6px;
+        max-height                         : 280px;
+        margin                             : var(--Vale_Spacing_Small) 0;
+        overflow-y                         : auto;
+    }
+
+    .DistoImageMapper__Landing__ChooserItem {
+        display                            : flex;
+        justify-content                    : space-between;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : 10px 14px;
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundWhite);
+        cursor                             : pointer;
+        text-align                         : left;
+    }
+
+    .DistoImageMapper__Landing__ChooserItem:hover {
+        border-color                       : var(--Vale_PrimaryBrand);
+        background                         : var(--Vale_BackgroundLight);
+    }
+
+    .DistoImageMapper__Landing__ChooserItem span {
+        color                              : var(--Vale_TextSecondary);
+        font-size                          : var(--Vale_FontSize_Small);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LANDING | What a Folder Holds */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Landing__Files {
+        width                              : 100%;
+        margin-top                         : var(--Vale_Spacing_Large);
+        border-collapse                    : collapse;
+        font-size                          : var(--Vale_FontSize_Small);
+        text-align                         : left;
+    }
+
+    .DistoImageMapper__Landing__Files caption {
+        padding-bottom                     : 6px;
+        color                              : var(--Vale_TextSecondary);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-align                         : left;
+    }
+
+    .DistoImageMapper__Landing__Files th,
+    .DistoImageMapper__Landing__Files td {
+        padding                            : 5px 8px;
+        border-top                         : 1px solid #e6e8ea;
+    }
+
+    .DistoImageMapper__Landing__Files th {
+        width                              : 92px;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        white-space                        : nowrap;
+    }
+
+    .DistoImageMapper__Landing__Footer {
+        display                            : flex;
+        justify-content                    : space-between;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-top                         : var(--Vale_Spacing_Medium);
+        color                              : var(--Vale_TextSecondary);
+        font-size                          : var(--Vale_FontSize_Small);
+        text-align                         : left;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Drop Veil
+ * ----------------------------------------------------------------------------- */
+
+    /* DROP | Shown While a Folder Is Dragged Over the Window */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__DropVeil {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : 24px;
+        background                         : var(--DistoImageMapper_Scrim);
+        z-index                            : var(--Vale_ZIndex_Tooltip);
+        pointer-events                     : none;
+    }
+
+    .DistoImageMapper__DropVeil div {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 100%;
+        height                             : 100%;
+        border                             : 2px dashed var(--Vale_TextLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

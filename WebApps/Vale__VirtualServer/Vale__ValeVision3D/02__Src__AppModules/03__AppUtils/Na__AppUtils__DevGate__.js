@@ -33,6 +33,12 @@
 //   Na__DevGate__IsClientLink() is the one rule for "is this a client link",
 //   read from the address; the Layout Editor's loader asks it too.
 //
+// - STAFF AND CREATING (05-Nov-2026). Adam: "Employees should be able to create entourage and
+//   foliage". Na__DevGate__IsStaff() is an Employee or above, and it is what shows them work still
+//   waiting for an admin. Na__DevGate__CanCreateAssets() is that on a computer or a tablet: on a
+//   phone they only look. An admin previewing the client view is neither. Again this only decides
+//   what the page offers, and the server checks on every write.
+//
 // INTEGRATION:
 // - Lock / unlock: ?authoring=off|on, or Na__DevGate__Lock() / Na__DevGate__Unlock() on window.
 // - Every dev panel, save button and the Layout Editor call Na__DevGate__IsAuthoringEnabled().
@@ -46,6 +52,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 2.2.0 (ValeVision3D v2.89.0)
+// - Na__DevGate__IsStaff() and Na__DevGate__CanCreateAssets(): Employees place people and plants.
+//
 // 28-Oct-2026 - Version 2.1.0 (ValeVision3D v2.77.0, client links)
 // - Na__DevGate__IsClientLink(): a page opened from a client link. Authoring is
 //   off on one, whoever is signed in.
@@ -73,6 +82,7 @@
     const Na__DevGate__URL_PARAM    = 'authoring';
     const Na__DevGate__AUTHOR_LEVEL = 'AppAdmin';                                // <-- The server's AUTHOR_LEVEL (VALEVISION3D_AUTHOR_LEVEL)
     const Na__DevGate__SHARE_PARAM  = 'share';                                   // <-- A client link's token (93__Feature__ClientLinks)
+    const Na__DevGate__STAFF_LEVEL  = 'Employee';                                // <-- Who may place people and plants, the server's @Na__Auth__Require('Employee')
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -88,6 +98,7 @@
     // would leave half the dev panels built and half not.
     // ------------------------------------------------------------
     let Na__DevGate__Resolved = null;
+    let Na__DevGate__ResolvedStaff = null;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -178,6 +189,36 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Is This Member of Staff, Working as Themselves?
+    // ------------------------------------------------------------
+    // An Employee or above, not on a client link, and not an admin previewing the client view.
+    // ------------------------------------------------------------
+    function Na__DevGate__IsStaff() {
+        if (Na__DevGate__ResolvedStaff !== null) return Na__DevGate__ResolvedStaff;
+        let staff = false;
+        if (!Na__DevGate__IsClientLink()) {
+            Na__DevGate__IsAuthoringEnabled();                                   // <-- So an ?authoring= parameter has had its say
+            const login = window.ValeUserLogin;
+            try {
+                staff = !!login && typeof login.HasLevel === 'function' && login.HasLevel(Na__DevGate__STAFF_LEVEL) === true && !Na__DevGate__IsLockedHere();
+            } catch (error) { staff = false; }
+        }
+        Na__DevGate__ResolvedStaff = staff;
+        return staff;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | May This Session Place People and Plants?
+    // ------------------------------------------------------------
+    // Staff, on anything but a phone (<html data-na-device>, set in index.html).
+    // ------------------------------------------------------------
+    function Na__DevGate__CanCreateAssets() {
+        return Na__DevGate__IsStaff() && document.documentElement.getAttribute('data-na-device') !== 'phone';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Lift / Set the Device Lock (takes effect on the next load)
     // ------------------------------------------------------------
     function Na__DevGate__Unlock() {
@@ -217,6 +258,8 @@
     export {
         Na__DevGate__IsAuthoringEnabled,
         Na__DevGate__IsClientLink,
+        Na__DevGate__IsStaff,
+        Na__DevGate__CanCreateAssets,
         Na__DevGate__Unlock,
         Na__DevGate__Lock,
         Na__DevGate__Initialize

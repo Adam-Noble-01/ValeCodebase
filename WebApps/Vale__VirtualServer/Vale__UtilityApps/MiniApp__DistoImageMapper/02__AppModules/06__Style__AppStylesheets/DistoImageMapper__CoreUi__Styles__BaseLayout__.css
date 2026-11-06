@@ -1,0 +1,200 @@
+/* =============================================================================
+ * DISTO IMAGE MAPPER - BASE LAYOUT STYLES
+ * =============================================================================
+ *
+ * FILE       : DistoImageMapper__CoreUi__Styles__BaseLayout__.css
+ * NAMESPACE  : DistoImageMapper
+ * MODULE     : Base Layout
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Reset, body, the header bar and the shared button
+ * CREATED    : 05-Nov-2026
+ *
+ * DESCRIPTION:
+ * - Header matches the Vale ecosystem: white bar, Vale logo left, title right, Vale
+ *   blue rule beneath
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Global Reset and Base Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* RESET | Box Sizing and Margin Reset */
+    /* ------------------------------------------------------------ */
+    *, *::before, *::after {
+        box-sizing                         : border-box;
+        margin                             : 0;
+        padding                            : 0;
+    }
+
+    [hidden] {
+        display                            : none !important;              /* <-- hidden always wins over a display rule */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BASE | HTML and Body */
+    /* ------------------------------------------------------------ */
+    html, body {
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : hidden;
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextPrimary);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        -webkit-font-smoothing             : antialiased;
+        -moz-osx-font-smoothing            : grayscale;
+    }
+
+    button, select, input {
+        font                               : inherit;
+        color                              : inherit;
+    }
+
+    input[type="checkbox"], input[type="range"] {
+        accent-color                       : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | App Header
+ * ----------------------------------------------------------------------------- */
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Medium);
+        height                             : var(--Vale_HeaderHeight);
+        padding                            : 0 var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_TextPrimary);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);
+        z-index                            : var(--Vale_ZIndex_Header);
+    }
+
+    .app-header__logo-container {
+        display                            : flex;
+        align-items                        : center;
+    }
+
+    .app-header__logo-left {
+        height                             : 42px;
+        width                              : auto;
+    }
+
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Phone Width: the Logo Keeps Its Place, the Title Gives Way */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 480px) {
+        .app-header {
+            padding                        : 0 var(--Vale_Spacing_Medium);
+        }
+
+        .app-header__logo-left {
+            height                         : 32px;
+        }
+
+        .app-header__title {
+            font-size                      : var(--Vale_FontSize_Standard);
+            white-space                    : normal;
+            text-align                     : right;
+            line-height                    : 1.2;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Shared Button
+ * ----------------------------------------------------------------------------- */
+
+    /* BUTTON | Standard Button */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Button {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : 7px;
+        padding                            : 9px 18px;
+        border                             : 1px solid var(--Vale_PrimaryBrand);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_PrimaryBrand);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast), color var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Button:hover:not(:disabled) {
+        background                         : var(--Vale_HoverBackground);
+    }
+
+    .DistoImageMapper__Button:disabled {
+        opacity                            : 0.4;
+        cursor                             : default;
+    }
+
+    .DistoImageMapper__Button:focus-visible,
+    .DistoImageMapper__Toolbar__Button:focus-visible {
+        outline                            : 2px solid var(--Vale_PrimaryBrand);
+        outline-offset                     : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ICON | A House Line Icon Beside a Label */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Icon {
+        flex                               : none;
+        width                              : 16px;
+        height                             : 16px;
+    }
+
+    .DistoImageMapper__Button--Primary .DistoImageMapper__Icon,
+    .DistoImageMapper__Toolbar__Button.is-active .DistoImageMapper__Icon {
+        filter                             : brightness(0) invert(1);      /* <-- The icons are navy image files: white on a navy button */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | Primary and Small Variants */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Button--Primary {
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+    }
+
+    .DistoImageMapper__Button--Primary:hover:not(:disabled) {
+        background                         : #24425a;
+    }
+
+    .DistoImageMapper__Button--Small {
+        padding                            : 5px 12px;
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

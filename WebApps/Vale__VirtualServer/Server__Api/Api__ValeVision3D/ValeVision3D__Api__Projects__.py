@@ -50,6 +50,9 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 05-Nov-2026 - ValeVision3D v2.89.0
+# - A whole-key write of placed assets, by a sync or Remove All, is on the record of who did what.
+#
 # 04-Nov-2026 - Version 1.3.0
 # - A client link's read of the record leaves out productionData, scheduleData and description
 #   (CLIENT_HIDDEN_KEYS): staff still get it as stored, and the 3D page reads none of the three.
@@ -88,6 +91,7 @@ import ValeVision3D__Api__Core__ as vv_shared
 from ValeShared__Auth__ import Na__Auth__CurrentUser, Na__Auth__Require
 from ValeShared__Library__ import (Na__Library__Conflict, Na__Library__ListProjects, Na__Library__Locked,
                                    Na__Library__ReadJson, Na__Library__WriteJson)
+from ValeVision3D__Api__SceneAssets__ import note_record_write as na_note_record_write
 
 # endregion -------------------------------------------------------------------
 
@@ -277,6 +281,7 @@ def merge_project_keys(token):
         for name in unset:
             merged.pop(name, None)
         written = Na__Library__WriteJson(path, merged, user_code=_user_code(), project_folder=folder)
+        na_note_record_write(folder, current, merged, unset)                       # <-- A SketchUp sync or Remove All, on the record of who did what
 
     return jsonify({'success': True, 'message': f'Project {folder.name} updated', 'keys': sorted(keys), 'removed': sorted(unset),
                     'drawings': vv_shared.drawings_fingerprint(merged), 'revision': written.get('revision'),

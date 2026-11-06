@@ -75,7 +75,7 @@ const paths = normalised.Vegetation__SceneData__Paths.map((path) => {
         lengthMm  : Math.round(line.total),
         spacingMm : path.Vegetation__Path__SpacingMm,
         plantScale: path.Vegetation__Path__PlantScale > 0 ? path.Vegetation__Path__PlantScale : 1,
-        plants    : Na__VegPath__PlantsFor(path, items).map(describe)
+        plants    : Na__VegPath__PlantsFor(path, items, recipeOf).map(describe)
     };
 });
 

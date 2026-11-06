@@ -34,6 +34,9 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 05-Nov-2026 - ValeVision3D v2.89.0
+# - Registers the placed-assets routes.
+#
 # 28-Oct-2026 - Version 1.3.0
 # - Client links: make, list and switch off links a client opens the 3D model
 #   with, the door that lets a client's browser in, and the guard: a project
@@ -73,6 +76,7 @@ from ValeVision3D__Api__Email__ import valevision_email_api                     
 from ValeVision3D__Api__PageLayouts__ import valevision_page_layouts_api          # noqa: E402
 from ValeVision3D__Api__Projects__ import valevision_projects_api                 # noqa: E402
 from ValeVision3D__Api__Published__ import valevision_published_api               # noqa: E402
+from ValeVision3D__Api__SceneAssets__ import valevision_scene_assets_api          # noqa: E402
 from ValeVision3D__Api__Scrapbook__ import valevision_scrapbook_api               # noqa: E402
 from ValeVision3D__Api__SheetImages__ import valevision_sheet_images_api          # noqa: E402
 from ValeVision3D__Api__Statements__ import valevision_statements_api             # noqa: E402
@@ -92,7 +96,7 @@ def create_app() -> Flask:
     Na__Vv3dClientLinks__Install(app)                                             # <-- Every read: a sign-in, or a live client link for its project
     for bp in (valevision_projects_api, valevision_published_api, valevision_scrapbook_api, valevision_sheet_images_api,
                valevision_statements_api, valevision_user_config_api, valevision_email_api, valevision_page_layouts_api,
-               valevision_client_links_api):
+               valevision_client_links_api, valevision_scene_assets_api):
         app.register_blueprint(bp)
 
     @app.errorhandler(404)

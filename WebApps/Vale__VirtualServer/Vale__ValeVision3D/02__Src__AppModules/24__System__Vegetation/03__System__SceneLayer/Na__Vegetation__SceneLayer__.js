@@ -92,6 +92,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.88.0)
+// - The render hook goes through host.addRenderHook when there is one, as figures want that slot too. The test bench, with no host, is as it was.
+//
 // 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
 // - The fill has the walls' brightness and changes with the view (wallColour, setFillWallShare).
 //   A plant's scale counts in its proxy and its pick. FillTone is now the tone on a sheet.
@@ -1085,7 +1088,7 @@
         // once, and the plants go, the model carries on.
         // ------------------------------------------------------------
         function installRenderHook() {
-            scene.onBeforeRender = (renderer, _scene, camera) => {
+            const hook = (renderer, _scene, camera) => {
                 try {
                     onBeforeSceneRender(renderer, camera);
                 } catch (error) {
@@ -1094,6 +1097,8 @@
                     console.warn('[ValeVision3D Vegetation] Drawing failed, so plants are off for this visit. The model is unaffected:', error);
                 }
             };
+            if (host.addRenderHook) host.addRenderHook(hook);                  // <-- The one slot is shared in the app: figures want it too
+            else scene.onBeforeRender = hook;
         }
         // ------------------------------------------------------------
 

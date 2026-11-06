@@ -48,6 +48,10 @@
 //   lookAt(target) aim the camera at the cube and discard the SketchUp look
 //   direction, so scenes framed the cube instead of the shot).
 //
+// 06-Nov-2026 - Version 1.0.1 (v2.91.1)
+// - GetPivot reads the resolved pivot, so a scene whose SketchUp target is
+//   beyond the orbit's reach is pulled in level with the cube.
+//
 // =============================================================================
 
 
@@ -181,6 +185,18 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Read the Cube / Saved Pivot
+    // ------------------------------------------------------------
+    // Returns a plain { x, y, z } copy in scene units, or null when none is
+    // resolved. Scene transitions use it to keep a far-off scene target
+    // within the orbit's reach (Na__PresentationMode__Camera__ReachableTarget).
+    // ------------------------------------------------------------
+    function Na__OrbitPivot__GetPivot() {
+        return Na__OrbitPivot__Pivot ? { ...Na__OrbitPivot__Pivot } : null;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -195,7 +211,8 @@
         Na__OrbitPivot__SetPivot,
         Na__OrbitPivot__Arm,
         Na__OrbitPivot__Disarm,
-        Na__OrbitPivot__HasPivot
+        Na__OrbitPivot__HasPivot,
+        Na__OrbitPivot__GetPivot
     };
     // ------------------------------------------------------------
 

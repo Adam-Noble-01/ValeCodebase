@@ -53,9 +53,13 @@ import Na__ValeVisionMcp__Server__Protocol__ as Na__Protocol             # noqa:
 import Na__ValeVisionMcp__Tools__LiveApp__ as Na__LiveApp                # noqa: E402
 import Na__ValeVisionMcp__Tools__Project__                               # noqa: E402,F401  (registers its tools)
 import Na__ValeVisionMcp__Tools__Vegetation__                            # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__Entourage__                             # noqa: E402,F401
 import Na__ValeVisionMcp__Tools__Server__                                # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__Testing__                               # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__SceneAssets__                           # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__Workshop__                              # noqa: E402,F401
 
-NA_SERVER_VERSION = '1.0.0'
+NA_SERVER_VERSION = '1.2.0'
 NA_SERVER_INFO = {'name': 'valevision3d', 'title': 'ValeVision 3D MCP', 'version': NA_SERVER_VERSION,
                   'description': 'Open, look at, change and publish ValeVision 3D projects.'}
 NA_INSTRUCTIONS = (
@@ -63,6 +67,9 @@ NA_INSTRUCTIONS = (
     'Two places a record can be. sandbox: this server\'s own copy on its testing server, fake users, anything may be tried. real: the PC\'s mirror, which a push sends to the live server.\n'
     'To look: vv3d_sandbox_start, vv3d_sandbox_load_project, vv3d_open, vv3d_view, vv3d_screenshot. Software rendering takes a while: a project opens in about a minute.\n'
     'To change planting: vv3d_vegetation_get reads it as the app will draw it, vv3d_vegetation_edit changes it. Try it on the sandbox, reopen and look, then make it real.\n'
+    'People work the same way: vv3d_entourage_get and vv3d_entourage_edit, and vv3d_entourage_import_skp brings new figures into the library from SketchUp.\n'
+    'To test as a person would: vv3d_click and vv3d_mouse press for real, vv3d_ui_read says what is on screen and what is clipped, vv3d_level_walk says what every level gets. vv3d_scene_changes says who placed what and what waits for an admin.\n'
+    'Building: vv3d_check after an edit, vv3d_consumers before changing a name another program may read, vv3d_reload_tools after writing a tool.\n'
     'To publish, only when the person has asked: vv3d_server_collect_project first (someone may have saved on the live server), the change with confirm_real_data, then vv3d_server_push_project with dry_run false.\n'
     'Never sign in on real data, never touch ports 8020, 8030, 8031 or 8032, and no tool here deletes on the server or forces a push. A gateway refusal is final for now: tell the person, do not retry. '
     'Load the vgh-valevision3d skill for how the app works, and vgh-app-server for anything these tools refuse.'
@@ -133,6 +140,7 @@ def na_main():
     sys.stdout = sys.stderr                                                    # <-- A stray print() must never corrupt the protocol stream
     logger = Na__Main__MakeLogger(os.environ.get('NA_VV3D_MCP_LOG') == '1')
     protocol = Na__Protocol.Na__McpProtocol(NA_SERVER_INFO, NA_INSTRUCTIONS, Na__Main__MakeWriter(binary_stdout), logger)
+    Na__Core.NA_NOTIFY_TOOLS_CHANGED = protocol.Na__McpProtocol__NotifyToolsChanged
 
     logger('Started (%d tools). Waiting for the client on stdin.' % len(Na__Core.NA_TOOLS))
     try:

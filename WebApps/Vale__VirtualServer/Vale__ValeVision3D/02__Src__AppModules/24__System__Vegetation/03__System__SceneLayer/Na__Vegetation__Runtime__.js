@@ -40,6 +40,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.4.0 (ValeVision3D v2.89.0)
+// - A path's plant swapped by hand counts among the assets named, and PathPlants hands the model the recipes to swap with.
+//
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.88.0)
+// - The layer's render hook shares scene.onBeforeRender with the figures, through Na__SceneHooks.
+//
 // 04-Nov-2026 - Version 1.2.0 (ValeVision3D v2.86.0)
 // - The walls' colour goes to the layer, with its share from the line rules, for a fill
 //   that has their brightness. A palette item's plant scale goes to the models.
@@ -67,6 +73,7 @@
     // MODULE IMPORTS | The App's Rendering
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    import { Na__SceneHooks__Add } from '../../05__RenderPipeline/Na__RenderLoop__SceneRenderHooks__.js';
     import {
         Na__InteractiveOverlays__Register,
         Na__InteractiveOverlays__SetWanted,
@@ -165,6 +172,11 @@
         sceneData.Vegetation__SceneData__Palettes.forEach((palette) => {
             (palette.Vegetation__Palette__Items || []).forEach((item) => { ids.add(item.Vegetation__PaletteItem__AssetId); });
         });
+        sceneData.Vegetation__SceneData__Paths.forEach((path) => {
+            Object.values(path.Vegetation__Path__PlantChanges || {}).forEach((change) => {
+                if (change.Vegetation__PlantChange__AssetId) ids.add(change.Vegetation__PlantChange__AssetId);
+            });
+        });
         return ids;
     }
     // ------------------------------------------------------------
@@ -247,7 +259,7 @@
     // FUNCTION | One Path's Plants, Worked Out from Its Rules and Seed
     // ------------------------------------------------------------
     function Na__VegRun__PathPlants(path) {
-        return Na__VegPath__PlantsFor(path, Na__VegRun__PaletteItems(path.Vegetation__Path__PaletteUid));
+        return Na__VegPath__PlantsFor(path, Na__VegRun__PaletteItems(path.Vegetation__Path__PaletteUid), Na__VegRun__RecipeFor);
     }
     // ------------------------------------------------------------
 
@@ -403,6 +415,7 @@
                 frameBudget       : config.Vegetation__FrameBudget__Config,
                 seeThroughPercent : config.Vegetation__Transparency__Config.Vegetation__Transparency__SeeThroughFromPercent,
                 host              : {
+                    addRenderHook    : (hook) => Na__SceneHooks__Add(context.scene, hook),
                     getLiveFrame     : Na__InteractiveOverlays__GetLiveFrameNumber,
                     getExportScale   : Na__LineworkSettings__GetLineworkExportScale,
                     getClipList      : Na__SectionClipping__GetClipList,

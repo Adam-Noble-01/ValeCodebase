@@ -377,7 +377,8 @@
             "RenderEngine__Config",
             "VideoStudio__Config",
             "GridLine__Grid__Offset__Config",
-            "Vegetation__SceneData"
+            "Vegetation__SceneData",
+            "Entourage__SceneData"
         ]
     },
     "LoadResilience__Config": {

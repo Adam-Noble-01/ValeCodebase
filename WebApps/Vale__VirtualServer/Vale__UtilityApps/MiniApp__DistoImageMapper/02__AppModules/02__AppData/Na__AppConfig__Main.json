@@ -1,0 +1,183 @@
+{
+    "DistoImageMapper__AppConfig": {
+        "DistoImageMapper__AppConfig__Description": "Every tunable number in Disto Image Mapper. Read through DistoImageMapper__AppCore__Config__.mjs. Lengths are millimetres unless the key says otherwise; on-screen sizes end in Px.",
+
+        "DistoImageMapper__AppConfig__Identity": {
+            "AppName"                     : "Disto Image Mapper",
+            "AppVersion"                  : "1.5.1"
+        },
+
+        "DistoImageMapper__AppConfig__FileRules": {
+            "Prefix3d"                    : "3d",
+            "PrefixPlan"                  : "2dg",
+            "PrefixElevation"             : "2dw",
+            "PrefixNote"                  : "How the DISTO names its three CAD files, tested without case and followed by a separator: 3D_ the 3D space, 2DG_ the plan, 2DW_ the elevation.",
+            "ImageExtensions"             : [".jpg", ".jpeg", ".png", ".webp"],
+            "FolderDepthLimit"            : 3,
+            "FolderDepthNote"             : "How far below the chosen folder to look for survey folders, so the DISTO's parent folder works as well as one survey."
+        },
+
+        "DistoImageMapper__AppConfig__Checks": {
+            "SheetToleranceMm"            : 2,
+            "SheetToleranceNote"          : "A plan or elevation further than this (RMS) from the 3D points is flagged as not lining up.",
+            "LogToleranceMm"              : 2,
+            "StationToleranceMm"          : 25,
+            "StationToleranceNote"        : "The tripod's position is solved from the log's angles and distances. Worse than this RMS and the tripod probably moved during the survey, so its view is switched off.",
+            "RepeatShotToleranceMm"       : 5,
+            "RepeatShotNote"              : "A last shot this close to the first is reported as the survey's closing check."
+        },
+
+        "DistoImageMapper__AppConfig__Sheets": {
+            "PlanOffsetMm"                : 1500,
+            "ElevationOffsetMm"           : 1500,
+            "OffsetMaximumMm"             : 12000,
+            "OffsetNote"                  : "How far the plan sits below the lowest point and the elevation behind the furthest point. Equal to PaddingMm by default, so the two sheets meet in a corner.",
+            "PaddingMm"                   : 1500,
+            "SnapMm"                      : 500,
+            "PaperOpacity"                : 0.95,
+            "TextureMaximumPx"            : 4096,
+            "GridMinorMm"                 : 1000,
+            "GridMajorMm"                 : 5000,
+            "PointLabelHeightMm"          : 250,
+            "TitleHeightMm"               : 620,
+            "LineWidthPx"                 : 1.6,
+            "EdgeWidthPx"                 : 1.2,
+            "LineLiftMm"                  : 8,
+            "MarkerPx"                    : 7
+        },
+
+        "DistoImageMapper__AppConfig__Lines": {
+            "ChainWidthPx"                : 2.6,
+            "MarkerPx"                    : 9,
+            "HighlightRingPx"             : 26,
+            "ProjectorDashMm"             : 140,
+            "ProjectorGapMm"              : 110,
+            "ProjectorOpacity"            : 0.5,
+            "SightLineOpacity"            : 0.28,
+            "AxisLengthMm"                : 1000,
+            "AxisWidthPx"                 : 2.4,
+            "TripodMarkerMm"              : 170
+        },
+
+        "DistoImageMapper__AppConfig__Cards": {
+            "TextureLongSidePx"           : 320,
+            "MatPx"                       : 11,
+            "TagHeightRatio"              : 0.26,
+            "WorldSizeMm"                 : 1050,
+            "WorldSizeNote"               : "A photo's size in the model, held between MinimumPx and MaximumPx on screen, so it stays readable zoomed out and grows when zoomed in.",
+            "MinimumPx"                   : 46,
+            "MinimumReferenceWidthPx"     : 1100,
+            "MinimumSmallestPx"           : 28,
+            "MinimumNote"                 : "MinimumPx holds from this viewport width up, and narrows with the viewport below it down to MinimumSmallestPx, so a phone still shows the model between its photos.",
+            "MaximumPx"                   : 280,
+            "SizeScaleDefault"            : 1,
+            "OpacityDefault"              : 0.8,
+            "OpacityNote"                 : "How much of the photos you see through, so the model and the survey line still read behind them. A focused photo is always solid, and so are photos As Shot: see-through planes would not register as a panorama.",
+            "LiftPx"                      : 22,
+            "LiftMaximumPx"               : 160,
+            "GapPx"                       : 4,
+            "TopReservePx"                : 46,
+            "TopReserveNote"              : "The toolbar's height. A photo whose point is on screen never slides up beneath it.",
+            "RelaxIterations"             : 5,
+            "RelaxPush"                   : 0.5,
+            "RelaxSpring"                 : 0.012,
+            "RelaxNote"                   : "The Atlas arrangement pushes overlapping photos apart in screen space and pulls each back toward its point, every frame, from where it was last frame. So it follows the camera in any view, and the same two numbers suit one view or another.",
+            "SettleFrames"                : 240,
+            "SettleNote"                  : "Frames after the camera stops before the layout is left as it is, however crowded, so the draw loop always comes to rest.",
+            "SpreadMaximumRatio"          : 5,
+            "HoverGrowth"                 : 0.55,
+            "HoverEaseMs"                 : 130,
+            "AppearEaseMs"                : 280,
+            "HighlightFramePx"            : 4,
+            "LoadConcurrency"             : 6,
+            "FieldOfViewDegrees"          : 4.1,
+            "FieldOfViewMaximumDegrees"   : 30,
+            "FieldOfViewNote"             : "The DISTO's camera width across the photo. Measured on the 21-Jul-2026 survey by correlating neighbouring photos against the angle between their shots: 58.6 px per degree, so 4.1 degrees across 240 px. Change it here or by the panel's slider if another DISTO or zoom differs: at the right value the photos line up in the Tripod view."
+        },
+
+        "DistoImageMapper__AppConfig__Camera": {
+            "FieldOfViewDegrees"          : 36,
+            "NarrowFieldOfViewDegrees"    : 2.5,
+            "NarrowNote"                  : "A flight into a parallel view closes the lens to this while backing away, so the switch to the orthographic camera at the end cannot be seen.",
+            "TripodFieldOfViewDegrees"    : 60,
+            "TripodFieldOfViewNote"       : "The widest lens the Tripod view opens on. It closes to frame the shots.",
+            "TripodMinimumDegrees"        : 2,
+            "TripodMaximumDegrees"        : 90,
+            "TripodOrbitRadiusMm"         : 20,
+            "TripodNearShare"             : 0.25,
+            "TripodNearNote"              : "Shots closer than this share of the median distance are left out of the opening aim, such as a reference point at the tripod's feet. They are still there when you turn to them.",
+            "TripodMarginDegrees"         : 2,
+            "AzimuthDegrees"              : 26,
+            "ElevationDegrees"            : 26,
+            "FitPadding"                  : 1.02,
+            "FitPaddingSheet"             : 1.06,
+            "PointViewHeightMm"           : 5000,
+            "FlightMs"                    : 800,
+            "DampingFactor"               : 0.14,
+            "MinimumDistanceMm"           : 300,
+            "ClickMoveTolerancePx"        : 4
+        },
+
+        "DistoImageMapper__AppConfig__Colours": {
+            "Backdrop"                    : "#e6eaed",
+            "BackdropNote"                : "A shade darker than Lantern Designer's, so the white sheets read as paper standing in space. Matches --DistoImageMapper_ViewportBackdrop.",
+            "Ink"                         : "#172b3a",
+            "Chain"                       : "#e8710a",
+            "AxisX"                       : "#dc2626",
+            "AxisY"                       : "#16a34a",
+            "AxisZ"                       : "#2563eb",
+            "SightLine"                   : "#9333ea",
+            "Highlight"                   : "#cc3333",
+            "Measure"                     : "#db2777",
+            "ColoursNote"                 : "Vale blue ink. TrueVision's shades of SketchUp's axis colours: the plan's drop lines run along blue, the elevation's along green. The survey line is orange because the DISTO lays its first run exactly on the red X axis, so a red line would seem to run on past the origin."
+        },
+
+        "DistoImageMapper__AppConfig__Panel": {
+            "WidthDefaultPx"              : 292,
+            "WidthMinimumPx"              : 248,
+            "WidthMaximumPx"              : 640,
+            "WidthMaximumShare"           : 0.6,
+            "KeyStepPx"                   : 16,
+            "WidthNote"                   : "The right-hand menu's width: its grip drags between these, never wider than this share of the window. Double-click the grip, or press Home on it, for the default. Each browser keeps its own in its settings file."
+        },
+
+        "DistoImageMapper__AppConfig__ClipBox": {
+            "MarginMm"                    : 500,
+            "MarginNote"                  : "How far a fitted box reaches past the outermost points, before it is rounded out to the snap grid.",
+            "MinimumSizeMm"               : 100,
+            "SnapDefaultMm"               : 50,
+            "SnapIncrementsMm"            : [10, 25, 50, 100, 250, 500],
+            "SnapNote"                    : "A dragged face lands on the absolute grid of its own axis, as AURA's and TrueVision's drawing planes do. Each viewer keeps their own choice.",
+            "SquareMinimumMm"             : 300,
+            "SquareNote"                  : "Square to Points needs its two points at least this far apart on plan, or the wall's direction is guesswork.",
+            "FaceColours"                 : { "Front" : "#2e7d4f", "Back" : "#7b3fb8", "Left" : "#1f6fd1", "Right" : "#c2277a", "Top" : "#0e8f8a", "Bottom" : "#8a6d1c" },
+            "FaceColoursNote"             : "AURA's drawing plane palette, one colour a face: its tab and grips in the view, its swatch in the panel.",
+            "FillOpacity"                 : 0.06,
+            "FillOpacityActive"           : 0.16,
+            "FillOpacityBack"             : 0.03,
+            "OutlineWidthPx"              : 1.6,
+            "OutlineWidthActivePx"        : 3.2,
+            "BackOpacity"                 : 0.35,
+            "GripPx"                      : 16,
+            "ArrowLengthMinMm"            : 600,
+            "ArrowLengthMaxMm"            : 2500,
+            "ArrowLengthFraction"         : 0.12,
+            "MinAxisAngleDeg"             : 6,
+            "MinAxisNote"                 : "A face whose direction is within this of the line of sight cannot be dragged (a pixel would move it metres), and in a parallel view it is left out."
+        },
+
+        "DistoImageMapper__AppConfig__Export": {
+            "LabelHeightMm"               : 120,
+            "TitleHeightMm"               : 300,
+            "NoteHeightMm"                : 140,
+            "PointMode"                   : 34,
+            "PointSizeMm"                 : 80,
+            "PointNote"                   : "AutoCAD's $PDMODE 34 draws each point as a circle with a cross; $PDSIZE is its size in mm.",
+            "PhotoSizeMm"                 : 1050,
+            "PhotoSizeNote"               : "A photo's width when the survey has no tripod. With one it is its true size, 2 D tan(F / 2): D the shot's distance, F the Field of View slider.",
+            "LayerColours"                : { "Photos" : 8, "Points" : 1, "Labels" : 1, "Line" : 30, "Tripod" : 6, "Sight" : 6, "Box" : 8, "Title" : 7 },
+            "LayerColoursNote"            : "AutoCAD Color Index: 1 red, the DISTO's crosshair; 30 orange, the app's survey line; 6 magenta, the tripod; 8 grey; 7 black or white.",
+            "DefaultChoice"               : { "Include3d" : true, "Photos" : true, "Faces" : { "Front" : true, "Back" : true, "Left" : true, "Right" : true, "Top" : true, "Bottom" : false } }
+        }
+    }
+}

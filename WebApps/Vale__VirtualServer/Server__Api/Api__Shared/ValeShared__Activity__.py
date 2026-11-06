@@ -73,6 +73,11 @@ ENVIRONMENT:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+06-Nov-2026 - Version 1.2.2
+- drawing.export ("Exported a drawing PDF"): ValeVision 3D's Drawing Editor (the
+  simple page layout that bakes one picture) reports each PDF it makes, Full
+  layout or Image only. Only vale@ValeVision3D needs a restart to take it.
+
 30-Oct-2026 - Version 1.2.1
 - "aura" (ValeVision AURA) joins the apps a browser may report for. AURA's own
   API takes its reports, so no other service needs a restart for it.
@@ -192,6 +197,8 @@ NA__ACTIVITY__CLIENT_ACTIONS      = {
     "tour.skip"         : "Left the tour early",                               # <-- Target: the step; Detail: Step, Of
     "visit.summary"     : "Explored the model",                                # <-- Target: "4 min 20 s"; Detail: Seconds, ActiveSeconds, Turns, Zooms, Slides, Keys
     "video.watch"       : "Watched a video",                                   # <-- Target: the video; Detail: Seconds, Percent, Finished, Length
+    # 1.2.2
+    "drawing.export"    : "Exported a drawing PDF",                            # <-- Target: the layout name; Detail: Kind (Full layout / Image only), File
 }
 
 # endregion ----------------------------------------------------

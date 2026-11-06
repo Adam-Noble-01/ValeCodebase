@@ -485,20 +485,50 @@ Double-click `Start__ValeVision__TestServer__8032__.bat`: the app on <http://loc
 
 `96__Dev__McpServer__Python`, registered in `~/.claude.json` as `valevision3d`: an agent opens a project in the real app on its own sandbox, looks at it, measures it, changes its planting and publishes it through named tools. Real data asks for a confirmation each time, and nothing deletes or forces on the server. Its README lists the tools.
 
-## Vegetation (v2.83.0 to v2.86.0)
+## Placed Assets: Who Can Place What (v2.89.0)
 
-Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight, switched on project by project from Dev Tools > Vegetation.
+People and plants are on for every project unless an admin has unticked them in Dev Tools > Assets. Staff place them and every change is tracked by name. The project's record holds what is approved and is all a client reads, so a client sees an Employee's work only once an admin has approved it. The changes wait beside it in `ValeVision3D/UserData__SceneAssets/`, which holds staff names and is never served.
+
+| Who | What |
+|---|---|
+| A client link, an Affiliate | Show and Transparency, and only when something approved is there |
+| An Employee, or Management, on a computer or tablet | Places, moves, swaps and deletes anything, saved for approval. Sees everyone's work at once. The Changes tab: Remove My Changes. Phones only look |
+| An AppAdmin | All of that, approved as it is made. Approve, Approve All, Remove Their Changes. Line rules, drawings ticks, Update to Latest, the off switch |
+
+The routes and sums are `Server__Api/Api__ValeVision3D/ValeVision3D__Api__SceneAssets__*.py`, and the page's side is `02__Src__AppModules/22__System__SceneAssets`.
+
+## Vegetation (v2.83.0 to v2.91.0)
+
+Linework plants: clean CAD shrubs drawn from rules and a seed, at the whitecard's own line weight.
 
 | Who | Where | What |
 |---|---|---|
-| Everyone, client links and phones included, on a switched-on project | Tools & Settings > Vegetation | Show Vegetation, Transparency, remembered on the device |
-| An author (AppAdmin) | The same section | Vegetation Assets (the asset browser), Linear Placement Tool, Bush Tool, Vegetation Linework, Show on Live Drawings, Save Vegetation |
+| Everyone, client links and phones included, where there are plants | Tools & Settings > Vegetation | Show Vegetation, Transparency, remembered on the device |
+| Staff on a computer or tablet, on any project | The Vegetation panel on the left, which unfolding Tools & Settings > Vegetation opens and folding it (or the panel's Close) shuts | Dropdown sections, one open at a time: Assets (the cards), Line Tool, Brush Tool, In This Project and Changes, with Undo, Redo and Save Vegetation at its foot. Closing Tools & Settings leaves it open |
+| Staff, while the Vegetation panel is open | The model | Right-click a plant: Move, Bigger, Smaller, Copy, replace with pictures of the others, Delete. A plant of a path changes alone, and no other moves |
+| An author (AppAdmin) | The same section | Vegetation Linework, Show on Live Drawings |
 | An author | Plant scale, in every tool and on what is planted | The whole plant: 0.50 is the same bush at half the size. Width, depth and height fit one to a space |
 | An author | Dev Tools > Vegetation | The one switch, where a viewer starts, Remove All |
 | An author | A sheet's viewport | A Vegetation tick, off by default, puts plants over its vectors, on screen and in the PDF |
 | SketchUp | Cloud Sync's Sync Vegetation tab | Proxies both ways, three-way, ValeVision wins a clash; a path's plants come in locked |
 
 The library has shrubs, a clipped hedge (a card's Draw Path), and topiary: a ball, a standard and a cone. They draw in the live view, stills, thumbnails, video and a sheet's 3D pictures, on both engines, their fill at the brightness of a wall facing the camera, changing as you move. A planting change redraws a sheet's cached pictures. Plan of record: `ValeVision__PLAN__VegetationSystem__.md`. Code: `02__Src__AppModules/24__System__Vegetation` (its README). Library: `53__Vegetation__AssetLibrary`. A project's settings, every parameter of them, live in its record as `Vegetation__SceneData`. A project without that key costs one module and one listener.
+
+## Entourage (v2.88.0 to v2.91.0)
+
+People drawn in the plants' line language: flat figures that turn to the camera, line and face fading together, so they give a sense of scale without pulling the eye from the architecture. Dev Tools > Assets nests Entourage, Vegetation and Furnishings (to come), each with its own tick, which is the admin's off switch for that project.
+
+| Who | Where | What |
+|---|---|---|
+| Everyone, client links and phones included, where there are people | Tools & Settings > Entourage | Show Entourage, Transparency (60% to start), remembered on the device |
+| Staff on a computer or tablet, on any project | The Entourage panel on the left, which unfolding Tools & Settings > Entourage opens and folding it (or the panel's Close) shuts | Dropdown sections, one open at a time: Assets (the cards), In This Project and Changes, with Undo, Redo and Save Entourage at its foot. One of the two panels at a time: unfolding Entourage folds Vegetation, and the other way round |
+| Staff, while the Entourage panel is open | The model | Drag a card on, a ring on hover, drag a person to move them, M, Ctrl+D, Delete, right-click to replace with pictures of the others or delete |
+| An author (AppAdmin) | The same section | Entourage Linework, Show on Live Elevations |
+| An author | Dev Tools > Assets > Entourage | The one switch, where a viewer starts, Remove All |
+| An author | A sheet's viewport | An Entourage tick, off by default, puts people over its vectors, on screen and in the PDF. A plan never shows them |
+| SketchUp | Cloud Sync's Sync Entourage tab | Proxies both ways, three-way, ValeVision wins a clash |
+
+The library is 13 figures converted from the core component library's `60__Scene__Entourage__2D`: six men, six women and a Labrador. The code is `02__Src__AppModules/23__System__Entourage`, whose README has the files and the rules, and the library is `54__Entourage__AssetLibrary`. A new figure is a `.skp` in that folder and one call of the MCP tool `vv3d_entourage_import_skp`. What was baked into a GLB by tags 60 and 61 (Holt's silhouettes) still works by the old camera-follow billboards, and the two routes do not meet.
 
 ## Per-Scene Lighting (v2.71.0)
 

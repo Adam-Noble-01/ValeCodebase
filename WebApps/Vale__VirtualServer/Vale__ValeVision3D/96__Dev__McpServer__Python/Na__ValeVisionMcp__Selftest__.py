@@ -36,6 +36,7 @@ class Na__Client:
         environment = dict(os.environ, PYTHONUTF8='1')
         self.process = subprocess.Popen([sys.executable, '-B', NA_MAIN], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=environment)
         self.next_id = 0
+        self.notifications = []
 
     def request(self, method, params=None):
         self.next_id += 1
@@ -45,6 +46,8 @@ class Na__Client:
             message = json.loads(self.process.stdout.readline())
             if message.get('id') == self.next_id:
                 return message
+            if message.get('method'):
+                self.notifications.append(message['method'])
 
     def tool(self, name, arguments=None):
         return self.request('tools/call', {'name': name, 'arguments': arguments or {}})
@@ -113,6 +116,45 @@ def na_main():
         Na__Check('%s with no page is refused' % name, refused and 'vv3d_open' in text, text)
     refused, text = Na__Refused(client.tool('vv3d_open', {'project': project}))
     Na__Check('opening with no testing server is refused', refused and 'vv3d_sandbox_start' in text, text)
+
+    # TESTING AS A PERSON WOULD
+    for name, arguments in (('vv3d_mouse', {'action': 'move', 'x': 1, 'y': 1}), ('vv3d_key', {'key': 'Escape'}), ('vv3d_click', {'selector': 'body'}),
+                            ('vv3d_ui_read', {}), ('vv3d_world_to_screen', {'at_mm': [0, 0, 0]}), ('vv3d_run_module', {'file': NA_MAIN})):
+        refused, text = Na__Refused(client.tool(name, arguments))
+        Na__Check('%s with no page is refused' % name, refused and 'vv3d_open' in text, text)
+    refused, text = Na__Refused(client.tool('vv3d_level_walk', {'project': project}))
+    Na__Check('a level walk with no testing server is refused', refused and 'vv3d_sandbox_start' in text, text)
+    refused, text = Na__Refused(client.tool('vv3d_api_call', {'method': 'GET', 'path': 'projects'}))
+    Na__Check('an API call with no testing server is refused', refused and 'vv3d_sandbox_start' in text, text)
+
+    # WHO PLACED WHAT
+    refused, text = Na__Refused(client.tool('vv3d_scene_changes', {'project': project, 'system': 'Entourage', 'target': 'real', 'action': 'approve'}))
+    Na__Check('approving on real data is refused', refused and 'person' in text, text)
+    refused, text = Na__Refused(client.tool('vv3d_scene_changes', {'project': project, 'system': 'Entourage', 'target': 'real', 'action': 'revert'}))
+    Na__Check('putting back on real data is refused', refused and 'person' in text, text)
+    read = client.tool('vv3d_scene_changes', {'project': project, 'target': 'real'})
+    Na__Check('who placed what can be read', not read['result']['isError'] and 'Entourage' in read['result']['content'][0]['text'], read)
+
+    # THE WORKSHOP
+    readme = os.path.join(os.path.dirname(NA_MAIN), 'README__ValeVisionMcp__.md')
+    before = open(readme, 'rb').read()
+    refused, text = Na__Refused(client.tool('vv3d_patch_file', {'file': readme, 'edits': [{'old': 'no such words anywhere in this file', 'new': 'x'}]}))
+    Na__Check('a missing anchor is refused, and says nothing was written', refused and 'Nothing was written' in text, text)
+    answer = client.tool('vv3d_patch_file', {'file': readme, 'edits': [{'old': '# 96__Dev__McpServer__Python', 'new': '# 96__Dev__McpServer__Python'}], 'dry_run': True})
+    Na__Check('a dry run says what it would do', not answer['result']['isError'] and 'wouldWrite' in answer['result']['content'][0]['text'], answer)
+    Na__Check('neither touched the file', open(readme, 'rb').read() == before)
+    library = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(NA_MAIN))), 'Vale__Projects__MasterLibrary', 'x.json')
+    refused, text = Na__Refused(client.tool('vv3d_patch_file', {'file': library, 'edits': [{'old': 'a', 'new': 'b'}]}))
+    Na__Check('the project library is refused', refused and 'client or account data' in text, text)
+    refused, text = Na__Refused(client.tool('vv3d_patch_file', {'file': os.path.abspath(os.sep + 'Windows' + os.sep + 'win.ini'), 'edits': [{'old': 'a', 'new': 'b'}]}))
+    Na__Check('a file outside the app is refused', refused and 'Only the app' in text, text)
+    found = json.loads(client.tool('vv3d_consumers', {'name': 'Entourage__SceneData__Figures'})['result']['content'][0]['text'])
+    Na__Check('consumers finds a key in the app and the API', found['areas']['app'] and found['areas']['api'], found['files'])
+    answer = json.loads(client.tool('vv3d_reload_tools')['result']['content'][0]['text'])
+    Na__Check('reload reads the tools again', answer['tools'] == len(names) and answer['clientTold'] is True, answer)
+    Na__Check('and tells the client', 'notifications/tools/list_changed' in client.notifications, client.notifications)
+    Na__Check('the list still answers after a reload', len(client.request('tools/list')['result']['tools']) == len(names))
+    Na__Check('initialize says the list can change', client.request('initialize', {'protocolVersion': '2025-06-18'})['result']['capabilities']['tools']['listChanged'] is True)
     client.close()
 
     failed = NA_RESULTS.count(False)

@@ -383,7 +383,8 @@
             enhanceWhitecard  : flag('EnhanceWhitecard',  true),
             contextLayer      : flag('ContextLayer',      true),
             depthFog          : flag('DepthFog',          true),                 // <-- Follow the drawing: its own fog is off until its author switches it on, so this shows nothing until then
-            vegetation        : flag('Vegetation',        false)                 // <-- Off unless ticked per viewport, so no existing plan or elevation moves
+            vegetation        : flag('Vegetation',        false),                // <-- Off unless ticked per viewport, so no existing plan or elevation moves
+            entourage         : flag('Entourage',         false)                 // <-- The same for people
         };
     }
     // ------------------------------------------------------------

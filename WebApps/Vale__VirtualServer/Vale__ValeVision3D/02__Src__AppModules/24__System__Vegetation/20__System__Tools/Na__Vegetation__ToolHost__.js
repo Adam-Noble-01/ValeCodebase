@@ -25,8 +25,9 @@
 //   quiet until the 3D view is back: it reads what the keyboard scope reads.
 //
 // INTEGRATION:
-// - Used by ../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js, ./Na__Vegetation__LinearTool__.js
-//   and ./Na__Vegetation__BushTool__.js. Every tool is an object:
+// - Used by ../10__Ui__Panels/Na__Vegetation__AssetBrowser__.js, ./Na__Vegetation__LinearTool__.js,
+//   ./Na__Vegetation__BushTool__.js and 23__System__Entourage's figure tool: only one tool may
+//   have the clicks, whichever system it belongs to. Every tool is an object:
 //   { name, cursor, paintsWithLeft, onPress(event), onDrag(event), onRelease(event),
 //     onClick(event), onHover(event), onKey(event), paint(pen), onDisarm() }, all optional.
 //

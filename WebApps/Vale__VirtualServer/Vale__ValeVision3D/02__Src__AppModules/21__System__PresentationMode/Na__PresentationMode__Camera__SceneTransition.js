@@ -48,6 +48,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 06-Nov-2026 - Version 1.5.1 (v2.91.1)
+// - A scene target beyond controls.maxDistance is moved along its own view
+//   line, level with the OrbitHelperCube or at the reach (ReachableTarget),
+//   in the instant snap and the flight. Thorpe's IMG03 to IMG05 kept SketchUp
+//   targets 21.5 km away and the carousel flew the camera off the model.
+//
 // 28-Sep-2026 - Version 1.5.0 (per-scene lighting, v2.71.0)
 // - ApplySceneCameraState lights the model the way the scene asks, before the
 //   scene-activated announcement, so its listeners see the new light.
@@ -157,6 +163,12 @@
         Na__SceneLighting__Apply,
         Na__SceneLighting__IsBlendDuringFlight
     } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Orbit Pivot (the OrbitHelperCube centre, read only)
+    // @delegate: ../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js
+    // ------------------------------------------------------------
+    import { Na__OrbitPivot__GetPivot } from '../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -364,6 +376,43 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Keep a Scene's Orbit Target Within the Orbit's Reach
+    // ------------------------------------------------------------
+    // OrbitControls.update() holds the camera within controls.maxDistance of
+    // controls.target. SketchUp uses a camera's target only for its direction,
+    // so a synced scene can carry one kilometres down its view line (Thorpe's
+    // IMG03 to IMG05, 21.5 km): the flight slid the target out to it and
+    // update() dragged the camera off the model. A target beyond reach is
+    // moved along the same line, so the framing is unchanged: level with the
+    // orbit pivot (the OrbitHelperCube) when that lies ahead within reach,
+    // else at the reach itself. A target within reach is returned as it is.
+    //
+    // position, target {x,y,z} in scene units. Returns a new THREE.Vector3.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Camera__ReachableTarget(position, target, controls) {
+        const result = new THREE.Vector3(target.x, target.y, target.z);
+        const reach  = controls ? controls.maxDistance : Infinity;
+        if (!Number.isFinite(reach) || reach <= 0) return result;            // <-- No cap, nothing to reach
+
+        const eye      = new THREE.Vector3(position.x, position.y, position.z);
+        const look     = result.clone().sub(eye);
+        const distance = look.length();
+        if (distance <= reach || distance === 0) return result;              // <-- Within reach: the scene's own target
+        look.divideScalar(distance);                                         // <-- Unit view direction
+
+        let depth   = reach;
+        const pivot = Na__OrbitPivot__GetPivot();
+        if (pivot) {
+            const pivotDepth = new THREE.Vector3(pivot.x, pivot.y, pivot.z).sub(eye).dot(look);
+            const nearest    = Number.isFinite(controls.minDistance) ? controls.minDistance : 0;
+            if (pivotDepth > nearest && pivotDepth <= reach) depth = pivotDepth;  // <-- Level with the cube
+        }
+
+        return result.copy(eye).addScaledVector(look, depth);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Resolve the Navigation Mode a Scene Is Viewed In
     // ------------------------------------------------------------
     // 'orbit' | 'walk' | 'fly'. An absent or unknown value, or a mode the
@@ -424,7 +473,7 @@
             if (applyOrbitTarget && isFreeLookScene) {
                 Na__NavigationModes__PlaceLookAheadTarget(camera.position, camera.quaternion, controls.target); // <-- The scene's own look direction
             } else if (applyOrbitTarget && values.target) {
-                controls.target.set(values.target.x, values.target.y, values.target.z);  // <-- Snap orbit target
+                controls.target.copy(Na__PresentationMode__Camera__ReachableTarget(values.position, values.target, controls));  // <-- Snap orbit target, within reach
             }
             controls.update();                                                           // <-- Resync controls against new camera position either way
         }
@@ -581,7 +630,7 @@
         const endPos       = new THREE.Vector3(values.position.x, values.position.y, values.position.z);
         const endTarget    = isFreeLookScene
             ? Na__NavigationModes__PlaceLookAheadTarget(endPos, endQuat, new THREE.Vector3())   // <-- Where a walk or fly shot actually looks
-            : (values.target ? new THREE.Vector3(values.target.x, values.target.y, values.target.z) : startTarget.clone());
+            : (values.target ? Na__PresentationMode__Camera__ReachableTarget(endPos, values.target, controls) : startTarget.clone());  // <-- Within the orbit's reach
         const endFov       = values.fov !== null ? values.fov : startFov;
 
         const tempQuat     = new THREE.Quaternion();                          // <-- Reused scratch quaternion

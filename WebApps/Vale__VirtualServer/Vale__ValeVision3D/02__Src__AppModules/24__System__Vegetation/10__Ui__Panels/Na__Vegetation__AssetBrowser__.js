@@ -6,8 +6,8 @@
 // NAMESPACE  : Na__VegCards
 // MODULE     : System - Vegetation
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Vegetation Assets: the library as cards to place from, and everything
-//              this project holds, to select, focus, move, turn or take out
+// PURPOSE    : Vegetation Assets: the library as cards to place from, everything this
+//              project holds, to select, focus, move, turn or take out, and who changed what
 // CREATED    : 04-Nov-2026
 //
 // DESCRIPTION:
@@ -29,15 +29,40 @@
 // - DRAW PATH ON A CARD. A hedge is drawn alone, so a card goes straight to the Linear Tool
 //   with a palette of just that plant.
 //
+// - WHO DID WHAT (Adam, 05-Nov-2026: "who inserted what etc"). In This Project says it on each row,
+//   and whether it is waiting for an admin, with a tick for only your own. The Changes tab is
+//   ../../22__System__SceneAssets/Na__SceneAssets__ChangesPanel__.js.
+// - RIGHT-CLICK A PLANT: ../20__System__Tools/Na__Vegetation__PlantMenu__.js, while this is open.
+//
+// - ONE PANEL FOR ALL OF IT, AS DROPDOWN SECTIONS (Adam, 06-Nov-2026: "make the new menu on the left
+//   feel more like the sestablished style of the right each with dropdown sections and graphics etc",
+//   "we currently have multiple places for creating things"). The panel is called Vegetation, and
+//   holds Assets, Line Tool, Brush Tool, In This Project and Changes, one open at a time
+//   (../../22__System__SceneAssets/Na__SceneAssets__Hub__.js). The two tools draw into their
+//   section, and are armed on the model only while it is open.
+// - IT OPENS ON ASSETS WHEN VEGETATION IS UNFOLDED IN TOOLS & SETTINGS, AND GOES WHEN IT IS FOLDED
+//   (Adam: "people would expect those sections are the entry point for their respective asset
+//   browsers"). Closing it here folds the menu's section too.
+//
 // INTEGRATION:
-// - Opened from Tools & Settings > Vegetation (Na__Vegetation__MenuSection__.js).
+// - Opened and closed by Tools & Settings > Vegetation (Na__Vegetation__MenuSection__.js).
+// - @delegate: ../../22__System__SceneAssets/Na__SceneAssets__Hub__.js
 // - @delegate: ../20__System__Tools/Na__Vegetation__ToolHost__.js
 // - @delegate: ../20__System__Tools/Na__Vegetation__LinearTool__.js
+// - @delegate: ../20__System__Tools/Na__Vegetation__BushTool__.js
 // - @delegate: ./Na__Vegetation__PaletteEditor__.js
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 06-Nov-2026 - Version 1.3.0 (ValeVision3D v2.91.0)
+// - The panel is Vegetation, as dropdown sections: Assets, Line Tool, Brush Tool, In This Project and
+//   Changes. Open, Close, FoldSection and CurrentSection for the menu section and the tools.
+//
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.89.0)
+// - The tabs have their icons, and there is a Changes tab. Rows say who did it. Open on a named tab.
+//   Right-click a plant. Update to Latest is an admin's, as it changes every viewer's picture.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - Plant scale and sizes, a proxy under the pointer while a card is armed, Draw Path, and a box
 //   for a hedge on a card.
@@ -57,7 +82,24 @@
     // ------------------------------------------------------------
     import { Na__VegBuild__BuildPlant } from '../01__Core__Engine/Na__Vegetation__BushBuilder__.js';
     import { Na__VegContour__CreateOut, Na__VegContour__ResetOut, Na__VegContour__DrawBush } from '../01__Core__Engine/Na__Vegetation__Contour__.js';
-    import { Na__VegData__NextUid, Na__VegData__FindPath } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
+    import {
+        Na__VegData__NextUid,
+        Na__VegData__FindPath,
+        Na__VegData__WORK_EVENT,
+        Na__VegData__SYSTEM,
+        Na__VegData__Work,
+        Na__VegData__TakeAnswer,
+        Na__VegData__IsDirty
+    } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
+    import {
+        Na__SceneChanges__AddStyles,
+        Na__SceneChanges__Icon,
+        Na__SceneChanges__CountWaiting,
+        Na__SceneChanges__WhoDid,
+        Na__SceneChanges__WhoLine,
+        Na__SceneChanges__Draw
+    } from '../../22__System__SceneAssets/Na__SceneAssets__ChangesPanel__.js';
+    import { Na__SceneHub__Create } from '../../22__System__SceneAssets/Na__SceneAssets__Hub__.js';
     import { Na__VegPath__SetPlantScale } from '../01__Core__Engine/Na__Vegetation__PathModel__.js';
     import { Na__VegLib__LoadCatalogue, Na__VegLib__LoadAsset, Na__VegLib__PinAsset } from '../02__Core__Data/Na__Vegetation__Library__.js';
     import {
@@ -93,7 +135,9 @@
         Na__VegShell__BeforeChange,
         Na__VegShell__Toast,
         Na__VegShell__Config,
-        Na__VegShell__Prepare
+        Na__VegShell__Prepare,
+        Na__VegShell__Save,
+        Na__VegShell__AfterReplaced
     } from './Na__Vegetation__PanelShell__.js';
     import { Na__VegPalUi__AddAsset, Na__VegPalUi__OnlyThis } from './Na__Vegetation__PaletteEditor__.js';
     import {
@@ -104,6 +148,7 @@
         Na__VegTools__SetFallback
     } from '../20__System__Tools/Na__Vegetation__ToolHost__.js';
     import { Na__VegPick__AtPointer, Na__VegPick__RayAt } from '../20__System__Tools/Na__Vegetation__SurfacePick__.js';
+    import { Na__VegPlantMenu__Start, Na__VegPlantMenu__Stop, Na__VegPlantMenu__Paint } from '../20__System__Tools/Na__Vegetation__PlantMenu__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -131,7 +176,9 @@
     // ------------------------------------------------------------
     const Na__VegCards__State = {
         context   : null,
-        tab       : 'assets',
+        tab       : 'assets',                                                  // <-- The open section's key, '' with all folded
+        hub       : null,                                                      // <-- The sections, while the panel is open
+        opening   : null,                                                      // <-- The panel being built: a second ask waits for it
         search    : '',
         chips     : new Set(),
         chipsOpen : false,
@@ -147,7 +194,8 @@
         hoverHit  : null,                                                      // <-- World metres under the pointer while a card is armed
         hintEl    : null,
         listEl    : null,
-        resume    : null
+        resume    : null,
+        onlyMine  : false
     };
     // ------------------------------------------------------------
 
@@ -168,26 +216,30 @@
 
     // SUB FUNCTION | Draw One Card's Picture from the Same Code as the Scene
     // ------------------------------------------------------------
-    // A flat front view on a 2D canvas: no second GL context for a card each.
+    // A flat front view on a 2D canvas: no second GL context for a card each. size: { w, h }, for a
+    // smaller picture than a card's, as in the right-click menu.
     // ------------------------------------------------------------
-    function Na__VegCards__DrawPicture(canvas, recipe) {
+    function Na__VegCards__DrawPicture(canvas, recipe, size) {
         const state = Na__VegCards__State;
         const layer = Na__VegRun__GetLayer();
         const dpr   = Math.min(window.devicePixelRatio || 1, 2);
-        const w = Na__VegCards__CARD_W, h = Na__VegCards__CARD_H;
+        const w = size ? size.w : Na__VegCards__CARD_W, h = size ? size.h : Na__VegCards__CARD_H;
         canvas.width  = w * dpr;
         canvas.height = h * dpr;
         canvas.style.height = h + 'px';
+        if (size) canvas.style.width = w + 'px';
 
         const ctx = canvas.getContext('2d');
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, w, h);
         ctx.lineCap = 'round';
 
-        const size   = recipe.Asset__Size;
-        const widthM = size.Size__WidthMm / 1000, highM = size.Size__HeightMm / 1000;
-        const px     = Math.min((w - 34) / (widthM * 1.08), (h - 26) / (highM * 1.08));
-        const ox     = w / 2, oy = h - 14;
+        const own    = recipe.Asset__Size;
+        const widthM = own.Size__WidthMm / 1000, highM = own.Size__HeightMm / 1000;
+        const px     = size
+            ? Math.min((w - 10) / (widthM * 1.08), (h - 10) / (highM * 1.08))
+            : Math.min((w - 34) / (widthM * 1.08), (h - 26) / (highM * 1.08));
+        const ox     = w / 2, oy = size ? h - 5 : h - 14;
 
         if (state.pictures === 'proxy' && recipe.Asset__Proxy && recipe.Asset__Proxy.Proxy__Shape === 'Box') {
             // THE PROXY | A box, the same one the scene places
@@ -287,8 +339,8 @@
         ctx.strokeStyle = '#141414';
         ctx.lineWidth = 0.9;
         ctx.beginPath();
-        ctx.moveTo(10, oy);
-        ctx.lineTo(w - 10, oy);
+        ctx.moveTo(size ? 3 : 10, oy);
+        ctx.lineTo(w - (size ? 3 : 10), oy);
         ctx.stroke();
     }
     // ------------------------------------------------------------
@@ -510,7 +562,7 @@
         },
         paint(pen) {
             const state = Na__VegCards__State;
-            Na__VegCards__PaintSelected(pen);
+            if (!Na__VegPlantMenu__Paint(pen)) Na__VegCards__PaintSelected(pen);
             if (state.armedId && state.hoverHit) {
                 const recipe = state.recipes.get(state.armedId);
                 const size   = recipe.Asset__Size;
@@ -636,13 +688,14 @@
 
     // HELPER FUNCTION | One Row of In This Project
     // ------------------------------------------------------------
-    function Na__VegCards__Row(kind, uid, text, meta) {
+    function Na__VegCards__Row(kind, uid, text, meta, who) {
         const state = Na__VegCards__State;
         const isSelected = state.selected && state.selected.kind === kind && state.selected.uid === uid;
-        const row = Na__VegShell__El('button', 'na-veg-list-row' + (isSelected ? ' na-veg-list-row--selected' : ''));
+        const row = Na__VegShell__El('button', 'na-veg-list-row na-scene-list-row' + (isSelected ? ' na-veg-list-row--selected' : ''));
         row.type = 'button';
         row.appendChild(Na__VegShell__El('span', '', text));
         row.appendChild(Na__VegShell__El('span', 'na-veg-list-row__meta', meta));
+        if (who && (who.name || who.waiting)) row.appendChild(Na__SceneChanges__WhoLine(who));
         row.addEventListener('click', () => {
             state.selected = isSelected ? null : { kind, uid };
             Na__VegCards__DrawList();
@@ -847,7 +900,7 @@
             actions.appendChild(Na__VegShell__Button('Edit', '', async () => {
                 const tool = await import('../20__System__Tools/Na__Vegetation__LinearTool__.js');
                 await tool.Na__VegLinear__OpenOn(state.context, selected.uid);
-            }, 'In the Linear Tool'));
+            }, 'In the Line Tool'));
             actions.appendChild(Na__VegShell__Button('Remove', 'na-veg-btn--danger', Na__VegCards__RemoveSelected));
             holder.appendChild(actions);
             Na__VegCards__AppendPathScale(holder, path);
@@ -873,7 +926,7 @@
             const mine = pinned[assetId].Asset__Meta ? pinned[assetId].Asset__Meta.Meta__Version : '?';
             const catalogueRow = state.catalogue.find((candidate) => candidate.Asset__Id === assetId);
             row.appendChild(Na__VegShell__El('span', '', Na__VegCards__AssetName(assetId) + ' ' + mine));
-            if (catalogueRow && catalogueRow.Asset__Version !== mine) {
+            if (Na__VegData__Work().isAdmin && catalogueRow && catalogueRow.Asset__Version !== mine) {
                 row.appendChild(Na__VegShell__Button('Update to ' + catalogueRow.Asset__Version, '', async () => {
                     Na__VegShell__BeforeChange('');
                     delete pinned[assetId];
@@ -894,6 +947,7 @@
     function Na__VegCards__DrawList() {
         const state = Na__VegCards__State;
         if (state.tab === 'project') Na__VegCards__DrawProject();
+        if (state.tab === 'changes') Na__VegCards__DrawChanges();
         Na__VegTools__Repaint();
     }
     // ------------------------------------------------------------
@@ -910,36 +964,61 @@
 
         const paths = sceneData.Vegetation__SceneData__Paths;
         const plops = sceneData.Vegetation__SceneData__Plops;
+        const work  = Na__VegData__Work();
+        const myCode = work.me ? work.me.code : '';
+        const whoDid = (key) => Na__SceneChanges__WhoDid(work.summary, key, myCode);
         if (paths.length === 0 && plops.length === 0) {
-            holder.appendChild(Na__VegShell__El('p', 'na-veg-panel__hint', 'Nothing planted yet. Place a card, draw a path with the Linear Tool, or brush with the Bush Tool.'));
+            holder.appendChild(Na__VegShell__El('p', 'na-veg-panel__hint', 'Nothing planted yet. Place a card, draw a line with the Line Tool, or brush with the Brush Tool.'));
+        } else {
+            const mine = Na__VegShell__El('label', 'na-scene-mine');
+            const tick = Na__VegShell__El('input', 'na-veg-tick__input');
+            tick.type = 'checkbox';
+            tick.id = 'naVegetationOnlyMine';
+            tick.checked = state.onlyMine;
+            tick.addEventListener('change', () => {
+                state.onlyMine = tick.checked;
+                Na__VegCards__DrawProject();
+            });
+            mine.appendChild(tick);
+            mine.appendChild(Na__VegShell__El('span', '', 'Only mine'));
+            holder.appendChild(mine);
         }
 
-        if (paths.length > 0) {
+        const pathRows = paths.filter((path) => !state.onlyMine || whoDid('path:' + path.Vegetation__Path__Uid).mine);
+        if (pathRows.length > 0) {
             holder.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', 'Paths'));
-            paths.forEach((path) => {
+            pathRows.forEach((path) => {
                 const count = Na__VegRun__PathPlants(path).length;
-                holder.appendChild(Na__VegCards__Row('path', path.Vegetation__Path__Uid, path.Vegetation__Path__Name || path.Vegetation__Path__Uid, count + (count === 1 ? ' plant' : ' plants')));
+                holder.appendChild(Na__VegCards__Row('path', path.Vegetation__Path__Uid, path.Vegetation__Path__Name || path.Vegetation__Path__Uid, count + (count === 1 ? ' plant' : ' plants'), whoDid('path:' + path.Vegetation__Path__Uid)));
             });
         }
 
         const strokes = new Map();
         const singles = [];
         plops.forEach((plop) => {
+            const who = whoDid('plop:' + plop.Vegetation__Plop__Uid);
+            if (state.onlyMine && !who.mine) return;
             const uid = plop.Vegetation__Plop__StrokeUid;
-            if (uid) strokes.set(uid, (strokes.get(uid) || 0) + 1);
-            else singles.push(plop);
+            if (uid) {
+                const stroke = strokes.get(uid) || { count : 0, who };                 // <-- Brushed together: the first plant's name stands for the stroke
+                stroke.count++;
+                stroke.who = { name : stroke.who.name, mine : stroke.who.mine, waiting : stroke.who.waiting || who.waiting };
+                strokes.set(uid, stroke);
+            } else {
+                singles.push({ plop, who });
+            }
         });
         if (strokes.size > 0) {
             holder.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', 'Brush strokes'));
-            strokes.forEach((count, uid) => {
+            strokes.forEach((stroke, uid) => {
                 const label = uid === Na__VegCards__TEST_ROW ? 'Test row' : 'Stroke ' + uid;
-                holder.appendChild(Na__VegCards__Row('stroke', uid, label, count + (count === 1 ? ' plant' : ' plants')));
+                holder.appendChild(Na__VegCards__Row('stroke', uid, label, stroke.count + (stroke.count === 1 ? ' plant' : ' plants'), stroke.who));
             });
         }
         if (singles.length > 0) {
             holder.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', 'Single plants'));
-            singles.forEach((plop) => {
-                holder.appendChild(Na__VegCards__Row('plop', plop.Vegetation__Plop__Uid, Na__VegCards__AssetName(plop.Vegetation__Plop__AssetId), plop.Vegetation__Plop__Uid));
+            singles.forEach(({ plop, who }) => {
+                holder.appendChild(Na__VegCards__Row('plop', plop.Vegetation__Plop__Uid, Na__VegCards__AssetName(plop.Vegetation__Plop__AssetId), plop.Vegetation__Plop__Uid, who));
             });
         }
 
@@ -1086,7 +1165,7 @@
 
             const draw = Na__VegShell__El('button', 'na-veg-card__draw', 'Draw Path');
             draw.type = 'button';
-            draw.title = 'Draw a path of only this plant with the Linear Tool: how a hedge is made';
+            draw.title = 'Draw a path of only this plant with the Line Tool: how a hedge is made';
             draw.addEventListener('click', async (event) => {
                 event.stopPropagation();
                 const paletteUid = await Na__VegPalUi__OnlyThis(row.Asset__Id, row.Asset__Name);
@@ -1109,18 +1188,149 @@
 // REGION | The Panel
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Show a Tab
+    // SUB FUNCTION | The Changes Tab
+    // ------------------------------------------------------------
+    function Na__VegCards__DrawChanges() {
+        const state = Na__VegCards__State;
+        if (!state.listEl) return;
+        const work = Na__VegData__Work();
+        Na__SceneChanges__Draw(state.listEl, {
+            system    : Na__VegData__SYSTEM,
+            summary   : work.summary,
+            isAdmin   : work.isAdmin,
+            nameOf    : (what) => (what ? Na__VegCards__AssetName(what) : ''),
+            saveFirst : async () => (Na__VegData__IsDirty() ? Na__VegShell__Save() : true),
+            onAnswer  : async (answer) => {
+                state.selected = null;
+                await Na__VegData__TakeAnswer(answer);
+                await Na__VegShell__AfterReplaced();
+            },
+            onItem    : (item) => {
+                state.selected = { kind : item.Kind === 'path' ? 'path' : 'plop', uid : item.Uid };
+                Na__VegTools__Repaint();
+            },
+            toast     : Na__VegShell__Toast,
+            redraw    : Na__VegCards__DrawChanges
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Changes Row Says How Many Are Waiting
+    // ------------------------------------------------------------
+    // An admin's count is everyone's. Anyone else's is their own.
+    // ------------------------------------------------------------
+    function Na__VegCards__PaintCount() {
+        const hub = Na__VegCards__State.hub;
+        if (!hub) return;
+        const work = Na__VegData__Work();
+        hub.setCount('changes', Na__SceneChanges__CountWaiting(work.summary, work.isAdmin ? '' : (work.me && work.me.code)));
+    }
+    // ------------------------------------------------------------
+
+
+    // HANDLER | Who Did What Has Changed
+    // ------------------------------------------------------------
+    function Na__VegCards__OnWorkChanged() {
+        Na__VegCards__PaintCount();
+        if (Na__VegCards__State.listEl) Na__VegCards__DrawList();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open a Section, Folding the One That Was Open
+    // ------------------------------------------------------------
+    // 'assets', 'line', 'brush', 'project' or 'changes'. Resolves once it is drawn.
     // ------------------------------------------------------------
     function Na__VegCards__ShowTab(tab) {
+        const hub = Na__VegCards__State.hub;
+        return hub ? hub.open(tab) : Promise.resolve();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Section That Is a List: It Draws into Its Body While Open
+    // ------------------------------------------------------------
+    function Na__VegCards__ListSection(key, draw) {
+        return (body) => {
+            const state = Na__VegCards__State;
+            state.tab    = key;
+            state.listEl = body;
+            draw();
+            Na__VegTools__Repaint();
+            return () => {
+                if (state.listEl !== body) return;                             // <-- A section opened since owns the list now
+                state.listEl = null;
+                state.hintEl = null;
+            };
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Section That Is a Tool: Armed on the Model While Open
+    // ------------------------------------------------------------
+    // The tool draws its own rows into the body, and hands back how to stop.
+    // ------------------------------------------------------------
+    function Na__VegCards__ToolSection(key, load) {
+        return async (body, controls) => {
+            const state = Na__VegCards__State;
+            state.tab = key;
+            const mount = await load();
+            return mount(state.context, body, controls);
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Panel's Sections, in Order
+    // ------------------------------------------------------------
+    function Na__VegCards__Sections() {
         const state = Na__VegCards__State;
-        state.tab = tab;
-        state.hintEl = null;
-        document.querySelectorAll('#' + Na__VegCards__PANEL_ID + ' .na-veg-tabs__tab').forEach((button) => {
-            button.classList.toggle('na-veg-tabs__tab--active', button.dataset.tab === tab);
-        });
-        if (tab === 'project') Na__VegCards__DrawProject();
-        else Na__VegCards__DrawCards();
-        Na__VegTools__Repaint();
+        return [
+            {
+                key   : 'assets',
+                label : 'Assets',
+                icon  : 'Vegetation',
+                title : 'The library as cards: click a card, then click the model to drop one',
+                mount : (body) => {
+                    const stop = Na__VegCards__ListSection('assets', Na__VegCards__DrawCards)(body);
+                    return () => {
+                        if (state.armedId) Na__VegCards__StopPlacing();        // <-- A card left armed would still drop plants
+                        state.cardEls.clear();
+                        stop();
+                    };
+                }
+            },
+            {
+                key   : 'line',
+                label : 'Line Tool',
+                icon  : 'VegetationLine',
+                title : 'Draw a line on the model and plants are set out along it: how a hedge or a bed is made',
+                mount : Na__VegCards__ToolSection('line', async () => (await import('../20__System__Tools/Na__Vegetation__LinearTool__.js')).Na__VegLinear__Mount)
+            },
+            {
+                key   : 'brush',
+                label : 'Brush Tool',
+                icon  : 'VegetationBrush',
+                title : 'Brush plants on from a palette. Alt takes them away',
+                mount : Na__VegCards__ToolSection('brush', async () => (await import('../20__System__Tools/Na__Vegetation__BushTool__.js')).Na__VegBushTool__Mount)
+            },
+            {
+                key   : 'project',
+                label : 'In This Project',
+                icon  : 'InThisProject',
+                title : 'Every path, stroke and plant here: select, focus, size, move or take out',
+                mount : Na__VegCards__ListSection('project', Na__VegCards__DrawProject)
+            },
+            {
+                key   : 'changes',
+                label : 'Changes',
+                icon  : 'Changes',
+                title : 'Who has added, moved or deleted what here, and removing your own changes',
+                mount : Na__VegCards__ListSection('changes', Na__VegCards__DrawChanges)
+            }
+        ];
     }
     // ------------------------------------------------------------
 
@@ -1129,6 +1339,11 @@
     // ------------------------------------------------------------
     function Na__VegCards__OnClose() {
         const state = Na__VegCards__State;
+        if (state.hub) {
+            const hub = state.hub;
+            state.hub = null;
+            hub.destroy();                                                     // <-- The open section stops first: a tool lets go of the model
+        }
         state.armedId = null;
         state.moving  = false;
         state.selected = null;
@@ -1137,8 +1352,106 @@
         state.hintEl  = null;
         state.cardEls.clear();
         window.removeEventListener('na-vegetation-object-replaced', Na__VegCards__DrawList);
+        window.removeEventListener(Na__VegData__WORK_EVENT, Na__VegCards__OnWorkChanged);
+        if (state.context) Na__VegPlantMenu__Stop(state.context);
         Na__VegTools__SetFallback(null);
         Na__VegTools__Repaint();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Panel, Opening on a Section
+    // ------------------------------------------------------------
+    // A second ask while the first is still loading the library waits for it, so there is only
+    // ever one panel and one set of sections.
+    // ------------------------------------------------------------
+    async function Na__VegCards__Build(context, tab) {
+        const state = Na__VegCards__State;
+        if (Na__VegShell__IsOpen(Na__VegCards__PANEL_ID)) return;
+        if (!state.opening) {
+            state.opening = Na__VegCards__BuildNow(context, tab).finally(() => { state.opening = null; });
+        }
+        await state.opening;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build It Now
+    // ------------------------------------------------------------
+    async function Na__VegCards__BuildNow(context, tab) {
+        await Na__VegShell__Prepare(context);
+        await Na__VegTools__Prepare(context);
+        const state = Na__VegCards__State;
+        state.context = context;
+
+        state.catalogue = await Na__VegLib__LoadCatalogue();
+        for (const row of state.catalogue) {
+            if (!state.recipes.has(row.Asset__Id)) state.recipes.set(row.Asset__Id, await Na__VegLib__LoadAsset(row.Asset__Id));
+        }
+
+        Na__SceneChanges__AddStyles();
+        const panel = Na__VegShell__Open({
+            id      : Na__VegCards__PANEL_ID,
+            title   : 'Vegetation',
+            side    : 'left',
+            hub     : true,
+            icon    : Na__SceneChanges__Icon('Vegetation', 'na-scene-hub__title-icon'),
+            onClose : Na__VegCards__OnClose
+        });
+        state.hub = Na__SceneHub__Create(panel.body, {
+            sections : Na__VegCards__Sections(),
+            onOpened : (key) => {
+                if (!key) state.tab = '';
+                Na__VegTools__Repaint();
+            }
+        });
+
+        state.listEl = null;
+        window.addEventListener('na-vegetation-object-replaced', Na__VegCards__DrawList);
+        window.addEventListener(Na__VegData__WORK_EVENT, Na__VegCards__OnWorkChanged);
+        Na__VegCards__PaintCount();
+        Na__VegTools__SetFallback(Na__VegCards__Tool);                         // <-- Whenever no tool has the clicks, a click selects a plant
+        if (!Na__VegTools__Current()) Na__VegTools__Arm(Na__VegCards__Tool);
+        Na__VegPlantMenu__Start(context, {
+            hasTheClicks : () => Na__VegTools__Current() === Na__VegCards__Tool && !state.armedId && !state.moving,
+            onPicked     : (kind, uid) => {
+                state.selected = kind ? { kind, uid } : null;
+                if (kind && state.tab !== 'project') Na__VegCards__ShowTab('project');
+                else Na__VegCards__DrawList();
+            },
+            onChanged    : Na__VegCards__DrawList,
+            catalogue    : () => state.catalogue,
+            recipeOf     : (assetId) => state.recipes.get(assetId) || null,
+            drawPicture  : Na__VegCards__DrawPicture,
+            startMove    : () => {
+                state.armedId = null;
+                state.moving  = true;
+                Na__VegCards__TakeClicks();
+                Na__VegCards__SetCursor();
+                Na__VegCards__WriteHint();
+            }
+        });
+        await Na__VegCards__ShowTab(tab || 'assets');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open the Panel on Assets, If It Is Not Open
+    // ------------------------------------------------------------
+    // What unfolding Vegetation in Tools & Settings does.
+    // ------------------------------------------------------------
+    async function Na__VegCards__Open(context) {
+        await Na__VegCards__Build(context, 'assets');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Close the Panel, If It Is Open
+    // ------------------------------------------------------------
+    // What folding Vegetation in Tools & Settings does.
+    // ------------------------------------------------------------
+    function Na__VegCards__Close() {
+        Na__VegShell__Close(Na__VegCards__PANEL_ID);
     }
     // ------------------------------------------------------------
 
@@ -1146,37 +1459,40 @@
     // FUNCTION | Open the Panel, or Close It If It Is Open
     // ------------------------------------------------------------
     async function Na__VegCards__Toggle(context) {
-        await Na__VegShell__Prepare(context);
-        await Na__VegTools__Prepare(context);
-        const state = Na__VegCards__State;
-        state.context = context;
         if (Na__VegShell__IsOpen(Na__VegCards__PANEL_ID)) {
-            Na__VegShell__Close(Na__VegCards__PANEL_ID);
+            Na__VegCards__Close();
             return;
         }
+        await Na__VegCards__Build(context, 'assets');
+    }
+    // ------------------------------------------------------------
 
-        state.catalogue = await Na__VegLib__LoadCatalogue();
-        for (const row of state.catalogue) {
-            if (!state.recipes.has(row.Asset__Id)) state.recipes.set(row.Asset__Id, await Na__VegLib__LoadAsset(row.Asset__Id));
-        }
 
-        const panel = Na__VegShell__Open({ id : Na__VegCards__PANEL_ID, title : 'Vegetation Assets', side : 'left', onClose : Na__VegCards__OnClose });
+    // FUNCTION | Open the Panel on a Section, or Go to That Section If It Is Open
+    // ------------------------------------------------------------
+    async function Na__VegCards__OpenOn(context, tab) {
+        await Na__VegCards__Build(context, tab);
+        await Na__VegCards__ShowTab(tab);                                     // <-- Already open, or opened by an ask before this one
+    }
+    // ------------------------------------------------------------
 
-        const tabs = Na__VegShell__El('div', 'na-veg-tabs');
-        [['assets', 'Assets'], ['project', 'In This Project']].forEach(([tab, label]) => {
-            const button = Na__VegShell__El('button', 'na-veg-tabs__tab', label);
-            button.type = 'button';
-            button.dataset.tab = tab;
-            button.addEventListener('click', () => Na__VegCards__ShowTab(tab));
-            tabs.appendChild(button);
-        });
-        panel.root.insertBefore(tabs, panel.body);
 
-        state.listEl = panel.body;
-        window.addEventListener('na-vegetation-object-replaced', Na__VegCards__DrawList);
-        Na__VegTools__SetFallback(Na__VegCards__Tool);                         // <-- Whenever no tool has the clicks, a click selects a plant
-        if (!Na__VegTools__Current()) Na__VegTools__Arm(Na__VegCards__Tool);
-        Na__VegCards__ShowTab(state.tab);
+    // FUNCTION | Fold a Section, If It Is the Open One
+    // ------------------------------------------------------------
+    // The Brush Tool's Escape: stop brushing.
+    // ------------------------------------------------------------
+    function Na__VegCards__FoldSection(tab) {
+        const hub = Na__VegCards__State.hub;
+        if (hub && hub.current() === tab) hub.fold();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Which Section Is Open: '' When the Panel Is Shut or All Are Folded
+    // ------------------------------------------------------------
+    function Na__VegCards__CurrentSection() {
+        const hub = Na__VegCards__State.hub;
+        return hub ? hub.current() : '';
     }
     // ------------------------------------------------------------
 
@@ -1190,7 +1506,12 @@
     // MODULE EXPORTS | Asset Browser API
     // ------------------------------------------------------------
     export {
-        Na__VegCards__Toggle
+        Na__VegCards__Open,
+        Na__VegCards__Close,
+        Na__VegCards__Toggle,
+        Na__VegCards__OpenOn,
+        Na__VegCards__FoldSection,
+        Na__VegCards__CurrentSection
     };
     // ------------------------------------------------------------
 

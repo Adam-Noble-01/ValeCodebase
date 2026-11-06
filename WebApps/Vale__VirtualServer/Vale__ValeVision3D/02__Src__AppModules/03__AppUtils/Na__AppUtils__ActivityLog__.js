@@ -20,18 +20,18 @@
    - PEOPLE, NOT START-UP: the app picks a scene and a navigation mode by itself
      while it loads. Those are reported only after the person has touched, clicked
      or pressed a key, and only when they differ from the last one reported.
-   - The few actions with no event (a drawing a client opens, a sheet PDF, the
-     specification printed, a cross section placed, the measure tool, a Video
-     Studio preview, the project link email) call window.ValeActivity.Log where
-     they happen.
+   - The few actions with no event (a drawing a client opens, the specification
+     printed, a cross section placed, the measure tool, a Video Studio preview,
+     the project link email) call window.ValeActivity.Log where they happen.
+   - DOWNLOAD IMAGE, THE DRAWING EDITOR PDF AND LAYOUT EDITOR SHEET PDFS report
+     through Na__AppUtils__ExportReport__.js where the file is saved (1.4.0).
    - Who, where from and which project are added by the shared script and the
      server; nothing here can fail the app (no ValeActivity: nothing happens).
      On a client link the shared script adds the link's token to every report,
      so the Server Manager knows which client did what.
    - WHAT A VISIT DOES (1.2.0), heard from the page itself, no module changed:
-       image.export      an image actually downloaded after Download Image
-                         (Detail: Ratio, Resolution, Enhance, Custom, Lens);
-                         the shared script's own download report then stays quiet
+       image.export      moved to Na__AppUtils__ExportReport__ in 1.4.0 (reported
+                         by the export itself, with the size actually made)
        camera.lens       the lens slider let go (Target "35 mm"), once it settles
        camera.correction perspective correction on or off
        layer.toggle      a model layer shown or hidden (Target the layer)
@@ -49,6 +49,11 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.90.0)
+   - Download Image is no longer heard by its button and its download link (armed
+     for 3 minutes, so a longer render went unreported): the export reports itself
+     through Na__AppUtils__ExportReport__, as the two PDF exports do.
+
    04-Nov-2026 - Version 1.3.0 (ValeVision3D v2.85.0)
    - The Vegetation section's two controls for everyone report as settings.change: shown or
      hidden, and the transparency.
@@ -164,10 +169,8 @@
 // REGION | What a Visit Does: Exports, Camera, Layers, Settings, Menus (1.2.0)
 // -----------------------------------------------------------------------------
 
-    // MODULE VARIABLES | An Export Waiting for Its Download, the Lens Settling
+    // MODULE VARIABLES | The Lens Settling
     // ------------------------------------------------------------
-    var Na__ActLog__Export     = null;                                         // <-- { at, target, detail }: Download Image pressed
-    var Na__ActLog__ExportWait = 180e3;                                        // <-- A 4K render can take a while
     var Na__ActLog__LensTimer  = null;
     var Na__ActLog__LensMs     = 1200;                                         // <-- The lens is reported once it settles
     var Na__ActLog__ActiveVfx  = { naVfxProgressiveToggle: 1, naVfxProfileLinesToggle: 1, naVfxSsaoToggle: 1 };
@@ -192,20 +195,7 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | What Download Image Will Make (the panel as it stands when pressed)
-    // ------------------------------------------------------------
-    function Na__ActLog__ExportFacts() {
-        var ratio = Na__ActLog__Text('naImageExportRatioValue'), res = Na__ActLog__Text('naImageExportResolutionValue');
-        return {
-            target : ((res ? res + ' ' : '') + (ratio ? ratio + ' ' : '') + 'image').trim(),
-            detail : { Ratio: ratio, Resolution: res, Enhance: Na__ActLog__Checked('naImageExportEnhanceToggle'),
-                       Custom: Na__ActLog__Checked('naImageExportCustomToggle'), Lens: Na__ActLog__Text('naCameraLensValue') }
-        };
-    }
-    // ------------------------------------------------------------
-
-
-    // CLICKS | Download Image, the download itself, the bar, layers, settings, menus
+    // CLICKS | The bar, layers, settings, menus (exports report themselves: Na__AppUtils__ExportReport__)
     // ------------------------------------------------------------
     // Capture phase: the click is heard before a module's own handler can stop
     // it. State that the module changes (a panel opening, a layer's button) is
@@ -215,19 +205,6 @@
         var t = e.target;
         if (!t || !t.closest) return;
         try {
-            if (t.closest('#naImageExportAction')) {                           // <-- Armed: reported when the file downloads
-                Na__ActLog__Export = Object.assign({ at: Date.now() }, Na__ActLog__ExportFacts());
-                return;
-            }
-            var a = t.closest('a[download]');
-            if (a) {
-                var x = Na__ActLog__Export;
-                if (x && Date.now() - x.at < Na__ActLog__ExportWait && /\.(png|jpe?g|webp)$/i.test(a.getAttribute('download') || '')) {
-                    Na__ActLog__Export = null;
-                    Na__ActLog__Send('image.export', x.target, x.detail);      // <-- The shared script's download report stays quiet (within 3 s)
-                }
-                return;
-            }
             if (t.closest('#naNavToolbarResetBtn')) { Na__ActLog__Send('view.reset'); return; }
             if (t.closest('#naNavToolbarHelpBtn'))  { Na__ActLog__Send('help.open'); return; }
             if (t.closest('#naPurgeAppCacheAction')) { Na__ActLog__Send('settings.change', 'Purge App Cache'); return; }
@@ -300,6 +277,10 @@
             Na__ActLog__Send('settings.change', 'Vegetation: ' + (t.checked ? 'shown' : 'hidden'));
         } else if (t.id === 'naVegetationTransparencySlider') {
             Na__ActLog__Send('settings.change', 'Vegetation transparency: ' + t.value + '%');
+        } else if (t.id === 'naEntourageShowToggle') {
+            Na__ActLog__Send('settings.change', 'Entourage: ' + (t.checked ? 'shown' : 'hidden'));
+        } else if (t.id === 'naEntourageTransparencySlider') {
+            Na__ActLog__Send('settings.change', 'Entourage transparency: ' + t.value + '%');
         }
     }, true);
     // ------------------------------------------------------------

@@ -39,6 +39,11 @@
 
      data-app-avoid="#barId, .other"   optional: the app's own bars along the bottom. While one is
                                   on screen the card sits 12 px above it (checked every 0.5 s)
+     data-app-show-after-ms="1000"     optional: an app with nothing to sign in to or load first. The card
+                                  comes this long after the page opens, without waiting for the browser's
+                                  install offer (the default: 4 s, and up to 12 s for the offer). The app's
+                                  manifest must name itself in related_applications: that is how a copy
+                                  already installed is recognised
 
      ValeAppInstall.Show()        show the card now (a menu item), ignoring snoozes
      ValeAppInstall.HelpUrl()     the guide for this app and device
@@ -58,6 +63,11 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   05-Nov-2026 - Version 1.4.0
+   - data-app-show-after-ms: Disto Image Mapper has nothing to wait for, and Adam pressed its Install
+     App button before the card had come ("it should appear without needing the press the install
+     button"). Every app without the attribute keeps its timing.
+
    07-Oct-2026 - Version 1.3.0
    - Links open in the app. On a computer with ValeVision installed (Chrome or
      Edge; found with getInstalledRelatedApps), a page opened in a browser tab
@@ -527,7 +537,7 @@
         }
         if (p.kind !== 'native') { Na__ShowCard(p.kind); return; }
         if (Na__Deferred) { Na__ShowCard('native'); return; }
-        if (Date.now() - Na__Started < Na__WaitNativeMs) { window.setTimeout(Na__TryShow, 1500); return; }
+        if (Na__Opts.showAfterMs < 0 && Date.now() - Na__Started < Na__WaitNativeMs) { window.setTimeout(Na__TryShow, 1500); return; }
         Na__RelatedInstalled().then(function(installed) {                       // <-- No offer: installed already, or a manual install
             if (installed) Na__MarkInstalled();
             else if (!Na__Root && !Na__Snoozed()) Na__ShowCard('native');          // <-- Install stays the main button; it waits for the offer
@@ -545,7 +555,9 @@
     // ------------------------------------------------------------
     function Na__Init(opts) {
         if (Na__Opts || !opts || !opts.key) return;
-        Na__Opts = { key: String(opts.key), name: opts.name || 'the app', icon: opts.icon || '', avoid: opts.avoid || '' };
+        var showAfter = parseInt(opts.showAfterMs, 10);
+        Na__Opts = { key: String(opts.key), name: opts.name || 'the app', icon: opts.icon || '', avoid: opts.avoid || '',
+                     showAfterMs: showAfter >= 0 ? showAfter : -1 };                  // <-- -1: the usual timing
         var match = /[?&]install-preview=([a-z-]+)/.exec(window.location.search);
         Na__Preview = match ? match[1] : '';
         Na__Platform = (Na__Preview && Na__PreviewPlatform(Na__Preview)) || Na__Detect();
@@ -561,7 +573,7 @@
         var start = function() {
             Na__OpenAppInstalled().then(function(app) {                         // <-- The app is here already: offer to open this page in it
                 if (app) { Na__OpenApp = app; Na__OfferOpen(); }
-                else window.setTimeout(Na__TryShow, Na__Preview ? 300 : Na__FirstShowMs);
+                else window.setTimeout(Na__TryShow, Na__Preview ? 300 : (Na__Opts.showAfterMs >= 0 ? Na__Opts.showAfterMs : Na__FirstShowMs));
             });
         };
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
@@ -593,7 +605,7 @@
 
     if (Na__Script && Na__Script.dataset && Na__Script.dataset.appKey) {        // <-- Self-start from the script tag
         Na__Init({ key: Na__Script.dataset.appKey, name: Na__Script.dataset.appName, icon: Na__Script.dataset.appIcon,
-                   avoid: Na__Script.dataset.appAvoid });
+                   avoid: Na__Script.dataset.appAvoid, showAfterMs: Na__Script.dataset.appShowAfterMs });
     }
     // ------------------------------------------------------------
 

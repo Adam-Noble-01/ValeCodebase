@@ -32,6 +32,8 @@
     const RUNTIME   = '24__System__Vegetation/03__System__SceneLayer/Na__Vegetation__Runtime__.js';
     const SCENEDATA = '24__System__Vegetation/02__Core__Data/Na__Vegetation__SceneData__.js';
     const PICK      = '24__System__Vegetation/20__System__Tools/Na__Vegetation__SurfacePick__.js';
+    const ENT_RUN   = '23__System__Entourage/03__System__SceneLayer/Na__Entourage__Runtime__.js';
+    const ENT_DATA  = '23__System__Entourage/02__Core__Data/Na__Entourage__SceneData__.js';
     const TRANS     = '40__System__DrawingViewCore/Na__DrawView__Transitions__.js';
     const RENDER    = '05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     const SCENES    = '21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
@@ -58,6 +60,104 @@
     }
 
     window.Na__VvMcp = {
+
+        // WHERE A POINT IN THE MODEL IS ON SCREEN | Integer mm, three.js axes, to client pixels
+        async worldToScreen(pointMm) {
+            const { camera } = await core();
+            const three = await import('three');
+            const v = new three.Vector3(toM(pointMm[0]), toM(pointMm[1]), toM(pointMm[2])).project(camera);
+            const canvases = Array.from(document.querySelectorAll('canvas')).filter((c) => c.clientWidth > 0).sort((a, b) => (b.clientWidth * b.clientHeight) - (a.clientWidth * a.clientHeight));
+            const box = canvases[0].getBoundingClientRect();
+            const x = box.left + (v.x * 0.5 + 0.5) * box.width, y = box.top + (-v.y * 0.5 + 0.5) * box.height;
+            return { x : Math.round(x * 10) / 10, y : Math.round(y * 10) / 10, inView : v.z < 1 && x >= 0 && y >= 0 && x <= window.innerWidth && y <= window.innerHeight };
+        },
+
+        // WHAT IS REALLY ON SCREEN | Its words, its state, and what is cut off
+        async uiRead(selector, includeBoxes) {
+            const scope = selector ? document.querySelector(selector) : document.body;
+            if (!scope) throw new Error('nothing matches ' + selector);
+            const shows = (el) => {
+                const r = el.getBoundingClientRect();
+                if (r.width <= 0 || r.height <= 0) return false;
+                const s = getComputedStyle(el);
+                if (s.visibility === 'hidden' || s.display === 'none' || Number(s.opacity) === 0) return false;
+                return r.bottom > 0 && r.right > 0 && r.left < window.innerWidth && r.top < window.innerHeight;
+            };
+            const words = (el) => (el.innerText || el.value || el.title || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 90);
+            const selectors = 'button, a[href], input, select, textarea, summary, [role=button], [role=menuitem], .na-veg-panel__section, .na-veg-panel__hint, .na-dropdown-menu__panel-title';
+            const rows = [], clipped = [];
+            Array.from(scope.querySelectorAll(selectors)).filter(shows).forEach((el) => {
+                const r = el.getBoundingClientRect();
+                const row = { tag : el.tagName.toLowerCase(), text : words(el) };
+                if (el.id) row.id = el.id;
+                if (el.disabled) row.disabled = true;
+                if (el.type === 'checkbox' || el.type === 'radio') row.checked = el.checked;
+                else if (el.tagName === 'INPUT' || el.tagName === 'SELECT') row.value = el.value;
+                if (includeBoxes) row.box = [r.left, r.top, r.width, r.height].map(Math.round);
+                rows.push(row);
+                if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0 && el.tagName !== 'INPUT') clipped.push({ text : row.text, id : el.id || '', overBy : el.scrollWidth - el.clientWidth });
+                const holder = el.closest('.na-veg-panel, .na-ent-menu, .na-dropdown-menu__panel');
+                if (holder) {
+                    const h = holder.getBoundingClientRect();
+                    if (r.right > h.right + 1 || r.left < h.left - 1) clipped.push({ text : row.text, id : el.id || '', runsPast : holder.id || holder.className.split(' ')[0], byPx : Math.round(Math.max(r.right - h.right, h.left - r.left)) });
+                }
+            });
+            const panels = Array.from(document.querySelectorAll('.na-veg-panel, .na-ent-menu')).filter(shows);
+            const sideways = Array.from(scope.querySelectorAll('.na-veg-panel, .na-veg-panel__scroll, .na-ent-menu, .na-ent-swaps')).filter(shows)
+                .filter((el) => el.scrollWidth > el.clientWidth + 1 || el.scrollLeft > 0)
+                .map((el) => ({ id : el.id || el.className.split(' ')[0], overBy : el.scrollWidth - el.clientWidth, scrolledBy : el.scrollLeft }));
+            const messages = Array.from(document.querySelectorAll('[class*=toast], [class*=Toast], [id*=toast], [id*=Toast]')).filter(shows).map((el) => words(el)).filter(Boolean);
+            const menu = document.getElementById('naToolsMenu');
+            return { rows, clipped, sideways, openPanels : panels.map((el) => el.id || el.className), messages, toolsMenuOpen : !!(menu && menu.open) };
+        },
+
+        // WHAT A PERSON IS OFFERED | Each section of Tools & Settings, and the rows inside those named
+        async menuRows(sectionIds) {
+            const menu = document.getElementById('naToolsMenu');
+            if (menu) menu.open = true;
+            const shown = (el) => !!el && el.style.display !== 'none' && getComputedStyle(el).display !== 'none';
+            const sections = menu ? Array.from(menu.querySelectorAll(':scope .na-dropdown-menu__item')).filter((li) => shown(li) && li.offsetParent !== null)
+                .map((li) => { const b = li.querySelector('button, summary'); return b ? b.innerText.trim().replace(/\s+/g, ' ').replace(/ ?\u25BE$/, '') : ''; }).filter(Boolean) : [];
+            const inside = {};
+            (sectionIds || []).forEach((id) => {
+                const panel = document.getElementById(id);
+                if (!panel) return;
+                const item = panel.closest('.na-dropdown-menu__item');
+                if (item && !shown(item)) { inside[id] = null; return; }
+                inside[id] = Array.from(panel.querySelectorAll('button, input, .na-dropdown-menu__panel-title')).map((el) => (el.id ? el.id + ': ' : '') + (el.innerText || '').trim().replace(/\s+/g, ' ')).filter(Boolean);
+            });
+            if (menu) menu.open = false;
+            return { menu : sections, inside };
+        },
+
+        // WHAT IS OPEN | The sections unfolded in Tools & Settings, the plants' and people's panels
+        // with their open section (v2.91.0), and the tool that has the model's clicks. The tool host
+        // is read only while one of those panels is open, when the page has loaded it already, so
+        // this never fetches a staff module. Not resource timing: its list stops at 250, and the app
+        // loads more modules than that.
+        async panels() {
+            const menu = document.getElementById('naToolsMenu');
+            const unfolded = Array.from(document.querySelectorAll('#naToolsMenu .na-dropdown-menu__panel.is-open')).map((el) => el.id).filter(Boolean);
+            const open = Array.from(document.querySelectorAll('aside.na-veg-panel')).map((panel) => {
+                const heads = Array.from(panel.querySelectorAll('.na-scene-hub__head'));
+                const opened = heads.find((head) => head.getAttribute('aria-expanded') === 'true');
+                const title = panel.querySelector('.na-veg-panel__title');
+                return {
+                    id       : panel.id,
+                    side     : panel.classList.contains('na-veg-panel--left') ? 'left' : 'right',
+                    title    : title ? title.textContent.trim() : '',
+                    folded   : panel.classList.contains('na-veg-panel--folded'),
+                    sections : heads.map((head) => head.dataset.section),
+                    open     : opened ? opened.dataset.section : ''
+                };
+            });
+            let tool = null;
+            if (open.length > 0) {
+                const current = (await load('24__System__Vegetation/20__System__Tools/Na__Vegetation__ToolHost__.js')).Na__VegTools__Current();
+                tool = current ? (current.name || 'unnamed') : null;
+            }
+            return { toolsMenuOpen : !!(menu && menu.open), unfolded, panels : open, toolOnModel : tool };
+        },
 
         async getCamera() {
             const { camera, controls } = await core();
@@ -128,7 +228,7 @@
             if (!current) return { enabled : false };
             const run = await load(RUNTIME);
             const slider = document.getElementById('naVegetationTransparencySlider');
-            const wanted = run.Na__VegRun__WantedPlants();
+            const wanted = run.Na__VegRun__GetSceneData() ? run.Na__VegRun__WantedPlants() : [];   // <-- With nothing planted yet the layer has not been made
             const counts = {};
             wanted.forEach((plop) => { counts[plop.Vegetation__Plop__AssetId] = (counts[plop.Vegetation__Plop__AssetId] || 0) + 1; });
             return {
@@ -155,11 +255,47 @@
             return this.vegetation();
         },
 
+        // THE PEOPLE
+        async entourage() {
+            const data = await load(ENT_DATA);
+            const current = data.Na__EntData__Current();
+            if (!current) return { enabled : false };
+            const run = await load(ENT_RUN);
+            const slider = document.getElementById('naEntourageTransparencySlider');
+            const figures = current.Entourage__SceneData__Figures;
+            const counts = {};
+            figures.forEach((figure) => { counts[figure.Entourage__Figure__AssetId] = (counts[figure.Entourage__Figure__AssetId] || 0) + 1; });
+            return {
+                enabled                    : current.Entourage__SceneData__Enabled === true,
+                shown                      : run.Na__EntRun__IsShown(),
+                transparencyPercentOnPage  : slider ? Number(slider.value) : null,
+                transparencyPercentInRecord: current.Entourage__SceneData__DefaultTransparencyPercent,
+                figures                    : figures.length,
+                figuresByAsset             : counts,
+                unsavedChanges             : data.Na__EntData__IsDirty(),
+                stats                      : run.Na__EntRun__GetStats()
+            };
+        },
+
+        async setEntourage(change) {
+            const run = await load(ENT_RUN);
+            if (change.shown !== undefined) run.Na__EntRun__SetShown(change.shown === true);
+            if (change.transparency_percent !== undefined) {
+                run.Na__EntRun__SetTransparency(change.transparency_percent);
+                const slider = document.getElementById('naEntourageTransparencySlider');
+                if (slider) slider.value = String(change.transparency_percent);
+            }
+            await requestRender();
+            return this.entourage();
+        },
+
         // THE SURFACE | The first real surface below a height, at each plan spot
         async probe(spots, fromHeightMm) {
             const run = await load(RUNTIME);
+            const door = await load('24__System__Vegetation/Na__Vegetation__.js');
+            if (door.Na__Vegetation__IsActive()) await door.Na__Vegetation__EnsureStarted();        // <-- With nothing planted yet the layer has not been made
             const context = run.Na__VegRun__GetContext();
-            if (!context) throw new Error('a probe uses the vegetation system\'s pick, so this project needs vegetation switched on');
+            if (!context) throw new Error('a probe uses the vegetation system\'s pick, and vegetation is off for this project or for this person');
             const pick = await load(PICK);
             pick.Na__VegPick__Initialize(context);
             await pick.Na__VegPick__Prepare();

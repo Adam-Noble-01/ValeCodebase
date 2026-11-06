@@ -56,6 +56,12 @@
 // - The buttons live in the side menu (same ids). A sheet with no picture, and a
 //   failed flatten, say so on screen rather than only in the console.
 //
+// 06-Nov-2026 - Version 2.4.0
+// - Each PDF made is reported to the activity ledger as drawing.export ("Exported a
+//   drawing PDF"; Target the layout name; Detail Kind "Full layout" or "Image only"
+//   and File), through the app's shared Na__AppUtils__ExportReport__ (v2.90.0), which
+//   finds ValeVision 3D's window.ValeActivity around this frame; alone, nothing.
+//
 // =============================================================================
 
 
@@ -67,6 +73,7 @@
     // ------------------------------------------------------------
     import { Na__PageLayout__DrawImageLayer } from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
     import { Na__PageLayout__Toast } from './Na__PageLayoutSystem__UiNotify__.js';
+    import { Na__ExportReport__Send } from '../03__AppUtils/Na__AppUtils__ExportReport__.js';   // <-- Activity ledger: what was produced
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -171,6 +178,23 @@
             .replace('{project}', safe(project.split('/').pop()) || 'Project')
             .replace('{layout}', name);
         return /\.pdf$/i.test(file) ? file : file + '.pdf';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Report the PDF to the Activity Ledger (never throws, never in the way)
+    // ------------------------------------------------------------
+    // The page is ValeVision 3D's Drawing Editor frame: the app's window holds the
+    // shared ValeShared__ActivityLog__.js (window.ValeActivity), which adds who,
+    // where from and the share link. Alone (?standalone=1) there is none.
+    // ------------------------------------------------------------
+    function Na__PageLayout__ReportPdfExport(state, isFullLayout, filename) {
+        try {
+            const record  = state.layout && state.layout.record;
+            const name    = String((state.layout && state.layout.name) || (record && record.PageLayouts__Layout__Name) || 'Drawing').trim();
+            const project = (state.project && state.project.id) ? String(state.project.id) : '';
+            Na__ExportReport__Send('drawing.export', name, { Kind: isFullLayout ? 'Full layout' : 'Image only', File: filename }, project);
+        } catch (err) { /* the ledger never stops a PDF */ }
     }
     // ------------------------------------------------------------
 
@@ -326,7 +350,9 @@
             return;
         }
 
-        doc.save(Na__PageLayout__ResolvePdfFilename(state, pdfConfig, true)); // <-- Download PDF
+        const filename = Na__PageLayout__ResolvePdfFilename(state, pdfConfig, true);
+        doc.save(filename); // <-- Download PDF
+        Na__PageLayout__ReportPdfExport(state, true, filename); // <-- Activity ledger
     }
     // ------------------------------------------------------------
 
@@ -371,7 +397,9 @@
             return;
         }
 
-        doc.save(Na__PageLayout__ResolvePdfFilename(state, pdfConfig, false)); // <-- Download PDF
+        const filename = Na__PageLayout__ResolvePdfFilename(state, pdfConfig, false);
+        doc.save(filename); // <-- Download PDF
+        Na__PageLayout__ReportPdfExport(state, false, filename); // <-- Activity ledger
     }
     // ------------------------------------------------------------
 

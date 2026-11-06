@@ -1,6 +1,168 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.91.1 - 06-Nov-2026 - A Scene Whose SketchUp Target Is Far Away Flies In and Lands on Its Shot
+### Adam: "Investigate why Valevision Cloudsync is not syncing the correct camera positions. I'm getting to camera 3 in the carousel of the latest job we just uploaded, and it's whipping the camera back at a strange angle. Is the data correctly being passed to the server when I resync?", then: "Do it, but why is the orbit helper cube not being used? or is that for something else. make the other fixes suggested too"
+
+**What was wrong:** the sync was faithful. SketchUp, the PC's record for `60227__Thorpe` and the live server held the same cameras. But Thorpe's IMG03, IMG04 and IMG05 kept their SketchUp targets 21,537 m down the view line (IMG01 and IMG02: 39 to 44 m). SketchUp uses a target only for its direction, so the shots looked right there. Here the target is the orbit target: the flight slid `controls.target` out towards it, and `OrbitControls.update()` held the camera within the project's 50 m `Navmode__OrbitMaxDistanceMm` of it every frame, which dragged the camera off the model.
+
+**Why the OrbitHelperCube did not save it:** the cube takes over as the pivot on the first real drag after a scene lands (`Na__Navmode__OrbitPivot__InteractionSwap`). Through the flight and at rest the target must be the shot's own look-at point, or `update()` aims the camera at the cube instead of the shot.
+
+**Now:** a scene's target beyond `controls.maxDistance` is moved along its own view line, so the framing is unchanged. It lands level with the OrbitHelperCube when the cube lies ahead within reach, else at the reach. This happens in the instant snap and the flight, so the carousel, the launch camera, Layout Editor pictures and batch captures all get it. A target within reach is untouched. ValeVision Cloud Sync 0.7.1 also moves such a target at capture, onto the first thing the view line hits, and Thorpe's three scenes were fixed the same way in SketchUp.
+
+**Changed:** `Na__PresentationMode__Camera__SceneTransition.js` 1.5.1 (`Na__PresentationMode__Camera__ReachableTarget`), `Na__Navmode__OrbitPivot__InteractionSwap.js` 1.0.1 (`Na__OrbitPivot__GetPivot`). No record key, no API change.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, undeclared names and every import clean.
+- In Node, against the real three.js, using Thorpe's own numbers: IMG01 kept exactly; IMG03 pulled from 21.5 km to 37.5 m, level with a cube near the building, with the view line unchanged (0 degrees); with no cube, or a cube behind the camera, it lands at 50 m; no cap, or no controls, means it is kept; the argument is not changed.
+
+**Not checked:**
+- **The flight in a browser.** Nothing was looked at on screen.
+- **Anything live:** the app is not pushed and nothing is committed.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.91.0 - 06-Nov-2026 - Vegetation and Entourage Each Have One Panel, Opened by Unfolding Their Section, in the Menu's Own Style
+### Adam: "Make it so the entourage assets and vegetation assets panels always open when the menu section is unfolded. people would expect those sections are the entry point for their respective asset browsers, ensure when the section in the menu is folded the browser dissapears, see image 02 this section is pointless, this should be handled by the specialit menu that pops up", "See image 03 the same is true for the vegetation, we currently have multiple places for creating things, make the new menu on the left feel more like the sestablished style of the right each with dropdown sections and graphics etc", "effectively overhaul the UI for those systems to make it much more user friendly intuitive and less convoluted"
+
+**Before:** Tools & Settings > Vegetation held a Create New Vegetation fold (Vegetation Assets, Line Tool, Brush Tool), then Changes and Save; Entourage held Entourage Assets, Changes and Save. Each button opened a floating panel of its own: the asset browser on the left with three tabs, and the Line and Brush Tools on the right, where opening one shut Tools & Settings. Changes was in the menu and again as a tab.
+
+**Adam's answers:** one section open at a time in the panel; Line Rules and the drawings tick stay in the right menu for admins; closing Tools & Settings itself leaves the panel open.
+
+**Now:**
+- **Unfold the section and the panel opens; fold it and the panel goes.** For staff on a computer or tablet, unfolding Vegetation or Entourage in Tools & Settings opens its panel on the left, on Assets, and Tools & Settings stays open beside it. Folding the section, or the panel's own Close, shuts it, and either way the other follows. One of the two panels at a time: unfolding Entourage folds Vegetation, and the other way round. Closing Tools & Settings leaves the panel up, so the model's right side is clear to work on.
+- **One panel for all of it, as dropdown sections.** The Vegetation panel holds Assets, Line Tool, Brush Tool, In This Project and Changes; the Entourage panel holds Assets, In This Project and Changes. Each is a row with its icon and arrow, as in Tools & Settings, and the panel's title carries the system's icon as the menu's does. The open section sits in the menu's own grey inset and scrolls inside itself, so every row stays in view; Undo, Redo and Save are at the foot, and the panel is only as tall as what is open. Changes shows how many are waiting on its row.
+- **The Line and Brush Tools are sections, not panels on the right.** A tool is armed on the model only while its section is open: opening another section folds it and lets go of the model. Escape in the Brush Tool folds it. A card's Draw Path and a path's Edit open the Line Tool section.
+- **The menu section keeps only what is for viewing:** Show and Transparency for everyone, and for an admin Line Rules and the drawings tick. No placing buttons, no Changes, no Save.
+- **Folding a section with unsaved work says so,** as Save goes with the panel. Clients, Affiliates and phones: as before, the two rows, and nothing more is fetched.
+
+**Also today, in the library:** Rounded Shrub, Upright Shrub and Low Border Drift each have a No Grass version, `VVL_07_1002`, `VVL_07_1012` and `VVL_07_1022` (Var-02): the same plant with no strap-leaf tufts at its foot. Adam: "Valevision 3D , Create vartiations of these vegetation assets without the grass", then "Yes, swap Garnett". Garnett's Mixed Planting palette uses them, rev 19, its record pushed at stamp 20261106-102615 (one file, no restart). The library files themselves go up with the next push of the app.
+
+**New:** `22__System__SceneAssets/Na__SceneAssets__Hub__.js` 1.0.0. **Changed:** `Na__Vegetation__MenuSection__.js` 1.2.0, `Na__Entourage__MenuSection__.js` 1.2.0, `Na__Vegetation__AssetBrowser__.js` 1.3.0, `Na__Entourage__AssetBrowser__.js` 1.2.0, `Na__Vegetation__PanelShell__.js` 1.4.0, `Na__Entourage__PanelShell__.js` 1.2.0, `Na__Vegetation__LinearTool__.js` 1.4.0, `Na__Vegetation__BushTool__.js` 1.3.0, `Na__SceneAssets__Styles__.css` 1.1.0, the four READMEs. No API change, no record key.
+
+**MCP:** `vv3d_page_state` also says what is open: the Tools & Settings sections unfolded, the Vegetation and Entourage panels with their open section, and the tool on the model (`Na__ValeVisionMcp__PageHelpers__.js` `panels`). This job read that by hand six times.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, undeclared names and every import clean; the boot graph 315 modules, none added (the panel loads on first use).
+- **On a sandbox copy of Garnett, in headless Edge with a real mouse, as an AppAdmin:** unfolding Vegetation opens the panel on Assets with Tools & Settings still open; Line Tool arms the line tool and draws its rows in the section, with no panel on the right; Brush Tool arms the brush; Escape folds it, the panel shrinks to its rows and the select tool is back; folding Vegetation shuts the panel with no tool left armed; unfolding again opens on Assets; the panel's Close folds the section; Vegetation then Entourage swaps the panels and folds Vegetation; closing Tools & Settings leaves the panel; In This Project and Changes draw; a card's Draw Path opens the Line Tool drawing, crosshair on; Path 3's Edit opens the Line Tool with its grips on the model; folding with unsaved work gives the message.
+- **As an Employee:** the panel opens on unfolding, and the section has Show and Transparency only. **As a client link:** the two rows, nothing opens, and no panel module is fetched.
+
+**Not checked:**
+- **A person's hand:** a real iPad, or a tablet in portrait where the panel and Tools & Settings sit side by side.
+- **Placing and saving end to end through the new panel,** and a MaxEngine project. The code under each section is as it was; only where it draws has changed.
+- **Anything live:** the app is not pushed and nothing is committed.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.90.0 - 06-Nov-2026 - Download Image and the Drawing PDFs Report What Was Made
+### Adam: "Find any other export parts of the menu and ensure similar robust handling and reporting such as image exports etc so i can always see what people have produced using the app", then: "Report only these do not listen for the others from your table: Download Image, Drawing Editor PDF, Layout Editor sheet PDF"
+
+**Before:** Download Image was reported by listening for its button and then its download link, armed for 3 minutes (a longer render went unreported). A Layout Editor sheet PDF was a generic "Downloaded a file". The Drawing Editor PDF had its own report since this morning (`Na__PageLayoutSystem__PdfExport__A3__` 2.4.0).
+
+**Now:** one module, `03__AppUtils/Na__AppUtils__ExportReport__.js` (1.0.0), called by the export right after the file is handed over, never by listening for clicks. It finds `window.ValeActivity` in the page or, for the Drawing Editor's frame, its parent; with none it does nothing, and it never throws.
+
+| Export | Action | Target | Detail |
+|---|---|---|---|
+| Download Image | `image.export` | "4K 16:9 image" (as before) | Kind, File, Width, Height, SizeMb, Ratio, Resolution, Enhance, Custom, Lens, Reduced |
+| Drawing Editor PDF | `drawing.export` | the layout name | Kind (Full layout / Image only), File |
+| Layout Editor sheet PDF | `drawing.export` (was `file.download`) | the sheet name | Kind "Layout Editor sheet", File |
+
+- Not reported, at Adam's word: the presentation scenes batch, render layers, the specification and register PDFs, Video Studio, the developer JSON files. Their code is as it was (the shared script's own "Downloaded a file" still hears a download link put on the page, as before).
+- `Na__AppUtils__ActivityLog__.js` 1.4.0: the Download Image listener is gone, so an image is never counted twice.
+- No ledger change: `ValeShared__Activity__.py` 1.2.2, live since 08:27 UTC, takes both actions. Server Manager 0.16.2 lists them in a "What people produced" card.
+
+**Checked:** every touched module parses as an ES module, and each import of the new module resolves. Not run in a browser.
+
+**Live:** pushed 06-Nov-2026 08:46 UTC (`valevision3d`: 1 new, 4 changed in content, 7 re-sent byte-identical; all 12 live files match the PC by SHA-256). No API change or restart. Not committed. A real export not yet tried.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.89.0 - 05-Nov-2026 - Employees Place People and Plants, Every Change Is Tracked by Name, Clients See Them Once an Admin Approves, and Anyone's Changes Can Be Put Back
+### Adam: "YOU DID AN AMAZING JOB! WOW! Employees should be able to create entourage and foliage. So we need a system and way of tracking ownership of those assets and changes, so who inserted what etc. 2. See Image 1. Add graphics to the assets menu 2. Create Graphics for the line and brush tools and give employees access to the vegetation brush and line tool, but nest in a new "Create New Vegetation" subsection 3. Add the same right click swap for vegetation too. 4. Add way for user / admin to delete their changes (effectively revert the assetrs to the state before they added anything 5. Identiffy any pottential MCP tooling that would have made your life easier during these or your last task and add them to the mcp folder for ValeVision"
+
+**Before:** only an AppAdmin could place a person or a plant, nothing said who had, and both systems were off until an admin ticked them on each project.
+
+**Adam's answers:** whose items an Employee may change, "Anything, all tracked". Which projects, "Any Project, make the admin ticked on boxes on by default now, i gated it initially whilst testing but its ready to roll out, keep those gates so i can disable though". What a client sees, "After an admin approves".
+
+**How it works.** The record stays exactly what it was, and is now what is approved: a client link reads only that, so nothing waiting can reach a client, by design and not by a filter someone could forget. What is waiting sits beside it, in `<project>/ValeVision3D/UserData__SceneAssets/ValeVision__SceneAssets__Changes__.json`, which holds staff names and which nginx and the API shut to a client. Staff work on the record with what is waiting laid over it.
+- **A save says what changed,** not the whole key: what this window read and what it holds now. The server works out the difference item by item (a figure, a plop, a path, a palette), under its lock, so a SketchUp sync or somebody else's work since is never overwritten. Two people taking the same next Uid both stand: the later one moves up and is told.
+- **An admin's change is approved as it is made,** and supersedes anything waiting on that item. Anyone else's waits. An Employee's line rules or Enabled are ignored, whatever a page sends.
+- **Removing changes** puts each item back as it stood just before that person first touched it, added, moved or deleted, saving any unsaved work first. An item somebody else has changed since is left alone and named. What was already approved stays in front of clients until an admin agrees. Added and deleted before anyone approved it leaves nothing at all.
+- **A write that did not come through a save,** a SketchUp sync, an agent, is on the record of who did what too, and approved as it is. Remove All takes that system's waiting work with it.
+
+**On by default, the gates kept.** A project with no key is on: staff on a computer or tablet get the menu on any project. Only a saved `Enabled` false turns one off, for everyone, which is what unticking in Dev Tools > Assets writes. A client or an Affiliate gets the section only when there is something approved to see: on a project with none they cost the door and one test, and fetch nothing. Staff on a phone only look. With nothing placed yet no layer is made until a panel opens, so a project with no plants still does not hold the plants' 13 MB of scratch. After Remove All the project is as one with no key: on. **Thrower holds `Vegetation__SceneData__Enabled` false from an earlier tick, so it stays off until unticked.**
+
+**The menus.** Everyone keeps Show and Transparency. Staff get **Tools & Settings > Vegetation > Create New Vegetation**, a fold holding Vegetation Assets, Line Tool and Brush Tool (the Linear and Bush tools, as he named them), then Changes and Save. Entourage: Entourage Assets, Changes, Save. An AppAdmin also gets Linework and the drawings tick, which change the look of the whole project, and Update to Latest, which changes every viewer's picture.
+
+**The Changes tab,** in both asset browsers beside Assets and In This Project, with a count of what waits: each person by name with what they added, changed or deleted, Remove My Changes (it asks first, saying how many), for an admin Approve, Approve All and Remove Their Changes, and a fold of who did what. In This Project says who on each row and marks what is waiting, with an Only mine tick. An admin is told on opening a project if anything waits. Approve is AppAdmin only: Management places as an Employee does.
+
+**Graphics,** by the vector-graphic-artist in the house line: Vegetation Line, Vegetation Brush, In This Project, Changes and Furnishings. On the tabs, the rows and Dev Tools > Assets. Three tabs with icons did not fit the panel, so they are tighter.
+
+**Right-click swap for plants,** while Vegetation Assets is open, in the people's menu: Move, Bigger, Smaller, Copy, pictures of the other plants that scroll inside it, resting on one showing its proxy where the plant stands, and Delete. **A plant of a path changes alone:** `Vegetation__Path__PlantChanges`, keyed by its number, holds a swap, a scale or a removal, laid over after every draw, so no other plant moves. New Seed clears it. Cloud Sync's `na_plants_for` is the same, and treats no key as on.
+
+**MCP tools, server 1.2.0, 43 tools.** What was written twice building this and v2.88.0: `vv3d_mouse`, `vv3d_key`, `vv3d_click` (a real pointer: synthetic events passed while a real drag failed), `vv3d_ui_read` (what shows, what is clipped, what scrolls sideways), `vv3d_world_to_screen`, `vv3d_run_module` (a scratch test among the app's own instances, no CORS server), `vv3d_level_walk` (what every level gets, and what it fetched), `vv3d_api_call`, `vv3d_shot_compare`, `vv3d_contact_sheet`, `vv3d_scene_changes`, `vv3d_consumers` (who reads a key, across the app, API, Gallery, Server Manager, Cloud Sync and GLB Builder), `vv3d_patch_file`, `vv3d_check`, `vv3d_reload_tools` (a tool written in a session can be used in it). `vv3d_screenshot` takes a selector or a clip, `vv3d_open` a phone. A tiled-still tool was not added: `vv3d_eval` reaches it, and it needs the page's own pipeline state.
+
+**New:** `22__System__SceneAssets` (`Na__SceneAssets__Api__.js`, `Na__SceneAssets__ChangesPanel__.js`, `Na__SceneAssets__Styles__.css`, 1.0.0), `24__System__Vegetation/20__System__Tools/Na__Vegetation__PlantMenu__.js` 1.0.0, API `ValeVision3D__Api__SceneAssets__.py` and `..Logic__.py` 1.0.0, MCP `Tools__Testing`, `Tools__SceneAssets`, `Tools__Workshop`. **Changed:** `Na__AppUtils__DevGate__.js` 2.2.0 (`Na__DevGate__IsStaff`, `Na__DevGate__CanCreateAssets`), both doors, data modules, shells, menu sections, Dev sections and asset browsers, `Na__Vegetation__PathModel__.js` 1.2.0, the loading sequence, the record's PATCH, `wsgi.py`, the ledger, both AppConfigs. Cloud Sync's own DEVLOG has its side.
+
+**Checked:**
+- The sums alone (`ValeVision3D__Api__SceneAssets__Logic__.py`): 46 checks. The routes in the API sandbox at every level: 45, `vv3d_api_sandbox.py smoke` clean, with the changes file refused a client link at the API and the gate. `vv3d_check.py changed`: clean, the boot graph still 314 modules.
+- **Who gets what, a real browser on a project with no key:** AppAdmin, Employee, Affiliate, client link and an Employee on a phone, 40 checks. A client and an Affiliate fetch nothing of either system and ask nothing of the routes. The admin's untick writes `Enabled` false and takes it from an Employee; on again; Remove All leaves it on.
+- **Employee to client on a sandbox copy of Garnett, with a real mouse, 58 checks:** drag a person on, save, told it waits; the record and a client link unchanged, in a browser too; In This Project and Changes name them; swap, reload; an admin told, Approve, a client has it with no staff name; drag it, a client keeps the approved spot; Remove My Changes with unsaved work, everything gone for staff, a client's until an admin agrees, then gone. An Employee places a plant, Bigger, Copy, Move, swaps; right-clicks plant 4 of a path, swap, Bigger, Delete, no other plant moved; a client sees none of it; Remove My Changes puts the plants back exactly.
+- **v2.88.0's real-mouse run again:** 28 of 28. **Approved people on Garnett, at client, Affiliate and on a phone:** 19 checks, two rows only, no staff module fetched, 60%.
+- **The path model in Node:** 60 paths, 901 plants, byte for byte what the committed module draws; with three changes by hand on each, 721 other plants checked, none moved.
+- **The new MCP tools, driven over stdio on the sandbox:** 34 checks. `Na__ValeVisionMcp__Selftest__.py`: 51. Cloud Sync's port against this path model, its report: 9,723 plants of 60 paths identical, with swaps, removals and scales.
+
+**Not checked:**
+- **A person's hand:** a real iPad or phone, or any of it live. Phones were emulated.
+- **Cloud Sync on real SketchUp entities:** no empty window was available, so `add_face` on real outlines, tags, scene hiding and real Undo are unproven. Its report says so, and its test is ready for one.
+- **Two real people at once,** beyond the sums and routes: a Uid clash and later edits are proven there, not with two browsers.
+- **An Employee's exported image or sheet shows what they see, waiting work included.** It is as designed for staff, and untested in a PDF.
+- **A sheet's viewport tick in a browser, a video export, walk and a section with people:** as v2.88.0.
+- **Anything live:** nothing committed, nothing pushed. An API push needs `vale@ValeVision3D` restarted, API first, then the page. Until then the live site's new page has no routes to save through.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.88.0 - 05-Nov-2026 - People: Your Entourage in the Plants' Line Language, with a Browser, a Ring, a Right-Click Menu, and SketchUp Both Ways
+### Adam: "TASK 01 - Get Existing entourage assets into ValeVision ... Port these assets to ValeVisions Web App (Convert to ValeVisions Format) ... Utilise MCP Tools, and write new ones if needed. TASK 02 - Create a Entourage Asset system ... Use a asset browser and drag and drop system similar to the new plant system ... Add a system that draws the linework similar to the plant system ... Default face transparency should be 60% ... the plants on that look amazing, so human entourage needs to be in the same flavour and vibe as to not distract from the architecture ... show a ring under the asset when its being interacted with and ensure right click allows for delete / replace and shows previews of the other caracters who you can swap for ... on my developer version add all the same exposed parameters ... in the dev menu nest vegetation in a new "Assets" section and have entourage, vegetation and furnishings as sub sections (funiture assets to come) then each has a toggle and nicely nested ... on the new eentorage menu basically do what we did with the vegetation menu with the same access controls for different users."
+
+**Before:** entourage was grey silhouettes baked into a project's GLBs from SketchUp tags 60 and 61, turned by the camera-follow billboards. Only Holt had any. Nothing could be placed in the app, and they read as dark shapes in front of the building.
+
+**Asked and answered, from a look test on a sandbox copy of Garnett:** line and face fade together with pen lifts and hooks; people react to the mouse only while the panel is open; SketchUp both ways now; elevations and sheets as plants, off unless ticked. Plan of record: `ValeVision__PLAN__EntourageSystem__.md`.
+
+**The assets (Task 01).** All 13 of `60__Scene__Entourage__2D` read from their `.skp` files through the SketchUp MCP, into a new library, `54__Entourage__AssetLibrary`: one JSON file each, a register, a schema, a generated index and a build util that converts, validates, indexes and gives the next Id. Ids keep Adam's numbers: `60_0301` is `VVL_60_0301`, and the Labrador, `60_0500`, is `VVL_60_0501`, as an Id ending in 0 is never an asset. Twelve people are one outline each, and the Labrador keeps its faces and 824 points of inner line.
+
+**The drawing.** `23__System__Entourage`, a door and lazily loaded modules as the plants have. A traced outline becomes a drawn line: smoothed with its real corners kept, small pen lifts placed by the figure's seed, and at a sharp notch, an armpit or between the legs, a short hook carrying on inward at the lighter inner weight. Line weights start at Garnett's own, 0.60 px and 0.55. The fill is the plants' fill: unlit, the walls' brightness worked out for each view, fading as one sheet. Transparency starts at 60%, line and face together. Figures turn to the eye for every render through `scene.onBeforeRender`, written into shared buffers in world space, so three draw calls however many.
+
+**The menus.**
+- **Dev Tools > Assets** now holds Entourage, Vegetation and Furnishings (greyed, to come), nested, each with a tick on its own row. Vegetation's Switch On button became that tick; its panel is otherwise as it was.
+- **Tools & Settings > Entourage:** Show Entourage and Transparency for everyone, clients and phones included, remembered on the device. For an author: Entourage Assets, Entourage Linework, Show on Live Elevations, Save Entourage.
+
+**Placing and moving.** While Entourage Assets is open: drag a card onto the model, or click a card then the model; a soft ring on hover; press a person and drag to move them, on the real surface by the plants' BVH pick, only on what faces up; `M` to carry with no press, `Ctrl+D`, `Delete`, Escape; undo and redo. The ring is NPR's footprint, on the 2D canvas over the model, so it prints nowhere. NPR's own ring shows only while carrying and a drag there still orbits, so this goes further, to Adam's brief. **Right-click:** Move, Bigger, Smaller, Copy beside it, a grid of the other 12 characters drawn live, and Delete. Resting on a picture shows that character standing there. Closing the panel gives the model back.
+
+**The Linework panel:** Line weight, Inner weight, Hooks, Pen lifts, Smoothing, and an Advanced dropdown for corners, pen lift spacing and gap, hook lengths and chance, fill and depth bias. All live, all saved in the project's object.
+
+**Shared with the plants, with nothing they draw changed:** `Na__RenderLoop__SceneRenderHooks__.js`, because `scene.onBeforeRender` is one slot and two systems want it; the tool host, overlay (a filled shape, a filled ring and a dot added to its pen) and pick; one panel a side across both systems.
+
+**Sheets.** A viewport's Entourage tick, off by default, beside Vegetation. Plants and people share one layer over the linework, so a person stands among the planting. With plants alone the viewport's stamp is what it always was, so no ticked sheet redraws for this. A plan never shows a figure: it would be edge on.
+
+**SketchUp, both ways:** Cloud Sync 0.7.0, its DEVLOG has it. **MCP tools:** `vv3d_entourage_library`, `vv3d_entourage_import_skp`, `vv3d_entourage_get`, `vv3d_entourage_edit`, `vv3d_entourage_preview`, server 1.1.0.
+
+**New modules:** `23__System__Entourage` (all 1.0.0), `05__RenderPipeline/Na__RenderLoop__SceneRenderHooks__.js` 1.0.0, `70__System__DevTools/Na__UiFeature__AssetsSection__DevControls__.js` 1.0.0, `54__Entourage__AssetLibrary`, `Icon__ToolsMenu__Entourage__.svg`. **Changed:** index.html, `Na__AppFlow__LoadingSequence.js`, `Na__AppConfig__Main.json` (the editor-owned key), `Na__AppUtils__ActivityLog__.js`, `Na__Vegetation__SceneLayer__.js` 1.3.0, `Na__Vegetation__Runtime__.js` 1.3.0, `Na__Vegetation__PanelShell__.js` 1.2.0, `Na__Vegetation__DevControls__.js` 1.2.0, `Na__Vegetation__ToolOverlay__.js` 1.2.0, the Layout Editor's SheetSetup, SheetRecords, RenderComposites and its config, Viewport2d and SnapshotRenderer, the DevToolsMenu stylesheet, and **`ValeVision3D__Api__Activity__.py`: an API file, so the push needs `vale@ValeVision3D` restarted.**
+
+**Checked:**
+- `vv3d_check.py changed`: 30 changed modules, no undeclared names, every import resolves, the boot graph 314 modules, one more than before: the door. The library validates, its index is current.
+- **The figure builder in Node, on the 13 real assets:** the same seed draws the same figure, a different seed differs, feet at height 0 to within 1 mm of smoothing, the Pen lifts slider never moves a hook. Pen lifts 0 and Hooks 0 are honoured.
+- **On a sandbox copy of Garnett, in headless Edge on the real graphics card, as an author:** the tick switches it on and saves, the section appears at 60%; 13 cards; four people dragged on, each pinned once; a drop over the scene carousel cancels; hover gives a grab cursor; press and drag moves a figure, orbit off during and back after; right-click opens the menu with 12 pictures; replace keeps its spot, Uid, seed and scale; Bigger, Ctrl+D, Delete, undo, redo; Save; reloaded and all there.
+- **A client link on the same project:** four figures at 60%, two rows, no dev rows, no dev module fetched, no Assets row.
+- **A tiled still at 2400 x 1350:** shows the figures, 10,891 pixels different with them hidden. **The drawing layer through an orthographic camera:** 8,970 pixels alone, 19,279 plants alone, 27,184 together; looking straight down, none.
+- **MaxEngine with AO on, a project with no plants (Doous):** draws at 60%, and the plants' tool host works with plants off. A drop on a wall is refused and says so.
+- `Na__ValeVisionMcp__Selftest__.py`: 30 checks, the server lists the new tools.
+
+**Not checked:**
+- **A real sheet's viewport tick pressed in a browser, and its PDF.** The layer is proven at the function, on the path the plants' tick uses.
+- **A person's thumb:** a phone or an iPad, real or emulated. The two public rows are the plants' rows.
+- **A video export and a Video Studio preview.** They go through the same hook as stills.
+- **Project with a section on, walk mode, an engine switch mid-visit.** Each follows the plants' route.
+- **Real mouse dragging by a human.** The gestures were driven by scripted events.
+- **Anything live:** nothing committed, nothing pushed, no real record written.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.87.0 - 04-Nov-2026 - An MCP Server Opens, Looks At, Changes and Publishes a Project, and Garnett's Planting Is Small to Medium and 60% Transparent
 ### Adam: "Push to the Vale server and to GitHub. After that, I want you to, on the Garnet project, correct the bushes so they are smaller, so those planting beds feature small-to-medium attractive planted shrubbery. Set the vegetation transparency at 60%, then save the model and tell me when I can look at it. You will need to push it to the server. Create MCP tools to orchestrate and control ValeVision 3D if the tools don't already exist, to allow you to access it."
 

@@ -1,0 +1,57 @@
+/* =============================================================================
+ * DISTO IMAGE MAPPER - FONT LOADING
+ * =============================================================================
+ *
+ * FILE       : DistoImageMapper__CoreUi__Styles__Fonts__.css
+ * NAMESPACE  : DistoImageMapper
+ * MODULE     : Font Loading
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Open Sans in three weights, from this app's own folder
+ * CREATED    : 05-Nov-2026
+ *
+ * DESCRIPTION:
+ * - Local copies of Core__BrandAssets/Fonts__AppFontFiles rather than the CDN the
+ *   other apps use: this app has to work on site with no connection.
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Open Sans Font Faces
+ * ----------------------------------------------------------------------------- */
+
+    /* FONT | Open Sans Light (300) */
+    /* ------------------------------------------------------------ */
+    @font-face {
+        font-family                        : 'Open Sans';
+        font-style                         : normal;
+        font-weight                        : 300;
+        font-display                       : swap;
+        src                                : url('../../01__AppAssets/Fonts__AppFontFiles/FontType_-_OpenSans-Light.ttf') format('truetype');
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FONT | Open Sans Regular (400) */
+    /* ------------------------------------------------------------ */
+    @font-face {
+        font-family                        : 'Open Sans';
+        font-style                         : normal;
+        font-weight                        : 400;
+        font-display                       : swap;
+        src                                : url('../../01__AppAssets/Fonts__AppFontFiles/FontType_-_OpenSans-Regular.ttf') format('truetype');
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FONT | Open Sans SemiBold (600) */
+    /* ------------------------------------------------------------ */
+    @font-face {
+        font-family                        : 'Open Sans';
+        font-style                         : normal;
+        font-weight                        : 600;
+        font-display                       : swap;
+        src                                : url('../../01__AppAssets/Fonts__AppFontFiles/FontType_-_OpenSans-SemiBold.ttf') format('truetype');
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

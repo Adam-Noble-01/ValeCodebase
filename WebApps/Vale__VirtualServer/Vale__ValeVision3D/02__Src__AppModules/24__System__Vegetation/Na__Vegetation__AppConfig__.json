@@ -2,7 +2,7 @@
     "Vegetation__AppConfig__Meta": {
         "Meta__FileName"    : "Na__Vegetation__AppConfig__.json",
         "Meta__Description" : "The vegetation system's defaults. A project's Vegetation__SceneData is born with a full copy of these, and from then on the project's own values win. Plants are never loaded on a project that is not enabled, so nor is this file.",
-        "Meta__Version"     : "1.3.0",
+        "Meta__Version"     : "1.4.0",
         "Meta__Created"     : "04-Nov-2026",
         "Meta__Author"      : "Adam Noble - Noble Architecture",
 
@@ -13,6 +13,8 @@
     "Vegetation__SceneData__Config": {
         "Vegetation__SceneData__Description"                : "What a project's object starts with. ShowByDefault and DefaultTransparencyPercent are where a viewer starts on a device that has not chosen.",
         "Vegetation__SceneData__SchemaVersion"              : 1,
+        "Vegetation__SceneData__EnabledByDefault"           : true,
+        "Vegetation__SceneData__EnabledByDefaultNote"       : "On for every project unless an admin has unticked it in Dev Tools (Adam, 05-Nov-2026: 'make the admin ticked on boxes on by default now ... keep those gates so i can disable though'). Only a saved Enabled false turns a project off.",
         "Vegetation__SceneData__ShowByDefault"              : true,
         "Vegetation__SceneData__DefaultTransparencyPercent" : 0,
         "Vegetation__SceneData__ShowOnLiveDrawings"         : false
@@ -124,6 +126,10 @@
         "Vegetation__DevTools__PlantScaleMin"        : 0.10,
         "Vegetation__DevTools__PlantScaleMax"        : 3.00,
         "Vegetation__DevTools__PlantScaleStep"       : 0.05,
+        "Vegetation__DevTools__RightClickSlopPx"     : 4,
+        "Vegetation__DevTools__RightClickSlopPxNote" : "A right press that travelled further was a pan, so it opens no menu.",
+        "Vegetation__DevTools__MenuScaleStep"        : 1.10,
+        "Vegetation__DevTools__CopyOffsetMm"         : 900,
         "Vegetation__DevTools__UndoDepth"            : 60
     },
 

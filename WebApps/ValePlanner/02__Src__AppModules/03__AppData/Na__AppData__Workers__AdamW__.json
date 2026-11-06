@@ -3622,6 +3622,38 @@
           "endTime": "16:30",
           "title": "Whitecard |  Garnett",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1793884732415",
+          "date": "2026-11-05",
+          "startTime": "13:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Brown",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1793966275571",
+          "date": "2026-11-06",
+          "startTime": "09:00",
+          "endTime": "10:30",
+          "title": "DesignDevelopment |  Brown",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1793966289454",
+          "date": "2026-11-06",
+          "startTime": "10:30",
+          "endTime": "11:15",
+          "title": "Video |  Brown",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1793966311751",
+          "date": "2026-11-06",
+          "startTime": "12:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Thorpe",
+          "color": "na-shift-color-rose"
         }
       ]
     }

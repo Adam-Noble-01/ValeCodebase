@@ -11,6 +11,8 @@
 // CREATED    : 04-Nov-2026
 //
 // DESCRIPTION:
+// - NESTED UNDER DEV TOOLS > ASSETS (Adam, 05-Nov-2026: "in the dev menu nest vegetation in a new
+//   "Assets" section"), so its switch is a tick on its own row, and this panel holds the rest.
 // - ONE SWITCH (Adam, 04-Nov-2026). On makes the project's object, with every parameter
 //   in it, shows the plants and puts the Vegetation section in Tools & Settings. Off keeps
 //   the object and takes them away. Everything else is in that section.
@@ -21,13 +23,21 @@
 //
 // INTEGRATION:
 // - Loaded by Na__Vegetation__.js for an author only. Nobody else fetches this file.
-// - Markup: #naVegetationDevItem, #naVegetationDevToggle, #naVegetationDevPanel.
+// - Markup: #naVegetationDevItem, #naVegetationDevToggle, #naVegetationDevEnable,
+//   #naVegetationDevPanel, inside #naAssetsDevPanel.
 // - Tuned from Vegetation__DevTools__Config in ../Na__Vegetation__AppConfig__.json.
 // - @delegate: ../Na__Vegetation__.js
+// - @delegate: ../../70__System__DevTools/Na__UiFeature__AssetsSection__DevControls__.js
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
+// - On by default: the tick shows on for a project with no key, and unticking is what turns one off, for everyone.
+//
+// 05-Nov-2026 - Version 1.2.0 (ValeVision3D v2.88.0)
+// - Nested under Dev Tools > Assets, at Adam's word: the switch is a tick on the section's own row.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.85.0)
 // - The real menu and tools have arrived, so the test row has gone. Where viewers start,
 //   Remove All, and a warning on a very full project. A test row saved earlier is an
@@ -52,6 +62,7 @@
         Na__VegData__Save
     } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
     import { Na__Vegetation__IsActive, Na__Vegetation__SetEnabled, Na__Vegetation__RemoveAll } from '../Na__Vegetation__.js';
+    import { Na__DevAssets__Initialize, Na__DevAssets__OPENED_EVENT } from '../../70__System__DevTools/Na__UiFeature__AssetsSection__DevControls__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -65,6 +76,7 @@
     // ------------------------------------------------------------
     const Na__VegDev__ITEM_ID     = 'naVegetationDevItem';
     const Na__VegDev__TOGGLE_ID   = 'naVegetationDevToggle';
+    const Na__VegDev__ENABLE_ID   = 'naVegetationDevEnable';
     const Na__VegDev__PANEL_ID    = 'naVegetationDevPanel';
     const Na__VegDev__READOUT_MS  = 500;
     const Na__VegDev__REMOVE_WORD = 'delete';
@@ -76,6 +88,7 @@
         context  : null,
         panel    : null,
         toggle   : null,
+        enable   : null,
         config   : null,
         busy     : false,
         removing : false,
@@ -153,10 +166,21 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Switch on the Section's Row Says How Things Stand
+    // ------------------------------------------------------------
+    function Na__VegDev__SyncSwitch() {
+        const enable = Na__VegDev__State.enable;
+        if (!enable) return;
+        if (!Na__VegDev__State.busy) enable.checked = Na__Vegetation__IsActive();   // <-- While it is switching, the tick stays where the hand put it
+        enable.disabled = Na__VegDev__State.busy;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Switch the Project On or Off
     // ------------------------------------------------------------
     async function Na__VegDev__ToggleEnabled() {
-        const turningOn = !Na__Vegetation__IsActive();
+        const turningOn = Na__VegDev__State.enable.checked;
         Na__VegDev__State.busy = true;
         Na__VegDev__Render();
         try {
@@ -285,22 +309,15 @@
     function Na__VegDev__Render() {
         const panel = Na__VegDev__State.panel;
         if (!panel) return;
+        Na__VegDev__SyncSwitch();
         const isOn = Na__Vegetation__IsActive();
         const busy = Na__VegDev__State.busy;
         const sceneData = Na__VegData__Current();
 
         panel.innerHTML = '';
-        panel.appendChild(Na__VegDev__El('div', 'na-dropdown-menu__panel-title', 'Vegetation'));
         panel.appendChild(Na__VegDev__El('p', 'na-fp-dev__empty', isOn
-            ? 'On for this project. Its menu is in Tools & Settings, and clients see the plants too.'
-            : 'Off for this project. Nothing loads and nothing draws.'));
-
-        const switchRow = Na__VegDev__El('div', 'na-pm-dev__actions');
-        const enable = Na__VegDev__Button(isOn ? 'Switch Off' : 'Switch On', isOn ? '' : 'na-pm-dev__btn--primary', Na__VegDev__ToggleEnabled);
-        enable.id = 'naVegetationDevSwitch';
-        enable.disabled = busy;
-        switchRow.appendChild(enable);
-        panel.appendChild(switchRow);
+            ? 'On for this project. Its menu is in Tools & Settings. Staff can plant, and clients see what has been approved.'
+            : 'Off for this project, for everyone. Nothing loads and nothing draws. Tick it to switch on.'));
 
         if (isOn && sceneData) {
             const readout = Na__VegDev__El('p', 'na-fp-dev__empty');
@@ -324,15 +341,18 @@
     async function Na__VegDev__Initialize(context) {
         const menuItem = document.getElementById(Na__VegDev__ITEM_ID);
         const toggle   = document.getElementById(Na__VegDev__TOGGLE_ID);
+        const enable   = document.getElementById(Na__VegDev__ENABLE_ID);
         const panel    = document.getElementById(Na__VegDev__PANEL_ID);
-        if (!menuItem || !toggle || !panel) return false;                      // <-- Markup absent: nothing to mount into
+        if (!menuItem || !toggle || !enable || !panel) return false;           // <-- Markup absent: nothing to mount into
 
         Na__VegDev__State.context = context;
         Na__VegDev__State.panel   = panel;
         Na__VegDev__State.toggle  = toggle;
+        Na__VegDev__State.enable  = enable;
         Na__VegDev__State.config  = await Na__VegData__LoadConfig();
 
-        menuItem.style.display = '';                                           // <-- Reveal alongside the other dev tools
+        Na__DevAssets__Initialize();
+        menuItem.style.display = '';                                           // <-- Reveal alongside the other assets
 
         toggle.addEventListener('click', () => {
             const isOpen = panel.classList.contains('is-open');
@@ -345,6 +365,8 @@
                 window.clearInterval(Na__VegDev__State.readout);
             }
         });
+        enable.addEventListener('change', Na__VegDev__ToggleEnabled);
+        window.addEventListener(Na__DevAssets__OPENED_EVENT, Na__VegDev__SyncSwitch);
         return true;
     }
     // ------------------------------------------------------------

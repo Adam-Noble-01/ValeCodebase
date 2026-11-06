@@ -33,6 +33,9 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 05-Nov-2026 - ValeVision3D v2.89.0
+# - The placed-assets routes in the ledger.
+#
 # 28-Oct-2026 - Version 1.2.0 (ValeVision3D v2.79.0)
 # - g.na_vv3d_activity may name the action and the link too: a client email is
 #   recorded as email.client with the client link it carries (ValeVision3D__Api__Email__ 1.2.0).
@@ -84,6 +87,9 @@ NA__VV3D__WRITES         = {
     'valevision_email_api.email_send'                    : ('email.send', 'Sent an email'),
     'valevision_page_layouts_api.page_layouts_save'      : ('drawing.layout', 'Saved a page layout'),
     'valevision_page_layouts_api.page_layouts_delete'    : ('drawing.delete', 'Deleted a page layout'),
+    'valevision_scene_assets_api.scene_assets_save'      : ('settings.save', 'Saved placed assets'),
+    'valevision_scene_assets_api.scene_assets_approve'   : ('settings.save', 'Approved placed assets'),
+    'valevision_scene_assets_api.scene_assets_revert'    : ('settings.save', 'Put back placed assets'),
 }
 NA__VV3D__RECORD_SAVES   = ('valevision_projects_api.save_project', 'valevision_projects_api.merge_project_keys')
 
@@ -103,6 +109,7 @@ NA__VV3D__KEYS           = {
     'valeVision_Camera__DefaultPosition'  : ('default camera', 'settings.save'),
     'GridLine__Grid__Offset__Config'      : ('grid', 'settings.save'),
     'Vegetation__SceneData'               : ('vegetation', 'settings.save'),
+    'Entourage__SceneData'                : ('entourage', 'settings.save'),
     'ValeVison3D__SketchUpCameraData'     : ('SketchUp cameras', 'project.sync'),
     'valeVision_ModelUrls'                : ('3D model files', 'project.sync'),
     'valeVision_ModelUrl'                 : ('3D model files', 'project.sync'),

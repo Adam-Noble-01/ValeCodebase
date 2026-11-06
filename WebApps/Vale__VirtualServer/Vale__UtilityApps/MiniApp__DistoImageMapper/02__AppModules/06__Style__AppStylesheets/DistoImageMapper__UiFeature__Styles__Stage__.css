@@ -1,0 +1,558 @@
+/* =============================================================================
+ * DISTO IMAGE MAPPER - STAGE STYLES
+ * =============================================================================
+ *
+ * FILE       : DistoImageMapper__UiFeature__Styles__Stage__.css
+ * NAMESPACE  : DistoImageMapper
+ * MODULE     : Stage Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The working screen: panel, 3D viewport, toolbar, filmstrip and the
+ *              labels that float over the view
+ * CREATED    : 05-Nov-2026
+ *
+ * DESCRIPTION:
+ * - The panel is docked rather than floated, so the model frames in the middle of
+ *   the space it actually has. Since 1.5.0 it is the right-hand column (Adam: "Move
+ *   menu to right side"), its width the --DistoImageMapper_PanelWidth its grip sets
+ * - Phone width: the panel slides over the view from the right, and starts closed
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Stage Layout
+ * ----------------------------------------------------------------------------- */
+
+    /* STAGE | Panel Beside, Filmstrip Beneath */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Stage {
+        position                           : fixed;
+        top                                : var(--Vale_HeaderHeight);
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        display                            : grid;
+        grid-template-columns              : minmax(0, 1fr) var(--DistoImageMapper_PanelWidth);
+        grid-template-rows                 : minmax(0, 1fr) var(--DistoImageMapper_FilmstripHeight);
+    }
+
+    .DistoImageMapper__Stage.is-panel-collapsed {
+        grid-template-columns              : minmax(0, 1fr) 0;
+    }
+
+    .DistoImageMapper__Stage.is-panel-collapsed .DistoImageMapper__Panel {
+        display                            : none;
+    }
+
+    .DistoImageMapper__ViewportFrame {
+        position                           : relative;
+        grid-column                        : 1;
+        grid-row                           : 1;
+        overflow                           : hidden;
+        background                         : var(--DistoImageMapper_ViewportBackdrop);
+    }
+
+    .DistoImageMapper__Viewport {
+        position                           : absolute;
+        inset                              : 0;
+    }
+
+    .DistoImageMapper__Viewport canvas {
+        display                            : block;
+        cursor                             : grab;
+    }
+
+    .DistoImageMapper__Viewport canvas:active {
+        cursor                             : grabbing;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Control Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | Scrolling Column */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel {
+        position                           : relative;                     /* <-- The grip sits on its left edge */
+        grid-column                        : 2;
+        grid-row                           : 1 / span 2;
+        display                            : flex;
+        flex-direction                     : column;
+        min-height                         : 0;
+        background                         : var(--Vale_BackgroundWhite);
+        border-left                        : 1px solid var(--Vale_BorderLight);
+    }
+
+    .DistoImageMapper__Panel__Section {
+        padding                            : 12px 14px;
+        border-bottom                      : 1px solid #e6e8ea;
+    }
+
+    .DistoImageMapper__Panel__Section h3 {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 7px;
+        margin-bottom                      : 8px;
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__Panel__SurveyName {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        word-break                         : break-word;
+    }
+
+    .DistoImageMapper__Panel__Section--Footer {
+        display                            : flex;
+        justify-content                    : space-between;
+        align-items                        : center;
+        gap                                : 8px;
+        border-bottom                      : none;
+        color                              : var(--Vale_TextSecondary);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | The Survey's Figures */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__Stats {
+        display                            : grid;
+        grid-template-columns              : auto 1fr;
+        gap                                : 3px 10px;
+        margin                             : 8px 0 10px;
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .DistoImageMapper__Panel__Stats dt {
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+    }
+
+    .DistoImageMapper__Panel__Stats dd {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-align                         : right;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Layers and Other Tick Boxes */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__Checks {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 5px;
+    }
+
+    .DistoImageMapper__Panel__Checks label,
+    .DistoImageMapper__Panel__CheckRow {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        cursor                             : pointer;
+    }
+
+    .DistoImageMapper__Panel__CheckRow {
+        margin-top                         : 8px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Fields and Sliders */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__Field {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+        margin-bottom                      : 8px;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .DistoImageMapper__Panel__Field select {
+        width                              : 100%;
+        padding                            : 5px 6px;
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : 5px;
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .DistoImageMapper__Panel__Hint {
+        margin-bottom                      : 8px;
+        color                              : var(--Vale_TextSubtle);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .DistoImageMapper__Panel__Range {
+        display                            : grid;
+        grid-template-columns              : 1fr auto;
+        gap                                : 1px 8px;
+        margin-bottom                      : 8px;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .DistoImageMapper__Panel__Range input {
+        grid-column                        : 1 / span 2;
+        grid-row                           : 2;
+        width                              : 100%;
+    }
+
+    .DistoImageMapper__Panel__Range output {
+        color                              : var(--Vale_TextPrimary);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | The Survey Check */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Panel__CheckList {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 7px;
+        list-style                         : none;
+    }
+
+    .DistoImageMapper__Panel__Check {
+        display                            : flex;
+        flex-direction                     : column;
+        padding-left                       : 10px;
+        border-left                        : 3px solid var(--DistoImageMapper_CheckOk);
+        font-size                          : var(--Vale_FontSize_Small);
+        line-height                        : 1.35;
+    }
+
+    .DistoImageMapper__Panel__Check--Warn {
+        border-left-color                  : var(--DistoImageMapper_CheckWarn);
+    }
+
+    .DistoImageMapper__Panel__Check strong {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__Panel__Check span {
+        color                              : var(--Vale_TextSecondary);
+        word-break                         : break-word;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Toolbar and Floating Labels
+ * ----------------------------------------------------------------------------- */
+
+    /* TOOLBAR | Over the Viewport's Top Edge */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Toolbar {
+        position                           : absolute;
+        top                                : 8px;
+        left                               : 8px;
+        right                              : 8px;
+        display                            : flex;
+        flex-wrap                          : wrap;
+        align-items                        : center;
+        gap                                : 4px;
+        pointer-events                     : none;                         /* <-- Only the buttons catch the pointer, so the view orbits between them */
+    }
+
+    .DistoImageMapper__Toolbar__Group {
+        display                            : inline-flex;
+        gap                                : 4px;
+    }
+
+    .DistoImageMapper__Toolbar__Gap {
+        width                              : 10px;
+    }
+
+    .DistoImageMapper__Toolbar__Button {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 6px;
+        padding                            : 5px 10px;
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : 5px;
+        background                         : var(--DistoImageMapper_OverlayPanel);
+        color                              : var(--Vale_PrimaryBrand);
+        box-shadow                         : var(--DistoImageMapper_OverlayShadow);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        pointer-events                     : auto;
+        white-space                        : nowrap;
+        transition                         : background var(--Vale_Transition_Fast), color var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Toolbar__Button:hover:not(:disabled):not(.is-active) {
+        background                         : var(--Vale_HoverBackground);
+    }
+
+    .DistoImageMapper__Toolbar__Button.is-active {
+        border-color                       : var(--Vale_PrimaryBrand);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+    }
+
+    .DistoImageMapper__Toolbar__Button:disabled {
+        opacity                            : 0.45;
+        cursor                             : default;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | Measure Hint and Result */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__MeasureHint {
+        position                           : absolute;
+        bottom                             : 10px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        padding                            : 5px 12px;
+        border-radius                      : 14px;
+        background                         : var(--DistoImageMapper_MeasurePink);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        white-space                        : nowrap;
+        pointer-events                     : none;
+    }
+
+    .DistoImageMapper__MeasureLabel {
+        position                           : absolute;
+        top                                : 0;
+        left                               : 0;
+        display                            : flex;
+        flex-direction                     : column;
+        padding                            : 5px 10px;
+        border                             : 1px solid var(--DistoImageMapper_MeasurePink);
+        border-radius                      : 5px;
+        background                         : var(--Vale_BackgroundWhite);
+        box-shadow                         : var(--DistoImageMapper_OverlayShadow);
+        font-size                          : var(--Vale_FontSize_Small);
+        white-space                        : nowrap;
+        pointer-events                     : none;
+    }
+
+    .DistoImageMapper__MeasureLabel strong {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__MeasureLabel span {
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | Progress Line */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Status {
+        position                           : absolute;
+        right                              : 10px;
+        bottom                             : 10px;
+        padding                            : 5px 12px;
+        border-radius                      : 14px;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        pointer-events                     : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | Pointer Tooltip */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Tooltip {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        display                            : flex;
+        flex-direction                     : column;
+        padding                            : 4px 9px;
+        border-radius                      : 5px;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        white-space                        : pre;
+        pointer-events                     : none;
+        z-index                            : var(--Vale_ZIndex_Tooltip);
+    }
+
+    .DistoImageMapper__Tooltip strong {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HELP | Controls Panel */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Help {
+        position                           : absolute;
+        top                                : 44px;
+        right                              : 8px;
+        width                              : min(360px, calc(100% - 16px));
+        max-height                         : calc(100% - 56px);
+        padding                            : 14px;
+        overflow-y                         : auto;
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundWhite);
+        box-shadow                         : 0 4px 18px rgba(0, 0, 0, 0.2);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .DistoImageMapper__Help h3 {
+        margin                             : 10px 0 6px;
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .DistoImageMapper__Help h3:first-of-type {
+        margin-top                         : 0;
+    }
+
+    .DistoImageMapper__Help dl {
+        display                            : grid;
+        grid-template-columns              : auto 1fr;
+        gap                                : 3px 12px;
+    }
+
+    .DistoImageMapper__Help dt {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        white-space                        : nowrap;
+    }
+
+    .DistoImageMapper__Help__Close {
+        float                              : right;
+        display                            : inline-flex;
+        padding                            : 4px;
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : 5px;
+        background                         : var(--Vale_BackgroundWhite);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Filmstrip
+ * ----------------------------------------------------------------------------- */
+
+    /* FILMSTRIP | Sideways Scrolling Row */
+    /* ------------------------------------------------------------ */
+    .DistoImageMapper__Filmstrip {
+        grid-column                        : 1;
+        grid-row                           : 2;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        padding                            : 8px;
+        overflow-x                         : auto;
+        overflow-y                         : hidden;
+        background                         : var(--Vale_BackgroundWhite);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+        scrollbar-width                    : thin;
+    }
+
+    .DistoImageMapper__Filmstrip__Item {
+        position                           : relative;
+        flex                               : 0 0 auto;
+        width                              : 70px;
+        height                             : 70px;
+        padding                            : 0;
+        overflow                           : hidden;
+        border                             : 2px solid var(--Vale_BorderLight);
+        border-radius                      : 4px;
+        background                         : #e4e7ea;
+        cursor                             : pointer;
+        transition                         : border-color var(--Vale_Transition_Fast), transform var(--Vale_Transition_Fast);
+    }
+
+    .DistoImageMapper__Filmstrip__Item img {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : cover;
+    }
+
+    .DistoImageMapper__Filmstrip__Item.is-focus {
+        border-color                       : var(--DistoImageMapper_AccentRed);
+        transform                          : translateY(-1px);
+    }
+
+    .DistoImageMapper__Filmstrip__Tag {
+        position                           : absolute;
+        top                                : 0;
+        left                               : 0;
+        padding                            : 1px 5px;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : 11px;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Phone Width
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 760px) {
+
+        :root {
+            --DistoImageMapper_FilmstripHeight : 72px;
+        }
+
+        /* STAGE | The View Takes the Width, the Panel Slides Over It */
+        /* ------------------------------------------------------------ */
+        .DistoImageMapper__Stage,
+        .DistoImageMapper__Stage.is-panel-collapsed {
+            grid-template-columns          : minmax(0, 1fr);
+        }
+
+        .DistoImageMapper__ViewportFrame,
+        .DistoImageMapper__Filmstrip {
+            grid-column                    : 1;
+        }
+
+        .DistoImageMapper__Panel {
+            position                       : absolute;
+            top                            : 0;
+            right                          : 0;
+            bottom                         : var(--DistoImageMapper_FilmstripHeight);
+            width                          : min(86vw, 320px);
+            box-shadow                     : 0 4px 18px rgba(0, 0, 0, 0.25);
+            z-index                        : 20;
+        }
+
+        .DistoImageMapper__Toolbar {
+            flex-wrap                      : nowrap;
+            right                          : 0;
+            left                           : 0;
+            padding                        : 0 8px;
+            overflow-x                     : auto;
+            pointer-events                 : auto;
+            scrollbar-width                : none;
+        }
+
+        .DistoImageMapper__Filmstrip__Item {
+            width                          : 54px;
+            height                         : 54px;
+        }
+
+        .DistoImageMapper__Panel__Grip {
+            display                        : none;                         /* <-- A phone's menu is a fixed width over the view */
+        }
+        /* ------------------------------------------------------------ */
+    }
+
+/* endregion ------------------------------------------------------------------- */

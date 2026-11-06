@@ -136,6 +136,7 @@
     // ------------------------------------------------------------
     const Na__LeComposite__FALLBACK = [
         { key : 'vegetation',        label : 'Vegetation',              twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
+        { key : 'entourage',         label : 'Entourage',               twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
         { key : 'depthFog',          label : 'Depth Fog',               twoDOnly : true,  toggle : true,  weight : { kind : 'none' } },
         { key : 'projectedLinework', label : 'Projected Linework',      twoDOnly : true,  toggle : true,  weight : { kind : 'factor', value : 1.00, min : 0.10, max : 3.00, step : 0.05, label : 'Weight'  } },
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false, toggle : true,  weight : { kind : 'pixels', value : 1.00, min : 0.10, max : 4.00, step : 0.05, label : 'Edge px', twoDOnly : true } },

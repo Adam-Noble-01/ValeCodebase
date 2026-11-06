@@ -277,6 +277,21 @@
             "Content": [],
             "UserData": [],
             "DefaultLane": "code"
+        },
+        {
+            "Id": "distoimagemapper",
+            "Name": "Disto Image Mapper",
+            "Kind": "web",
+            "Local": "Vale__UtilityApps/MiniApp__DistoImageMapper",
+            "Remote": "Vale__UtilityApps/MiniApp__DistoImageMapper",
+            "Enabled": true,
+            "AllowDeletes": true,
+            "Exclude": [
+                "100__TesttingInput/"
+            ],
+            "Content": [],
+            "UserData": [],
+            "DefaultLane": "code"
         }
     ]
 }

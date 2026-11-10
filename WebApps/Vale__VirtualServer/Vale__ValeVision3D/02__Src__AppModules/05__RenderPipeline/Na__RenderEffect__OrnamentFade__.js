@@ -57,6 +57,19 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Nov-2026 - Version 1.1.0
+// - Adam: "add door handles and columns (pilasters) to the new linework culling system and
+//   make it so anything in my SketchUp Library is known to ValeVision as one of these
+//   assets". A node is ornament when the GLB Builder (2.15.0 on) wrote extras.Na__LibraryAsset
+//   on it or a node above it, when its name starts with a library code (20_1001__...), or
+//   when its name holds a word in Choose__SeedNames (Cresting, Column, Pilaster, Handle):
+//   the last two serve the GLBs exported before.
+// - Columns and pilasters fade further off (Fade__FurtherOffNames, Fade__FurtherOffScale):
+//   Adam, "only when you zoom real far back for the pilasters".
+// - Only a cresting carries in the busy flattened pieces round it (Choose__CarryInFromNames).
+//   A category with no cresting measures its named parts alone, which is cheap.
+// - A library part's mesh, flattened in with the rest, is found inside the box of its lines.
+// - Doors, fixtures, furniture and decor are no longer skipped: library parts live there too.
 // 10-Nov-2026 - Version 1.0.0
 // - Built from the linework density test (80__Testing__LocalTestServer), measured on
 //   60227__Thorpe at 11 to 51 m: the cresting lightens from 16 m out and no pixel outside
@@ -109,10 +122,13 @@
     // ------------------------------------------------------------
     const Na__OrnamentFade__Defaults = {
         Enabled                     : true,
-        Choose__SeedNames           : 'Cresting',
+        Choose__SeedNames           : 'Cresting|Column|Pilaster|Handle',
+        Choose__LibraryAssets       : true,                             // <-- A node the GLB Builder marked Na__LibraryAsset, or named with a library code
+        Choose__LibraryExcludeTypes : '',                               // <-- Library types never to fade, e.g. 'Roof|Rainwater'
+        Choose__CarryInFromNames    : 'Cresting',                       // <-- Only round these are busy flattened pieces carried in
         Choose__CompanionNames      : 'Finial|Spire|Urn',
         Choose__ExemptNames         : 'Note__',
-        Choose__SkipCategories      : 'Furniture|Decor|Fixtures|Vegetation|Entourage|Landscape|SiteBoundaries|Contextual|Linetype|Doors',
+        Choose__SkipCategories      : 'Vegetation|Entourage|Landscape|SiteBoundaries|Contextual|Linetype',
         Choose__CarryInMm           : 300,
         Choose__CarryInShare        : 0.03,
         Choose__CarryInSoftShare    : 0.02,
@@ -127,10 +143,14 @@
         Fade__ProfileBarMm          : 30,
         Fade__ProfileThinPx         : 2,
         Fade__ProfileWholePx        : 6,
+        Fade__FurtherOffNames       : 'Column|Pilaster',                // <-- These fade from further off...
+        Fade__FurtherOffScale       : 2,                                // <-- ...this many times the distance
         Show__Picked                : false                             // <-- Never in the config: the test panel's "show what was chosen"
     };
     const NA__ORNAMENTFADE__SPLIT_OF_TONE  = 0.5;                       // <-- Segments at this share of the threshold or over go in the blending object; the shader still decides
-    const NA__ORNAMENTFADE__MEASURE_AGAIN  = ['Choose__SeedNames', 'Choose__CompanionNames', 'Choose__ExemptNames', 'Choose__SkipCategories', 'Choose__CarryInMm', 'Choose__CarryInShare', 'Fade__BuildingAboveMm', 'Enabled'];
+    const NA__ORNAMENTFADE__MEASURE_AGAIN  = ['Choose__SeedNames', 'Choose__LibraryAssets', 'Choose__LibraryExcludeTypes', 'Choose__CarryInFromNames', 'Choose__CompanionNames', 'Choose__ExemptNames', 'Choose__SkipCategories', 'Choose__CarryInMm', 'Choose__CarryInShare', 'Fade__BuildingAboveMm', 'Fade__FurtherOffNames', 'Fade__FurtherOffScale', 'Enabled'];
+    const NA__ORNAMENTFADE__LIBRARY_CODE   = /^(?!00_)\d{2}_{1,2}\d{2,4}__/;   // <-- 20_1001__..., 20__1003__..., 03_85__...; 00 is the modelling helpers
+    const NA__ORNAMENTFADE__BOX_PAD_M      = 0.01;                      // <-- A library part's mesh is found within its lines' box grown by this
     const NA__ORNAMENTFADE__CONFIG_URL     = new URL('./Na__RenderEffect__OrnamentFade__Config__.json', import.meta.url);
     // ------------------------------------------------------------
 
@@ -247,7 +267,7 @@
                     if (uNaOfEnabled > 0.5 && projectionMatrix[ 2 ][ 3 ] == - 1.0) {                      // perspective only: a drawing is never touched
                         float naOfDepth = max(-0.5 * (start.z + end.z), 1e-4);
                         float naOfPpu   = resolution.y * projectionMatrix[ 1 ][ 1 ] * 0.5 / naOfDepth;      // pixels to a metre, here
-                        float naOfHow   = naOfBusy(instanceNaOfCover, linewidth / naOfPpu, uNaOfTone, uNaOfSoft, uNaOfRange);
+                        float naOfHow   = naOfBusy(instanceNaOfCover, linewidth / naOfPpu / max(instanceNaOfFeature.y, 1.0), uNaOfTone, uNaOfSoft, uNaOfRange);   // y: fades this many times further off
                         if (naOfHow > 0.0001) {
                             float naOfStructure = smoothstep(uNaOfFeaturePx.x, uNaOfFeaturePx.y, instanceNaOfFeature.x * naOfPpu);   // 0: detail. 1: structure
                             float naOfBuilding  = smoothstep(0.6 * uNaOfKeepAbove, uNaOfKeepAbove, instanceNaOfFeature.x);          // 1: too long to be ornament
@@ -300,7 +320,7 @@
                     vNaOfVis = 1.0;
                     if (uNaOfEnabled > 0.5 && projectionMatrix[ 2 ][ 3 ] == - 1.0 && naOfPatch.w < 0.5) {     // w is 0 on a measured mesh
                         float naOfPpu  = uNaOfResolution.y * projectionMatrix[ 1 ][ 1 ] * 0.5 / max(-mvPosition.z, 1e-4);
-                        float naOfHow  = naOfBusy(naOfPatch, uNaOfLineRef / naOfPpu, uNaOfTone, uNaOfSoft, uNaOfRange);
+                        float naOfHow  = naOfBusy(naOfPatch, uNaOfLineRef / naOfPpu / max(naOfPatch.x, 1.0), uNaOfTone, uNaOfSoft, uNaOfRange);   // x: fades this many times further off
                         float naOfThin = 1.0 - smoothstep(uNaOfProfile.z, uNaOfProfile.w, uNaOfProfile.y * naOfPpu);   // 1: its bars are too thin to outline
                         vNaOfVis = 1.0 - naOfHow * naOfThin * (1.0 - uNaOfProfile.x);
                     }`);
@@ -345,6 +365,55 @@
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | The Library Data the GLB Builder Wrote on a Node or One Above It
+    // ------------------------------------------------------------
+    function Na__OrnamentFade__LibraryOf(object, stopAt) {
+        for (let node = object; node && node !== stopAt; node = node.parent) {
+            const info = node.userData && node.userData.Na__LibraryAsset;
+            if (info) return info;
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | What One Fat Line Is: Seed, Companion, Exempt, Carries In, How Much Further Off
+    // ------------------------------------------------------------
+    // Ornament by any of: the GLB Builder's Na__LibraryAsset (newest exports),
+    // a library code leading the node's name (older exports of a part placed
+    // unrenamed), or a word in Choose__SeedNames (older exports of a renamed one).
+    // ------------------------------------------------------------
+    function Na__OrnamentFade__Mark(object, stopAt, settings, seeds, beside, exempt, carry, later, notTypes) {
+        const name    = object.name || '';
+        const library = settings.Choose__LibraryAssets ? Na__OrnamentFade__LibraryOf(object, stopAt) : null;
+        const words   = [name, library ? library.Type : '', library ? library.Definition : ''].join(' ');
+        const typeOut = !!(library && notTypes && library.Type && notTypes.test(library.Type));
+        const seed    = !typeOut && (seeds.test(name) || !!library || (settings.Choose__LibraryAssets && NA__ORNAMENTFADE__LIBRARY_CODE.test(name)));
+        return {
+            seed,
+            companion : beside.test(name),
+            exempt    : exempt ? exempt.test(name) : false,
+            carry     : carry.test(words),
+            scale     : (later && later.test(words)) ? Math.max(1, Number(settings.Fade__FurtherOffScale) || 1) : 1
+        };
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | A Part's Box, Grown a Little: [minX, minY, minZ, maxX, maxY, maxZ]
+    // ------------------------------------------------------------
+    function Na__OrnamentFade__BoxOf(points) {
+        if (points.length < 6) return null;
+        const box = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+        for (let o = 0; o < points.length; o += 3) {
+            for (let c = 0; c < 3; c++) {
+                if (points[o + c] < box[c]) box[c] = points[o + c];
+                if (points[o + c] > box[3 + c]) box[3 + c] = points[o + c];
+            }
+        }
+        for (let c = 0; c < 3; c++) { box[c] -= NA__ORNAMENTFADE__BOX_PAD_M; box[3 + c] += NA__ORNAMENTFADE__BOX_PAD_M; }
+        return box;
+    }
+    // ------------------------------------------------------------
+
     // SUB FUNCTION | The Drawn Fat Lines of Every Category That Names Ornament, Measured
     // ------------------------------------------------------------
     // A category is one GLB's worth: a cresting and the roof it stands on are
@@ -356,6 +425,9 @@
         const seeds  = new RegExp(settings.Choose__SeedNames || '(?!)', 'i');
         const beside = new RegExp(settings.Choose__CompanionNames || '(?!)', 'i');
         const exempt = settings.Choose__ExemptNames ? new RegExp(settings.Choose__ExemptNames, 'i') : null;
+        const carry  = new RegExp(settings.Choose__CarryInFromNames || '(?!)', 'i');
+        const later  = settings.Fade__FurtherOffNames ? new RegExp(settings.Fade__FurtherOffNames, 'i') : null;
+        const notTypes = settings.Choose__LibraryExcludeTypes ? new RegExp(settings.Choose__LibraryExcludeTypes, 'i') : null;
         const groups = [];
         modelRoot.children.forEach((category) => {
             if (skip && skip.test(category.name)) return;
@@ -368,23 +440,31 @@
                     objects.push(object);
                 });
             });
-            if (!objects.some((object) => seeds.test(object.name) && !(exempt && exempt.test(object.name)))) return;   // <-- Nothing named here: nothing measured, nothing changed
+            const marks = objects.map((object) => Na__OrnamentFade__Mark(object, category, settings, seeds, beside, exempt, carry, later, notTypes));
+            if (!marks.some((mark) => mark.seed && !mark.exempt)) return;      // <-- Nothing named here: nothing measured, nothing changed
+            const carries = marks.some((mark) => mark.seed && mark.carry && !mark.exempt);
 
-            const parts = objects.map((object) => {
+            const parts = [];
+            objects.forEach((object, n) => {
+                const mark = marks[n];
+                if (!carries && !mark.seed && !mark.companion) return;        // <-- No cresting here: the named parts alone are measured
                 const points = Na__OrnamentFade__WorldPoints(object);
-                return {
+                parts.push(Object.assign({
                     object, points,
-                    sizes     : Na__OrnamentFade__MeasureCurves(points, Na__OrnamentFade__FieldDefaults.Field__ChainAngleDeg).sizes,
-                    seed      : seeds.test(object.name),
-                    companion : beside.test(object.name),
-                    exempt    : exempt ? exempt.test(object.name) : false
-                };
+                    sizes : Na__OrnamentFade__MeasureCurves(points, Na__OrnamentFade__FieldDefaults.Field__ChainAngleDeg).sizes
+                }, mark));
             });
             const field = Na__OrnamentFade__BuildField(parts, { Field__SeedsOnly : true, Field__CarryInMm : settings.Choose__CarryInMm });
             parts.forEach((part) => { part.cover = Na__OrnamentFade__CoverOfSegments(field, part.points, part); });
-            const named = new Set();                                          // <-- A seed's mesh carries the same node name as its lines
-            parts.forEach((part) => { if (part.seed === true) named.add(part.object.name); });
-            groups.push({ category, parts, field, named });
+            const named = new Map();                                          // <-- A seed's mesh carries the same node name as its lines: name -> how much further off it fades
+            const boxes = [], boxScales = [];                                 // <-- Round each seed's lines: its flattened mesh is inside
+            parts.forEach((part) => {
+                if (part.seed !== true) return;
+                named.set(part.object.name, part.scale);
+                const box = Na__OrnamentFade__BoxOf(part.points);
+                if (box) { boxes.push(box); boxScales.push(part.scale); }
+            });
+            groups.push({ category, parts, field, named, boxes, boxScales });
         });
         return groups;
     }
@@ -426,7 +506,8 @@
         const cover = new Float32Array(picks.length * 4), feature = new Float32Array(picks.length * 2);
         for (let n = 0; n < picks.length; n++) {
             for (let k = 0; k < NA__ORNAMENTFADE__LEVELS; k++) cover[n * 4 + k] = part.cover[picks[n] * NA__ORNAMENTFADE__LEVELS + k];
-            feature[n * 2] = part.sizes[picks[n]];
+            feature[n * 2]     = part.sizes[picks[n]];
+            feature[n * 2 + 1] = part.scale || 1;                             // <-- How many times further off this part fades
         }
         geometry.setAttribute('instanceNaOfCover', new THREE.InstancedBufferAttribute(cover, 4));
         geometry.setAttribute('instanceNaOfFeature', new THREE.InstancedBufferAttribute(feature, 2));
@@ -549,11 +630,26 @@
                             corner.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
                             world[i * 3] = corner.x; world[i * 3 + 1] = corner.y; world[i * 3 + 2] = corner.z;
                         }
-                        const cover = Na__OrnamentFade__CoverOfMesh(group.field, world, mesh.geometry.index ? mesh.geometry.index.array : null, settings.Fade__BuildingAboveMm / 1000, group.named.has(mesh.name));
+                        mesh.geometry.computeBoundingBox();
+                        const meshBox = mesh.geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld);
+                        const near = [], nearScales = [];                     // <-- Only the named parts' boxes this mesh reaches
+                        group.boxes.forEach((box, b) => {
+                            if (box[0] <= meshBox.max.x && box[3] >= meshBox.min.x && box[1] <= meshBox.max.y && box[4] >= meshBox.min.y && box[2] <= meshBox.max.z && box[5] >= meshBox.min.z) { near.push(box); nearScales.push(group.boxScales[b]); }
+                        });
+                        const named = group.named.has(mesh.name);
+                        const cover = Na__OrnamentFade__CoverOfMesh(group.field, world, mesh.geometry.index ? mesh.geometry.index.array : null, settings.Fade__BuildingAboveMm / 1000, named, near.length > 0 ? near : null);
                         let any = false;
                         for (let i = 0; i < cover.length && !any; i++) any = cover[i] > 0;
                         if (!any) return;                                     // <-- Nothing busy on it: no attribute, which the profile patch reads as quiet
-                        for (let i = 3; i < cover.length; i += 4) cover[i] = 0;   // <-- The fourth number is the "measured" flag, not a measure (a named part holds 1 in all four)
+                        for (let i = 0; i < position.count; i++) {
+                            let scale = named ? group.named.get(mesh.name) : 1;   // <-- The first number carries how much further off it fades (the shader never reads that level)
+                            for (let b = 0; b < near.length && !named; b++) {
+                                const box = near[b];
+                                if (world[i * 3] >= box[0] && world[i * 3 + 1] >= box[1] && world[i * 3 + 2] >= box[2] && world[i * 3] <= box[3] && world[i * 3 + 1] <= box[4] && world[i * 3 + 2] <= box[5]) scale = Math.max(scale, nearScales[b]);
+                            }
+                            cover[i * 4] = scale;
+                            cover[i * 4 + 3] = 0;                             // <-- The fourth number is the "measured" flag, not a measure (a named part holds 1 in all four)
+                        }
                         mesh.geometry.setAttribute('naOfPatch', new THREE.BufferAttribute(cover, 4));
                         state.MeshParts.push(mesh.geometry);
                         state.Stats.MeshCorners += position.count;

@@ -1,6 +1,28 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.93.0 - 10-Nov-2026 - Columns, Door Handles and Every SketchUp Library Part Join the Ornament Fade
+### Adam: "Good work / load my asset browser sketchup plugin and look at all the assets, add door handles and columns (pilasters) to the new linework culling system and make it so anything in my SketchUp Library is known to ValeVision as one of these assets requiring culling as the authored assets already contain numbers, meta data and loads of other stuff we can use to gurantee its exported, update ValeVision Cloud Sync if required"
+
+**What was wrong:** after v2.92.0 the cresting lightened, but from the launch view the column capitals still read as a row of black blocks along the orangery and the door handles as dark knots (Adam's marked-up View-01 of `60227__Thorpe`). Nothing in a GLB said which parts came from the library: a part placed once was flattened into the category's unnamed node, and instances carry Adam's own names (`Column__02__DoorLeft`), not the library's.
+
+**Now:** a node is ornament when it is a library part, by any of three marks: `extras.Na__LibraryAsset` on it or a node above it (written by the GLB Builder from 2.15.0, from the `Na__ComponentLibrary` dictionary and the code every library definition already carries), a library code leading its name (`20_1001__...`, older exports of a part placed unrenamed), or a word in `Choose__SeedNames` (`Cresting|Column|Pilaster|Handle`, older exports of a renamed one). So Thorpe's columns and handles fade today, before any re-export. Columns and pilasters fade twice as far off (`Fade__FurtherOffNames`, `Fade__FurtherOffScale` 2): Adam, "only when you zoom real far back for the pilasters". Column shafts and every curve of 800 mm or more never fade, so the columns keep their outline; capitals and handles lighten. A library part's mesh, flattened in with the rest, is found inside the box of its lines for the profile fade. Only a cresting carries in busy flattened pieces round it; a category with no cresting measures its named parts alone. Doors, fixtures, furniture and decor are no longer skipped (library parts live there); vegetation and entourage billboards still are. `Choose__LibraryExcludeTypes` names library types never to fade (empty: Adam said anything).
+
+**GLB Builder 2.15.0 (`<plugins>`, its own repo):** a component placed from the library writes its edges to a linework node of its own, `<name>_ID<persistent id>`, with `extras.Na__LibraryAsset` = Code, Type, Category, Name, Definition; instanced nodes and door children carry the same, a renamed wrapper marked with the part inside it (`Via: Nested`); library parts inside a door child get their own line nodes under it, so they still swing with the leaf. Code 00 (modelling helpers) is never an asset; an asset holding a LineworkModifier tag flattens as before so that node is never lost. **Cloud Sync needs no change:** it exports through `Na__PublicApi__PerformExport`.
+
+**Changed:** `Na__RenderEffect__OrnamentFade__.js` 1.1.0, `__Core__.js` 1.1.0, `__Config__.json` 1.1.0. GLB Builder: linework engine 1.7.0, `ComponentInstancing`, `DoorObjectHandling`, its DevLog 2.15.0. No record key, no API change.
+
+**Checked:**
+- `vv3d_check.py changed` and `lint`: clean. The three Ruby files loaded into SketchUp 2027 without error.
+- GLB Builder, on a copy of Thorpe 1.0.0 in its own SketchUp window, exported to the scratchpad: every library part arrives named with its data (crestings, including the pieces that used to flatten, both finials, every column, the handles, chimney pots, rainwater elbows); the origin point helper does not.
+- Sandbox, real GPU, Thorpe's current export: 34,004 segments chosen (was 26,272): the cresting as before plus all 11 columns and the handles. Launch view and 14 m and 24 m orangery fronts shot no fade / live now / new in one page and pose: the capitals and handles lighten, shafts, cornice and windows stay. A node given `Na__LibraryAsset` as the new GLB writes it is chosen, and dropped again when its type is in `Choose__LibraryExcludeTypes`.
+
+**Not checked:**
+- A whole Cloud Sync export and its GLBs in the app: only a scratch export was read, in Node. Nothing in the library was re-exported.
+- Other projects on screen; phones; MaxEngine; image and video export.
+- The GLB Builder change is not in the running SketchUp until it restarts (or the GLB Builder is reloaded).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.92.0 - 10-Nov-2026 - A Ridge Cresting Lightens With Distance Instead of Reading as a Black Blob, and Nothing Else Moves
 ### Adam: "See things like this cresting? the linework bunches up and looks super eye grabbing when you zoom back and even from a sensible distance. ... The aim is on areas of high detail to force less darkness to elimate bunched up items reading as areas of black blobs and high contrast. ... Create a test  enviroment and test parameters until the crestings dont look as promitinent, but the remainder of the orangery and building must look exactly the same.", then, after the A/Bs: "Implement the preview agents updates to the live branch / once done push to the Vale Server and GH"
 

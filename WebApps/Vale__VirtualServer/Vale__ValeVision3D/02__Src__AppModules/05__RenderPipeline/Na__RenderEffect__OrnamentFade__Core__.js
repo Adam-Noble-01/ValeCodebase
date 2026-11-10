@@ -43,6 +43,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Nov-2026 - Version 1.1.0
+// - A part marked carry: false (a column, a door handle) is ornament itself but carries
+//   nothing in: only a cresting's flattened pieces are worth looking for. A mesh corner
+//   inside a box given to CoverOfMesh (a library part's lines) counts as named.
 // 10-Nov-2026 - Version 1.0.0
 // - Built from the linework density test, tested on 60227__Thorpe and surveyed across the
 //   library's 99 projects. Pieces carried in from the unnamed node must now lie within
@@ -288,7 +292,7 @@
         const cell = reachM / 3, step = 0.05;
         const cells = new Map();
         for (let p = 0; p < parts.length; p++) {
-            if (parts[p].seed !== true || parts[p].exempt === true) continue;
+            if (parts[p].seed !== true || parts[p].exempt === true || parts[p].carry === false) continue;   // <-- carry false: ornament itself, but nothing is looked for round it
             const points = parts[p].points;
             for (let o = 0; o + 5 < points.length; o += 6) {
                 const ax = points[o], ay = points[o + 1], az = points[o + 2];
@@ -429,16 +433,30 @@
     // ------------------------------------------------------------
     // positions: three numbers a corner, world metres. index: the triangles'
     // corners, or null when they simply come in threes.
+    // A corner inside one of boxes (a named part's lines, grown a little) is the
+    // part's own mesh, flattened in with everything else: it counts as named.
     // A TRIANGLE IS AS BUSY AS ITS QUIETEST CORNER, and a corner as its quietest
     // triangle: a roof plane with one corner beside a cresting must not fade
     // across its whole face. A triangle with a building-sized edge is building,
     // and is never busy.
     // ------------------------------------------------------------
-    function Na__OrnamentFade__CoverOfMesh(field, positions, index, keepAboveM, named) {
+    function Na__OrnamentFade__CoverOfMesh(field, positions, index, keepAboveM, named, boxes) {
         const count = Math.floor(positions.length / 3);
         const raw   = new Float32Array(count * NA__ORNAMENTFADE__LEVELS);
+        const inBox = (x, y, z) => {                                          // <-- boxes: [minX, minY, minZ, maxX, maxY, maxZ] round a named part's lines
+            if (!boxes) return false;
+            for (let b = 0; b < boxes.length; b++) {
+                const box = boxes[b];
+                if (x >= box[0] && y >= box[1] && z >= box[2] && x <= box[3] && y <= box[4] && z <= box[5]) return true;
+            }
+            return false;
+        };
         if (named === true && field.seedsOnly) raw.fill(1);                   // <-- Ornament by name: the mesh of a seed
         else for (let i = 0; i < count; i++) {
+            if (field.seedsOnly && inBox(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2])) {   // <-- Inside a named part: its mesh, flattened in with the rest
+                for (let k = 0; k < NA__ORNAMENTFADE__LEVELS; k++) raw[i * NA__ORNAMENTFADE__LEVELS + k] = 1;
+                continue;
+            }
             let any = false;
             for (let k = 0; k < NA__ORNAMENTFADE__LEVELS; k++) {
                 raw[i * NA__ORNAMENTFADE__LEVELS + k] = Na__OrnamentFade__SampleLevel(field.levels[k], positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2], field.reach);

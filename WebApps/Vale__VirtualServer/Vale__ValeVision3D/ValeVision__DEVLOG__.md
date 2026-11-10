@@ -22,6 +22,8 @@
 - Other projects on screen; phones; MaxEngine; image and video export.
 - The GLB Builder change is not in the running SketchUp until it restarts (or the GLB Builder is reloaded).
 
+**Live (Adam: "Commit and push"), 10-Nov-2026:** `valevision3d` (stamp `20261110-111324`, the three ornament fade files changed, nothing else in the list); the live files carry the new code. No API change, no restart. ValeCodebase `eeb8db8c`; GLB Builder 2.15.0 on the Plugins repo `93e6b346`. Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.92.0 - 10-Nov-2026 - A Ridge Cresting Lightens With Distance Instead of Reading as a Black Blob, and Nothing Else Moves
 ### Adam: "See things like this cresting? the linework bunches up and looks super eye grabbing when you zoom back and even from a sensible distance. ... The aim is on areas of high detail to force less darkness to elimate bunched up items reading as areas of black blobs and high contrast. ... Create a test  enviroment and test parameters until the crestings dont look as promitinent, but the remainder of the orangery and building must look exactly the same.", then, after the A/Bs: "Implement the preview agents updates to the live branch / once done push to the Vale Server and GH"

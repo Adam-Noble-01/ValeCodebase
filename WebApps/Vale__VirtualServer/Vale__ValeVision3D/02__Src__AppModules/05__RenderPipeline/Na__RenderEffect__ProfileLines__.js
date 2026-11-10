@@ -22,6 +22,11 @@
 // DEVELOPMENT LOG:
 // 10-Mar-2026 - Version 1.0.0
 // - Initial stable release.
+// 10-Nov-2026 - Version 1.1.0
+// - Ornament fade (Na__RenderEffect__OrnamentFade__.js): the flat colour material writes, in
+//   its alpha, the share of an edge an ornament mesh keeps, and the Sobel multiplies each
+//   edge by the least of that within a pixel and a half. Only while ornament is attached;
+//   everywhere else the alpha is 1 and the switch is off, so nothing else moves.
 //
 // =============================================================================
 
@@ -47,6 +52,15 @@
     // MODULE IMPORTS | Cross Section Clipping Planes (Shared State)
     // ------------------------------------------------------------
     import { Na__SectionClipping__GetClipList } from './Na__RenderEffect__SectionClipping__State.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Ornament Fade (a cresting's profile edges lighten with distance)
+    // @delegate: ./Na__RenderEffect__OrnamentFade__.js
+    // ------------------------------------------------------------
+    import {
+        Na__OrnamentFade__PatchProfileFallback,
+        Na__OrnamentFade__GetEnabledUniform
+    } from './Na__RenderEffect__OrnamentFade__.js';
     // ------------------------------------------------------------
 
 
@@ -165,7 +179,8 @@
                 u_edgeWidth:           { value: edgeWidth },
                 u_sillyAmplitudePx:    { value: 0.0 },                        // <-- Silly Lines wave amplitude in px (0 = straight)
                 u_sillyWavelengthPx:   { value: 120.0 },                      // <-- Silly Lines wavelength in px
-                u_sillyPxOffset:       { value: new THREE.Vector2(0, 0) }     // <-- Full-image px offset (tiled exports keep waves seam-free)
+                u_sillyPxOffset:       { value: new THREE.Vector2(0, 0) },    // <-- Full-image px offset (tiled exports keep waves seam-free)
+                u_ornamentFadeOn:      { value: 0.0 }                         // <-- Replaced by the ornament fade's own shared switch once the pass is built
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -185,6 +200,7 @@
                 uniform float     u_sillyAmplitudePx;
                 uniform float     u_sillyWavelengthPx;
                 uniform vec2      u_sillyPxOffset;
+                uniform float     u_ornamentFadeOn;
 
                 varying vec2 vUv;
 
@@ -218,6 +234,18 @@
                     vec3  profileColor = texture2D(tProfileColor, sampleUv).rgb;
                     float softness     = u_edgeThresholdNormal * 0.5;
                     float blend        = smoothstep(u_edgeThresholdNormal - softness, u_edgeThresholdNormal + softness, edge);
+
+                    // ORNAMENT FADE | An edge keeps the least share held within a pixel and a half
+                    // of it, so the outline a cresting throws onto the wall behind fades with it.
+                    if (u_ornamentFadeOn > 0.5) {
+                        vec2  ofReach = 1.5 * invRes;
+                        float ofKeep  = texture2D(tProfileColor, sampleUv).a;
+                        ofKeep = min(ofKeep, texture2D(tProfileColor, sampleUv + vec2(ofReach.x, 0.0)).a);
+                        ofKeep = min(ofKeep, texture2D(tProfileColor, sampleUv - vec2(ofReach.x, 0.0)).a);
+                        ofKeep = min(ofKeep, texture2D(tProfileColor, sampleUv + vec2(0.0, ofReach.y)).a);
+                        ofKeep = min(ofKeep, texture2D(tProfileColor, sampleUv - vec2(0.0, ofReach.y)).a);
+                        blend *= ofKeep;
+                    }
 
                     gl_FragColor = mix(sceneColor, vec4(profileColor, 1.0), blend);
                 }
@@ -274,6 +302,7 @@
         const profileLinesPass   = new ShaderPass(profileLinesShader);           // <-- Create postprocess pass
         profileLinesPass.material.uniforms.tNormal.value       = normalRenderTarget.texture;       // <-- Bind normal buffer
         profileLinesPass.material.uniforms.tProfileColor.value = profileColorRenderTarget.texture; // <-- Bind colour buffer
+        profileLinesPass.material.uniforms.u_ornamentFadeOn    = Na__OrnamentFade__GetEnabledUniform(); // <-- Shared object: ShaderPass cloned the placeholder
 
         const fallbackProfileColor         = profileLinesPass.material.uniforms.u_edgeColor.value.clone();
         const profileColorFallbackMaterial = new THREE.MeshBasicMaterial({
@@ -283,6 +312,7 @@
             polygonOffsetFactor: 2,
             polygonOffsetUnits : 2
         });
+        Na__OrnamentFade__PatchProfileFallback(profileColorFallbackMaterial);  // <-- Writes the share of an edge an ornament mesh keeps into alpha (1 everywhere else)
 
         // DYNAMIC EDGE WIDTH CONFIG | Distance-Based Scaling Parameters
         const edgeWidthMin      = Number.isFinite(config.RenderEffect__ProfileLines__EdgeWidthMin)

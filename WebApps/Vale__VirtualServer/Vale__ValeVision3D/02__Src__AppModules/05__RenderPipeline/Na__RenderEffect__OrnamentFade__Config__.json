@@ -1,0 +1,27 @@
+{
+    "Meta__Version"                        : "1.0.0",
+    "OrnamentFade__Description"            : "Draws a model's ornament (a ridge cresting and its finials) with a lighter pen the further off it is, so it stops reading as a black blob from a distance. Every other line, and every orthographic drawing, is left exactly as it was. Read by Na__RenderEffect__OrnamentFade__.js once, after the models load. Shares are 0 to 1 of a line's ink; Mm sizes are a drawn line's width IN THE MODEL, its pixels over the pixels a metre takes there: on a desktop 3 mm is about 7 m away and 9 mm about 21 m.",
+    "OrnamentFade__Enabled"                : true,
+
+    "OrnamentFade__Choose__Description"    : "What is ornament. A GLB node whose name holds a seed is, every line of it. A companion is only when it stands beside a seed. An exempt name never is. A piece the GLB Builder flattened into the building's unnamed node is carried in when it is within CarryInMm of a named line and its patch is at least CarryInShare small shapes. Categories matching SkipCategories are never looked at.",
+    "OrnamentFade__Choose__SeedNames"      : "Cresting",
+    "OrnamentFade__Choose__CompanionNames" : "Finial|Spire|Urn",
+    "OrnamentFade__Choose__ExemptNames"    : "Note__",
+    "OrnamentFade__Choose__SkipCategories" : "Furniture|Decor|Fixtures|Vegetation|Entourage|Landscape|SiteBoundaries|Contextual|Linetype|Doors",
+    "OrnamentFade__Choose__CarryInMm"      : 300,
+    "OrnamentFade__Choose__CarryInShare"   : 0.03,
+    "OrnamentFade__Choose__CarryInSoftShare": 0.02,
+
+    "OrnamentFade__Fade__Description"      : "How it fades. Nothing while a line is under StartLineMm in the model, all of it by FullLineMm. A curve under DetailBelowPx on screen is detail and keeps DetailKeepShare of its ink; one over StructureAbovePx (a post, a rail, an arch) keeps StructureKeepShare. A curve BuildingAboveMm long is building and never fades. Profile lines on an ornament mesh keep ProfileKeepShare once its ProfileBarMm bars are thinner than ProfileThinPx on screen, and are whole again over ProfileWholePx.",
+    "OrnamentFade__Fade__StartLineMm"      : 3,
+    "OrnamentFade__Fade__FullLineMm"       : 9,
+    "OrnamentFade__Fade__DetailBelowPx"    : 3,
+    "OrnamentFade__Fade__StructureAbovePx" : 30,
+    "OrnamentFade__Fade__DetailKeepShare"  : 0,
+    "OrnamentFade__Fade__StructureKeepShare": 0.7,
+    "OrnamentFade__Fade__BuildingAboveMm"  : 800,
+    "OrnamentFade__Fade__ProfileKeepShare" : 0.5,
+    "OrnamentFade__Fade__ProfileBarMm"     : 30,
+    "OrnamentFade__Fade__ProfileThinPx"    : 2,
+    "OrnamentFade__Fade__ProfileWholePx"   : 6
+}

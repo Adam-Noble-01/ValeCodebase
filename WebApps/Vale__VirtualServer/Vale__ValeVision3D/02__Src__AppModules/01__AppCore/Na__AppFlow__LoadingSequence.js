@@ -233,6 +233,11 @@
 // - LoadAllModels receives a status+progress wrapper so watchdog stall clock resets
 //   on each file.
 //
+// 10-Nov-2026 - Version 1.2.2
+// - Once the models are in, the ornament fade measures them and draws a ridge cresting
+//   lightly from a distance (05__RenderPipeline/Na__RenderEffect__OrnamentFade__.js).
+//   A project with nothing named as ornament is left exactly as it was.
+//
 // 10-Jun-2026 - Version 1.2.1
 // - Door animation init now uses token-based category collection (TrueVision
 //   parity): matches CategoryNameTokens against loaded Map keys and resolves
@@ -567,6 +572,12 @@
     // @delegate: ../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js
     // ------------------------------------------------------------
     import { Na__PlOverlay__SyncFrame } from '../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Ornament Fade (a cresting drawn lightly from a distance)
+    // @delegate: ../05__RenderPipeline/Na__RenderEffect__OrnamentFade__.js
+    // ------------------------------------------------------------
+    import { Na__OrnamentFade__Attach } from '../05__RenderPipeline/Na__RenderEffect__OrnamentFade__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Fog Plane System
@@ -1294,6 +1305,18 @@
 
             // SET WALK MODE COLLISION MESHES (from loaded model root)
             Na__WalkMode__SetCollisionMeshes(Na__ModelGroup__Root);
+
+            // ORNAMENT FADE | A cresting's lines lighten with distance; nothing else changes.
+            // Its own catch: a failure here leaves the model exactly as loaded.
+            try {
+                await Na__OrnamentFade__Attach({
+                    scene       : Na__Scene__Main,
+                    modelRoot   : Na__ModelGroup__Root,
+                    getPipeline : () => Na__RenderPipeline__State
+                });
+            } catch (ornamentError) {
+                console.warn('[ValeVision3D] Ornament fade skipped:', ornamentError);
+            }
 
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);

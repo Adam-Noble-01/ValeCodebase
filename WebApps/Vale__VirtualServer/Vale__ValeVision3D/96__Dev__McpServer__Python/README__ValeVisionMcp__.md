@@ -59,6 +59,8 @@ Agents never sign in on real data. The real record is written with the API's own
 | `vv3d_level_walk` | A project opened afresh at every level: the sections and rows each gets, files fetched, failures. `phone: true` for a phone |
 | `vv3d_api_call` | One request to the sandbox's API as any level, a client link or signed out |
 | `vv3d_shot_compare`, `vv3d_contact_sheet` | Two pictures with what differs in red and how many pixels, or several on one labelled sheet. No page needed |
+| `vv3d_shot_series` | The same views shot one after another (saved scenes or cameras in mm), with a module run before each, for before-and-after sets |
+| `vv3d_linework_survey` | With no browser: which line segments of one project, or of the whole library, the ornament fade draws lightly, where they are and which GLB nodes hold them |
 | `vv3d_scene_changes` | Who placed what and what waits for an admin. Reads sandbox or real. Approve and revert on the sandbox only |
 | `vv3d_consumers` | Every file naming a key, function or event: the app, API, developer tools, Gallery, Server Manager, Cloud Sync, GLB Builder |
 | `vv3d_patch_file` | Anchored edits keeping each file's line endings, every anchor checked before anything is written. Refuses client data |
@@ -113,6 +115,9 @@ Agents never sign in on real data. The real record is written with the API's own
 | `Na__ValeVisionMcp__Tools__Testing__.py` | A real mouse and keyboard, what is on screen, every level, the API as any level, comparing pictures |
 | `Na__ValeVisionMcp__Tools__SceneAssets__.py` | Who placed what |
 | `Na__ValeVisionMcp__Tools__Workshop__.py` | Consumers of a name, anchored edits, the checks, reloading the tools |
+| `Na__ValeVisionMcp__Tools__Series__.py` | Shot series |
+| `Na__ValeVisionMcp__Tools__Linework__.py` | The linework survey tool |
+| `Na__ValeVisionMcp__LineworkSurvey__.mjs` | The ornament fade's own sums (`Na__RenderEffect__OrnamentFade__Core__.js`) over linework GLBs, in Node |
 | `Na__ValeVisionMcp__PageHelpers__.js` | What runs on the page |
 | `Na__ValeVisionMcp__VegetationSums__.mjs` | The app's plant sums, in Node |
 | `Na__ValeVisionMcp__EntourageSums__.mjs` | The app's figure sums, in Node |

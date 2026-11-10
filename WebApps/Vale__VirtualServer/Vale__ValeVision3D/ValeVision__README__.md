@@ -181,6 +181,10 @@ The live 3D viewport uses a **mesh + linework** rendering model: each category l
 
 Mesh materials use polygon offset (factor/units from config) to push surfaces back; linework uses polygon offset to pull lines forward. **With a logarithmic depth buffer, the hardware polygon offset is ignored** because depth is written in the fragment shader via `gl_FragDepth`. So linework also uses a **fragment shader depth bias**: after the logarithmic depth include, a small value is subtracted from `gl_FragDepth` so line fragments (including the ground line where the building meets the ground plane) win the depth test against coplanar mesh and no longer disappear.
 
+### Ornament Fade (v2.92.0)
+
+A ridge cresting is thousands of short lines in a metre cube; at a fixed pixel width, with every bar outlined by the profile lines, it reads as a black block from about 16 m out. After the models load, `05__RenderPipeline/Na__RenderEffect__OrnamentFade__.js` finds the ornament by name (`Cresting`; `Finial`, `Spire`, `Urn` only beside one; pieces the GLB Builder flattened into the building within 300 mm of a named line that measure as small shapes) and lightens it with distance: untouched under about 7 m, fully light by about 21 m. Its segments move to a child fat line on a blending copy of the material, so every other line keeps its own material and the rest of the picture does not change. Orthographic views are never touched. A project with nothing named is not measured. Tunables: `Na__RenderEffect__OrnamentFade__Config__.json`; live trial: the testing server's "Linework density test" panel.
+
 ### RenderConfig__Linework Config
 
 Linework behaviour is fully config-driven under **`models.RenderConfig__Linework`** in `Na__AppConfig__Main.json`, using 3-stage naming:
@@ -203,6 +207,7 @@ The depth bias is applied in `Na__ModelLoader__LoadSingleLinework` via `LineMate
 | `Na__ModelLoader__MultiModel.js` | Loads mesh + linework GLBs per category; applies materials and depth-bias hook to LineMaterial; reads `config.RenderConfig__Linework`. |
 | `Na__RenderPipeline__PostProcessing__Setup.js` | EffectComposer with RenderPass + ProfileLines pass (optional) + FXAA; returns composer + profile-lines helpers. |
 | `Na__AppConfig__Main.json` | `models.baseMesh`, `models.RenderConfig__Linework`, `scene` (ground, fog, etc.). |
+| `Na__RenderEffect__OrnamentFade__.js` (+ `__Core__`, `__Config__.json`) | Draws ornament (a node named Cresting, the finials beside it, its pieces flattened into the building) with a lighter pen from a distance: fat lines by alpha, profile edges through the profile pass's colour alpha. Perspective only; every other line untouched. |
 
 # -----------------------------------------------------------------------------
 

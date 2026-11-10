@@ -58,6 +58,8 @@ import Na__ValeVisionMcp__Tools__Server__                                # noqa:
 import Na__ValeVisionMcp__Tools__Testing__                               # noqa: E402,F401
 import Na__ValeVisionMcp__Tools__SceneAssets__                           # noqa: E402,F401
 import Na__ValeVisionMcp__Tools__Workshop__                              # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__Series__                                # noqa: E402,F401
+import Na__ValeVisionMcp__Tools__Linework__                              # noqa: E402,F401
 
 NA_SERVER_VERSION = '1.2.0'
 NA_SERVER_INFO = {'name': 'valevision3d', 'title': 'ValeVision 3D MCP', 'version': NA_SERVER_VERSION,

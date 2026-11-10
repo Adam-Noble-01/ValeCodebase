@@ -1,0 +1,164 @@
+/* =============================================================================
+ * VALEVISION3D - TESTING SERVER - LINEWORK DENSITY TEST STYLES
+ * =============================================================================
+ *
+ * FILE       : ValeVision__TestServer__Styles__LineworkDensity__.css
+ * NAMESPACE  : ValeVision__TestServer
+ * MODULE     : TestServer - Linework Density Test
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The linework density test's panel, top right over the app
+ * CREATED    : 10-Nov-2026
+ *
+ * DESCRIPTION:
+ * - Never part of the app: loaded by ValeVision__TestServer__LineworkDensity__Panel__.js
+ *   from /_testserver/, and this folder never syncs.
+ * - Its own tokens, scoped to the panel, so the app's :root is untouched. Amber as
+ *   the testing server's own frame, so it is plainly not the app's.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | Top Right, Under the App Header, Above Every App Layer */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__LdPanel {
+        --ValeVision_TestServer_Ld_Ink     : #172b3a;                     /* <-- Vale navy */
+        --ValeVision_TestServer_Ld_Muted   : #5b6b78;
+        --ValeVision_TestServer_Ld_Paper   : #ffffff;
+        --ValeVision_TestServer_Ld_Rule    : #d9dee3;
+        --ValeVision_TestServer_Ld_Accent  : #e39b17;                     /* <-- The testing server's amber */
+        position                           : fixed;
+        top                                : 132px;
+        right                              : 18px;
+        box-sizing                         : border-box;
+        width                              : 400px;
+        max-width                          : calc(100vw - 36px);
+        max-height                         : calc(100vh - 160px);
+        overflow-y                         : auto;
+        padding                            : 14px 16px 12px;
+        border                             : 2px solid var(--ValeVision_TestServer_Ld_Accent);
+        border-radius                      : 10px;
+        background                         : var(--ValeVision_TestServer_Ld_Paper);
+        color                              : var(--ValeVision_TestServer_Ld_Ink);
+        box-shadow                         : 0 6px 24px rgba(0, 0, 0, 0.22);
+        font-family                        : var(--Vale_FontFamily, 'Open Sans', sans-serif);
+        font-size                          : 13px;
+        line-height                        : 1.4;
+        z-index                            : 2147483000;
+    }
+
+    .ValeVision__TestServer__LdHead {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : 12px;
+        margin-bottom                      : 6px;
+    }
+
+    .ValeVision__TestServer__LdTitle {
+        margin                             : 0;
+        font-size                          : 15px;
+        font-weight                        : 700;
+    }
+
+    .ValeVision__TestServer__LdNote,
+    .ValeVision__TestServer__LdFound,
+    .ValeVision__TestServer__LdWarning {
+        margin                             : 6px 0 8px;
+        color                              : var(--ValeVision_TestServer_Ld_Muted);
+        font-size                          : 12px;
+    }
+
+    .ValeVision__TestServer__LdFound {
+        color                              : var(--ValeVision_TestServer_Ld_Ink);
+    }
+
+    .ValeVision__TestServer__LdWarning {
+        color                              : #c62828;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Rows, Buttons and Sliders
+ * ----------------------------------------------------------------------------- */
+
+    /* ROW | A Label, Then Its Control */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__LdRow {
+        display                            : grid;
+        grid-template-columns              : 132px 1fr;
+        align-items                        : center;
+        gap                                : 4px 10px;
+        padding                            : 7px 0;
+        border-top                         : 1px solid var(--ValeVision_TestServer_Ld_Rule);
+    }
+
+    .ValeVision__TestServer__LdLabel {
+        font-weight                        : 600;
+    }
+
+    .ValeVision__TestServer__LdButtons {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+    }
+
+    .ValeVision__TestServer__LdFigure {
+        grid-column                        : 2;
+        color                              : var(--ValeVision_TestServer_Ld_Muted);
+        font-size                          : 12px;
+    }
+
+    .ValeVision__TestServer__LdRange {
+        width                              : 100%;
+        margin                             : 0;
+        accent-color                       : var(--ValeVision_TestServer_Ld_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | One of a Row: the Current One Is Navy */
+    /* ------------------------------------------------------------ */
+    .ValeVision__TestServer__LdButton,
+    .ValeVision__TestServer__LdSmall {
+        margin                             : 0;
+        padding                            : 5px 10px;
+        border                             : 1px solid var(--ValeVision_TestServer_Ld_Ink);
+        border-radius                      : 6px;
+        background                         : var(--ValeVision_TestServer_Ld_Paper);
+        color                              : var(--ValeVision_TestServer_Ld_Ink);
+        font-family                        : inherit;
+        font-size                          : 12px;
+        cursor                             : pointer;
+    }
+
+    .ValeVision__TestServer__LdButton--current {
+        background                         : var(--ValeVision_TestServer_Ld_Ink);
+        color                              : var(--ValeVision_TestServer_Ld_Paper);
+        font-weight                        : 700;
+    }
+
+    .ValeVision__TestServer__LdButton:focus-visible,
+    .ValeVision__TestServer__LdSmall:focus-visible {
+        outline                            : 3px solid var(--ValeVision_TestServer_Ld_Accent);
+        outline-offset                     : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * PRINT | Never on Paper
+ * ----------------------------------------------------------------------------- */
+
+    @media print {
+        .ValeVision__TestServer__LdPanel { display : none; }
+    }
+
+/* #endregion ------------------------------------------------------------------- */

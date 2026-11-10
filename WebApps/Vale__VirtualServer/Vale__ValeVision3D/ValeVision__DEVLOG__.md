@@ -1,6 +1,32 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.92.0 - 10-Nov-2026 - A Ridge Cresting Lightens With Distance Instead of Reading as a Black Blob, and Nothing Else Moves
+### Adam: "See things like this cresting? the linework bunches up and looks super eye grabbing when you zoom back and even from a sensible distance. ... The aim is on areas of high detail to force less darkness to elimate bunched up items reading as areas of black blobs and high contrast. ... Create a test  enviroment and test parameters until the crestings dont look as promitinent, but the remainder of the orangery and building must look exactly the same.", then, after the A/Bs: "Implement the preview agents updates to the live branch / once done push to the Vale Server and GH"
+
+**What was wrong:** a cast iron cresting is thousands of short lines in a metre cube (57% of `60227__Thorpe`'s drawn segments). Fat lines keep their pixel width however far off they are, and the profile lines outline every bar, so from about 16 m out it read as a solid dark block. Measured: the fat lines and the profile lines each gave about half of that darkness.
+
+**Now:** once the models load, `Na__RenderEffect__OrnamentFade__.js` finds the ornament and draws it with a lighter pen the further off it is: untouched under about 7 m, fully light by about 21 m on a desktop. Small detail keeps none of its ink, posts, rails and arches 70%, profile edges 50%. On Thorpe the cresting's mean tone goes from 172 to 188 at 24 m and from 158 to 187 at the launch view (0 black, 255 white). Every other line is drawn by the very material and shader it was, so the rest of the picture does not change by a pixel. Plans, elevations, sections and every orthographic view are never touched.
+
+**What is ornament:** a GLB node whose name holds `Cresting`, every line of it; a `Finial`, `Spire` or `Urn` only where it stands beside one; and the pieces of a cresting the GLB Builder flattened into the building's unnamed node (a third of Thorpe's), carried in when they lie within 300 mm of a named line and measure as "mush" (curves too small to read as shapes from that distance). A category with nothing named is never measured, so most projects pay nothing. Across the library's 99 projects that is seven: Thorpe, Brown, Lister, Majid, Ball, Miah and Mathison. No SketchUp change is needed for them.
+
+**How:** the ornament's segments move into a fat line of their own, a child of the line they came from, on a copy of its material that blends by alpha; a line that is ornament throughout takes the copy itself, so drawings never see a segment twice. The profile pass's flat colour material writes the share of an edge an ornament mesh keeps into the colour buffer's alpha, and the Sobel multiplies each edge by the least of that within 1.5 px. The switch is off, and the alpha 1, everywhere else. Tunables: `Na__RenderEffect__OrnamentFade__Config__.json`.
+
+**Changed:** new `05__RenderPipeline/Na__RenderEffect__OrnamentFade__.js` 1.0.0, `Na__RenderEffect__OrnamentFade__Core__.js` 1.0.0 (pure sums, also run in Node by the MCP's library survey) and `Na__RenderEffect__OrnamentFade__Config__.json` 1.0.0; `Na__RenderEffect__ProfileLines__.js` 1.1.0; `Na__AppFlow__LoadingSequence.js` 1.2.2. Testing server: the "Linework density test" panel (`80__Testing__LocalTestServer`) now drives the app's own module live; Thorpe joined the testing server's projects. ValeVision MCP: `vv3d_linework_survey` (which lines of any project are ornament, no browser) and `vv3d_shot_series`. No record key, no API change.
+
+**Checked:**
+- `vv3d_check.py changed` and `lint`: syntax, JSON, undeclared names and every import clean.
+- On the sandbox, real GPU, 2000 x 1125: Thorpe's built-in fade is pixel identical to the A/B pictures Adam approved, at the launch view and 24 m. With the fade switched off in the same page the new code matches the app before this change (24 m: 0 pixels; launch view: the one pixel, by one level, that differs between any two page loads).
+- Earlier, on the test: 0 pixels changed outside the cresting at 11, 16, 24, 41 and 51 m, with the fade on and off in one page and pose.
+- `64348__Mathison`: the 300 mm limit stops the house's tile joints and gable pendant being taken with its ridge cresting. `64135__Washington` (no cresting): nothing measured, 0 ms, switch off.
+- The testing server's panel opens and drives the module.
+
+**Not checked:**
+- Phones, MaxEngine, image and video export, tiled stills, thumbnails and Layout Editor 3D viewports (all should fade by the same rule, since it is the line's width in the model; none looked at).
+- Brown, Ball, Majid and Miah on screen (surveyed only). Mathison's house cresting lightens too: it is named Cresting.
+- Pilaster mouldings are not touched: nothing in their names says ornament.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.91.1 - 06-Nov-2026 - A Scene Whose SketchUp Target Is Far Away Flies In and Lands on Its Shot
 ### Adam: "Investigate why Valevision Cloudsync is not syncing the correct camera positions. I'm getting to camera 3 in the carousel of the latest job we just uploaded, and it's whipping the camera back at a strange angle. Is the data correctly being passed to the server when I resync?", then: "Do it, but why is the orbit helper cube not being used? or is that for something else. make the other fixes suggested too"
 

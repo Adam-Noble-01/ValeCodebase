@@ -41,6 +41,10 @@
      real thing, down to the API's own checks.
    - Never throws into the app: every handler is guarded, and a problem in the
      overlay's own drawing is never recorded as one of the app's.
+   - TESTS (10-Nov-2026). The panel also opens trials that are not part of the
+     app, each a module of its own beside this file, fetched only when its button
+     is pressed: the linework density test (ValeVision__TestServer__LineworkDensity__*).
+     A test changes the page it is on and nothing else.
 
    ============================================================================= */
 
@@ -477,6 +481,23 @@ var ValeVision__TestServer__Overlay = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Open One of the Tests Kept Beside the Overlay
+    // ------------------------------------------------------------
+    // A test is a module of its own in this folder, fetched only when asked
+    // for, so the overlay stays as small as it was and a test that fails to
+    // load is one more line in the browser's list, never a broken overlay.
+    // ------------------------------------------------------------
+    function ValeVision__TestServer__OpenTest(fileStem, openName) {
+        var State  = ValeVision__TestServer__State;
+        var folder = SCRIPT_TAG && SCRIPT_TAG.src ? SCRIPT_TAG.src.replace(/[^\/]+$/, '') : '/_testserver/';
+        State.Open = false;                                                 // <-- The model is what a test is looked at on
+        ValeVision__TestServer__QueueRender();
+        import(folder + 'ValeVision__TestServer__' + fileStem + '__.js')
+            .then(function(module) { module[openName](); })
+            .catch(function(error) { ValeVision__TestServer__AddBrowser('test', 'The test could not be opened: ' + ValeVision__TestServer__Describe(error)); });
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Build the Overlay Once (frame, header label, dock with badge and panel)
     // ------------------------------------------------------------
     function ValeVision__TestServer__Build() {
@@ -645,6 +666,19 @@ var ValeVision__TestServer__Overlay = (function() {
             projects.appendChild(projectRow);
             panel.appendChild(projects);
         }
+
+        // Tests that are not part of the app
+        var tests = El('div', CLS + 'Group');
+        tests.appendChild(El('h3', CLS + 'GroupTitle', 'Tests'));
+        tests.appendChild(El('p', CLS + 'GroupNote', 'Trials that are not part of the app. Each changes this page only, saves nothing, and is gone when the page is reloaded.'));
+        var testRow = El('div', CLS + 'SignInButtons');
+        var density = El('button', CLS + 'SignInButton', 'Linework density test');
+        density.type = 'button';
+        density.title = 'Draw ornament (a ridge cresting, its finials) with a lighter pen the further off it is. Try it on 60227__Thorpe.';
+        density.addEventListener('click', function() { ValeVision__TestServer__OpenTest('LineworkDensity__Panel', 'Na__LineDensityPanel__Open'); });
+        testRow.appendChild(density);
+        tests.appendChild(testRow);
+        panel.appendChild(tests);
 
         // Facts
         var facts = El('dl', CLS + 'Facts');

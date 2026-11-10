@@ -26,6 +26,8 @@
 - Brown, Ball, Majid and Miah on screen (surveyed only). Mathison's house cresting lightens too: it is named Cresting.
 - Pilaster mouldings are not touched: nothing in their names says ornament.
 
+**Live (Adam: "once done push to the Vale Server and GH"), 10-Nov-2026:** `valevision3d` (stamp `20261110-103916`, 3 new, 2 changed, none deleted, nothing else in the list). The three new files answer 200 on the live site and the live profile pass carries the change. No API change, no restart. On GitHub as `3ef8fd497`. Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.91.1 - 06-Nov-2026 - A Scene Whose SketchUp Target Is Far Away Flies In and Lands on Its Shot
 ### Adam: "Investigate why Valevision Cloudsync is not syncing the correct camera positions. I'm getting to camera 3 in the carousel of the latest job we just uploaded, and it's whipping the camera back at a strange angle. Is the data correctly being passed to the server when I resync?", then: "Do it, but why is the orbit helper cube not being used? or is that for something else. make the other fixes suggested too"

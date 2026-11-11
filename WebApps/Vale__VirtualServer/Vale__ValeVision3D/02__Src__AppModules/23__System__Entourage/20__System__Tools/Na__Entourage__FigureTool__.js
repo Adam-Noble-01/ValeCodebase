@@ -46,6 +46,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.95.0)
+// - WriteHeightStretch (Jamesification). A carry, its outline and a copy keep the stretch.
+//
 // 05-Nov-2026 - Version 1.1.0 (ValeVision3D v2.89.0)
 // - Hands the right-click menu how to draw its pictures, as that menu now serves plants too.
 //
@@ -238,6 +241,15 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Write a Figure's Height Stretch (Jamesification). Exactly 1 Is the Same as None
+    // ------------------------------------------------------------
+    function Na__EntTool__WriteHeightStretch(figure, value) {
+        if (!(value > 1)) delete figure.Entourage__Figure__HeightStretch;
+        else figure.Entourage__Figure__HeightStretch = value;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -327,6 +339,11 @@
             position[1],
             Math.round(position[2] + e[2] * across)
         ], figure.Entourage__Figure__Scale > 0 ? figure.Entourage__Figure__Scale : 1);
+        const copy = Na__EntTool__SelectedFigure();                            // <-- The copy is selected now: it keeps the original's stretch
+        if (copy && copy !== figure && figure.Entourage__Figure__HeightStretch > 1) {
+            Na__EntTool__WriteHeightStretch(copy, figure.Entourage__Figure__HeightStretch);
+            await Na__EntRun__SyncFigures();
+        }
     }
     // ------------------------------------------------------------
 
@@ -396,6 +413,7 @@
             assetId : figure.Entourage__Figure__AssetId,
             seed    : figure.Entourage__Figure__Seed,
             scale   : figure.Entourage__Figure__Scale > 0 ? figure.Entourage__Figure__Scale : 1,
+            stretch : figure.Entourage__Figure__HeightStretch > 0 ? figure.Entourage__Figure__HeightStretch : 1,
             point   : position.map((mm) => mm / 1000),
             lastY   : position[1] / 1000
         };
@@ -657,13 +675,13 @@
 
     // HELPER FUNCTION | A Figure's Outline at a Spot, Turned to the Camera
     // ------------------------------------------------------------
-    function Na__EntTool__PaintOutline(pen, assetId, seed, scale, point, style) {
+    function Na__EntTool__PaintOutline(pen, assetId, seed, scale, point, style, stretch) {
         const layer = Na__EntRun__GetLayer();
         const parts = layer ? layer.partsFor({ assetId, seed }) : null;
         if (!parts) return;
         const e = Na__EntTool__State.context.camera.matrixWorld.elements;
         const yaw = Math.atan2(e[12] - point[0], e[14] - point[2]);
-        const c = Math.cos(yaw) * scale / 1000, s = Math.sin(yaw) * scale / 1000, up = scale / 1000;
+        const c = Math.cos(yaw) * scale / 1000, s = Math.sin(yaw) * scale / 1000, up = (scale * (stretch || 1)) / 1000;
         parts.outlines.forEach((loop) => {
             const world = loop.map((p) => [point[0] + p[0] * c, point[1] + p[1] * up, point[2] - p[0] * s]);
             pen.polygon(world, style);
@@ -705,7 +723,7 @@
             const point = placed(selected);
             Na__EntTool__PaintRing(pen, point, Na__EntRun__SizeOf(selected)[0], 1, strong);
             if (state.previewId) {
-                Na__EntTool__PaintOutline(pen, state.previewId, 7, selected.Entourage__Figure__Scale > 0 ? selected.Entourage__Figure__Scale : 1, point, { colour : ring.Entourage__Ring__Stroke, width : 1.5 });
+                Na__EntTool__PaintOutline(pen, state.previewId, 7, selected.Entourage__Figure__Scale > 0 ? selected.Entourage__Figure__Scale : 1, point, { colour : ring.Entourage__Ring__Stroke, width : 1.5 }, selected.Entourage__Figure__HeightStretch);
             }
         }
 
@@ -718,8 +736,8 @@
                 const widest = parts.outlines.reduce((most, loop) => loop.reduce((m, p) => Math.max(m, Math.abs(p[0])), most), 0) * 2;
                 const tallest = parts.outlines.reduce((most, loop) => loop.reduce((m, p) => Math.max(m, p[1]), most), 0);
                 Na__EntTool__PaintRing(pen, carry.point, widest, carry.scale, dashed);
-                Na__EntTool__PaintOutline(pen, carry.assetId, carry.seed, carry.scale, carry.point, { colour : ring.Entourage__Ring__Stroke, width : 1.25, fill : 'rgba(255, 255, 255, 0.55)' });
-                pen.polyline([carry.point, [carry.point[0], carry.point[1] + (tallest * carry.scale) / 1000, carry.point[2]]], { colour : ring.Entourage__Ring__HoverStroke, width : 1 });
+                Na__EntTool__PaintOutline(pen, carry.assetId, carry.seed, carry.scale, carry.point, { colour : ring.Entourage__Ring__Stroke, width : 1.25, fill : 'rgba(255, 255, 255, 0.55)' }, carry.stretch);
+                pen.polyline([carry.point, [carry.point[0], carry.point[1] + (tallest * carry.scale * (carry.stretch || 1)) / 1000, carry.point[2]]], { colour : ring.Entourage__Ring__HoverStroke, width : 1 });
                 pen.dot(carry.point, ring.Entourage__Ring__FootDotPx, ring.Entourage__Ring__Stroke);
             }
         }
@@ -939,7 +957,8 @@
         Na__EntTool__CopySelected,
         Na__EntTool__RemoveSelected,
         Na__EntTool__SwapSelected,
-        Na__EntTool__WriteScale
+        Na__EntTool__WriteScale,
+        Na__EntTool__WriteHeightStretch
     };
     // ------------------------------------------------------------
 

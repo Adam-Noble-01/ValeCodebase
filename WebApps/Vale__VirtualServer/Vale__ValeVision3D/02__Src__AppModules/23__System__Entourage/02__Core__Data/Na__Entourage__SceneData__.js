@@ -37,6 +37,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.95.0)
+// - A figure carries Entourage__Figure__HeightStretch (Jamesification), height only, on top of its scale.
+//
 // 05-Nov-2026 - Version 1.1.0 (ValeVision3D v2.89.0)
 // - Staff open and save through the placed-assets routes, with who did what alongside. On by default.
 //
@@ -182,6 +185,7 @@
             seed       : figure.Entourage__Figure__Seed,
             positionMm : figure.Entourage__Figure__PositionMm,
             scale      : figure.Entourage__Figure__Scale > 0 ? figure.Entourage__Figure__Scale : 1,
+            stretch    : figure.Entourage__Figure__HeightStretch > 0 ? figure.Entourage__Figure__HeightStretch : 1,   // <-- Jamesification: height only, on top of scale
             key        : Na__EntData__FigureKey(figure)
         };
     }
@@ -192,11 +196,12 @@
     // ------------------------------------------------------------
     function Na__EntData__FigureKey(figure) {
         const zoom = figure.Entourage__Figure__Scale;
+        const tall = figure.Entourage__Figure__HeightStretch;
         return [
             figure.Entourage__Figure__AssetId,
             figure.Entourage__Figure__Seed,
             figure.Entourage__Figure__PositionMm
-        ].join('|') + ((zoom && zoom !== 1) ? '|x' + zoom : '');
+        ].join('|') + ((zoom && zoom !== 1) ? '|x' + zoom : '') + ((tall && tall !== 1) ? '|h' + tall : '');
     }
     // ------------------------------------------------------------
 

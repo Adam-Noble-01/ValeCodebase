@@ -1,6 +1,22 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.95.0 - 11-Nov-2026 - Jamesification: a Second Slider Stretches a Figure's Height Only, 1 to 1.50
+### Adam: "In valevision 3d add a second slider that scales along height axis only name the sider Jamesification and make it only go 1 - 1.50 to stretch peoples height"
+
+**Now:** Entourage > In This Project, with a figure selected, has a Jamesification slider under Scale. It stretches the figure upwards only, 1.00 to 1.50 in steps of 0.01, on top of Scale (Scale 1.10 with Jamesification 1.20 is 10% bigger all round and then 20% taller). "Stands ... m tall" follows the slider as it moves. The stretch is drawn, picked, outlined while carrying, kept by a copy, Replace With and New Seed, and counted by SizeOf. Saved as `Entourage__Figure__HeightStretch` on the figure; exactly 1 is not saved. Limits are config (`Entourage__DevTools__JamesificationMin/Max/Step`).
+
+**Changed:** `23__System__Entourage`: `Na__Entourage__AppConfig__.json` 1.2.0, `Na__Entourage__SceneData__.js` 1.2.0, `Na__Entourage__SceneLayer__.js` 1.1.0, `Na__Entourage__Runtime__.js` 1.1.0, `Na__Entourage__FigureTool__.js` 1.2.0, `Na__Entourage__PanelShell__.js` 1.3.0, `Na__Entourage__AssetBrowser__.js` 1.3.0. Record: `Entourage__Figure__HeightStretch` (new, optional). No API change.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- MCP sandbox, `64616__Garnett` as AppAdmin, real clicks: Tools & Settings > Entourage > In This Project > the figure: "Scale = 1.00 [0.5-1.5]", "Jamesification = 1.00 [1-1.5 step 0.01]", "Stands 1.80 m tall and 628 mm wide". At 1.30: "Stands 2.34 m tall and 628 mm wide", the figure drawn visibly taller and no wider, What It Saves shows `"Entourage__Figure__HeightStretch": 1.3`; Save Entourage wrote it to the sandbox record.
+
+**Not checked:**
+- Picking a stretched figure by its head, a copy keeping the stretch, a figure on a live drawing or sheet, a phone.
+- The MCP tools (`vv3d_entourage_edit`, `vv3d_entourage_get`) do not yet read or write the stretch.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.94.1 - 11-Nov-2026 - The Drawing Editor's Picture Handles Say What They Do: Navy Discs Scale, White Tabs Trim
 ### Adam: "Add better corner handles that are larger, different shaped and visually clearly describe scale drag points or clipping drag points."
 

@@ -41,6 +41,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.95.0)
+// - The Jamesification slider under Scale stretches the selected figure's height only, 1 to 1.50.
+//
+// 11-Nov-2026 - Version 1.2.1 (ValeVision3D v2.94.2)
+// - In This Project no longer shows the selected figure's saved record (What It Saves). Adam: "remove
+//   the section showing the code thats no longer needed".
+//
 // 06-Nov-2026 - Version 1.2.0 (ValeVision3D v2.91.0)
 // - The panel is Entourage, as dropdown sections: Assets, In This Project and Changes. Open and Close
 //   for the menu section.
@@ -93,6 +100,7 @@
         Na__EntShell__El,
         Na__EntShell__Button,
         Na__EntShell__ScaleSlider,
+        Na__EntShell__JamesificationSlider,
         Na__EntShell__Open,
         Na__EntShell__Close,
         Na__EntShell__IsOpen,
@@ -119,7 +127,8 @@
         Na__EntTool__CopySelected,
         Na__EntTool__RemoveSelected,
         Na__EntTool__SwapSelected,
-        Na__EntTool__WriteScale
+        Na__EntTool__WriteScale,
+        Na__EntTool__WriteHeightStretch
     } from '../20__System__Tools/Na__Entourage__FigureTool__.js';
     // ------------------------------------------------------------
 
@@ -431,8 +440,29 @@
         scale.row.style.marginTop = '8px';
         holder.appendChild(scale.row);
 
-        const measured = Na__EntRun__SizeOf(figure);
-        holder.appendChild(Na__EntShell__El('p', 'na-veg-panel__hint', 'Stands ' + (measured[1] / 1000).toFixed(2) + ' m tall and ' + measured[0] + ' mm wide.'));
+        const sizeLine = Na__EntShell__El('p', 'na-veg-panel__hint', '');
+        const writeSize = () => {
+            const measured = Na__EntRun__SizeOf(figure);
+            sizeLine.textContent = 'Stands ' + (measured[1] / 1000).toFixed(2) + ' m tall and ' + measured[0] + ' mm wide.';
+        };
+
+        const stretch = Na__EntShell__JamesificationSlider({
+            value   : figure.Entourage__Figure__HeightStretch,
+            title   : 'Taller only: 1.20 is a fifth taller and no wider',
+            onInput : (value) => {
+                Na__EntShell__BeforeChange('figure-height-stretch');
+                Na__EntTool__WriteHeightStretch(figure, value);
+                Na__EntShell__MarkChanged();
+                Na__EntRun__SyncFigures();
+                writeSize();
+            },
+            onChange : () => { Na__EntCards__DrawProject(); }
+        });
+        stretch.row.style.marginTop = '8px';
+        holder.appendChild(stretch.row);
+
+        writeSize();
+        holder.appendChild(sizeLine);
 
         holder.appendChild(Na__EntShell__El('div', 'na-veg-panel__section', 'Replace with'));
         const swaps = Na__EntShell__El('div', 'na-ent-swaps');
@@ -447,10 +477,7 @@
             button.addEventListener('click', () => Na__EntTool__SwapSelected(row.Asset__Id));
             swaps.appendChild(button);
         });
-        holder.appendChild(swaps);
-
-        holder.appendChild(Na__EntShell__El('div', 'na-veg-panel__section', 'What it saves'));
-        holder.appendChild(Na__EntShell__El('pre', 'na-veg-record__json', JSON.stringify(figure, null, 1)));
+        holder.appendChild(swaps);                                             // <-- The saved record is no longer shown under it (Adam, 11-Nov-2026)
     }
     // ------------------------------------------------------------
 

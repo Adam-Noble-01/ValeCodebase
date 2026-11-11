@@ -2,7 +2,7 @@
     "Entourage__AppConfig__Meta": {
         "Meta__FileName"    : "Na__Entourage__AppConfig__.json",
         "Meta__Description" : "The entourage system's defaults. A project's Entourage__SceneData is born with a full copy of these, and from then on the project's own values win. Figures are never loaded on a project that is not enabled, so nor is this file.",
-        "Meta__Version"     : "1.1.0",
+        "Meta__Version"     : "1.2.0",
         "Meta__Created"     : "05-Nov-2026",
         "Meta__Author"      : "Adam Noble - Noble Architecture",
 
@@ -76,6 +76,10 @@
         "Entourage__DevTools__ScaleMin"           : 0.50,
         "Entourage__DevTools__ScaleMax"           : 1.50,
         "Entourage__DevTools__ScaleStep"          : 0.01,
+        "Entourage__DevTools__JamesificationMin"  : 1.00,
+        "Entourage__DevTools__JamesificationMax"  : 1.50,
+        "Entourage__DevTools__JamesificationStep" : 0.01,
+        "Entourage__DevTools__JamesificationNote" : "Adam, 11-Nov-2026: a second slider, Jamesification, that stretches a figure's height only, 1 to 1.50. Saved as Entourage__Figure__HeightStretch, on top of Entourage__Figure__Scale; exactly 1 is not saved.",
         "Entourage__DevTools__MenuScaleStep"      : 1.10,
         "Entourage__DevTools__CopyOffsetMm"       : 700,
         "Entourage__DevTools__HoverMs"            : 40,

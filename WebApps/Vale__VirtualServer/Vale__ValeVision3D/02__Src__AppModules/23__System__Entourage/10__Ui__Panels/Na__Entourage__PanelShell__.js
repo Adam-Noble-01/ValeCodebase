@@ -28,6 +28,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.95.0)
+// - JamesificationSlider: height only, 1 to 1.50.
+//
 // 06-Nov-2026 - Version 1.2.0 (ValeVision3D v2.91.0)
 // - A panel can carry an icon in its title and be the dropdown sections' panel. Only a panel on the
 //   right shuts Tools & Settings. Closing a panel says so (CLOSED_EVENT).
@@ -188,6 +191,28 @@
             min      : config.Entourage__DevTools__ScaleMin,
             max      : config.Entourage__DevTools__ScaleMax,
             step     : config.Entourage__DevTools__ScaleStep,
+            value    : options.value > 0 ? options.value : 1,
+            format   : (value) => Number(value).toFixed(2),
+            onInput  : options.onInput,
+            onChange : options.onChange
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Jamesification Slider: a Figure's Height Only, 1 to 1.50
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "add a second slider that scales along height axis only name the sider
+    // Jamesification and make it only go 1 - 1.50 to stretch peoples height"
+    // ------------------------------------------------------------
+    function Na__EntShell__JamesificationSlider(options) {
+        const config = Na__EntShell__Config().Entourage__DevTools__Config;
+        return Na__EntShell__Slider({
+            label    : 'Jamesification',
+            title    : options.title,
+            min      : config.Entourage__DevTools__JamesificationMin,
+            max      : config.Entourage__DevTools__JamesificationMax,
+            step     : config.Entourage__DevTools__JamesificationStep,
             value    : options.value > 0 ? options.value : 1,
             format   : (value) => Number(value).toFixed(2),
             onInput  : options.onInput,
@@ -523,6 +548,7 @@
         Na__EntShell__Button,
         Na__EntShell__Slider,
         Na__EntShell__ScaleSlider,
+        Na__EntShell__JamesificationSlider,
         Na__EntShell__MakeSaveButton,
         Na__EntShell__Save,
         Na__EntShell__AfterReplaced,

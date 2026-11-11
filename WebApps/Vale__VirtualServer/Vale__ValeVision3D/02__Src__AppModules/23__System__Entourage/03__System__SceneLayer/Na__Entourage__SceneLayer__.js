@@ -48,6 +48,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.95.0)
+// - A figure's height is multiplied by its stretch (Jamesification) as well as its scale, drawn and picked.
+//
 // 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.88.0)
 // - Initial build.
 //
@@ -450,7 +453,7 @@
                 const px = figure.positionMm[0] / 1000, py = figure.positionMm[1] / 1000, pz = figure.positionMm[2] / 1000;
                 const toX = ortho ? e[8] : e[12] - px, toZ = ortho ? e[10] : e[14] - pz;
                 const yaw = Math.atan2(toX, toZ);
-                const c = Math.cos(yaw) * figure.scale, s = Math.sin(yaw) * figure.scale, up = figure.scale;
+                const c = Math.cos(yaw) * figure.scale, s = Math.sin(yaw) * figure.scale, up = figure.scale * (figure.stretch || 1);
                 entry.c = Math.cos(yaw);
                 entry.s = Math.sin(yaw);
                 if (figure.uid === state.hiddenUid) return;
@@ -757,7 +760,7 @@
                 const dx = origin.x + direction.x * t - px;
                 const dz = origin.z + direction.z * t - pz;
                 const x = ((dx * entry.c - dz * entry.s) / figure.scale) * 1000;
-                const y = ((origin.y + direction.y * t - py) / figure.scale) * 1000;
+                const y = ((origin.y + direction.y * t - py) / (figure.scale * (figure.stretch || 1))) * 1000;
                 const reach = ((t * (tolerancePerM || 0)) / figure.scale) * 1000;
                 const spots = [[x, y], [x - reach, y], [x + reach, y], [x, y - reach], [x, y + reach]];
                 const hit = entry.parts.faces.some((face) => spots.some((spot) => Na__EntBuild__Inside(spot[0], spot[1], face.outer)));

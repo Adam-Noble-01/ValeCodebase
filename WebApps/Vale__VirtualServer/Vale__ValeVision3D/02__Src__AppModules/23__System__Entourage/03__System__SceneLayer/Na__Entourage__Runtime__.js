@@ -29,6 +29,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.95.0)
+// - SizeOf counts the height stretch (Jamesification).
+//
 // 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.88.0)
 // - Initial build, after Na__Vegetation__Runtime__.js.
 //
@@ -151,7 +154,8 @@
         const recipe = Na__EntRun__RecipeFor(figure.Entourage__Figure__AssetId);
         const size = recipe ? recipe.Asset__Size : { Size__WidthMm : 600, Size__HeightMm : 1700 };
         const zoom = figure.Entourage__Figure__Scale > 0 ? figure.Entourage__Figure__Scale : 1;
-        return [Math.round(size.Size__WidthMm * zoom), Math.round(size.Size__HeightMm * zoom)];
+        const tall = figure.Entourage__Figure__HeightStretch > 0 ? figure.Entourage__Figure__HeightStretch : 1;
+        return [Math.round(size.Size__WidthMm * zoom), Math.round(size.Size__HeightMm * zoom * tall)];
     }
     // ------------------------------------------------------------
 

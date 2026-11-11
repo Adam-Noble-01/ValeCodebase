@@ -26,8 +26,9 @@
 **Not checked:**
 - A real download landing on a PC (headless Edge took the jsPDF save without error); the PDF's look, which is unchanged code.
 - A real phone or tablet; Safari's IndexedDB in a private window (the copy simply is not kept there).
-- The live server: nothing pushed. The API service needs a restart after the push (`vale@ValeVision3D`).
 - Amy's 09:18 drawing cannot be brought back: it was never saved anywhere.
+
+**Live (Adam: "Push tom server and GH"), 11-Nov-2026 14:04 UTC:** `server-api` scoped to `Api__ValeVision3D` (stamp `20261111-140433`, the two API files, nothing else in the list), then `vale@ValeVision3D` restarted (active since 14:04:39 UTC, health OK); then `valevision3d` (stamp `20261111-140452`, 5 new, 14 changed, none deleted, nothing else in the list). All 19 page files match the PC by SHA-256 through Cloudflare; the deploy stamp moved to `20261111-140453`. On GitHub as `29bbc0d27`. Not looked at in a browser on the live site.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.93.0 - 10-Nov-2026 - Columns, Door Handles and Every SketchUp Library Part Join the Ornament Fade

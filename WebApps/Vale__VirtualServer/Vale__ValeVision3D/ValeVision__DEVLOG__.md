@@ -22,7 +22,8 @@
 
 **Not checked:**
 - A real touch screen (it uses the same tested hit test and drag), a phone, Safari.
-- The live server: nothing pushed.
+
+**Live (Adam: "Push server and GH"), 11-Nov-2026 14:53 UTC:** `valevision3d` scoped to `02__Src__AppModules/35__System__PageLayoutSystem` (stamp `20261111-145359`, 1 new, 6 changed, none deleted, nothing else in the list; the Entourage, Vegetation and menu icon work of other sessions left on the PC). All 7 files match the PC by SHA-256 through Cloudflare; the deploy stamp moved to `20261111-145359`. No API change, no restart. On GitHub as `797b8e70`. Not looked at in a browser on the live site.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.94.0 - 11-Nov-2026 - Every Drawing Export Is Saved as a Version Anyone on the Job Can Open Again, Named for the Job and the Scheme

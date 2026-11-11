@@ -43,11 +43,30 @@
 #   sent, objects only, size capped. A save that leaves a block out keeps the stored one.
 # - The activity ledger names each save and delete (ValeVision3D__Api__Activity__, through
 #   g.na_vv3d_activity).
+# - EVERY EXPORT KEEPS A VERSION (Adam, 11-Nov-2026: "a version should always be saved
+#   when exported otherwise they can never if closed get that same view and
+#   configurations back"). The page's Export saves first, with an 'issue' part naming
+#   the PDF (its kind and file name). The server then freezes the layout as it now
+#   stands as numbered version N: its picture, its thumbnail, and one JSON file
+#   written once and never changed (PageLayouts/<layout id>/<layout id>__Version__003__<stamp>.json)
+#   holding the sheet, the picture's place and trims, the guide, the render settings
+#   and the view it was rendered from. The layout lists its versions
+#   (PageLayouts__Layout__Versions), each with who made it, when, and every export of
+#   it (Version__Exports). A version's picture and thumbnail never move to 00__Archive:
+#   they stay as long as the layout does.
+# - THE SAME DRAWING EXPORTED AGAIN IS THE SAME VERSION (Adam, 11-Nov-2026): when the
+#   layout has not changed since its last version (Full layout, then Image only), the
+#   export is added to that version instead of a new one.
+# - NOTHING CHANGED, NOTHING WRITTEN: a save whose name, blocks and picture are what
+#   is stored keeps the layout as it is (no Rev, no "last updated by"), so the stamps
+#   only ever name people who changed the drawing. Such a save without an export is
+#   not recorded in the activity ledger either.
 #
 # ROUTES:
 #   GET  /api/projects/<id>/page-layouts                        the job's layouts, newest first (signed in)
 #   GET  /api/projects/<id>/page-layouts/files/<path>           a layout's picture or thumbnail (signed in)
-#   POST /api/projects/<id>/page-layouts                        save one (Employee): multipart layout, image, thumbnail
+#   GET  /api/projects/<id>/page-layouts/<layout id>/version?number=<n>   one version as exported (signed in)
+#   POST /api/projects/<id>/page-layouts                        save one (Employee): multipart layout, image, thumbnail, issue
 #   POST /api/projects/<id>/page-layouts/<layout id>/delete     delete one for good (its creator, or Management)
 #
 # ENVIRONMENT:
@@ -56,6 +75,15 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.94.0)
+# - Versions on export: a save may carry 'issue' ({ Issue__Kind, Issue__FileName });
+#   the layout is frozen as version N (a JSON file written once, its picture and
+#   thumbnail kept), or the export joins version N when nothing has changed since.
+#   GET <layout id>/version?number=<n> reads one back. The version route ends in a
+#   word, never a number, so a service that lacks it can never resolve it as a job.
+# - A save that changes nothing writes nothing and keeps the layout's stamps.
+# - Pictures a version holds are never moved to 00__Archive.
+#
 # 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.76.2)
 # - Delete is final (Adam): the layout's folder is removed, not moved to
 #   PageLayouts/00__Archive. The answer and the activity ledger say how many files went.
@@ -110,11 +138,16 @@ MAX_IMAGE_BYTES          = 96 * 1024 * 1024                                     
 MAX_THUMB_BYTES          = 4 * 1024 * 1024
 MAX_NAME_LENGTH          = 120
 MAX_LAYOUTS              = 500                                                    # <-- Per job
+MAX_VERSIONS             = 300                                                    # <-- Per layout: a new version past this is refused
+MAX_EXPORTS              = 500                                                    # <-- Per version: the oldest go past this
+MAX_FILE_NAME_LENGTH     = 200                                                    # <-- An export's PDF file name as recorded
 
 # NAMES | What the server makes, and the only files a read may send
 LAYOUT_ID                = re.compile(r'^PL-\d{8}-\d{6}-[a-z0-9]{4}$')
 STORED_FILE              = re.compile(r'^PageLayouts/(PL-\d{8}-\d{6}-[a-z0-9]{4})/\1__(Image|Thumbnail)__\d{8}-\d{6}-\d{3}\.(png|webp|jpg)$')
+VERSION_FILE             = re.compile(r'^PageLayouts/(PL-\d{8}-\d{6}-[a-z0-9]{4})/\1__Version__\d{3,4}__\d{8}-\d{6}-\d{3}\.json$')
 ID_ALPHABET              = 'abcdefghijklmnopqrstuvwxyz0123456789'
+EXPORT_KINDS             = ('Full layout', 'Image only')                          # <-- The two PDFs the Drawing Editor makes
 
 # KEYS | The data file
 K_DESCRIPTION            = 'PageLayouts__Library__Description'
@@ -143,11 +176,41 @@ CONTENT_KEYS             = ('PageLayouts__Layout__Sheet',                       
                             'PageLayouts__Layout__Guide',                          # <-- The composition guide: shown, margins in mm
                             'PageLayouts__Layout__RenderSettings',                 # <-- Resolution, aspect, anti-aliasing, enhance, line weights
                             'PageLayouts__Layout__SourceView')                     # <-- The camera, layers, lighting it was rendered from
+K_VERSIONS               = 'PageLayouts__Layout__Versions'                        # <-- The exported versions, oldest first (the server writes them)
+
+# KEYS | One version (an entry of K_VERSIONS) and one export of it (an entry of V_EXPORTS)
+V_NUMBER                 = 'Version__Number'
+V_NAME                   = 'Version__Name'                                        # <-- The scheme name or reference it was exported under
+V_LAYOUT_REV             = 'Version__LayoutRev'                                   # <-- The layout's Rev it froze
+V_CREATED_BY             = 'Version__CreatedBy'
+V_CREATED_BY_NAME        = 'Version__CreatedByName'
+V_CREATED_ISO            = 'Version__CreatedIso'
+V_IMAGE_FILE             = 'Version__ImageFile'
+V_IMAGE_WIDTH            = 'Version__ImageWidthPx'
+V_IMAGE_HEIGHT           = 'Version__ImageHeightPx'
+V_THUMB_FILE             = 'Version__ThumbnailFile'
+V_CONTENT_FILE           = 'Version__ContentFile'                                 # <-- Written once, never changed
+V_EXPORTS                = 'Version__Exports'
+E_BY                     = 'Export__By'
+E_BY_NAME                = 'Export__ByName'
+E_ISO                    = 'Export__Iso'
+E_KIND                   = 'Export__Kind'
+E_FILE_NAME              = 'Export__FileName'
+
+# KEYS | The 'issue' part of a save (the page's Export)
+I_KIND                   = 'Issue__Kind'
+I_FILE_NAME              = 'Issue__FileName'
 
 DESCRIPTION              = ('LayoutVision 2D page layouts made with Create Drawing in ValeVision 3D: one record per '
                             'layout, the picture and a thumbnail of the sheet in PageLayouts/<layout id>/. Written by '
                             'the ValeVision 3D API only (ValeVision3D__Api__PageLayouts__.py), which stamps who made '
-                            'each layout and who changed it last.')
+                            'each layout and who changed it last. Every PDF export keeps a numbered version of the '
+                            'layout as exported (PageLayouts__Layout__Versions), with who exported it and when.')
+
+VERSION_DESCRIPTION      = ('One exported version of a LayoutVision 2D page layout, frozen as it was when it was '
+                            'exported: the sheet, the picture\'s place and trims, the composition guide, the render '
+                            'settings and the view it was rendered from. Written once by the ValeVision 3D API '
+                            '(ValeVision3D__Api__PageLayouts__.py) and never changed.')
 
 # endregion -------------------------------------------------------------------
 
@@ -282,25 +345,83 @@ def _user():
     return user, (user.get('code') or ''), (user.get('name') or user.get('code') or '')
 
 
-def _public(entry, folder: Path):
-    """A layout as the page sees it: as stored, plus where its pictures are read from (relative to api/)."""
-    out = dict(entry)
-    base = f'projects/{Path(folder).name}/page-layouts/files/'
-    out['imageUrl']     = base + entry[K_IMAGE_FILE] if entry.get(K_IMAGE_FILE) else ''
-    out['thumbnailUrl'] = base + entry[K_THUMB_FILE] if entry.get(K_THUMB_FILE) else ''
+def _files_base(folder: Path) -> str:
+    return f'projects/{Path(folder).name}/page-layouts/files/'
+
+
+def _version_public(version, folder: Path):
+    """A version as the page sees it: as stored, plus where its picture and thumbnail are read from."""
+    out  = dict(version)
+    base = _files_base(folder)
+    out['imageUrl']     = base + version[V_IMAGE_FILE] if version.get(V_IMAGE_FILE) else ''
+    out['thumbnailUrl'] = base + version[V_THUMB_FILE] if version.get(V_THUMB_FILE) else ''
     return out
 
 
-def _archive_superseded(images_dir: Path, rels):
+def _public(entry, folder: Path):
+    """A layout as the page sees it: as stored, plus where its pictures are read from (relative to api/)."""
+    out = dict(entry)
+    base = _files_base(folder)
+    out['imageUrl']     = base + entry[K_IMAGE_FILE] if entry.get(K_IMAGE_FILE) else ''
+    out['thumbnailUrl'] = base + entry[K_THUMB_FILE] if entry.get(K_THUMB_FILE) else ''
+    out[K_VERSIONS]     = [_version_public(v, folder) for v in (entry.get(K_VERSIONS) or []) if isinstance(v, dict)]
+    return out
+
+
+def _same(a, b):
+    """True when two blocks hold the same values (key order aside)."""
+    return json.dumps(a, sort_keys=True, ensure_ascii=False) == json.dumps(b, sort_keys=True, ensure_ascii=False)
+
+
+def _clean_file_name(raw):
+    """An export's PDF file name as recorded: one line, a plain file name (no folders), at most MAX_FILE_NAME_LENGTH."""
+    if not isinstance(raw, str):
+        return ''
+    text = re.sub(r'\s+', ' ', re.sub(r'[\x00-\x1f\x7f]+', ' ', raw)).strip()
+    text = text.replace('\\', '/').split('/')[-1]                                 # <-- A name, never a path
+    text = re.sub(r'[^A-Za-z0-9 ._()\-]+', '-', text).strip(' .')
+    return text[:MAX_FILE_NAME_LENGTH]
+
+
+def _read_issue(raw):
+    """The save's 'issue' part (an export) as { kind, file }, None when the save is not an export, or raises ValueError."""
+    if not raw:
+        return None
+    try:
+        sent = json.loads(raw)
+    except ValueError:
+        raise ValueError('The export details are not valid JSON')
+    if not isinstance(sent, dict):
+        raise ValueError('The export details must be an object')
+    kind = str(sent.get(I_KIND) or '').strip()
+    if kind not in EXPORT_KINDS:
+        raise ValueError(f'An export is one of: {", ".join(EXPORT_KINDS)}')
+    file_name = _clean_file_name(sent.get(I_FILE_NAME))
+    if not file_name:
+        raise ValueError('An export needs its file name')
+    return {'kind': kind, 'file': file_name}
+
+
+def _held_files(entry):
+    """The pictures and thumbnails a layout's versions hold: they never move to 00__Archive."""
+    held = set()
+    for version in entry.get(K_VERSIONS) or []:
+        if isinstance(version, dict):
+            held.update(v for v in (version.get(V_IMAGE_FILE), version.get(V_THUMB_FILE)) if v)
+    return held
+
+
+def _archive_superseded(images_dir: Path, rels, held=()):
     """
     Move pictures a save replaced into the layout's 00__Archive, keeping the newest
-    KEEP_SUPERSEDED of each kind (pictures, thumbnails). Never raises: a picture that
-    cannot move simply stays beside the new one.
+    KEEP_SUPERSEDED of each kind (pictures, thumbnails). A picture a version holds
+    (held) stays where it is. Never raises: a picture that cannot move simply stays
+    beside the new one.
     """
     for rel in rels:
         try:
             match = STORED_FILE.match(rel or '')
-            if not match:
+            if not match or rel in held:
                 continue
             path = images_dir / rel
             if not path.is_file():
@@ -369,6 +490,55 @@ def page_layouts_file(token, rel_path):
         return _refuse(f'Not on the server: {rel}', 404, missing=True)
     return vv_shared.send_private_file(str(path))
 
+
+@valevision_page_layouts_api.get('/api/projects/<path:token>/page-layouts/<layout_id>/version')
+@Na__Auth__Require(READ_LEVEL)
+def page_layouts_version(token, layout_id):
+    """
+    One version of a layout as it was exported (?number=<n>): its summary (who, when,
+    every export, where its picture and thumbnail are read from) and its frozen
+    content (the sheet, the picture's place and trims, the guide, the render
+    settings, the view). The route ends in a word on purpose (note 04, rule 17).
+    """
+    if not LAYOUT_ID.match(str(layout_id or '')):
+        return _refuse('That is not a layout id')
+    number = _whole_number(request.args.get('number', type=int), 1, 9999)
+    if number is None:
+        return _refuse('Name the version: ?number=<n>')
+    folder = vv_shared.resolve_project(token)
+    if not folder:
+        return _refuse(f'Project not found: {token}', 404)
+    data, problem = _read(folder)
+    if data is None:
+        return _refuse(problem, 500, unreadable=True)
+    _index, entry = _find(data, layout_id)
+    if entry is None:
+        return _refuse('This layout is not saved for the job (deleted?)', 404, missing=True)
+    version = next((v for v in (entry.get(K_VERSIONS) or []) if isinstance(v, dict) and v.get(V_NUMBER) == number), None)
+    if version is None:
+        return _refuse(f'This layout has no version {number}', 404, missing=True)
+
+    rel = str(version.get(V_CONTENT_FILE) or '')
+    images_dir = _images_dir(folder)
+    path = images_dir / rel
+    if not VERSION_FILE.match(rel) or not rel.startswith(f'{FILES_DIR}/{layout_id}/') \
+            or not vv_shared.is_inside(path, images_dir) or not path.is_file():
+        return _refuse(f'Version {number} is listed but its file is not on the server', 404, missing=True)
+    content = vv_shared.read_json_file(str(path))
+    if content is None:
+        return _refuse(f'Version {number} could not be read on the server', 500, unreadable=True)
+
+    response = jsonify({
+        'ok'        : True,
+        'projectId' : folder.name,
+        'layoutId'  : layout_id,
+        'layoutRev' : entry.get(K_REV),
+        'version'   : _version_public(version, folder),
+        'content'   : {key: content[key] for key in content if key.startswith('PageLayouts__')},
+    })
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
 # endregion -------------------------------------------------------------------
 
 
@@ -382,8 +552,11 @@ def page_layouts_save(token):
     """
     Save one layout (multipart): 'layout' is its JSON, 'image' the picture (needed for a
     new layout; leave it out to keep the stored one), 'thumbnail' a small picture of
-    the sheet. With PageLayouts__Layout__Id and __Rev it updates that layout; without,
-    it makes a new one. Answers { ok, created, layout }.
+    the sheet, and 'issue' when the save is an export ({ Issue__Kind, Issue__FileName }).
+    With PageLayouts__Layout__Id and __Rev it updates that layout; without, it makes a
+    new one. A save that changes nothing writes nothing. An export then freezes the
+    layout as a new version, or joins its last version when nothing has changed since.
+    Answers { ok, created, unchanged, layout, version, newVersion }.
     """
     folder = vv_shared.resolve_project(token)
     if not folder:
@@ -415,6 +588,7 @@ def page_layouts_save(token):
         return _refuse('That is not a layout id')
 
     try:
+        issue = _read_issue(request.form.get('issue'))                         # <-- None: a plain save, not an export
         image, image_kind = _upload('image', MAX_IMAGE_BYTES)
         thumb, thumb_kind = _upload('thumbnail', MAX_THUMB_BYTES)
     except ValueError as error:
@@ -450,53 +624,132 @@ def page_layouts_save(token):
                 return _refuse(f'This job already has {MAX_LAYOUTS} layouts: delete some first')
             layout_id = _new_id({e.get(K_ID) for e in data[K_LAYOUTS]})
 
-        # PICTURES FIRST | the file only ever names pictures that are on disk
-        stamp = _utc_stamp()
-        layout_dir = images_dir / FILES_DIR / layout_id
+        # NOTHING CHANGED? | the same name, blocks and picture: the layout and its stamps stay as they are
+        # ------------------------------------------------------------
+        old       = current or {}
+        unchanged = (current is not None and image is None and name == current.get(K_NAME)
+                     and all(_same(content[key], current.get(key)) for key in content))
+        if unchanged and issue is None:
+            g.na_vv3d_activity = {'skip': True}                                # <-- Nothing was written: nothing to record
+            return jsonify({'ok': True, 'created': False, 'unchanged': True, 'layout': _public(current, folder),
+                            'version': None, 'newVersion': False, 'revision': ''})
+
+        stamp   = _utc_stamp()
+        now     = vv_shared.now_iso()
         written = []
         image_rel = thumb_rel = None
-        try:
+
+        if unchanged:
+            entry = dict(current)                                              # <-- An export of the drawing as stored: no Rev, no new stamps
+        else:
+            # PICTURES FIRST | the file only ever names pictures that are on disk
+            # ------------------------------------------------------------
+            try:
+                if image is not None:
+                    image_rel = f'{FILES_DIR}/{layout_id}/{layout_id}__Image__{stamp}.{image_kind}'
+                    vv_shared.write_bytes_atomic(str(images_dir / image_rel), image)
+                    written.append(images_dir / image_rel)
+                if thumb is not None:
+                    thumb_rel = f'{FILES_DIR}/{layout_id}/{layout_id}__Thumbnail__{stamp}.{thumb_kind}'
+                    vv_shared.write_bytes_atomic(str(images_dir / thumb_rel), thumb)
+                    written.append(images_dir / thumb_rel)
+            except OSError as error:
+                _remove_quietly(written)
+                vv_shared.log(f' [PAGE LAYOUTS] Pictures not written for {folder.name}/{layout_id}: {error}')
+                return _refuse('The pictures could not be written on the server', 500)
+
+            # THE RECORD | the server's stamps first, then the page's own blocks
+            # ------------------------------------------------------------
+            entry = {
+                K_ID              : layout_id,
+                K_NAME            : name,
+                K_REV             : int(old.get(K_REV) or 0) + 1,
+                K_CREATED_BY      : old.get(K_CREATED_BY) or code,
+                K_CREATED_BY_NAME : old.get(K_CREATED_BY_NAME) or user_name,
+                K_CREATED_ISO     : old.get(K_CREATED_ISO) or now,
+                K_UPDATED_BY      : code,
+                K_UPDATED_BY_NAME : user_name,
+                K_UPDATED_ISO     : now,
+                K_IMAGE_FILE      : image_rel or old.get(K_IMAGE_FILE) or '',
+                K_IMAGE_WIDTH     : old.get(K_IMAGE_WIDTH),
+                K_IMAGE_HEIGHT    : old.get(K_IMAGE_HEIGHT),
+                K_THUMB_FILE      : thumb_rel or old.get(K_THUMB_FILE) or '',
+            }
             if image is not None:
-                image_rel = f'{FILES_DIR}/{layout_id}/{layout_id}__Image__{stamp}.{image_kind}'
-                vv_shared.write_bytes_atomic(str(images_dir / image_rel), image)
-                written.append(images_dir / image_rel)
-            if thumb is not None:
-                thumb_rel = f'{FILES_DIR}/{layout_id}/{layout_id}__Thumbnail__{stamp}.{thumb_kind}'
-                vv_shared.write_bytes_atomic(str(images_dir / thumb_rel), thumb)
-                written.append(images_dir / thumb_rel)
-        except OSError as error:
-            _remove_quietly(written)
-            vv_shared.log(f' [PAGE LAYOUTS] Pictures not written for {folder.name}/{layout_id}: {error}')
-            return _refuse('The pictures could not be written on the server', 500)
+                size = _png_size(image) if image_kind == 'png' else None
+                entry[K_IMAGE_WIDTH]  = size[0] if size else _whole_number(sent.get(K_IMAGE_WIDTH))
+                entry[K_IMAGE_HEIGHT] = size[1] if size else _whole_number(sent.get(K_IMAGE_HEIGHT))
+            for key in CONTENT_KEYS:
+                if key in content:
+                    entry[key] = content[key]
+                elif key in old:
+                    entry[key] = old[key]                                      # <-- A block the save left out is kept
+            if old.get(K_VERSIONS):
+                entry[K_VERSIONS] = old[K_VERSIONS]                            # <-- The versions stay with the layout
 
-        # THE RECORD | the server's stamps first, then the page's own blocks
-        old = current or {}
-        now = vv_shared.now_iso()
-        entry = {
-            K_ID              : layout_id,
-            K_NAME            : name,
-            K_REV             : int(old.get(K_REV) or 0) + 1,
-            K_CREATED_BY      : old.get(K_CREATED_BY) or code,
-            K_CREATED_BY_NAME : old.get(K_CREATED_BY_NAME) or user_name,
-            K_CREATED_ISO     : old.get(K_CREATED_ISO) or now,
-            K_UPDATED_BY      : code,
-            K_UPDATED_BY_NAME : user_name,
-            K_UPDATED_ISO     : now,
-            K_IMAGE_FILE      : image_rel or old.get(K_IMAGE_FILE) or '',
-            K_IMAGE_WIDTH     : old.get(K_IMAGE_WIDTH),
-            K_IMAGE_HEIGHT    : old.get(K_IMAGE_HEIGHT),
-            K_THUMB_FILE      : thumb_rel or old.get(K_THUMB_FILE) or '',
-        }
-        if image is not None:
-            size = _png_size(image) if image_kind == 'png' else None
-            entry[K_IMAGE_WIDTH]  = size[0] if size else _whole_number(sent.get(K_IMAGE_WIDTH))
-            entry[K_IMAGE_HEIGHT] = size[1] if size else _whole_number(sent.get(K_IMAGE_HEIGHT))
-        for key in CONTENT_KEYS:
-            if key in content:
-                entry[key] = content[key]
-            elif key in old:
-                entry[key] = old[key]                                          # <-- A block the save left out is kept
+        # THE EXPORT | a new version of the layout as it now stands, or one more export of the last
+        # ------------------------------------------------------------
+        version, new_version = None, False
+        if issue is not None:
+            versions = [dict(v) for v in (entry.get(K_VERSIONS) or []) if isinstance(v, dict)]
+            last     = versions[-1] if versions else None
+            export   = {E_BY: code, E_BY_NAME: user_name, E_ISO: now, E_KIND: issue['kind'], E_FILE_NAME: issue['file']}
+            if last is not None and last.get(V_LAYOUT_REV) == entry[K_REV]:
+                exports           = [e for e in (last.get(V_EXPORTS) or []) if isinstance(e, dict)] + [export]
+                last[V_EXPORTS]   = exports[-MAX_EXPORTS:]                     # <-- Unchanged since that version: it is the same drawing
+                versions[-1]      = last
+                version           = last
+            else:
+                if len(versions) >= MAX_VERSIONS:
+                    _remove_quietly(written)
+                    return _refuse(f'This layout already has {MAX_VERSIONS} versions: use Save as New, then export that')
+                number      = max([int(v.get(V_NUMBER) or 0) for v in versions] + [0]) + 1
+                content_rel = f'{FILES_DIR}/{layout_id}/{layout_id}__Version__{number:03d}__{stamp}.json'
+                frozen = {
+                    'PageLayouts__Version__Description'   : VERSION_DESCRIPTION,
+                    'PageLayouts__Version__ProjectId'     : folder.name,
+                    'PageLayouts__Version__LayoutId'      : layout_id,
+                    'PageLayouts__Version__Number'        : number,
+                    'PageLayouts__Version__Name'          : entry[K_NAME],
+                    'PageLayouts__Version__LayoutRev'     : entry[K_REV],
+                    'PageLayouts__Version__CreatedBy'     : code,
+                    'PageLayouts__Version__CreatedByName' : user_name,
+                    'PageLayouts__Version__CreatedIso'    : now,
+                    K_IMAGE_FILE                          : entry.get(K_IMAGE_FILE) or '',
+                    K_IMAGE_WIDTH                         : entry.get(K_IMAGE_WIDTH),
+                    K_IMAGE_HEIGHT                        : entry.get(K_IMAGE_HEIGHT),
+                    K_THUMB_FILE                          : entry.get(K_THUMB_FILE) or '',
+                }
+                for key in CONTENT_KEYS:
+                    if key in entry:
+                        frozen[key] = entry[key]
+                try:
+                    vv_shared.write_json_file(str(images_dir / content_rel), frozen)   # <-- Written once, never changed (0664)
+                    written.append(images_dir / content_rel)
+                except OSError as error:
+                    _remove_quietly(written)
+                    vv_shared.log(f' [PAGE LAYOUTS] Version {number} not written for {folder.name}/{layout_id}: {error}')
+                    return _refuse('The version could not be written on the server', 500)
+                version = {
+                    V_NUMBER          : number,
+                    V_NAME            : entry[K_NAME],
+                    V_LAYOUT_REV      : entry[K_REV],
+                    V_CREATED_BY      : code,
+                    V_CREATED_BY_NAME : user_name,
+                    V_CREATED_ISO     : now,
+                    V_IMAGE_FILE      : entry.get(K_IMAGE_FILE) or '',
+                    V_IMAGE_WIDTH     : entry.get(K_IMAGE_WIDTH),
+                    V_IMAGE_HEIGHT    : entry.get(K_IMAGE_HEIGHT),
+                    V_THUMB_FILE      : entry.get(K_THUMB_FILE) or '',
+                    V_CONTENT_FILE    : content_rel,
+                    V_EXPORTS         : [export],
+                }
+                versions.append(version)
+                new_version = True
+            entry[K_VERSIONS] = versions
 
+        # THE FILE | the layout and its versions in one write
+        # ------------------------------------------------------------
         layouts = data[K_LAYOUTS]
         if index >= 0:
             layouts[index] = entry
@@ -522,15 +775,28 @@ def page_layouts_save(token):
             replaced.append(old.get(K_IMAGE_FILE))
         if thumb_rel and old.get(K_THUMB_FILE) and old.get(K_THUMB_FILE) != thumb_rel:
             replaced.append(old.get(K_THUMB_FILE))
-        _archive_superseded(images_dir, replaced)                              # <-- Only now: the file points at the new pictures
+        _archive_superseded(images_dir, replaced, held=_held_files(entry))    # <-- Only now: the file points at the new pictures
 
     created = current is None
-    g.na_vv3d_activity = {
-        'text'   : f'{"Created" if created else "Saved"} page layout {name}',
-        'target' : name,
-        'detail' : {'Layout': layout_id, 'Picture': 'new' if image is not None else 'kept'},
-    }
-    return jsonify({'ok': True, 'created': created, 'layout': _public(entry, folder),
+    if issue is not None:
+        number = version[V_NUMBER]
+        text   = (f'Saved {name} as version {number} for a PDF ({issue["kind"]})' if new_version
+                  else f'Recorded another export of {name} version {number} ({issue["kind"]})')
+        g.na_vv3d_activity = {
+            'text'   : text,
+            'target' : name,
+            'detail' : {'Layout': layout_id, 'Version': number, 'Kind': issue['kind'], 'File': issue['file'],
+                        'Drawing': 'Unchanged' if unchanged else ('New' if created else 'Changed'),
+                        'Picture': 'new' if image is not None else 'kept'},
+        }
+    else:
+        g.na_vv3d_activity = {
+            'text'   : f'{"Created" if created else "Saved"} page layout {name}',
+            'target' : name,
+            'detail' : {'Layout': layout_id, 'Picture': 'new' if image is not None else 'kept'},
+        }
+    return jsonify({'ok': True, 'created': created, 'unchanged': unchanged, 'layout': _public(entry, folder),
+                    'version': _version_public(version, folder) if version else None, 'newVersion': new_version,
                     'revision': written_doc.get('revision')})
 
 # endregion -------------------------------------------------------------------
@@ -577,9 +843,10 @@ def page_layouts_delete(token, layout_id):
         removed = _remove_layout_files(images_dir, layout_id, folder.name)    # <-- Only now: the file no longer names its pictures
 
     name = entry.get(K_NAME) or layout_id
+    versions = len([v for v in (entry.get(K_VERSIONS) or []) if isinstance(v, dict)])
     g.na_vv3d_activity = {'text': f'Deleted page layout {name}', 'target': name,
-                          'detail': {'Layout': layout_id, 'Files removed': removed}}
-    return jsonify({'ok': True, 'deleted': layout_id, 'filesRemoved': removed})
+                          'detail': {'Layout': layout_id, 'Versions': versions, 'Files removed': removed}}
+    return jsonify({'ok': True, 'deleted': layout_id, 'filesRemoved': removed, 'versionsRemoved': versions})
 
 
 def _remove_layout_files(images_dir: Path, layout_id: str, project_name: str) -> int:

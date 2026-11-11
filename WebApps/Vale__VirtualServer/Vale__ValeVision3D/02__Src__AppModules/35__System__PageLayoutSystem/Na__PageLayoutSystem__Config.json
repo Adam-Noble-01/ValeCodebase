@@ -13,7 +13,7 @@
         "PageLayout__Document__Config__InitialImagePlacement"    : 0.92
     },
     "PageLayout__PdfExport__Config": {
-        "PageLayout__PdfExport__Config__Description"             : "PDF export and flattening settings. The full A3 sheet is flattened to a single JPEG at the target DPI before embedding into the PDF via jsPDF. With a project, the file is named from the patterns ({project}, {layout}); without one, from the plain file names.",
+        "PageLayout__PdfExport__Config__Description"             : "PDF export and flattening settings. The full A3 sheet is flattened to a single JPEG at the target DPI before embedding into the PDF via jsPDF. The export dialog names the file from the patterns: {ProjectNo} {ProjectName} (from the library id), {Reference} (the scheme name or reference typed), {Date} (11-Nov-2026); the older {project} and {layout} still work.",
         "PageLayout__PdfExport__Config__Orientation"             : "landscape",
         "PageLayout__PdfExport__Config__Unit"                    : "mm",
         "PageLayout__PdfExport__Config__Format"                  : "a3",
@@ -23,8 +23,8 @@
         "PageLayout__PdfExport__Config__FloatPrecision"          : "smart",
         "PageLayout__PdfExport__Config__FilenameFullLayout"      : "ValeVision3D__Layout__A3.pdf",
         "PageLayout__PdfExport__Config__FilenameImageOnly"       : "ValeVision3D__ImageOnly__A3.pdf",
-        "PageLayout__PdfExport__Config__FilenamePatternFull"     : "{project}__{layout}__Layout__A3.pdf",
-        "PageLayout__PdfExport__Config__FilenamePatternImageOnly": "{project}__{layout}__ImageOnly__A3.pdf"
+        "PageLayout__PdfExport__Config__FilenamePatternFull"     : "{ProjectNo}__{ProjectName}__{Reference}__ValeVisionLayout__{Date}__.pdf",
+        "PageLayout__PdfExport__Config__FilenamePatternImageOnly": "{ProjectNo}__{ProjectName}__{Reference}__ValeVisionLayout__ImageOnly__{Date}__.pdf"
     },
     "PageLayout__CanvasAppearance__Config": {
         "PageLayout__CanvasAppearance__Config__Description"      : "Visual styling of the 2D layout canvas: background colour, paper shadow, selection handles, and image border appearance.",
@@ -85,10 +85,14 @@
         ]
     },
     "PageLayout__SavedLayouts__Config": {
-        "PageLayout__SavedLayouts__Config__Description"          : "Saving layouts to the job (ValeVision 3D API, page-layouts): the name a new layout is offered, and the small picture of the sheet shown in the Saved Layouts list.",
+        "PageLayout__SavedLayouts__Config__Description"          : "Saving layouts to the job (ValeVision 3D API, page-layouts): the name a new layout is offered (never taken as an export's reference), the small picture of the sheet shown in the Saved Layouts list, and the recovery copy of an unsaved drawing kept on this computer: written this long after the last change, kept this many days, this many per job per person and this many on the computer in all.",
         "PageLayout__SavedLayouts__Config__DefaultName"          : "Drawing Layout",
         "PageLayout__SavedLayouts__Config__ThumbnailWidthPx"     : 480,
         "PageLayout__SavedLayouts__Config__ThumbnailType"        : "image/webp",
-        "PageLayout__SavedLayouts__Config__ThumbnailQuality"     : 0.85
+        "PageLayout__SavedLayouts__Config__ThumbnailQuality"     : 0.85,
+        "PageLayout__SavedLayouts__Config__RecoveryWriteDelayMs" : 1500,
+        "PageLayout__SavedLayouts__Config__RecoveryKeepDays"     : 14,
+        "PageLayout__SavedLayouts__Config__RecoveryKeepPerJob"   : 5,
+        "PageLayout__SavedLayouts__Config__RecoveryKeepAll"      : 12
     }
 }

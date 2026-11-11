@@ -24,10 +24,26 @@
 //   the server refuses with 409 and the menu says who.
 // - OPENING fetches the picture as a blob (the page keeps it, so Save as New can
 //   send it on), then puts everything back on the sheet.
+// - AN EXPORT IS A SAVE WITH AN ISSUE (v2.94.0, Adam: "a version should always be saved
+//   when exported"): Save takes options.issue { kind, fileName } and the server keeps
+//   the layout as a numbered version (or adds the export to the last one when nothing
+//   changed). The answer's version is the one the PDF belongs to.
+// - A VERSION OPENS AS IT WAS EXPORTED (OpenVersion): its frozen blocks and its own
+//   picture go on the sheet. The open layout stays the saved one, so Save Changes
+//   makes that version the current drawing; until then the page shows which version
+//   it is (state.layout.version) and counts as changed unless it is the current one.
+// - A RECOVERY COPY GOES BACK ON THE SHEET the same way (Recover), unsaved.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.94.0)
+// - Save sends options.issue (the export's kind and file name); the answer says
+//   whether nothing had changed (unchanged) and which version the export is.
+// - OpenVersion: a version as exported, back on the sheet (state.layout.version).
+// - Recover: a recovery copy kept on this computer, back on the sheet, unsaved.
+// - PutOnSheet: the one routine Open, OpenVersion and Recover share.
+//
 // 09-Oct-2026 - Version 1.0.0
 // - Initial build with the side menu (ValeVision3D v2.75.0).
 //
@@ -262,6 +278,12 @@
 
         const form = new FormData();
         form.append('layout', JSON.stringify(Na__PageLayout__Store__BuildRecord(state, asNew)));
+        if (options.issue) {
+            form.append('issue', JSON.stringify({                           // <-- An export: the server keeps a version
+                Issue__Kind     : options.issue.kind,
+                Issue__FileName : options.issue.fileName
+            }));
+        }
         if (needsImage) form.append('image', state.imageBlob, 'image.png');
         const thumbnail = await Na__PageLayout__Store__MakeThumbnail(state);
         if (thumbnail) form.append('thumbnail', thumbnail, 'thumbnail' + (thumbnail.type === 'image/png' ? '.png' : '.webp'));
@@ -273,8 +295,16 @@
         state.layout.record  = answer.layout;
         state.layout.name    = answer.layout.PageLayouts__Layout__Name;
         state.layout.dirty   = false;
+        state.layout.version = null;                                        // <-- The sheet is the current drawing now
         state.imageIsSaved   = true;
-        Na__PageLayout__Emit('layout', { record : answer.layout, saved : true, created : answer.created === true });
+        Na__PageLayout__Emit('layout', {
+            record     : answer.layout,
+            saved      : true,
+            created    : answer.created === true,
+            unchanged  : answer.unchanged === true,
+            version    : answer.version || null,
+            newVersion : answer.newVersion === true
+        });
         return answer;
     }
     // ------------------------------------------------------------
@@ -290,9 +320,10 @@
         if (!response.ok) throw await Na__PageLayout__Store__Refusal(response, 'The server refused the delete');
 
         if (state.layout.record && state.layout.record.PageLayouts__Layout__Id === layoutId) {
-            state.layout.record = null;                                     // <-- The sheet stays: a new, unsaved layout now
-            state.layout.dirty  = true;
-            state.imageIsSaved  = false;
+            state.layout.record  = null;                                    // <-- The sheet stays: a new, unsaved layout now
+            state.layout.dirty   = true;
+            state.layout.version = null;
+            state.imageIsSaved   = false;
             Na__PageLayout__Emit('layout', { record : null, deleted : layoutId });
         }
         return true;
@@ -300,24 +331,25 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Open a Saved Layout on the Sheet
+    // FUNCTION | Put a Picture and a Layout's Blocks on the Sheet (Open, OpenVersion and Recover Share It)
     // ------------------------------------------------------------
-    async function Na__PageLayout__Store__Open(state, record) {
-        if (!record || !record.imageUrl) throw new Error('This layout has no picture saved');
-
-        const response = await Na__PageLayout__ApiFetch(Na__PageLayout__Store__FileUrl(record.imageUrl), { cache : 'no-store' });
-        if (!response.ok) throw await Na__PageLayout__Store__Refusal(response, 'The layout\'s picture could not be read');
-        const blob  = await response.blob();
-        const image = await Na__PageLayout__LoadImageFromBlob(blob);
+    // what: { image, blob, imageWidthPx, imageHeightPx, blocks (an object holding
+    // the PageLayouts__Layout__* blocks), record (the saved layout, or null), name,
+    // imageIsSaved, dirty, version ({ number, isCurrent, ... } or null) }.
+    // Emits image and guide; the caller emits layout with what it opened.
+    // ------------------------------------------------------------
+    function Na__PageLayout__Store__PutOnSheet(state, what) {
+        const blocks = what.blocks || {};
+        const image  = what.image;
 
         // The picture first, then its saved place and trims (if they make sense)
         // ------------------------------------------------------------
         Na__PageLayout__SetImage(state, image, {
-            width       : record.PageLayouts__Layout__ImageWidthPx  || image.naturalWidth,
-            height      : record.PageLayouts__Layout__ImageHeightPx || image.naturalHeight,
-            aspectRatio : (record.PageLayouts__Layout__RenderSettings && record.PageLayouts__Layout__RenderSettings.Render__AspectRatio) || null
+            width       : what.imageWidthPx  || image.naturalWidth,
+            height      : what.imageHeightPx || image.naturalHeight,
+            aspectRatio : (blocks.PageLayouts__Layout__RenderSettings && blocks.PageLayouts__Layout__RenderSettings.Render__AspectRatio) || null
         });
-        const p   = record.PageLayouts__Layout__ImagePlacement || {};
+        const p   = blocks.PageLayouts__Layout__ImagePlacement || {};
         const num = (value) => Number.isFinite(value) ? value : NaN;
         const placed = {
             x          : num(p.Placement__XMm),
@@ -337,20 +369,126 @@
 
         // Everything else the layout carries
         // ------------------------------------------------------------
-        Na__PageLayout__Guide__Apply(state, record.PageLayouts__Layout__Guide);
-        state.sourceView      = record.PageLayouts__Layout__SourceView     || null;
-        state.renderSettings  = record.PageLayouts__Layout__RenderSettings || null;
-        state.imageBlob       = blob;
-        state.imageIsSaved    = true;
+        Na__PageLayout__Guide__Apply(state, blocks.PageLayouts__Layout__Guide);
+        state.sourceView      = blocks.PageLayouts__Layout__SourceView     || null;
+        state.renderSettings  = blocks.PageLayouts__Layout__RenderSettings || null;
+        state.imageBlob       = what.blob || null;
+        state.imageIsSaved    = what.imageIsSaved === true;
         state.isImageSelected = false;
-        state.layout.record   = record;
-        state.layout.name     = record.PageLayouts__Layout__Name || '';
-        state.layout.dirty    = false;
+        state.layout.record   = what.record || null;
+        state.layout.name     = what.name || '';
+        state.layout.dirty    = what.dirty === true;
+        state.layout.version  = what.version || null;
 
         Na__PageLayout__FitPageToView(state);
         Na__PageLayout__Emit('image', { opened : true });
         Na__PageLayout__Emit('guide', { opened : true });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Picture the API Serves, as a Blob and a Decoded Image
+    // ------------------------------------------------------------
+    async function Na__PageLayout__Store__FetchPicture(relative, what) {
+        const response = await Na__PageLayout__ApiFetch(Na__PageLayout__Store__FileUrl(relative), { cache : 'no-store' });
+        if (!response.ok) throw await Na__PageLayout__Store__Refusal(response, `${what} could not be read`);
+        const blob  = await response.blob();
+        const image = await Na__PageLayout__LoadImageFromBlob(blob);
+        return { blob, image };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open a Saved Layout on the Sheet
+    // ------------------------------------------------------------
+    async function Na__PageLayout__Store__Open(state, record) {
+        if (!record || !record.imageUrl) throw new Error('This layout has no picture saved');
+        const picture = await Na__PageLayout__Store__FetchPicture(record.imageUrl, 'The layout\'s picture');
+
+        Na__PageLayout__Store__PutOnSheet(state, {
+            image         : picture.image,
+            blob          : picture.blob,
+            imageWidthPx  : record.PageLayouts__Layout__ImageWidthPx,
+            imageHeightPx : record.PageLayouts__Layout__ImageHeightPx,
+            blocks        : record,
+            record        : record,
+            name          : record.PageLayouts__Layout__Name || '',
+            imageIsSaved  : true,
+            dirty         : false,
+            version       : null
+        });
         Na__PageLayout__Emit('layout', { record : record, opened : true });
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open One Version of a Saved Layout, as It Was Exported
+    // ------------------------------------------------------------
+    // record: the layout as last listed (its current Rev). The version's frozen
+    // blocks and its own picture go on the sheet; the layout stays open, so Save
+    // Changes makes this version the current drawing. A version that IS the
+    // current drawing opens clean. Resolves the version's summary.
+    // ------------------------------------------------------------
+    async function Na__PageLayout__Store__OpenVersion(state, record, number) {
+        if (!record || !record.PageLayouts__Layout__Id) throw new Error('This layout is not saved for the job');
+        const route    = Na__PageLayout__Store__Route(state, `/${encodeURIComponent(record.PageLayouts__Layout__Id)}/version?number=${encodeURIComponent(number)}`);
+        const response = await Na__PageLayout__ApiFetch(route, { cache : 'no-store' });
+        if (!response.ok) throw await Na__PageLayout__Store__Refusal(response, `Version ${number} could not be read`);
+        const answer  = await response.json();
+        const version = answer.version || {};
+        const content = answer.content || {};
+        if (!version.imageUrl) throw new Error(`Version ${number} has no picture saved`);
+        const picture = await Na__PageLayout__Store__FetchPicture(version.imageUrl, `Version ${number}'s picture`);
+
+        const isCurrent = version.Version__LayoutRev === record.PageLayouts__Layout__Rev;   // <-- Nothing has changed since it was exported
+        Na__PageLayout__Store__PutOnSheet(state, {
+            image         : picture.image,
+            blob          : picture.blob,
+            imageWidthPx  : version.Version__ImageWidthPx  || content.PageLayouts__Layout__ImageWidthPx,
+            imageHeightPx : version.Version__ImageHeightPx || content.PageLayouts__Layout__ImageHeightPx,
+            blocks        : content,
+            record        : record,
+            name          : version.Version__Name || content.PageLayouts__Version__Name || record.PageLayouts__Layout__Name || '',
+            imageIsSaved  : isCurrent && version.Version__ImageFile === record.PageLayouts__Layout__ImageFile,
+            dirty         : !isCurrent,
+            version       : {
+                number      : version.Version__Number,
+                isCurrent   : isCurrent,
+                createdBy   : version.Version__CreatedByName || version.Version__CreatedBy || '',
+                createdIso  : version.Version__CreatedIso || '',
+                latest      : Math.max(0, ...((record.PageLayouts__Layout__Versions || []).map((v) => Number(v.Version__Number) || 0)))
+            }
+        });
+        Na__PageLayout__Emit('layout', { record : record, opened : true, version : version.Version__Number, matchesSaved : isCurrent });
+        return version;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a Recovery Copy Back on the Sheet (Unsaved)
+    // ------------------------------------------------------------
+    // draft: what Na__PageLayoutSystem__RecoveryDraft__ kept ({ blob, name, blocks,
+    // imageWidthPx, imageHeightPx }). record: the saved layout it was a change of,
+    // when that layout is still saved for the job (Save Changes then updates it,
+    // and says so if someone saved it since), else null (a new drawing).
+    // ------------------------------------------------------------
+    async function Na__PageLayout__Store__Recover(state, draft, record) {
+        if (!draft || !draft.blob) throw new Error('This recovery copy has no picture');
+        const image = await Na__PageLayout__LoadImageFromBlob(draft.blob);
+        Na__PageLayout__Store__PutOnSheet(state, {
+            image         : image,
+            blob          : draft.blob,
+            imageWidthPx  : draft.imageWidthPx,
+            imageHeightPx : draft.imageHeightPx,
+            blocks        : draft.blocks || {},
+            record        : record || null,
+            name          : draft.name || '',
+            imageIsSaved  : false,                                          // <-- The picture goes up again with the next save
+            dirty         : true,
+            version       : null
+        });
+        Na__PageLayout__Emit('layout', { record : record || null, opened : true, recovered : true, matchesSaved : false });
         return true;
     }
     // ------------------------------------------------------------
@@ -372,7 +510,9 @@
         Na__PageLayout__Store__List,
         Na__PageLayout__Store__Save,
         Na__PageLayout__Store__Delete,
-        Na__PageLayout__Store__Open
+        Na__PageLayout__Store__Open,
+        Na__PageLayout__Store__OpenVersion,
+        Na__PageLayout__Store__Recover
     };
     // ------------------------------------------------------------
 

@@ -31,6 +31,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 2.4.0 (ValeVision3D v2.94.0)
+// - ?version=<n> with ?layout=<id> (state.openVersion): the page opens on that
+//   exported version. state.layout.version names the version on the sheet.
+//
 // 09-Oct-2026 - Version 2.3.0 (ValeVision3D v2.76.1)
 // - ?layout=<id> (state.openLayoutId): the page opens on that saved layout, for
 //   the app's Drawings menu.
@@ -296,13 +300,15 @@
     function Na__PageLayout__ReadUrlParams() {
         try {
             const params = new URLSearchParams(window.location.search);
+            const version = parseInt(params.get('version') || '', 10);
             return {
                 project : (params.get('project') || '').trim(),
                 open    : (params.get('open') || '').trim(),
-                layout  : (params.get('layout') || '').trim()             // <-- A saved layout to open as the page starts (the app's Drawings menu)
+                layout  : (params.get('layout') || '').trim(),            // <-- A saved layout to open as the page starts (the app's Drawings menu)
+                version : (Number.isInteger(version) && version > 0) ? version : 0   // <-- ...at one of its exported versions (v2.94.0)
             };
         } catch (error) {
-            return { project : '', open : '', layout : '' };
+            return { project : '', open : '', layout : '', version : 0 };
         }
     }
     // ------------------------------------------------------------
@@ -527,10 +533,13 @@
             project         : { id : projectId },                                         // <-- ?project= (or the picture's)
             openMode        : params.open,                                                // <-- 'saved': opened on the saved list
             openLayoutId    : params.layout,                                              // <-- Opened on one saved layout (taken by the Saved Layouts section)
+            openVersion     : params.version,                                             // <-- ...at this exported version (0: the current drawing)
 
             // The saved layout open on the page (record null: a new, unsaved layout).
-            // dirty: differs from what is saved (leaving the page then asks first)
-            layout          : { record : null, name : '', dirty : false },
+            // dirty: differs from what is saved (leaving the page then asks first).
+            // version: the exported version on the sheet ({ number, isCurrent, ... }),
+            // null for the current drawing (Na__PageLayoutSystem__LayoutStore__ OpenVersion)
+            layout          : { record : null, name : '', dirty : false, version : null },
 
             // The composition guide (off until switched on)
             guide           : Na__PageLayout__Guide__CreateState(),

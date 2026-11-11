@@ -182,6 +182,8 @@
                 <details class="na-layout-menu__section na-saved-list" data-section="saved" id="naLayoutSavedSection">
                     <summary class="na-layout-menu__section-title">Saved Layouts <span class="na-saved-list__count" id="naLayoutSavedCount"></span></summary>
                     <div class="na-layout-menu__section-body">
+                        <!-- Recovery copies of unsaved drawings, kept on this computer (Na__PageLayoutSystem__RecoveryDraft__Controls__.js) -->
+                        <div class="na-saved-list__drafts" id="naLayoutDraftList" hidden></div>
                         <div class="na-saved-list__segmented" id="naLayoutSavedFilter" role="group" aria-label="Whose layouts">
                             <button class="na-saved-list__segment is-active" data-filter="all" type="button">Everyone</button>
                             <button class="na-saved-list__segment" data-filter="mine" type="button">Mine</button>
@@ -270,12 +272,13 @@
                     </div>
                 </details>
 
-                <!-- SECTION | Export (Na__PageLayoutSystem__PdfExport__A3__.js) -->
+                <!-- SECTION | Export: both buttons open the export dialog, which saves a version first (Na__PageLayoutSystem__ExportDialog__.js) -->
                 <details class="na-layout-menu__section" data-section="export">
                     <summary class="na-layout-menu__section-title">Export</summary>
                     <div class="na-layout-menu__section-body">
-                        <button class="na-layout-menu__action" id="naLayoutExportFull" type="button">Export Full Layout (PDF)</button>
-                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutExportImageOnly" type="button">Export Image Only (PDF)</button>
+                        <button class="na-layout-menu__action" id="naLayoutExportFull" type="button" title="Name the drawing, save it as a version for the job, then download the PDF with the title block">Export Full Layout (PDF)</button>
+                        <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutExportImageOnly" type="button" title="Name the drawing, save it as a version for the job, then download the PDF of the picture alone">Export Image Only (PDF)</button>
+                        <p class="na-layout-menu__hint">Every export is saved for the job first, as a numbered version anyone can open again.</p>
                         <!-- Save Drawing: the same save as Drawing Layout's button; red until saved, green once saved (Na__PageLayoutSystem__SavedLayouts__Controls__.js) -->
                         <button class="na-layout-menu__action na-layout-menu__action--save" id="naLayoutExportSaveFile" type="button">Save Drawing</button>
                         <p class="na-layout-menu__hint" id="naLayoutExportSaveHint">Not saved yet. Save it to the Vale Cloud to open it again from Saved Drawings.</p>
@@ -308,6 +311,100 @@
                 <button class="na-layout-menu__action na-layout-menu__action--secondary" id="naLayoutUnsavedKeep" type="button">Keep Editing</button>
                 <button class="na-layout-menu__action na-layout-menu__action--close" id="naLayoutUnsavedDiscard" type="button">Close Without Saving</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Export dialog: the scheme name or reference, the kind, the file name, then save a version, make the PDF, download it (Na__PageLayoutSystem__ExportDialog__.js) -->
+    <div class="na-layout-dialog na-export" id="naExportDialog" role="dialog" aria-modal="true" aria-labelledby="naExportTitle" aria-describedby="naExportSubtitle" hidden>
+        <div class="na-layout-dialog__backdrop" data-export-dismiss></div>
+        <div class="na-export__panel" data-state="ready">
+
+            <header class="na-export__head">
+                <span class="na-export__head-icon" aria-hidden="true">
+                    <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><path d="M182 540V168A56 56 0 0 1 238 112H604.4L842 349.6V540"/><path d="M604.4 112V321.6A28 28 0 0 0 632.4 349.6H842"/><path d="M182 896V608H242A72 72 0 0 1 314 680A72 72 0 0 1 242 752H182"/><path d="M446 608H490.9A87.1 87.1 0 0 1 578 695.1V808.9A87.1 87.1 0 0 1 490.9 896H446Z"/><polyline points="842 608 710 608 710 896"/><line x1="710" y1="752" x2="802.4" y2="752"/></svg>
+                </span>
+                <div class="na-export__head-words">
+                    <h2 class="na-export__title" id="naExportTitle">Export Drawing PDF</h2>
+                    <p class="na-export__subtitle" id="naExportSubtitle">Saved for the job first, so anyone can open it again exactly as exported.</p>
+                </div>
+                <button class="na-export__close" id="naExportClose" type="button" aria-label="Close" title="Close">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+            </header>
+
+            <div class="na-export__body">
+
+                <!-- THE SHEET | What the PDF will hold, and which version it becomes -->
+                <figure class="na-export__preview">
+                    <div class="na-export__preview-paper">
+                        <canvas id="naExportPreview" aria-label="Preview of the PDF"></canvas>
+                    </div>
+                    <figcaption class="na-export__badge" id="naExportBadge">Version 1</figcaption>
+                </figure>
+
+                <div class="na-export__form">
+
+                    <!-- THE REFERENCE | Names the drawing, its version and the PDF -->
+                    <label class="na-export__label" for="naExportReference">Scheme name or reference</label>
+                    <input class="na-export__input" id="naExportReference" type="text" maxlength="80" autocomplete="off" spellcheck="true" placeholder="For example: Rear Garden View Option A" />
+                    <p class="na-export__hint" id="naExportReferenceHint">Names the drawing in Saved Drawings and the PDF's file name.</p>
+
+                    <label class="na-export__check" id="naExportAsNewRow" hidden>
+                        <input type="checkbox" id="naExportAsNew" />
+                        <span id="naExportAsNewText">Save as a new drawing (keeps the open one as it is)</span>
+                    </label>
+
+                    <!-- THE KIND | With the title block, or the picture alone -->
+                    <div class="na-export__label">What to export</div>
+                    <div class="na-export__kinds" id="naExportKinds" role="radiogroup" aria-label="What to export">
+                        <button class="na-export__kind" type="button" role="radio" data-kind="full" aria-checked="true">
+                            <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="104" y="232" width="816" height="560" rx="40"/><rect x="164" y="292" width="490" height="440" rx="12"/><line x1="724" y1="292" x2="724" y2="732"/><line x1="774" y1="352" x2="860" y2="352"/><line x1="774" y1="432" x2="860" y2="432"/><line x1="774" y1="652" x2="860" y2="652"/></svg>
+                            <span class="na-export__kind-name">Full layout</span>
+                            <span class="na-export__kind-note">With the title block</span>
+                        </button>
+                        <button class="na-export__kind" type="button" role="radio" data-kind="image" aria-checked="false">
+                            <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="104" y="232" width="816" height="560" rx="40"/><path d="M134 712L330 504A22 22 0 0 1 362 504L512 672L596 596A22 22 0 0 1 626 596L890 776"/><circle cx="640" cy="402" r="58"/></svg>
+                            <span class="na-export__kind-name">Image only</span>
+                            <span class="na-export__kind-note">The picture alone</span>
+                        </button>
+                    </div>
+
+                    <!-- THE FILE NAME | As it will download, the reference marked -->
+                    <div class="na-export__label">File name</div>
+                    <div class="na-export__file" id="naExportFileName" title=""></div>
+
+                    <!-- THE STEPS | What happens, and how far it has got -->
+                    <ol class="na-export__steps" id="naExportSteps">
+                        <li class="na-export__step" data-step="pdf">
+                            <span class="na-export__step-mark" aria-hidden="true">
+                                <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"><path d="M232 112H604L792 300V856A56 56 0 0 1 736 912H232A56 56 0 0 1 176 856V168A56 56 0 0 1 232 112Z"/><path d="M604 112V300H792"/><line x1="320" y1="560" x2="648" y2="560"/><line x1="320" y1="712" x2="560" y2="712"/></svg>
+                            </span>
+                            <span class="na-export__step-words"><span class="na-export__step-title" id="naExportStepPdf">Make the PDF</span><span class="na-export__step-note" id="naExportStepPdfNote">A3 at full quality</span></span>
+                        </li>
+                        <li class="na-export__step" data-step="save">
+                            <span class="na-export__step-mark" aria-hidden="true">
+                                <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"><path d="M300 800H264A184 184 0 0 1 240 434A272 272 0 0 1 766 368A216 216 0 0 1 752 800H724"/><line x1="512" y1="880" x2="512" y2="540"/><polyline points="392 660 512 540 632 660"/></svg>
+                            </span>
+                            <span class="na-export__step-words"><span class="na-export__step-title" id="naExportStepSave">Save version 1 to the Vale Cloud</span><span class="na-export__step-note" id="naExportStepSaveNote">For the job</span></span>
+                        </li>
+                        <li class="na-export__step" data-step="download">
+                            <span class="na-export__step-mark" aria-hidden="true">
+                                <svg viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"><path d="M512 132V612M370.6 470.6L512 612L653.4 470.6"/><path d="M160 560V788A72 72 0 0 0 232 860H792A72 72 0 0 0 864 788V560"/></svg>
+                            </span>
+                            <span class="na-export__step-words"><span class="na-export__step-title" id="naExportStepDownload">Download the PDF</span><span class="na-export__step-note" id="naExportStepDownloadNote">To this computer's downloads</span></span>
+                        </li>
+                    </ol>
+
+                    <p class="na-export__status" id="naExportStatus" role="status" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <footer class="na-export__foot">
+                <button class="na-export__button na-export__button--quiet" id="naExportCancel" type="button">Cancel</button>
+                <span class="na-export__foot-gap"></span>
+                <button class="na-export__button na-export__button--warn" id="naExportWithout" type="button" hidden>Export Without Saving</button>
+                <button class="na-export__button na-export__button--main" id="naExportGo" type="button">Save and Export PDF</button>
+            </footer>
         </div>
     </div>
 
@@ -350,7 +447,8 @@
         import { Na__PageLayout__InitNavigation }                from './Na__PageLayoutSystem__2dNavigationControls__.js';
         import { Na__PageLayout__InitPcControls }                from './Na__PageLayoutSystem__Controls__Pc__.js';
         import { Na__PageLayout__InitTouchControls }             from './Na__PageLayoutSystem__Controls__TouchScreen__.js';
-        import { Na__PageLayout__InitPdfExport }                 from './Na__PageLayoutSystem__PdfExport__A3__.js';
+        import { Na__PageLayout__InitExportDialog }              from './Na__PageLayoutSystem__ExportDialog__.js';
+        import { Na__PageLayout__InitRecoveryDrafts }            from './Na__PageLayoutSystem__RecoveryDraft__Controls__.js';
         import { Na__PageLayout__UserSession__Start }            from './Na__PageLayoutSystem__UserSession__.js';
         import { Na__PageLayout__InitSideMenu }                  from './Na__PageLayoutSystem__SideMenu__.js';
         import { Na__PageLayout__InitSavedLayoutsControls,
@@ -407,7 +505,8 @@
             Na__PageLayout__InitSavedLayoutsControls(state, requestRedraw); // <-- Name, save, the job's saved layouts
             Na__PageLayout__InitCompositionGuideControls(state, requestRedraw); // <-- Grid of thirds and centre cross
             Na__PageLayout__InitRenderControls(state, requestRedraw); // <-- Render quality and Re-Render
-            Na__PageLayout__InitPdfExport(state); // <-- PDF export button handlers
+            Na__PageLayout__InitExportDialog(state, requestRedraw); // <-- Export: name it, save a version, then the PDF
+            Na__PageLayout__InitRecoveryDrafts(state, requestRedraw); // <-- A recovery copy of an unsaved drawing, on this computer
 
             // What ValeVision 3D may ask this page (inside the app only): is a drawing
             // open and saved (and which layout), save it, stand aside for a new one,
@@ -421,11 +520,12 @@
                     canSave    : Na__PageLayout__CanSave(),
                     saved      : !!state.layout.record,
                     layoutId   : state.layout.record ? state.layout.record.PageLayouts__Layout__Id : '',
+                    version    : (state.layout.version && state.layout.version.number) || 0,
                     name       : state.layout.name || ''
                 }),
                 Save          : () => Na__PageLayout__UnsavedGuard__SaveNow(),
                 StandAside    : () => Na__PageLayout__UnsavedGuard__StandAside(),
-                OpenLayout    : (layoutId) => Na__PageLayout__SavedLayouts__OpenById(layoutId),
+                OpenLayout    : (layoutId, version) => Na__PageLayout__SavedLayouts__OpenById(layoutId, version),
                 LayoutDeleted : (layoutId) => Na__PageLayout__SavedLayouts__Deleted(layoutId)
             });
 

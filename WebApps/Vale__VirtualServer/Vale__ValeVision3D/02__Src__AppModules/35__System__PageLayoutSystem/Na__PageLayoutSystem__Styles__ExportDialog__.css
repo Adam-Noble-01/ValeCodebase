@@ -1,0 +1,696 @@
+/* =============================================================================
+ * VALEVISION3D - PAGE LAYOUT SYSTEM - EXPORT DIALOG STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__PageLayoutSystem__Styles__ExportDialog__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Export Dialog Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The export dialog: the sheet as the PDF holds it, the version it
+ *              becomes, the scheme name or reference, the kind, the file name and
+ *              three steps that tick as they happen
+ * CREATED    : 11-Nov-2026
+ *
+ * DESCRIPTION:
+ * - Imported by Na__PageLayoutSystem__Styles__Main__.css; drawn by
+ *   Na__PageLayoutSystem__ExportDialog__.js over the page's dialog shell
+ *   (.na-layout-dialog: the fixed layer and its backdrop).
+ * - The page's own tokens (Vale blue, Synced green, the warn amber), Open Sans,
+ *   and the house line icons (round caps, Vale blue). The step spinner is not
+ *   held back for reduced motion: it says work is happening.
+ *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 11-Nov-2026 - Version 1.0.0 (ValeVision3D v2.94.0)
+ * - Initial build.
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Panel
+ * ----------------------------------------------------------------------------- */
+
+    .na-export {
+        --NaExport_Ink                      : #172b3a;
+        --NaExport_InkSoft                  : rgba(23, 43, 58, 0.68);
+        --NaExport_Line                     : rgba(23, 43, 58, 0.16);
+        --NaExport_Well                     : #eef1f4;
+        --NaExport_Accent                   : #336699;
+        --NaExport_Green                    : #1f6f43;
+        --NaExport_Amber                    : #a35a00;
+        --NaExport_Red                      : #8b1e1e;
+    }
+
+    .na-export__panel {
+        position                            : relative;
+        display                             : flex;
+        flex-direction                      : column;
+        width                               : min(880px, 100%);
+        max-height                          : calc(100vh - 32px);
+        overflow                            : auto;
+        background                          : #ffffff;
+        border-radius                       : 14px;
+        box-shadow                          : 0 24px 64px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.12);
+        color                               : var(--NaExport_Ink);
+        font-family                         : var(--Vale_FontFamily);
+        user-select                         : none;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Head
+ * ----------------------------------------------------------------------------- */
+
+    .na-export__head {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 14px;
+        padding                             : 18px 20px 14px 22px;
+    }
+
+    .na-export__head-icon {
+        flex                                : 0 0 46px;
+        display                             : grid;
+        place-items                         : center;
+        width                               : 46px;
+        height                              : 46px;
+        border-radius                       : 12px;
+        background                          : var(--NaExport_Ink);
+        color                               : #ffffff;
+        transition                          : background-color 0.4s ease;
+    }
+
+    .na-export__head-icon svg {
+        width                               : 28px;
+        height                              : 28px;
+    }
+
+    .na-export__panel[data-state="done"] .na-export__head-icon {
+        background                          : var(--NaExport_Green);
+    }
+
+    .na-export__panel[data-state="done-unsaved"] .na-export__head-icon,
+    .na-export__panel[data-state="save-failed"] .na-export__head-icon {
+        background                          : var(--NaExport_Amber);
+    }
+
+    .na-export__head-words {
+        flex                                : 1 1 auto;
+        min-width                           : 0;
+    }
+
+    .na-export__title {
+        margin                              : 0;
+        font-size                           : 1.12rem;
+        font-weight                         : 600;
+    }
+
+    .na-export__subtitle {
+        margin                              : 2px 0 0 0;
+        font-size                           : 0.8rem;
+        line-height                         : 1.4;
+        color                               : var(--NaExport_InkSoft);
+    }
+
+    .na-export__close {
+        flex                                : 0 0 34px;
+        display                             : grid;
+        place-items                         : center;
+        width                               : 34px;
+        height                              : 34px;
+        border                              : none;
+        border-radius                       : 50%;
+        background                          : transparent;
+        color                               : var(--NaExport_InkSoft);
+        cursor                              : pointer;
+    }
+
+    .na-export__close:hover {
+        background                          : rgba(23, 43, 58, 0.07);
+        color                               : var(--NaExport_Ink);
+    }
+
+    .na-export__close:disabled {
+        opacity                             : 0.3;
+        cursor                              : default;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Body: the Sheet Beside the Form
+ * ----------------------------------------------------------------------------- */
+
+    .na-export__body {
+        display                             : grid;
+        grid-template-columns               : minmax(230px, 0.92fr) minmax(0, 1fr);
+        gap                                 : 22px;
+        padding                             : 4px 22px 10px 22px;
+    }
+
+    /* THE SHEET | On a grey well, like the editor's canvas */
+    /* ------------------------------------------------------------ */
+    .na-export__preview {
+        display                             : flex;
+        flex-direction                      : column;
+        align-items                         : center;
+        justify-content                     : center;
+        gap                                 : 14px;
+        margin                              : 0;
+        padding                             : 22px 18px;
+        border-radius                       : 12px;
+        background                          : var(--NaExport_Well);
+        box-shadow                          : inset 0 0 0 1px rgba(23, 43, 58, 0.05);
+    }
+
+    .na-export__preview-paper {
+        width                               : 100%;
+        display                             : flex;
+        justify-content                     : center;
+    }
+
+    .na-export__preview canvas {
+        display                             : block;
+        max-width                           : 100%;
+        background                          : #ffffff;
+        box-shadow                          : 0 6px 18px rgba(23, 43, 58, 0.22), 0 1px 3px rgba(23, 43, 58, 0.18);
+    }
+
+    /* THE VERSION IT BECOMES */
+    /* ------------------------------------------------------------ */
+    .na-export__badge {
+        padding                             : 4px 12px;
+        border-radius                       : 999px;
+        font-size                           : 0.76rem;
+        font-weight                         : 600;
+        letter-spacing                      : 0.01em;
+        background                          : var(--NaExport_Ink);
+        color                               : #ffffff;
+    }
+
+    .na-export__badge--again {
+        background                          : #ffffff;
+        color                               : var(--NaExport_Green);
+        box-shadow                          : inset 0 0 0 1.5px var(--NaExport_Green);
+    }
+
+    .na-export__badge--saved {
+        background                          : var(--NaExport_Green);
+        color                               : #ffffff;
+    }
+
+    .na-export__badge--unsaved {
+        background                          : #ffffff;
+        color                               : var(--NaExport_Amber);
+        box-shadow                          : inset 0 0 0 1.5px var(--NaExport_Amber);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Form
+ * ----------------------------------------------------------------------------- */
+
+    .na-export__form {
+        display                             : flex;
+        flex-direction                      : column;
+        min-width                           : 0;
+    }
+
+    .na-export__label {
+        margin                              : 12px 0 6px 0;
+        font-size                           : 0.74rem;
+        font-weight                         : 600;
+        letter-spacing                      : 0.02em;
+        color                               : var(--NaExport_Ink);
+    }
+
+    .na-export__form > .na-export__label:first-child {
+        margin-top                          : 0;
+    }
+
+    /* THE REFERENCE */
+    /* ------------------------------------------------------------ */
+    .na-export__input {
+        width                               : 100%;
+        height                              : 42px;
+        padding                             : 0 12px;
+        border                              : 1.5px solid rgba(23, 43, 58, 0.28);
+        border-radius                       : 8px;
+        background                          : #ffffff;
+        color                               : var(--NaExport_Ink);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : 0.95rem;
+        font-weight                         : 600;
+        outline                             : none;
+        transition                          : border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .na-export__input::placeholder {
+        font-weight                         : 400;
+        color                               : rgba(23, 43, 58, 0.42);
+    }
+
+    .na-export__input:focus {
+        border-color                        : var(--NaExport_Ink);
+        box-shadow                          : 0 0 0 3px rgba(51, 102, 153, 0.18);
+    }
+
+    .na-export__input:disabled {
+        background                          : #f6f7f8;
+        color                               : var(--NaExport_InkSoft);
+    }
+
+    .na-export__hint {
+        margin                              : 6px 0 0 0;
+        font-size                           : 0.72rem;
+        line-height                         : 1.4;
+        color                               : var(--NaExport_InkSoft);
+    }
+
+    .na-export__hint.is-error {
+        color                               : var(--NaExport_Red);
+        font-weight                         : 600;
+    }
+
+    .na-export__check {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 8px;
+        margin-top                          : 10px;
+        font-size                           : 0.78rem;
+        cursor                              : pointer;
+    }
+
+    .na-export__check[hidden] {
+        display                             : none;
+    }
+
+    .na-export__check input {
+        width                               : 16px;
+        height                              : 16px;
+        accent-color                        : var(--NaExport_Ink);
+    }
+
+    /* FULL LAYOUT OR IMAGE ONLY */
+    /* ------------------------------------------------------------ */
+    .na-export__kinds {
+        display                             : grid;
+        grid-template-columns               : 1fr 1fr;
+        gap                                 : 10px;
+    }
+
+    .na-export__kind {
+        display                             : grid;
+        grid-template-columns               : 34px minmax(0, 1fr);
+        grid-template-rows                  : auto auto;
+        column-gap                          : 10px;
+        align-items                         : center;
+        padding                             : 10px 12px;
+        border                              : 1.5px solid var(--NaExport_Line);
+        border-radius                       : 10px;
+        background                          : #ffffff;
+        color                               : var(--NaExport_Ink);
+        font-family                         : var(--Vale_FontFamily);
+        text-align                          : left;
+        cursor                              : pointer;
+        transition                          : border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .na-export__kind svg {
+        grid-row                            : 1 / span 2;
+        width                               : 34px;
+        height                              : 34px;
+        opacity                             : 0.75;
+    }
+
+    .na-export__kind-name {
+        font-size                           : 0.82rem;
+        font-weight                         : 600;
+    }
+
+    .na-export__kind-note {
+        font-size                           : 0.7rem;
+        color                               : var(--NaExport_InkSoft);
+    }
+
+    .na-export__kind:hover {
+        border-color                        : rgba(23, 43, 58, 0.4);
+    }
+
+    .na-export__kind.is-active {
+        border-color                        : var(--NaExport_Ink);
+        background                          : rgba(23, 43, 58, 0.045);
+        box-shadow                          : inset 0 0 0 1px var(--NaExport_Ink);
+    }
+
+    .na-export__kind.is-active svg {
+        opacity                             : 1;
+    }
+
+    .na-export__kind:disabled {
+        cursor                              : default;
+        opacity                             : 0.6;
+    }
+
+    /* THE FILE NAME | The reference marked where it lands */
+    /* ------------------------------------------------------------ */
+    .na-export__file {
+        padding                             : 9px 11px;
+        border-radius                       : 8px;
+        background                          : #f6f7f8;
+        box-shadow                          : inset 0 0 0 1px rgba(23, 43, 58, 0.08);
+        font-family                         : Consolas, "Cascadia Mono", Menlo, monospace;
+        font-size                           : 0.74rem;
+        line-height                         : 1.55;
+        color                               : var(--NaExport_InkSoft);
+        overflow-wrap                       : anywhere;                     /* <-- Breaks at the <wbr> after each "__" first */
+        user-select                         : text;
+    }
+
+    .na-export__file-sep,
+    .na-export__file-part,
+    .na-export__file-ref {
+        white-space                         : nowrap;                       /* <-- A part stays whole where it can */
+    }
+
+    .na-export__file-sep {
+        color                               : rgba(23, 43, 58, 0.38);
+    }
+
+    .na-export__file-part {
+        color                               : var(--NaExport_Ink);
+    }
+
+    .na-export__file-ref {
+        padding                             : 1px 3px;
+        border-radius                       : 4px;
+        background                          : rgba(51, 102, 153, 0.16);
+        color                               : var(--NaExport_Ink);
+        font-weight                         : 700;
+    }
+
+    .na-export__file-ref.is-placeholder {
+        background                          : transparent;
+        box-shadow                          : inset 0 0 0 1px rgba(51, 102, 153, 0.45);
+        color                               : rgba(23, 43, 58, 0.5);
+        font-weight                         : 400;
+        font-style                          : italic;
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | The Steps
+ * ----------------------------------------------------------------------------- */
+
+    .na-export__steps {
+        list-style                          : none;
+        margin                              : 14px 0 0 0;
+        padding                             : 10px 12px;
+        border-radius                       : 10px;
+        background                          : #fafbfb;
+        box-shadow                          : inset 0 0 0 1px rgba(23, 43, 58, 0.07);
+    }
+
+    .na-export__step {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 11px;
+        padding                             : 5px 0;
+    }
+
+    .na-export__step-mark {
+        position                            : relative;
+        flex                                : 0 0 30px;
+        display                             : grid;
+        place-items                         : center;
+        width                               : 30px;
+        height                              : 30px;
+        border-radius                       : 50%;
+        border                              : 1.5px solid rgba(23, 43, 58, 0.22);
+        background                          : #ffffff;
+        color                               : rgba(23, 43, 58, 0.62);
+        transition                          : background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .na-export__step-mark svg {
+        width                               : 16px;
+        height                              : 16px;
+    }
+
+    .na-export__step-words {
+        display                             : flex;
+        flex-direction                      : column;
+        min-width                           : 0;
+    }
+
+    .na-export__step-title {
+        font-size                           : 0.8rem;
+        font-weight                         : 600;
+    }
+
+    .na-export__step-note {
+        font-size                           : 0.7rem;
+        line-height                         : 1.35;
+        color                               : var(--NaExport_InkSoft);
+        overflow-wrap                       : anywhere;
+    }
+
+    /* WORKING | A turning ring round the mark */
+    .na-export__step.is-active .na-export__step-mark {
+        border-color                        : rgba(23, 43, 58, 0.12);
+        color                               : var(--NaExport_Ink);
+    }
+
+    .na-export__step.is-active .na-export__step-mark::after {
+        content                             : "";
+        position                            : absolute;
+        inset                               : -3px;
+        border-radius                       : 50%;
+        border                              : 2.5px solid transparent;
+        border-top-color                    : var(--NaExport_Ink);
+        border-right-color                  : var(--NaExport_Ink);
+        animation                           : naExportSpin 0.8s linear infinite;
+    }
+
+    /* DONE | A tick in a green circle (drawn, no icon font) */
+    .na-export__step.is-done .na-export__step-mark,
+    .na-export__step.is-failed .na-export__step-mark {
+        border-color                        : transparent;
+        color                               : #ffffff;
+    }
+
+    .na-export__step.is-done .na-export__step-mark {
+        background                          : var(--NaExport_Green);
+    }
+
+    .na-export__step.is-done .na-export__step-mark svg,
+    .na-export__step.is-failed .na-export__step-mark svg {
+        display                             : none;
+    }
+
+    .na-export__step.is-done .na-export__step-mark::before {
+        content                             : "";
+        width                               : 7px;
+        height                              : 13px;
+        margin-top                          : -3px;
+        border                              : solid #ffffff;
+        border-width                        : 0 2.5px 2.5px 0;
+        transform                           : rotate(45deg);
+    }
+
+    /* FAILED | A cross in a red circle */
+    .na-export__step.is-failed .na-export__step-mark {
+        background                          : var(--NaExport_Red);
+    }
+
+    .na-export__step.is-failed .na-export__step-mark::before,
+    .na-export__step.is-failed .na-export__step-mark::after {
+        content                             : "";
+        position                            : absolute;
+        width                               : 14px;
+        height                              : 2.5px;
+        border-radius                       : 2px;
+        background                          : #ffffff;
+        transform                           : rotate(45deg);
+    }
+
+    .na-export__step.is-failed .na-export__step-mark::after {
+        transform                           : rotate(-45deg);
+    }
+
+    .na-export__step.is-failed .na-export__step-title {
+        color                               : var(--NaExport_Red);
+    }
+
+    /* SKIPPED | Not saved for the job: said, not hidden */
+    .na-export__step.is-skipped {
+        opacity                             : 0.75;
+    }
+
+    .na-export__step.is-skipped .na-export__step-mark {
+        border-style                        : dashed;
+        color                               : var(--NaExport_Amber);
+        border-color                        : var(--NaExport_Amber);
+    }
+
+    .na-export__step.is-skipped .na-export__step-title {
+        color                               : var(--NaExport_Amber);
+    }
+
+    @keyframes naExportSpin {
+        to { transform : rotate(360deg); }
+    }
+
+    /* WHERE IT STANDS | One line under the steps */
+    /* ------------------------------------------------------------ */
+    .na-export__status {
+        margin                              : 10px 0 0 0;
+        padding                             : 9px 11px;
+        border-radius                       : 8px;
+        font-size                           : 0.78rem;
+        line-height                         : 1.45;
+        background                          : rgba(23, 43, 58, 0.05);
+        color                               : var(--NaExport_Ink);
+        user-select                         : text;
+    }
+
+    .na-export__status:empty {
+        display                             : none;
+    }
+
+    .na-export__status--ok {
+        background                          : rgba(31, 111, 67, 0.1);
+        color                               : #17532f;
+    }
+
+    .na-export__status--warn {
+        background                          : rgba(163, 90, 0, 0.1);
+        color                               : #7a4300;
+    }
+
+    .na-export__status--error {
+        background                          : rgba(139, 30, 30, 0.08);
+        color                               : var(--NaExport_Red);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Foot: Cancel Left, the Main Action Right and Larger
+ * ----------------------------------------------------------------------------- */
+
+    .na-export__foot {
+        display                             : flex;
+        align-items                         : center;
+        gap                                 : 10px;
+        padding                             : 14px 22px 18px 22px;
+        border-top                          : 1px solid rgba(23, 43, 58, 0.08);
+        margin-top                          : 8px;
+    }
+
+    .na-export__foot-gap {
+        flex                                : 1 1 auto;
+    }
+
+    .na-export__button {
+        height                              : 40px;
+        padding                             : 0 16px;
+        border                              : none;
+        border-radius                       : 8px;
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : 0.84rem;
+        font-weight                         : 600;
+        cursor                              : pointer;
+        transition                          : background-color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .na-export__button[hidden] {
+        display                             : none;
+    }
+
+    .na-export__button:disabled {
+        opacity                             : 0.45;
+        cursor                              : not-allowed;
+    }
+
+    .na-export__button--quiet {
+        background                          : transparent;
+        color                               : var(--NaExport_Ink);
+        box-shadow                          : inset 0 0 0 1px rgba(23, 43, 58, 0.22);
+    }
+
+    .na-export__button--quiet:hover:not(:disabled) {
+        background                          : rgba(23, 43, 58, 0.06);
+    }
+
+    .na-export__button--warn {
+        background                          : #ffffff;
+        color                               : var(--NaExport_Amber);
+        box-shadow                          : inset 0 0 0 1.5px var(--NaExport_Amber);
+    }
+
+    .na-export__button--warn:hover:not(:disabled) {
+        background                          : rgba(163, 90, 0, 0.08);
+    }
+
+    .na-export__button--main {
+        min-width                           : 210px;
+        height                              : 44px;
+        padding                             : 0 22px;
+        background                          : var(--NaExport_Ink);
+        color                               : #ffffff;
+        font-size                           : 0.9rem;
+        box-shadow                          : 0 4px 12px rgba(23, 43, 58, 0.25);
+    }
+
+    .na-export__button--main:hover:not(:disabled) {
+        background                          : #1e3a4f;
+    }
+
+    .na-export__button--main.is-working {
+        cursor                              : progress;
+        opacity                             : 0.85;
+    }
+
+    .na-export__panel[data-state="done"] .na-export__button--main {
+        background                          : var(--NaExport_Green);
+    }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Narrow Screens: the Sheet Above the Form
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 760px) {
+        .na-export__body {
+            grid-template-columns           : minmax(0, 1fr);
+            gap                             : 14px;
+        }
+
+        .na-export__preview {
+            padding                         : 14px;
+        }
+
+        .na-export__foot {
+            flex-wrap                       : wrap;
+        }
+
+        .na-export__button--main {
+            flex                            : 1 1 100%;
+            order                           : -1;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

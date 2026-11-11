@@ -37,10 +37,24 @@
 //   Tools & Settings > Drawings. From there the app asks this page to open a
 //   layout (OpenById, also ?layout=<id> when the page starts) and tells it when
 //   one was deleted (Deleted): the open drawing then stays, as a new unsaved one.
+// - EXPORTS SAVE A VERSION (v2.94.0): the export dialog (Na__PageLayoutSystem__ExportDialog__)
+//   saves through SaveForExport, the same save with the export's kind and file name,
+//   which answers instead of asking (the dialog shows what went wrong and offers
+//   the way on). The Drawing Layout section says which version was exported last,
+//   or which version is on the sheet; every card folds out its versions, and Open
+//   on one puts it on the sheet as it was exported (also ?layout=<id>&version=<n>).
+// - A SAVE THAT CHANGED NOTHING says so: the server wrote nothing and the stamps stay.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.5.0 (ValeVision3D v2.94.0)
+// - SaveForExport (the export dialog's save: an answer, never a question), OpenById
+//   with a version, FindRecord (a recovery copy finds the layout it changed).
+// - The cards fold out their versions with Open (openVersion); the meta says the
+//   latest export, or the version on the sheet.
+// - "Already saved" when a save changed nothing.
+//
 // 09-Oct-2026 - Version 1.4.2 (ValeVision3D v2.76.3)
 // - Open Drawing / Reopen Drawing on the cards (the shared list's labels).
 //
@@ -87,7 +101,8 @@
         Na__PageLayout__Store__List,
         Na__PageLayout__Store__Save,
         Na__PageLayout__Store__Delete,
-        Na__PageLayout__Store__Open
+        Na__PageLayout__Store__Open,
+        Na__PageLayout__Store__OpenVersion
     } from './Na__PageLayoutSystem__LayoutStore__.js';
     import { Na__PageLayout__User, Na__PageLayout__CanSave, Na__PageLayout__CanDelete, Na__PageLayout__ShowSignIn } from './Na__PageLayoutSystem__UserSession__.js';
     import { Na__PageLayout__Toast, Na__PageLayout__SyncedToast, Na__PageLayout__Emit, Na__PageLayout__On } from './Na__PageLayoutSystem__UiNotify__.js';
@@ -104,6 +119,7 @@
         Na__PageLayout__SavedList__Shown,
         Na__PageLayout__SavedList__Message,
         Na__PageLayout__SavedList__Render,
+        Na__PageLayout__SavedList__Versions,
         Na__PageLayout__SavedList__SetBusy,
         Na__PageLayout__SavedList__WireFilter
     } from './Na__PageLayoutSystem__SavedList__.js';
@@ -138,8 +154,11 @@
 
     // MODULE VARIABLES | What the App May Ask (Set by Init: Open a Layout, One Was Deleted)
     // ------------------------------------------------------------
-    let Na__PageLayout__Saved__OpenByIdFn = null;
-    let Na__PageLayout__Saved__DeletedFn  = null;
+    let Na__PageLayout__Saved__OpenByIdFn   = null;
+    let Na__PageLayout__Saved__DeletedFn    = null;
+    let Na__PageLayout__Saved__ExportSaveFn = null;                         // <-- The export dialog's save
+    let Na__PageLayout__Saved__FindFn       = null;                         // <-- A saved layout by id (recovery copies)
+    let Na__PageLayout__Saved__StatusFn     = null;                         // <-- What the dialog needs to know of the open layout
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -264,19 +283,40 @@
 
             if (metaLine) {
                 const lines = [];
+                const warn = new Set();
                 if (record) {
                     const made = Na__PageLayout__Saved__FormatIso(record.PageLayouts__Layout__CreatedIso);
                     const last = Na__PageLayout__Saved__FormatIso(record.PageLayouts__Layout__UpdatedIso);
                     lines.push(`Created by ${record.PageLayouts__Layout__CreatedByName || record.PageLayouts__Layout__CreatedBy || 'unknown'}${made ? ', ' + made : ''}`);
                     lines.push(`Last updated by ${record.PageLayouts__Layout__UpdatedByName || record.PageLayouts__Layout__UpdatedBy || 'unknown'}${last ? ', ' + last : ''}`);
+
+                    // EXPORTED VERSIONS | The one on the sheet, else the latest
+                    // ------------------------------------------------------------
+                    const shown    = state.layout.version;
+                    const versions = Na__PageLayout__SavedList__Versions(record);
+                    if (shown && !shown.isCurrent) {
+                        const text = `Showing version ${shown.number} of ${Math.max(shown.latest || 0, shown.number)}, exported ${Na__PageLayout__Saved__FormatIso(shown.createdIso)}${shown.createdBy ? ' by ' + shown.createdBy : ''}. Save Changes makes it the current drawing.`;
+                        lines.push(text);
+                        warn.add(text);
+                    } else if (versions.length) {
+                        const latest  = versions[0];
+                        const exports = Array.isArray(latest.Version__Exports) ? latest.Version__Exports : [];
+                        const lastOut = exports[exports.length - 1] || {};
+                        lines.push(`Version ${latest.Version__Number} exported ${Na__PageLayout__Saved__FormatIso(lastOut.Export__Iso || latest.Version__CreatedIso)} by ${lastOut.Export__ByName || latest.Version__CreatedByName || 'unknown'}`);
+                    } else {
+                        lines.push('Not exported yet');
+                    }
                 } else {
                     lines.push(state.viewportImage ? 'Not saved yet' : 'Open a saved layout below, or press Create Drawing in ValeVision 3D');
                 }
-                if (record && state.layout.dirty) lines.push('Unsaved changes');
+                if (record && state.layout.dirty) {
+                    lines.push('Unsaved changes');
+                    warn.add('Unsaved changes');
+                }
                 metaLine.textContent = '';
                 lines.forEach((text, index) => {
                     const row = Na__PageLayout__Saved__Make('div', 'na-layout-menu__meta-line', text);
-                    if (text === 'Unsaved changes') row.classList.add('na-layout-menu__meta-line--warn');
+                    if (warn.has(text)) row.classList.add('na-layout-menu__meta-line--warn');
                     if (index === 0 && !record) row.classList.add('na-layout-menu__meta-line--muted');
                     metaLine.appendChild(row);
                 });
@@ -308,14 +348,16 @@
                 return;
             }
             Na__PageLayout__SavedList__Render(listBox, {
-                layouts   : Na__PageLayout__SavedList__Shown(layouts, filter, user.code),
-                filter    : filter,
-                currentId : current,
-                openLabel : (record) => (record.PageLayouts__Layout__Id === current ? Na__PageLayout__SavedList__REOPEN_LABEL : Na__PageLayout__SavedList__OPEN_LABEL),
-                canDelete : (record) => Na__PageLayout__CanDelete(record),
-                fileUrl   : (relative) => Na__PageLayout__Store__FileUrl(relative),
-                onOpen    : (record) => openLayout(record),
-                onDelete  : (record) => deleteLayout(record)
+                layouts        : Na__PageLayout__SavedList__Shown(layouts, filter, user.code),
+                filter         : filter,
+                currentId      : current,
+                currentVersion : (state.layout.version && state.layout.version.number) || 0,
+                openLabel      : (record) => (record.PageLayouts__Layout__Id === current ? Na__PageLayout__SavedList__REOPEN_LABEL : Na__PageLayout__SavedList__OPEN_LABEL),
+                canDelete      : (record) => Na__PageLayout__CanDelete(record),
+                fileUrl        : (relative) => Na__PageLayout__Store__FileUrl(relative),
+                onOpen         : (record) => openLayout(record),
+                onOpenVersion  : (record, number) => openVersion(record, number),
+                onDelete       : (record) => deleteLayout(record)
             });
         };
         // ------------------------------------------------------------
@@ -362,6 +404,10 @@
             const name   = layout.PageLayouts__Layout__Name || 'The layout';
             const job    = String(state.project.id || '').split('/').pop().replace(/__/g, ' ');
             const when   = Na__PageLayout__Saved__FormatIso(layout.PageLayouts__Layout__UpdatedIso);
+            if (answer.unchanged) {
+                Na__PageLayout__SyncedToast(`Nothing had changed: ${name} is already saved${job ? ' to job ' + job : ''}${when ? ', ' + when : ''}`, 'Already on the Vale Cloud');
+                return;
+            }
             const what   = answer.created ? `${name} saved` : `Changes to ${name} saved`;
             Na__PageLayout__SyncedToast(`${what}${job ? ' to job ' + job : ''}${when ? ', ' + when : ''}`);
         };
@@ -409,6 +455,34 @@
         // ------------------------------------------------------------
 
 
+        // SUB FUNCTION | The Export Dialog's Save: { ok, answer } or { ok: false, error } (Never Asks)
+        // ------------------------------------------------------------
+        // options: { asNew, issue: { kind, fileName } }. The dialog shows what went
+        // wrong itself (someone saved first, deleted, offline) and offers the way on.
+        // ------------------------------------------------------------
+        const saveForExport = async (options = {}) => {
+            if (busy) return { ok : false, error : new Error('Another save is still running: try again in a moment') };
+            setBusy(true, true);
+            try {
+                const answer = await Na__PageLayout__Store__Save(state, { asNew : options.asNew === true, issue : options.issue || null });
+                setBusy(false);
+                loadList(true);                                             // <-- The cards catch up behind the dialog
+                return { ok : true, answer : answer };
+            } catch (error) {
+                return { ok : false, error : error };
+            } finally {
+                if (busy) setBusy(false);
+            }
+        };
+        Na__PageLayout__Saved__ExportSaveFn = saveForExport;
+        Na__PageLayout__Saved__StatusFn     = () => ({
+            busy     : busy,
+            layouts  : layouts,
+            listed   : listed
+        });
+        // ------------------------------------------------------------
+
+
         // SUB FUNCTION | Open a Saved Layout on the Sheet
         // ------------------------------------------------------------
         const openLayout = async (record) => {
@@ -425,6 +499,34 @@
                 await Na__PageLayout__Store__Open(state, record);
                 requestRedraw();
                 Na__PageLayout__Toast(`Opened ${record.PageLayouts__Layout__Name || 'the layout'}`);
+            } catch (error) {
+                Na__PageLayout__Toast(error.message, true);
+            } finally {
+                setBusy(false);
+                renderList();
+            }
+        };
+        // ------------------------------------------------------------
+
+
+        // SUB FUNCTION | Open One Exported Version of a Saved Layout, as It Was Exported
+        // ------------------------------------------------------------
+        const openVersion = async (record, number) => {
+            if (busy) return;
+            if (state.layout.dirty && state.viewportImage) {
+                const loss = state.layout.record
+                    ? 'The unsaved changes on this page will be lost.'
+                    : 'The drawing on the sheet has not been saved and will be lost.';
+                if (!window.confirm(`Open version ${number} of ${record.PageLayouts__Layout__Name || 'this layout'}?\n\n${loss}`)) return;
+            }
+            setBusy(true);
+            try {
+                const version = await Na__PageLayout__Store__OpenVersion(state, record, number);
+                requestRedraw();
+                const latest = state.layout.version && state.layout.version.isCurrent;
+                Na__PageLayout__Toast(latest
+                    ? `Opened ${record.PageLayouts__Layout__Name || 'the layout'}: version ${number} is the current drawing`
+                    : `Opened version ${number} of ${record.PageLayouts__Layout__Name || 'the layout'}, as exported ${Na__PageLayout__Saved__FormatIso(version.Version__CreatedIso)}`);
             } catch (error) {
                 Na__PageLayout__Toast(error.message, true);
             } finally {
@@ -502,7 +604,7 @@
 
         // What the app may ask (ValeVision 3D's Drawings menu): open a layout; one was deleted there
         // ------------------------------------------------------------
-        const openById = async (layoutId) => {
+        const openById = async (layoutId, versionNumber) => {
             if (!layoutId || !Na__PageLayout__User() || !state.project.id) return false;
             if (!layouts.some((record) => record.PageLayouts__Layout__Id === layoutId)) await loadList(true);
             const record = layouts.find((candidate) => candidate.PageLayouts__Layout__Id === layoutId);
@@ -510,10 +612,19 @@
                 Na__PageLayout__Toast('That layout is no longer saved for this job', true);
                 return false;
             }
+            if (Number.isInteger(versionNumber) && versionNumber > 0) {
+                await openVersion(record, versionNumber);                   // <-- An exported version, as it was
+                return true;
+            }
             await openLayout(record);                                       // <-- Its own question first when the sheet has unsaved changes
             return true;
         };
         Na__PageLayout__Saved__OpenByIdFn = openById;
+        Na__PageLayout__Saved__FindFn     = async (layoutId) => {
+            if (!layoutId || !Na__PageLayout__User() || !state.project.id) return null;
+            if (!listed || !layouts.some((record) => record.PageLayouts__Layout__Id === layoutId)) await loadList(true);
+            return layouts.find((record) => record.PageLayouts__Layout__Id === layoutId) || null;
+        };
         Na__PageLayout__Saved__DeletedFn  = (layoutId) => {
             if (state.layout.record && state.layout.record.PageLayouts__Layout__Id === layoutId) {
                 state.layout.record = null;                                 // <-- The sheet stays: a new, unsaved drawing now (as a delete from here does)
@@ -532,8 +643,10 @@
         renderList();
         if (state.openLayoutId) {
             const layoutId = state.openLayoutId;
+            const version  = state.openVersion || 0;
             state.openLayoutId = '';
-            openById(layoutId);                                             // <-- Reads the list itself
+            state.openVersion  = 0;
+            openById(layoutId, version);                                    // <-- Reads the list itself
         } else if (Na__PageLayout__User() && state.project.id) {
             loadList(true);
         }
@@ -541,10 +654,36 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The App Asks: Put This Saved Layout on the Sheet (Promise<boolean>)
+    // FUNCTION | The App Asks: Put This Saved Layout (or One of Its Versions) on the Sheet (Promise<boolean>)
     // ------------------------------------------------------------
-    function Na__PageLayout__SavedLayouts__OpenById(layoutId) {
-        return Na__PageLayout__Saved__OpenByIdFn ? Na__PageLayout__Saved__OpenByIdFn(layoutId) : Promise.resolve(false);
+    function Na__PageLayout__SavedLayouts__OpenById(layoutId, versionNumber) {
+        return Na__PageLayout__Saved__OpenByIdFn ? Na__PageLayout__Saved__OpenByIdFn(layoutId, versionNumber) : Promise.resolve(false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Export Dialog's Save (Promise<{ ok, answer } | { ok: false, error }>)
+    // ------------------------------------------------------------
+    function Na__PageLayout__SavedLayouts__SaveForExport(options) {
+        return Na__PageLayout__Saved__ExportSaveFn
+            ? Na__PageLayout__Saved__ExportSaveFn(options)
+            : Promise.resolve({ ok : false, error : new Error('Saving is not ready on this page yet') });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Saved Layout of the Job by Id, as Last Listed (Promise<record | null>)
+    // ------------------------------------------------------------
+    function Na__PageLayout__SavedLayouts__FindRecord(layoutId) {
+        return Na__PageLayout__Saved__FindFn ? Na__PageLayout__Saved__FindFn(layoutId) : Promise.resolve(null);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is a Save, Open or Delete Running? (the Export Dialog Waits)
+    // ------------------------------------------------------------
+    function Na__PageLayout__SavedLayouts__IsBusy() {
+        return Na__PageLayout__Saved__StatusFn ? Na__PageLayout__Saved__StatusFn().busy === true : false;
     }
     // ------------------------------------------------------------
 
@@ -568,7 +707,10 @@
     export {
         Na__PageLayout__InitSavedLayoutsControls,
         Na__PageLayout__SavedLayouts__OpenById,
-        Na__PageLayout__SavedLayouts__Deleted
+        Na__PageLayout__SavedLayouts__Deleted,
+        Na__PageLayout__SavedLayouts__SaveForExport,
+        Na__PageLayout__SavedLayouts__FindRecord,
+        Na__PageLayout__SavedLayouts__IsBusy
     };
     // ------------------------------------------------------------
 

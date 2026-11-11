@@ -29,6 +29,9 @@
  * -----------------------------------------------------------------------------
  *
  * DEVELOPMENT LOG:
+ * 11-Nov-2026 - Version 2.6.0 (ValeVision3D v2.94.0)
+ * - Imports Na__PageLayoutSystem__Styles__ExportDialog__.css (the export dialog).
+ *
  * 09-Oct-2026 - Version 2.5.0 (ValeVision3D v2.76.1)
  * - The Saved Layouts rules (Everyone / Mine, the count, the list, the cards and
  *   their buttons) moved to Na__PageLayoutSystem__Styles__SavedList__.css, shared
@@ -72,6 +75,11 @@
 /* Import the Saved Layouts List (Shared With ValeVision 3D's Drawings Menu) */
 /* ----------------------------------------------------------------- */
 @import url('Na__PageLayoutSystem__Styles__SavedList__.css');
+
+
+/* Import the Export Dialog (v2.94.0: name it, save a version, then the PDF) */
+/* ----------------------------------------------------------------- */
+@import url('Na__PageLayoutSystem__Styles__ExportDialog__.css');
 
 
 /* -----------------------------------------------------------------------------

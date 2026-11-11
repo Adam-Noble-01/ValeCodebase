@@ -51,6 +51,11 @@
 //   and window.Na__PageLayout__Embed in the
 //   frame (Status, Save, StandAside, OpenLayout, LayoutDeleted:
 //   Na__PageLayoutSystem__Layout__.html).
+// - VERSIONS (v2.94.0): OpenLayout takes a version number (the Drawings menu's
+//   versions), and the app's own address opens one: ?project=<id>&page=drawing&
+//   layout=<layout id>&version=<n> (what the activity ledger's Path holds for an
+//   export). The two are taken off the address once read, so a later Create
+//   Drawing or a copied address never carries them on.
 //
 // INTEGRATION:
 // - index.html: Na__DrawingPage__Initialize({ leaveLayoutEditor : Na__LeLoad__Leave })
@@ -64,6 +69,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.94.0)
+// - OpenLayout(layoutId, version) and OpenedVersion; the app's address opens a
+//   saved drawing at a version (&layout=&version=), read once and taken off.
+//
 // 09-Oct-2026 - Version 1.2.0 (ValeVision3D v2.76.2)
 // - ConfirmDelete: deleting a saved drawing is final, so the word delete has to be
 //   typed. The Drawings menu asks it here, and the Drawing Editor through
@@ -324,11 +333,36 @@
 // REGION | The Page Going Up and Away
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | A Saved Drawing (and Version) the App's Address Names, Taken Off It Once Read
+    // ------------------------------------------------------------
+    // ?project=<id>&page=drawing&layout=PL-...&version=3 (the activity ledger's Path
+    // for an export). Answers { layout, version } ('' and '' when none).
+    // ------------------------------------------------------------
+    function Na__DrawingPage__TakeAddressLayout() {
+        try {
+            const url     = new URL(window.location.href);
+            const layout  = (url.searchParams.get('layout') || '').trim();
+            const version = (url.searchParams.get('version') || '').trim();
+            if (!layout && !version) return { layout : '', version : '' };
+            url.searchParams.delete('layout');
+            url.searchParams.delete('version');
+            window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+            return { layout : /^PL-\d{8}-\d{6}-[a-z0-9]{4}$/.test(layout) ? layout : '', version : /^\d{1,4}$/.test(version) ? version : '' };
+        } catch (error) {
+            return { layout : '', version : '' };
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Put the Page Up, the Model's Rendering Paused Underneath
     // ------------------------------------------------------------
     function Na__DrawingPage__Show() {
         const host = Na__DrawingPage__BuildHost();
-        if (!Na__DrawingPage__Frame) Na__DrawingPage__NewFrame({ open : 'saved' });   // <-- Reached with nothing open (Forward, its address): the job's saved layouts
+        if (!Na__DrawingPage__Frame) {                                       // <-- Reached with nothing open (Forward, its address): the job's saved layouts...
+            const named = Na__DrawingPage__TakeAddressLayout();              // <-- ...or the saved drawing and version the address names
+            Na__DrawingPage__NewFrame({ open : 'saved', layout : named.layout, version : named.layout ? named.version : '' });
+        }
         if (Na__DrawingPage__Shown) return;
         Na__DrawingPage__Shown = true;
 
@@ -483,20 +517,21 @@
     // its sheet has changes not saved), or, with no page yet, a new page
     // starts on it (?layout=<id>).
     // ------------------------------------------------------------
-    function Na__DrawingPage__OpenLayout(layoutId) {
+    function Na__DrawingPage__OpenLayout(layoutId, version) {
         if (!layoutId) return;
+        const number = (Number.isInteger(version) && version > 0) ? version : 0;   // <-- 0: the drawing as saved now
         const status = Na__DrawingPage__Status();
         const embed  = Na__DrawingPage__Embed();
-        if (status && status.layoutId === layoutId) {
+        if (status && status.layoutId === layoutId && (status.version || 0) === number) {
             Na__AppPages__Go(Na__DrawingPage__NAME);
             return;
         }
         if (embed && typeof embed.OpenLayout === 'function') {
             Na__AppPages__Go(Na__DrawingPage__NAME);                         // <-- Up first: its question, if it asks one, is seen
-            try { embed.OpenLayout(layoutId); } catch (error) { console.error('[DrawingPage] The layout could not be opened:', error); }
+            try { embed.OpenLayout(layoutId, number); } catch (error) { console.error('[DrawingPage] The layout could not be opened:', error); }
             return;
         }
-        Na__DrawingPage__NewFrame({ open : 'saved', layout : layoutId });
+        Na__DrawingPage__NewFrame({ open : 'saved', layout : layoutId, version : number || '' });
         Na__AppPages__Go(Na__DrawingPage__NAME);
     }
     // ------------------------------------------------------------
@@ -507,6 +542,15 @@
     function Na__DrawingPage__OpenedLayoutId() {
         const status = Na__DrawingPage__Status();
         return (status && status.layoutId) || '';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Exported Version on the Editor's Sheet (0 When It Shows the Drawing as Saved Now)
+    // ------------------------------------------------------------
+    function Na__DrawingPage__OpenedVersion() {
+        const status = Na__DrawingPage__Status();
+        return (status && Number.isInteger(status.version)) ? status.version : 0;
     }
     // ------------------------------------------------------------
 
@@ -595,6 +639,7 @@
         Na__DrawingPage__OpenPicture,
         Na__DrawingPage__OpenLayout,
         Na__DrawingPage__OpenedLayoutId,
+        Na__DrawingPage__OpenedVersion,
         Na__DrawingPage__ConfirmDelete,
         Na__DrawingPage__LayoutDeleted
     };

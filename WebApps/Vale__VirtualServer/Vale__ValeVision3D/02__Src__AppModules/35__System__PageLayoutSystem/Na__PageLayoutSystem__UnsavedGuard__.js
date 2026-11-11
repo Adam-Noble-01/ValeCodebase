@@ -34,10 +34,17 @@
 //     StandAside.
 //     Closing ValeVision 3D, or leaving it, still brings the browser's own
 //     question; the page's own follows only while the page is on screen.
+// - THE RECOVERY COPY (v2.94.0): a drawing left unsaved stays recoverable on this
+//   computer (Na__PageLayoutSystem__RecoveryDraft__Controls__). Only a deliberate
+//   discard drops it: Close Without Saving, or the app replacing the page after
+//   asking (StandAside). Closing the tab or the browser keeps it.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.94.0)
+// - SetDiscarder: Close Without Saving and StandAside drop the recovery copy.
+//
 // 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.76.0)
 // - Inside the app: RequestClose goes back to the Model View; SaveNow and
 //   StandAside for the app's Create Drawing; the stayed question waits for the
@@ -100,6 +107,7 @@
     // ------------------------------------------------------------
     let Na__PageLayout__Guard__State  = null;
     let Na__PageLayout__Guard__Saver  = null;                               // <-- () => Promise<boolean>: true once the Vale Cloud has it
+    let Na__PageLayout__Guard__Discarder = null;                            // <-- () => void: drop the recovery copy (a deliberate discard)
     let Na__PageLayout__Guard__Mode   = null;                               // <-- 'close' | 'stayed' while the dialog is up
     let Na__PageLayout__Guard__Bypass = false;                              // <-- Close Without Saving: let the tab go
     // ------------------------------------------------------------
@@ -160,6 +168,22 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Hand the Guard What Drops the Recovery Copy (the Recovery Controls')
+    // ------------------------------------------------------------
+    function Na__PageLayout__UnsavedGuard__SetDiscarder(discarder) {
+        Na__PageLayout__Guard__Discarder = (typeof discarder === 'function') ? discarder : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Drawing Is Thrown Away on Purpose: Its Recovery Copy Goes Too
+    // ------------------------------------------------------------
+    function Na__PageLayout__Guard__Discard() {
+        try { if (Na__PageLayout__Guard__Discarder) Na__PageLayout__Guard__Discarder(); } catch (error) { /* never in the way */ }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Show the Question (mode 'close' or 'stayed')
     // ------------------------------------------------------------
     function Na__PageLayout__UnsavedGuard__Ask(mode) {
@@ -213,6 +237,7 @@
     function Na__PageLayout__UnsavedGuard__StandAside() {
         Na__PageLayout__UnsavedGuard__Dismiss();
         Na__PageLayout__Guard__Bypass = true;                               // <-- Never cleared: this page is going
+        Na__PageLayout__Guard__Discard();                                   // <-- The app asked first (Discard and Start New)
     }
     // ------------------------------------------------------------
 
@@ -286,6 +311,7 @@
         if (discard) {
             discard.addEventListener('click', () => {
                 Na__PageLayout__UnsavedGuard__Dismiss();
+                Na__PageLayout__Guard__Discard();                           // <-- Their choice: nothing to recover later
                 Na__PageLayout__Guard__CloseTab(false);                     // <-- Their choice: close without saving
             });
         }
@@ -313,6 +339,7 @@
         Na__PageLayout__InitUnsavedGuard,
         Na__PageLayout__UnsavedGuard__IsUnsaved,
         Na__PageLayout__UnsavedGuard__SetSaver,
+        Na__PageLayout__UnsavedGuard__SetDiscarder,
         Na__PageLayout__UnsavedGuard__Ask,
         Na__PageLayout__UnsavedGuard__Dismiss,
         Na__PageLayout__UnsavedGuard__SaveNow,

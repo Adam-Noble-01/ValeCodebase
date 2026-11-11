@@ -34,6 +34,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.94.0)
+// - Send takes an optional path: the Drawing Editor's PDF reports the address
+//   that opens the saved version again, which the ledger shows as Path.
+//
 // 06-Nov-2026 - Version 1.0.0 (ValeVision3D v2.90.0)
 // - Initial build: Download Image, the Drawing Editor PDF and Layout Editor
 //   sheet PDFs report through here.
@@ -91,15 +95,20 @@
     // ------------------------------------------------------------
     // action  'image.export' | 'drawing.export' | 'video.export' | 'data.export'
     // target  what was made, in words ("Test Drawing 01", "the specification")
-    // detail  { Kind, File, Files, Width, Height, SizeMb, ... } (unknowns left out)
+    // detail  { Kind, File, Files, Width, Height, SizeMb, ... } (unknowns left out;
+    //         the ledger keeps the first six)
     // project optional library id; the shared script uses the page's own otherwise
+    // path    optional same-site path the ledger shows as Path, in place of the
+    //         page's own address (the Drawing Editor: the address that opens the
+    //         saved version again)
     // ------------------------------------------------------------
-    function Na__ExportReport__Send(action, target, detail, project) {
+    function Na__ExportReport__Send(action, target, detail, project, path) {
         try {
             const activity = Na__ExportReport__Activity();
             if (!activity) return false;
             const fields = { target: String(target || '').trim(), detail: Na__ExportReport__Clean(detail) };
             if (project) fields.project = String(project).split('/').pop();
+            if (typeof path === 'string' && path.charAt(0) === '/' && path.charAt(1) !== '/') fields.path = path;
             activity.Log(action, fields);
             return true;
         } catch (error) {

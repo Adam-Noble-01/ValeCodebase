@@ -34,6 +34,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.94.0)
+// - An older version or a recovery copy opened (layout opened with matchesSaved
+//   false) is a fresh start that is NOT the saved drawing: undoing back to it
+//   leaves Save Drawing red.
+//
 // 09-Oct-2026 - Version 1.0.0
 // - Initial build (ValeVision3D v2.75.3).
 //
@@ -319,8 +324,9 @@
         Na__PageLayout__On('layout', (detail) => {
             if (detail.opened) {
                 Na__PageLayout__Undo__Reset();                              // <-- Another drawing: its own history
-                Na__PageLayout__Undo__SavedSig     = Na__PageLayout__Undo__Signature(Na__PageLayout__Undo__Current);
-                Na__PageLayout__Undo__SavedPicture = state.viewportImage || null;
+                const matches = detail.matchesSaved !== false;              // <-- An older version or a recovery copy is not what is saved
+                Na__PageLayout__Undo__SavedSig     = matches ? Na__PageLayout__Undo__Signature(Na__PageLayout__Undo__Current) : null;
+                Na__PageLayout__Undo__SavedPicture = matches ? (state.viewportImage || null) : null;
             } else if (detail.saved) {
                 Na__PageLayout__Undo__SavedSig     = Na__PageLayout__Undo__Signature(Na__PageLayout__Undo__Snapshot(state));
                 Na__PageLayout__Undo__SavedPicture = state.viewportImage || null;

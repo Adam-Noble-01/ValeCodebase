@@ -6,12 +6,18 @@
 // NAMESPACE  : Na__PageLayout
 // MODULE     : PDF Export A3
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Export the A3 layout as PDF using jsPDF (version-locked UMD build)
+// PURPOSE    : Make the A3 layout's PDF with jsPDF (version-locked UMD build): build it
+//              in memory, name it, hand it to the browser, report it
 // CREATED    : 11-Feb-2026
 //
 // DESCRIPTION:
-// - "Export Full Layout": A3 landscape PDF with title block + viewport image.
-// - "Export Image Only": A3 landscape PDF with viewport image only (no title block).
+// - SINCE v2.94.0 THE EXPORT DIALOG DRIVES IT (Na__PageLayoutSystem__ExportDialog__): the
+//   menu's two Export buttons open the dialog, which asks for the scheme name or
+//   reference, builds the PDF here (Build), saves the drawing as a version on the
+//   Vale Cloud, and only then hands the PDF to the browser (Download) and reports
+//   it (Report). Nothing here is wired to a button any more.
+// - "Full layout": A3 landscape PDF with title block + viewport image.
+// - "Image only": A3 landscape PDF with viewport image only (no title block).
 // - Both exports flatten the entire composed A3 sheet into one JPEG at 600 dpi,
 //   then embed that single image into the PDF as a full-page bitmap.
 // - Flattening mirrors the live canvas render exactly, including viewport clipping.
@@ -62,6 +68,16 @@
 //   and File), through the app's shared Na__AppUtils__ExportReport__ (v2.90.0), which
 //   finds ValeVision 3D's window.ValeActivity around this frame; alone, nothing.
 //
+// 11-Nov-2026 - Version 3.0.0 (ValeVision3D v2.94.0)
+// - A library for the export dialog: Build (the PDF in memory, or an Error saying
+//   why not), FileName, Download and Report. InitPdfExport is gone: the dialog
+//   wires the buttons, because a PDF now leaves only after its drawing is saved
+//   (Adam, 11-Nov-2026: an export with no saved version could never be got back).
+// - The file is named {ProjectNo}__{ProjectName}__{Reference}__ValeVisionLayout__{Date}__.pdf
+//   (Na__PageLayoutSystem__ExportNaming__, the config's patterns).
+// - Report names the layout, its version and whether it was saved, and its Path is
+//   the address that opens that version again.
+//
 // =============================================================================
 
 
@@ -69,10 +85,14 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | The Picture Layer, the Toast
+    // MODULE IMPORTS | The Picture Layer, the File Name, the Activity Ledger
     // ------------------------------------------------------------
     import { Na__PageLayout__DrawImageLayer } from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
-    import { Na__PageLayout__Toast } from './Na__PageLayoutSystem__UiNotify__.js';
+    import {
+        Na__PageLayout__Naming__KIND,
+        Na__PageLayout__Naming__FileName,
+        Na__PageLayout__Naming__DrawingPath
+    } from './Na__PageLayoutSystem__ExportNaming__.js';
     import { Na__ExportReport__Send } from '../03__AppUtils/Na__AppUtils__ExportReport__.js';   // <-- Activity ledger: what was produced
     // ------------------------------------------------------------
 
@@ -104,8 +124,14 @@
     // ------------------------------------------------------------
     const Na__PageLayout__FALLBACK_FILENAME_FULL  = 'ValeVision3D__Layout__A3.pdf';   // <-- Default full layout filename
     const Na__PageLayout__FALLBACK_FILENAME_IMG   = 'ValeVision3D__ImageOnly__A3.pdf'; // <-- Default image only filename
-    const Na__PageLayout__FALLBACK_PATTERN_FULL   = '{project}__{layout}__Layout__A3.pdf';    // <-- With a project
-    const Na__PageLayout__FALLBACK_PATTERN_IMG    = '{project}__{layout}__ImageOnly__A3.pdf'; // <-- With a project
+    const Na__PageLayout__FALLBACK_PATTERN_FULL   = '{ProjectNo}__{ProjectName}__{Reference}__ValeVisionLayout__{Date}__.pdf';
+    const Na__PageLayout__FALLBACK_PATTERN_IMG    = '{ProjectNo}__{ProjectName}__{Reference}__ValeVisionLayout__ImageOnly__{Date}__.pdf';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Where the App Is (the Address That Opens a Version Again)
+    // ------------------------------------------------------------
+    const Na__PageLayout__APP_PATH                = new URL('../../', import.meta.url).pathname;   // <-- '/valevision/' wherever the app is served
     // ------------------------------------------------------------
 
 
@@ -165,35 +191,47 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The File Name: the Project and the Layout When Known, Else the Plain Name
+    // FUNCTION | The PDF's File Name: the Job, the Reference, the Kind and the Date
     // ------------------------------------------------------------
-    function Na__PageLayout__ResolvePdfFilename(state, pdfConfig, isFullLayout) {
-        const project = (state.project && state.project.id) ? String(state.project.id) : '';
-        if (!project) return isFullLayout ? pdfConfig.filenameFull : pdfConfig.filenameImg;
-
-        const safe   = (text) => String(text || '').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
-        const record = state.layout && state.layout.record;
-        const name   = safe(state.layout && state.layout.name) || safe(record && record.PageLayouts__Layout__Name) || 'Drawing';
-        const file   = (isFullLayout ? pdfConfig.patternFull : pdfConfig.patternImg)
-            .replace('{project}', safe(project.split('/').pop()) || 'Project')
-            .replace('{layout}', name);
-        return /\.pdf$/i.test(file) ? file : file + '.pdf';
+    // 60795__Brown__Scheme-2a__Rear-Garden-View__ValeVisionLayout__11-Nov-2026__.pdf
+    // ------------------------------------------------------------
+    function Na__PageLayout__Pdf__FileName(state, reference, isFullLayout, date) {
+        const pdfConfig = Na__PageLayout__ResolvePdfConfig(state);
+        return Na__PageLayout__Naming__FileName({
+            pattern      : isFullLayout ? pdfConfig.patternFull : pdfConfig.patternImg,
+            projectId    : (state && state.project && state.project.id) ? String(state.project.id) : '',
+            reference    : reference,
+            date         : date,
+            isFullLayout : isFullLayout
+        });
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Report the PDF to the Activity Ledger (never throws, never in the way)
+    // FUNCTION | Report the PDF to the Activity Ledger (never throws, never in the way)
     // ------------------------------------------------------------
     // The page is ValeVision 3D's Drawing Editor frame: the app's window holds the
     // shared ValeShared__ActivityLog__.js (window.ValeActivity), which adds who,
     // where from and the share link. Alone (?standalone=1) there is none.
+    // details: { isFullLayout, fileName, reference, layoutId, versionNumber, saved,
+    // notSavedWhy }. The ledger keeps six facts: Kind, File, Version, Saved, Layout.
+    // Its Path is the address that opens the saved version again.
     // ------------------------------------------------------------
-    function Na__PageLayout__ReportPdfExport(state, isFullLayout, filename) {
+    function Na__PageLayout__Pdf__Report(state, details = {}) {
         try {
-            const record  = state.layout && state.layout.record;
-            const name    = String((state.layout && state.layout.name) || (record && record.PageLayouts__Layout__Name) || 'Drawing').trim();
             const project = (state.project && state.project.id) ? String(state.project.id) : '';
-            Na__ExportReport__Send('drawing.export', name, { Kind: isFullLayout ? 'Full layout' : 'Image only', File: filename }, project);
+            const name    = String(details.reference || (state.layout && state.layout.name) || 'Drawing').trim();
+            const version = Number.isInteger(details.versionNumber) ? details.versionNumber : null;
+            const path    = details.saved && details.layoutId
+                ? Na__PageLayout__Naming__DrawingPath(Na__PageLayout__APP_PATH, project, details.layoutId, version)
+                : '';
+            Na__ExportReport__Send('drawing.export', name, {
+                Kind    : details.isFullLayout === false ? Na__PageLayout__Naming__KIND.image : Na__PageLayout__Naming__KIND.full,
+                File    : details.fileName || '',
+                Version : version,
+                Saved   : details.saved ? 'Yes' : ('No' + (details.notSavedWhy ? ': ' + String(details.notSavedWhy).slice(0, 80) : '')),
+                Layout  : details.layoutId || ''
+            }, project, path);
         } catch (err) { /* the ledger never stops a PDF */ }
     }
     // ------------------------------------------------------------
@@ -307,35 +345,34 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Export Functions
+// REGION | Build and Download
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Export Full Layout (Title Block + Viewport Image)
+    // FUNCTION | Build the PDF in Memory (Nothing Leaves the Page Yet)
     // ------------------------------------------------------------
-    function Na__PageLayout__ExportFullLayout(state) {
-        if (!state) return; // <-- Guard against missing state
-        if (!state.viewportImage) {
-            Na__PageLayout__Toast('There is no picture on the sheet yet: open a saved layout first', true);
-            return;
-        }
+    // Answers the jsPDF document; THROWS an Error whose message says, in plain
+    // words, why there is no PDF. The whole A3 sheet (title block and picture,
+    // or the picture alone) is flattened to one JPEG at the configured DPI.
+    // ------------------------------------------------------------
+    function Na__PageLayout__Pdf__Build(state, isFullLayout) {
+        if (!state || !state.viewportImage) throw new Error('There is no picture on the sheet yet: open a saved drawing or press Create Drawing first');
 
         const pdfConfig = Na__PageLayout__ResolvePdfConfig(state); // <-- Resolve config with fallbacks
         const doc       = Na__PageLayout__CreateDocument(pdfConfig); // <-- Create PDF document
-        if (!doc) {
-            Na__PageLayout__Toast('The PDF library did not load: reload the page and try again', true);
-            return; // <-- Abort if jsPDF unavailable
+        if (!doc) throw new Error('The PDF library did not load: reload the page and try again');
+
+        let flattenedDataUrl = null;
+        try {
+            flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, isFullLayout !== false, pdfConfig);
+        } catch (err) {
+            console.error('[PageLayout] Failed to flatten the sheet:', err);
+        }
+        if (!flattenedDataUrl) {
+            console.error('[PageLayout] Flatten returned null - canvas may have been capped or corrupt');
+            throw new Error('This device could not make the PDF at full quality');
         }
 
-        // Flatten full sheet (title block + viewport) into one JPEG
-        // ------------------------------------------------------------
         try {
-            const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, true, pdfConfig);
-            if (!flattenedDataUrl) {
-                console.error('[PageLayout] Flatten returned null - canvas may have been capped or corrupt');
-                Na__PageLayout__Toast('This device could not make the PDF at full quality', true);
-                return;
-            }
-
             doc.addImage(
                 flattenedDataUrl,
                 'JPEG',
@@ -345,89 +382,24 @@
                 state.a3.heightMm    // <-- Full page height
             );
         } catch (err) {
-            console.error('[PageLayout] Failed to flatten or embed full layout sheet:', err);
-            Na__PageLayout__Toast('The PDF could not be made', true);
-            return;
+            console.error('[PageLayout] Failed to embed the flattened sheet:', err);
+            throw new Error('The PDF could not be made');
         }
-
-        const filename = Na__PageLayout__ResolvePdfFilename(state, pdfConfig, true);
-        doc.save(filename); // <-- Download PDF
-        Na__PageLayout__ReportPdfExport(state, true, filename); // <-- Activity ledger
+        return doc;
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Export Image Only (No Title Block)
+    // FUNCTION | Hand the PDF to the Browser Under Its Name (true When the Browser Took It)
     // ------------------------------------------------------------
-    function Na__PageLayout__ExportImageOnly(state) {
-        if (!state) return; // <-- Guard against missing state
-        if (!state.viewportImage) {
-            Na__PageLayout__Toast('There is no picture on the sheet yet: open a saved layout first', true);
-            return;
-        }
-
-        const pdfConfig = Na__PageLayout__ResolvePdfConfig(state); // <-- Resolve config with fallbacks
-        const doc       = Na__PageLayout__CreateDocument(pdfConfig); // <-- Create PDF document
-        if (!doc) {
-            Na__PageLayout__Toast('The PDF library did not load: reload the page and try again', true);
-            return; // <-- Abort if jsPDF unavailable
-        }
-
-        // Flatten viewport-only sheet (no title block) into one JPEG
-        // ------------------------------------------------------------
+    function Na__PageLayout__Pdf__Download(doc, fileName) {
+        if (!doc || typeof doc.save !== 'function') return false;
         try {
-            const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, false, pdfConfig);
-            if (!flattenedDataUrl) {
-                console.error('[PageLayout] Flatten returned null - canvas may have been capped or corrupt');
-                Na__PageLayout__Toast('This device could not make the PDF at full quality', true);
-                return;
-            }
-
-            doc.addImage(
-                flattenedDataUrl,
-                'JPEG',
-                0,                   // <-- X position: left edge
-                0,                   // <-- Y position: top edge
-                state.a3.widthMm,    // <-- Full page width
-                state.a3.heightMm    // <-- Full page height
-            );
+            doc.save(fileName || Na__PageLayout__FALLBACK_FILENAME_FULL);   // <-- jsPDF's own download link
+            return true;
         } catch (err) {
-            console.error('[PageLayout] Failed to flatten or embed image-only sheet:', err);
-            Na__PageLayout__Toast('The PDF could not be made', true);
-            return;
-        }
-
-        const filename = Na__PageLayout__ResolvePdfFilename(state, pdfConfig, false);
-        doc.save(filename); // <-- Download PDF
-        Na__PageLayout__ReportPdfExport(state, false, filename); // <-- Activity ledger
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Button Initialization
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Initialize PDF Export Button Handlers
-    // ------------------------------------------------------------
-    function Na__PageLayout__InitPdfExport(state) {
-        if (!state) return; // <-- Guard against missing state
-
-        const exportFullButton      = document.getElementById('naLayoutExportFull'); // <-- Full layout button
-        const exportImageOnlyButton = document.getElementById('naLayoutExportImageOnly'); // <-- Image only button
-
-        if (exportFullButton) {
-            exportFullButton.addEventListener('click', () => {
-                Na__PageLayout__ExportFullLayout(state); // <-- Export full layout PDF
-            });
-        }
-
-        if (exportImageOnlyButton) {
-            exportImageOnlyButton.addEventListener('click', () => {
-                Na__PageLayout__ExportImageOnly(state); // <-- Export image only PDF
-            });
+            console.error('[PageLayout] The PDF could not be handed to the browser:', err);
+            return false;
         }
     }
     // ------------------------------------------------------------
@@ -442,7 +414,10 @@
     // MODULE EXPORTS | PDF Export API
     // ------------------------------------------------------------
     export {
-        Na__PageLayout__InitPdfExport
+        Na__PageLayout__Pdf__Build,
+        Na__PageLayout__Pdf__FileName,
+        Na__PageLayout__Pdf__Download,
+        Na__PageLayout__Pdf__Report
     };
     // ------------------------------------------------------------
 

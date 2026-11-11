@@ -33,6 +33,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.94.0)
+# - g.na_vv3d_activity = { 'skip': True } leaves a write out of the ledger: a page layout
+#   save that changed nothing wrote nothing (ValeVision3D__Api__PageLayouts__ 1.2.0).
+#
 # 05-Nov-2026 - ValeVision3D v2.89.0
 # - The placed-assets routes in the ledger.
 #
@@ -205,6 +209,8 @@ def _after(response):
         else:
             text = text.format(name=(request.view_args or {}).get('name') or target or 'a file')
         named = getattr(g, 'na_vv3d_activity', None)                           # <-- A route that knows better names what it did
+        if isinstance(named, dict) and named.get('skip') is True:
+            return response                                                    # <-- It wrote nothing (a page layout save with no change)
         if isinstance(named, dict):
             action = named.get('action') or action
             text   = named.get('text') or text

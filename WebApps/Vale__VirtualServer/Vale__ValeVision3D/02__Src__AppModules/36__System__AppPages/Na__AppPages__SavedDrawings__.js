@@ -31,6 +31,10 @@
 //   the server removes the layout and every picture of it for good: the editor's
 //   own route and rule (its creator, or Management and up). An editor with it on
 //   its sheet is told; its drawing stays, as a new unsaved one.
+// - VERSIONS (v2.94.0): every export is a numbered version; each card says the
+//   latest and folds out all of them, and Open on one puts it on the Drawing
+//   Editor's sheet as it was exported (Na__DrawingPage__OpenLayout with a version),
+//   so colleagues can see and reopen each other's exported drawings.
 //
 // INTEGRATION:
 // - index.html: the markup under #naDrawingsPanel (#naSavedDrawings), and
@@ -44,6 +48,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.94.0)
+// - The cards' versions, with Open (onOpenVersion) and the one on the editor's
+//   sheet marked (currentVersion).
+//
 // 09-Oct-2026 - Version 1.1.1 (ValeVision3D v2.76.3)
 // - The open button says Open Drawing (the shared list's OPEN_LABEL).
 //
@@ -77,6 +85,7 @@
     import {
         Na__DrawingPage__OpenLayout,
         Na__DrawingPage__OpenedLayoutId,
+        Na__DrawingPage__OpenedVersion,
         Na__DrawingPage__ConfirmDelete,
         Na__DrawingPage__LayoutDeleted
     } from './Na__AppPages__DrawingPage__Host__.js';
@@ -231,12 +240,14 @@
         Na__PageLayout__SavedList__Render(Na__SavedDrawings__El('list'), {
             layouts   : Na__PageLayout__SavedList__Shown(Na__SavedDrawings__Layouts, Na__SavedDrawings__Filter, user.code),
             filter    : Na__SavedDrawings__Filter,
-            currentId : Na__DrawingPage__OpenedLayoutId(),                   // <-- The one on the Drawing Editor's sheet is outlined
-            openLabel : () => Na__PageLayout__SavedList__OPEN_LABEL,         // <-- Open Drawing
-            canDelete : (record) => Na__SavedDrawings__CanDelete(record),
-            fileUrl   : (relative) => Na__SavedDrawings__ApiUrl(relative),
-            onOpen    : (record) => Na__DrawingPage__OpenLayout(record.PageLayouts__Layout__Id),
-            onDelete  : (record) => Na__SavedDrawings__Delete(record)
+            currentId      : Na__DrawingPage__OpenedLayoutId(),              // <-- The one on the Drawing Editor's sheet is outlined
+            currentVersion : Na__DrawingPage__OpenedVersion(),               // <-- ...and the version it shows, when it is one
+            openLabel      : () => Na__PageLayout__SavedList__OPEN_LABEL,    // <-- Open Drawing
+            canDelete      : (record) => Na__SavedDrawings__CanDelete(record),
+            fileUrl        : (relative) => Na__SavedDrawings__ApiUrl(relative),
+            onOpen         : (record) => Na__DrawingPage__OpenLayout(record.PageLayouts__Layout__Id),
+            onOpenVersion  : (record, number) => Na__DrawingPage__OpenLayout(record.PageLayouts__Layout__Id, number),
+            onDelete       : (record) => Na__SavedDrawings__Delete(record)
         });
     }
     // ------------------------------------------------------------

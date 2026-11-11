@@ -31,6 +31,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 2.4.1 (ValeVision3D v2.94.1)
+// - state.imageHandleHover and state.imageHandleDrag: the picture handle under
+//   the mouse and the one being dragged (Na__PageLayoutSystem__ImageHandles__).
+//
 // 11-Nov-2026 - Version 2.4.0 (ValeVision3D v2.94.0)
 // - ?version=<n> with ?layout=<id> (state.openVersion): the page opens on that
 //   exported version. state.layout.version names the version on the sheet.
@@ -523,6 +527,8 @@
             canvasContainer : canvasContainer,                            // <-- What the canvas fills (ResizeCanvasToContainer)
             dpr             : canvasSize.dpr,                             // <-- Device pixel ratio
             isImageSelected : false,                                      // <-- Handles visible
+            imageHandleHover: null,                                       // <-- The picture handle under the mouse (labelled), or null
+            imageHandleDrag : null,                                       // <-- The picture handle being dragged (its numbers shown), or null
 
             // Source Image Metadata
             sourceImageMeta : { width : 0, height : 0, aspectRatio : null },

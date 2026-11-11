@@ -29,6 +29,10 @@
  * -----------------------------------------------------------------------------
  *
  * DEVELOPMENT LOG:
+ * 11-Nov-2026 - Version 2.6.1 (ValeVision3D v2.94.1)
+ * - Cursors .na-layout-canvas--trim-x and --trim-y (col-resize, row-resize) for
+ *   the picture's trim tabs (Na__PageLayoutSystem__ImageHandles__).
+ *
  * 11-Nov-2026 - Version 2.6.0 (ValeVision3D v2.94.0)
  * - Imports Na__PageLayoutSystem__Styles__ExportDialog__.css (the export dialog).
  *
@@ -963,6 +967,15 @@
 
     .na-layout-canvas--resize-w {
         cursor                              : w-resize !important;
+    }
+
+    /* A picture's trim tab: a splitter cursor, so a trim never reads as a resize */
+    .na-layout-canvas--trim-x {
+        cursor                              : col-resize !important;
+    }
+
+    .na-layout-canvas--trim-y {
+        cursor                              : row-resize !important;
     }
 
     .na-layout-canvas--pan {

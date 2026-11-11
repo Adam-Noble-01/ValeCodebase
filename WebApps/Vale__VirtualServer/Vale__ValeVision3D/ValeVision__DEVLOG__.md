@@ -1,6 +1,30 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.94.1 - 11-Nov-2026 - The Drawing Editor's Picture Handles Say What They Do: Navy Discs Scale, White Tabs Trim
+### Adam: "Add better corner handles that are larger, different shaped and visually clearly describe scale drag points or clipping drag points."
+
+**What was wrong:** the selected picture had eight identical 8 px blue squares, so nothing told a corner (scale) from an edge middle (trim). They sat on the untrimmed picture: after a trim, its handle floated over blank sheet away from the edge you could see, and the trimmed-away part still grabbed as the picture. Scaling a trimmed picture kept its trims in mm, so the crop slid.
+
+**Now:**
+- **Scale, the corners:** navy discs (22 px) with a white diagonal double arrow, at the visible picture's corners. A drag scales the whole picture with its trims about the opposite visible corner, so the crop holds; on an untrimmed picture it is the old drag.
+- **Trim, the edge middles:** white tabs (28 x 16 px) on the visible edge with a navy arrow across it, and a splitter cursor (col-resize, row-resize) instead of a resize arrow.
+- **Labels:** the handle under the mouse grows and says "Drag to scale" or "Drag to trim"; while dragging it reads "Scale: 235 x 187 mm" or "Trim left: 50.4 mm", and a trim drag shows the trimmed-away picture faintly with its untrimmed outline.
+- Only the visible picture takes a click. A tab too close to the corner discs at the zoom is left out: zoom in.
+- Screen only: the PDF, the thumbnail and saved layouts are unchanged. The picture running past the drawing frame (Amy's brown3) is a separate, open question.
+
+**Changed:** new `Na__PageLayoutSystem__ImageHandles__.js` 1.0.0 (where the handles sit, the hit test, the move, scale and trim drag, the drawing; one module for the mouse, touch and the screen); `__CanvasRenderPipeline__` 1.2.0 (the old squares gone); `__Controls__Pc__` 1.2.0; `__Controls__TouchScreen__` 1.2.0; `__SystemLogic__Main__` 2.4.1 (`state.imageHandleHover`, `state.imageHandleDrag`); `__Styles__Main__` 2.6.1 (trim cursors); `__Config.json` CanvasAppearance: `ScaleHandleRadiusPx`, `TrimHandleLengthPx`, `TrimHandleDepthPx`, `HandleHoverGrow`, `HandleInkColor`, `HandlePaperColor`, `HandleShadowColor`, `HandleShadowBlurPx`, `HandleLabelFont`, `HandleLabelFillColor`, `HandleLabelTextColor`, `TrimGhostAlpha` (`HandleSizePx`, `HandleFillColor`, `HandleStrokeColor`, `HandleLineWidth` retired).
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph (the Drawing Editor's 24 modules) clean.
+- Node, 19 of 19 (scratch test): untrimmed corner drags match the old ones; a trimmed corner keeps the opposite visible corner, the crop and the shape; the 10 mm floors; a trim moves one side only, between none and 10 mm left; the hit test finds the tab on the trimmed edge, nothing on the untrimmed one or the trimmed-away part.
+- MCP sandbox (headless Edge, `60795__Brown__Scheme-2a` as an Employee, real mouse): discs and tabs drawn on a fresh Create Drawing picture; a corner under the mouse grew and said "Drag to scale"; a side tab inverted, said "Drag to trim" and gave the col-resize cursor; a left trim held mid-drag showed the ghost, the untrimmed outline and "Trim left: 50.4 mm", the tab and corners on the new edge; a corner then scaled the trimmed picture about its top left with the crop kept ("Scale: 235 x 187 mm"); undo on; no script errors.
+
+**Not checked:**
+- A real touch screen (it uses the same tested hit test and drag), a phone, Safari.
+- The live server: nothing pushed.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.94.0 - 11-Nov-2026 - Every Drawing Export Is Saved as a Version Anyone on the Job Can Open Again, Named for the Job and the Scheme
 ### Adam: "I fgound a weakness in the simple drawing layout system . . . . . See amy made and exported a drawing? a version should always be saved when exported otherwise they can never if closed get that same view and configurations back. so ensure robust saving is introduced at the point of exporting, Bring up a custom modal when export is hit asking for a scheme name / reference and add that to a file name like {{ProjectNo}}__{{ProjectName}}__{{UsersNaming}}__ValeVisionLayour__11-Nov-2026__.pdf  Ensure the modal has decent graphics and is intuitive and clear. Then look at the simple drawing system as as a whole and build a more robust pipeline to prevent data loss and to also ensure its easy to audit who created what when and what the layout was etc, as now i have no way of seeing Amy's drawing project and neither do her colleagues using the app"
 

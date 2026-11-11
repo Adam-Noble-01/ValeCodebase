@@ -11,8 +11,10 @@
 //
 // DESCRIPTION:
 // - Single-finger drag on image body: move the image on the A3 document.
-// - Single-finger drag on corner handle: proportional resize.
-// - Single-finger drag on edge handle: clip/trim image from that edge.
+// - Single-finger drag on a corner disc: scale the picture, crop and all, about
+//   the opposite corner; on an edge tab: trim that edge. The hit test and the
+//   maths are Na__PageLayoutSystem__ImageHandles__ (shared with the mouse); the
+//   handle dragged is named in state.imageHandleDrag so its numbers show.
 // - Two-finger pinch: zoom the canvas view.
 // - Two-finger drag: pan the canvas view.
 // - Distinguishes image interaction (single touch on image) from navigation
@@ -26,6 +28,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.94.1)
+// - The picture's hit test and drag maths come from Na__PageLayoutSystem__ImageHandles__:
+//   handles on the visible (trimmed) picture, a corner scales the trims with the
+//   picture, the dragged handle's numbers shown while the finger is down.
+//
 // 09-Oct-2026 - Version 1.1.0 (ValeVision3D v2.75.0)
 // - The composition guide drags by finger (Na__PageLayoutSystem__CompositionGuide__), with the
 //   same order under the finger as the mouse: the picture's handles while it is selected, the
@@ -43,7 +50,7 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | The Composition Guide, Page Events
+    // MODULE IMPORTS | The Composition Guide, the Picture's Handles, Page Events
     // ------------------------------------------------------------
     import {
         Na__PageLayout__Guide__ResolveConfig,
@@ -51,6 +58,12 @@
         Na__PageLayout__Guide__IsHandle,
         Na__PageLayout__Guide__Drag
     } from './Na__PageLayoutSystem__CompositionGuide__.js';
+    import {
+        Na__PageLayout__Handles__HitTest,
+        Na__PageLayout__Handles__IsHandle,
+        Na__PageLayout__Handles__StartDrag,
+        Na__PageLayout__Handles__Drag
+    } from './Na__PageLayoutSystem__ImageHandles__.js';
     import { Na__PageLayout__Emit } from './Na__PageLayoutSystem__UiNotify__.js';
     // ------------------------------------------------------------
 
@@ -140,56 +153,10 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Hit-Test for Touch (Larger Radius)
-    // ------------------------------------------------------------
-    function Na__PageLayout__TouchHitTest(screenX, screenY, state, hitRadiusPx) {
-        const ct  = state.canvasTransform; // <-- Canvas transform shorthand
-        const it  = state.imageTransform; // <-- Image transform shorthand
-        const hit = hitRadiusPx; // <-- Hit radius from config
-
-        // Convert image bounds to screen coordinates
-        // ------------------------------------------------------------
-        const imgLeft   = ct.offsetX + (it.x * ct.zoom); // <-- Left edge screen X
-        const imgTop    = ct.offsetY + (it.y * ct.zoom); // <-- Top edge screen Y
-        const imgRight  = ct.offsetX + ((it.x + it.width) * ct.zoom); // <-- Right edge screen X
-        const imgBottom = ct.offsetY + ((it.y + it.height) * ct.zoom); // <-- Bottom edge screen Y
-        const imgMidX   = (imgLeft + imgRight) / 2; // <-- Horizontal midpoint
-        const imgMidY   = (imgTop + imgBottom) / 2; // <-- Vertical midpoint
-
-        // Handles only while the picture is selected (they are only drawn then)
-        // ------------------------------------------------------------
-        if (state.isImageSelected) {
-            // Check corners (proportional resize)
-            // ------------------------------------------------------------
-            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgTop) < hit)       return 'tl';
-            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return 'tr';
-            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return 'bl';
-            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return 'br';
-
-            // Check edge midpoint handles (clip/trim)
-            // ------------------------------------------------------------
-            if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)       return 'tc';
-            if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return 'bc';
-            if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return 'lc';
-            if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return 'rc';
-        }
-
-        // Check image body (move)
-        // ------------------------------------------------------------
-        if (screenX >= imgLeft && screenX <= imgRight && screenY >= imgTop && screenY <= imgBottom) {
-            return 'body';
-        }
-
-        return 'none'; // <-- No hit
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | What Is Under the Finger: Picture Handle, Then Guide, Then Picture Body
     // ------------------------------------------------------------
     function Na__PageLayout__TouchTarget(screenX, screenY, state, touchConfig, guideRadiusPx) {
-        const hasImage = !!state.viewportImage && state.imageTransform.width > 0 && state.imageTransform.height > 0;
-        const imageHit = hasImage ? Na__PageLayout__TouchHitTest(screenX, screenY, state, touchConfig.touchHitRadiusPx) : 'none';
+        const imageHit = Na__PageLayout__Handles__HitTest(screenX, screenY, state, touchConfig.touchHitRadiusPx);
         if (imageHit !== 'none' && imageHit !== 'body') return imageHit;   // <-- A picture handle wins
 
         const guideHit = Na__PageLayout__Guide__HitTest(screenX, screenY, state, guideRadiusPx, imageHit === 'body');
@@ -216,9 +183,8 @@
         let touchMode       = 'none'; // <-- Current touch mode: 'none', 'image-move', 'image-resize', 'guide-drag', 'nav-pinch'
         let activeHandle    = 'none'; // <-- Active handle during resize or guide drag
         let dragStartMm     = { x: 0, y: 0 }; // <-- Touch start position in mm
-        let dragStartTransform = { x: 0, y: 0, width: 0, height: 0, clipTop: 0, clipRight: 0, clipBottom: 0, clipLeft: 0 };
+        let dragStartTransform = Na__PageLayout__Handles__StartDrag({ x: 0, y: 0, width: 0, height: 0 });
         let dragStartMargins   = null; // <-- Guide margins at drag start
-        let imageAspect     = 1; // <-- Image aspect ratio
 
         // Two-finger navigation state
         // ------------------------------------------------------------
@@ -246,6 +212,7 @@
                     Na__PageLayout__Emit('changed', { what : 'guide' });
                 }
                 touchMode = 'nav-pinch'; // <-- Set navigation mode
+                state.imageHandleDrag = null; // <-- A second finger ends a handle drag where it is
 
                 const rect = canvas.getBoundingClientRect(); // <-- Canvas rect
                 pinchStartDistance = Na__PageLayout__TouchDistance(touches[0], touches[1]); // <-- Initial distance
@@ -283,16 +250,11 @@
                     event.preventDefault(); // <-- Suppress scroll
                     touchMode = 'image-move'; // <-- Set move mode
                     state.isImageSelected = true; // <-- Select image
+                    state.imageHandleDrag = null;
 
                     const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = {
-                        ...state.imageTransform,
-                        clipTop    : state.imageTransform.clipTop || 0,
-                        clipRight  : state.imageTransform.clipRight || 0,
-                        clipBottom : state.imageTransform.clipBottom || 0,
-                        clipLeft   : state.imageTransform.clipLeft || 0
-                    };
+                    dragStartTransform = Na__PageLayout__Handles__StartDrag(state.imageTransform);
                     requestRedraw(); // <-- Show handles
                 }
                 else if (hitResult !== 'none') {
@@ -300,17 +262,11 @@
                     touchMode    = 'image-resize'; // <-- Set resize mode
                     activeHandle = hitResult; // <-- Store active handle
                     state.isImageSelected = true; // <-- Select image
+                    state.imageHandleDrag = Na__PageLayout__Handles__IsHandle(hitResult) ? hitResult : null; // <-- Its numbers show while it moves
 
                     const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = {
-                        ...state.imageTransform,
-                        clipTop    : state.imageTransform.clipTop || 0,
-                        clipRight  : state.imageTransform.clipRight || 0,
-                        clipBottom : state.imageTransform.clipBottom || 0,
-                        clipLeft   : state.imageTransform.clipLeft || 0
-                    };
-                    imageAspect   = dragStartTransform.width / dragStartTransform.height; // <-- Aspect ratio
+                    dragStartTransform = Na__PageLayout__Handles__StartDrag(state.imageTransform);
                     requestRedraw(); // <-- Show handles
                 }
                 else {
@@ -370,7 +326,7 @@
             const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
             const dx      = mmPos.x - dragStartMm.x; // <-- Delta X in mm
             const dy      = mmPos.y - dragStartMm.y; // <-- Delta Y in mm
-            const it      = state.imageTransform; // <-- Image transform shorthand
+            const limits  = { minImageMm : touchConfig.minImageSizeMm, minVisibleMm : touchConfig.minVisibleMm };
 
             if (touchMode === 'guide-drag') {
                 Na__PageLayout__Guide__Drag(state, activeHandle, dragStartMargins, dx, dy, state.guide.pairEdges === true);
@@ -380,50 +336,10 @@
             }
 
             if (touchMode === 'image-move') {
-                it.x = dragStartTransform.x + dx; // <-- Update X
-                it.y = dragStartTransform.y + dy; // <-- Update Y
+                Na__PageLayout__Handles__Drag(state, 'body', dragStartTransform, dx, dy, limits);
             }
             else if (touchMode === 'image-resize') {
-                if (activeHandle === 'br') {
-                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width + dx);
-                    it.width  = newWidth;
-                    it.height = newWidth / imageAspect;
-                }
-                else if (activeHandle === 'tl') {
-                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width - dx);
-                    it.width  = newWidth;
-                    it.height = newWidth / imageAspect;
-                    it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
-                    it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
-                }
-                else if (activeHandle === 'tr') {
-                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width + dx);
-                    it.width  = newWidth;
-                    it.height = newWidth / imageAspect;
-                    it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
-                }
-                else if (activeHandle === 'bl') {
-                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width - dx);
-                    it.width  = newWidth;
-                    it.height = newWidth / imageAspect;
-                    it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
-                }
-                else if (activeHandle === 'rc') {
-                    const maxClip = dragStartTransform.width - touchConfig.minVisibleMm - (dragStartTransform.clipLeft || 0);
-                    it.clipRight  = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx));
-                }
-                else if (activeHandle === 'lc') {
-                    const maxClip = dragStartTransform.width - touchConfig.minVisibleMm - (dragStartTransform.clipRight || 0);
-                    it.clipLeft   = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx));
-                }
-                else if (activeHandle === 'bc') {
-                    const maxClip = dragStartTransform.height - touchConfig.minVisibleMm - (dragStartTransform.clipTop || 0);
-                    it.clipBottom = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy));
-                }
-                else if (activeHandle === 'tc') {
-                    const maxClip = dragStartTransform.height - touchConfig.minVisibleMm - (dragStartTransform.clipBottom || 0);
-                    it.clipTop    = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy));
-                }
+                Na__PageLayout__Handles__Drag(state, activeHandle, dragStartTransform, dx, dy, limits); // <-- Scale or trim
             }
 
             requestRedraw(); // <-- Trigger redraw
@@ -449,6 +365,10 @@
                     const keys  = ['x', 'y', 'width', 'height', 'clipTop', 'clipRight', 'clipBottom', 'clipLeft'];
                     const moved = keys.some((key) => (it[key] || 0) !== (dragStartTransform[key] || 0));
                     if (moved) Na__PageLayout__Emit('changed', { what : 'image' });
+                    if (state.imageHandleDrag) {
+                        state.imageHandleDrag = null; // <-- The drag's numbers and the trim ghost go
+                        requestRedraw();
+                    }
                 }
                 touchMode    = 'none'; // <-- Reset mode
                 activeHandle = 'none'; // <-- Reset handle

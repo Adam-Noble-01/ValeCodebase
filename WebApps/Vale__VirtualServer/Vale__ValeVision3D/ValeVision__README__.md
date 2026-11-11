@@ -398,11 +398,12 @@ Now      Create Drawing -> render -> Na__DrawingPage__OpenPicture -> history ent
 
 **Interactive 2D Canvas**
 - Drag the viewport image to reposition it anywhere on the A3 document
-- Resize using corner handles (proportional scaling maintaining aspect ratio)
-- Clip/trim image using edge handles (intuitive inward drag to crop image from that edge)
+- Scale with the corner discs (navy, a diagonal arrow): the whole picture and its crop scale about the opposite corner (v2.94.1)
+- Trim with the edge tabs (white, an arrow across the edge): that edge of the visible picture moves in or out; a trim drag shows what it cuts, faintly
+- The handle under the mouse grows and is labelled ("Drag to scale", "Drag to trim"); a drag shows its size or trim in mm
 - Mouse wheel zoom toward cursor; middle/right-click pan
 - Touch support: single-finger drag/resize/edge-clipping, two-finger pinch zoom + pan
-- Selection handles appear when image is selected (8 handles: 4 corners + 4 edges)
+- Handles appear when the picture is selected, on its visible (trimmed) edges: 4 scale corners, 4 trim tabs
 
 **Exact A3-Scale PDF Export**
 - **Export Full Layout** — saves title block + viewport image as a single flattened A3 PDF
@@ -431,7 +432,7 @@ Now      Create Drawing -> render -> Na__DrawingPage__OpenPicture -> history ent
 **Rendering Pipeline**
 - DPR-aware canvas for sharp display on retina screens (internal resolution = display size × DPR)
 - Multi-layer drawing: grey background → white A3 paper with shadow → title block PNG → viewport image
-- Selection handles drawn at screen-pixel size (8px squares) over zoomed image
+- Handles drawn at screen-pixel size (22 px discs, 28 x 16 px tabs) over the zoomed picture (`Na__PageLayoutSystem__ImageHandles__`)
 - Dashed border around selected image for visual clarity
 
 **Interaction**
@@ -453,6 +454,7 @@ Now      Create Drawing -> render -> Na__DrawingPage__OpenPicture -> history ent
 | `Na__PageLayoutSystem__SystemLogic__Main__.js` | State, picture loading (from the app or a saved layout), drawing frame, canvas sizing |
 | `Na__PageLayoutSystem__CanvasRenderPipeline__.js` | 2D rendering of A3 paper, title block, image (DrawImageLayer, shared with PDF and thumbnails), guide, handles |
 | `Na__PageLayoutSystem__2dNavigationControls__.js` | Zoom toward cursor, middle/right-click pan |
+| `Na__PageLayoutSystem__ImageHandles__.js` | The picture's scale corners and trim tabs: where they sit (the visible picture), hit test, the move, scale and trim drag, drawing and labels; shared by mouse, touch and screen (v2.94.1) |
 | `Na__PageLayoutSystem__Controls__Pc__.js` | Mouse interaction: picture handles, guide drags (Shift pairs edges), cursor feedback |
 | `Na__PageLayoutSystem__Controls__TouchScreen__.js` | Touch interaction: drag, resize, guide drags, pinch zoom, pan |
 | `Na__PageLayoutSystem__CompositionGuide__.js` | The guide's geometry, drag and clamp maths, hit-testing, drawing, save and open |

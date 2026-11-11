@@ -26,6 +26,9 @@
 //   on, in the data module.
 // - THE DEV SECTION IS ALSO BEHIND A DOOR, so a client or an Employee never fetches it.
 // - A FAILURE HERE NEVER REACHES THE MODEL. Figures are an extra.
+// - A DRAWING SAVES THEM FIRST (v2.96.0). Unsaved people are saved as the Drawing Editor or the
+//   Layout Editor opens (Adam, 11-Nov-2026: "to stop people losing their entorage and vegetation
+//   when they make drawings").
 //
 // INTEGRATION:
 // - Initialized from index.html, beside the vegetation door, with the scene and friends.
@@ -38,6 +41,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.96.0)
+// - SaveForDrawing: unsaved people are saved as the Drawing Editor or the Layout Editor opens.
+//
 // 05-Nov-2026 - Version 1.1.0 (ValeVision3D v2.89.0)
 // - On by default, for staff on any project, and only a saved Enabled false turns it off. The layer is
 //   made when first needed. After Remove All the project is as one with no key: on.
@@ -55,6 +61,13 @@
     // MODULE CONSTANTS | The Loading Sequence's Event for This Key
     // ------------------------------------------------------------
     const Na__Entourage__LOADED_EVENT = 'na-entourage-scenedata-loaded';
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | The Drawing Pages' Events: Unsaved Work Is Saved as They Open
+    // ------------------------------------------------------------
+    const Na__Entourage__PAGE_EVENT   = 'na-app-page-changed';                 // <-- Na__AppPages__Navigation__: { page, previous }
+    const Na__Entourage__MODEL_PAGE   = 'model';                               // <-- Its Na__AppPages__MODEL
+    const Na__Entourage__LAYOUT_EVENT = 'na-layouteditor-mode-changed';        // <-- Na__LayoutEditor__ModeController__: { isActive, sheetId, view }
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Where the System Stands on This Page
@@ -156,6 +169,31 @@
     // ------------------------------------------------------------
 
 
+    // HANDLER | A Drawing Is Being Made: Save Unsaved People First
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "also saved when the drawing tool is used to stop people losing their
+    // entorage and vegetation when they make drawings". The Drawing Editor's page opening
+    // (na-app-page-changed, any page but the Model View) and the Layout Editor opening
+    // (na-layouteditor-mode-changed, isActive) each save what is unsaved, through Save Entourage
+    // itself, so the button, the undo steps and anyone else's work coming back all behave as a
+    // press would. Nothing unsaved, or nobody who can save (a client), costs one test.
+    // ------------------------------------------------------------
+    async function Na__Entourage__SaveForDrawing(event) {
+        const detail = (event && event.detail) || {};
+        const drawing = event.type === Na__Entourage__LAYOUT_EVENT ? detail.isActive === true : (detail.page && detail.page !== Na__Entourage__MODEL_PAGE);
+        if (!drawing || !Na__Entourage__State.active) return;
+        try {
+            const data = await import('./02__Core__Data/Na__Entourage__SceneData__.js');
+            if (!data.Na__EntData__IsDirty()) return;
+            const shell = await import('./10__Ui__Panels/Na__Entourage__PanelShell__.js');
+            await shell.Na__EntShell__Save();
+        } catch (error) {
+            console.warn('[ValeVision3D Entourage] Not saved before the drawing opened:', error && error.message);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Arm the Door
     // ------------------------------------------------------------
     // Called once from index.html, before any project event can fire.
@@ -165,6 +203,8 @@
         Na__Entourage__State.armed   = true;
         Na__Entourage__State.context = context || null;
         window.addEventListener(Na__Entourage__LOADED_EVENT, Na__Entourage__OnDataLoaded, { once : true });
+        window.addEventListener(Na__Entourage__PAGE_EVENT, Na__Entourage__SaveForDrawing);
+        window.addEventListener(Na__Entourage__LAYOUT_EVENT, Na__Entourage__SaveForDrawing);
         if (Na__Entourage__State.context) Na__Entourage__OfferDevSection();
     }
     // ------------------------------------------------------------

@@ -16,6 +16,12 @@
 #   / admin to delete their changes (effectively revert the assetrs to the state before they added
 #   anything)". His answers: an Employee may change anything, all of it tracked, and clients see what
 #   an Employee adds only after an admin approves.
+# - NO MORE WAITING (11-Nov-2026, v2.96.0). Adam: "Remove this, any entorage added by anyone staff or
+#   above should be updated when saved". With NA_STAFF_SAVES_GO_STRAIGHT_IN, an Employee's save and
+#   own put back go into the record as an admin's do, and a save publishes anything left waiting
+#   from before. Who placed what, and when, is kept exactly as before: Owners is what the
+#   right-click menus show ("who added that thing into the scene and when"). The waiting machinery
+#   below stays, for the switch.
 # - THE RECORD IS WHAT IS APPROVED. A project's Entourage__SceneData and Vegetation__SceneData stay
 #   exactly as they were, written only at the admin's level. It is all a client link ever reads, so
 #   nothing waiting can reach a client, by design and not by a filter someone could forget.
@@ -49,6 +55,9 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.96.0)
+# - NA_STAFF_SAVES_GO_STRAIGHT_IN, and na_save's straight_in: staff saves go into the record.
+#
 # 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.89.0)
 # - Initial build.
 #
@@ -65,6 +74,12 @@ import time
 
 NA_SCHEMA_VERSION = 1
 NA_HISTORY_LIMIT  = 1000                                                          # <-- Newest kept. Who did what is a record, not a log for ever
+
+# A SAVE BY ANY STAFF GOES STRAIGHT IN (Adam, 11-Nov-2026: "Remove this, any entorage added by anyone
+# staff or above should be updated when saved"). An Employee's people and plants, their own put back
+# and the pins they need are written to the record as an admin's are. False brings back the wait for
+# an admin's approval exactly as v2.89.0 built it. Line rules, Enabled and the rest stay an admin's.
+NA_STAFF_SAVES_GO_STRAIGHT_IN = True
 
 # WHAT EACH SYSTEM HOLDS | Its record key, and its lists of items: the list's key, the Uid's key, the
 # word for a person, the letter a new Uid starts with, and the keys that say what an item is
@@ -301,9 +316,10 @@ def na_diff(spec, base, sent):
     return out
 
 
-def na_save(system, approved, changes, base, sent, who, is_admin):
+def na_save(system, approved, changes, base, sent, who, is_admin, straight_in=False):
     """One save. base: the working object this window read. sent: what it holds now.
-    An admin's changes go straight into the approved object. Anyone else's go in Waiting.
+    An admin's changes go straight into the approved object, and so do anyone's items when
+    straight_in (NA_STAFF_SAVES_GO_STRAIGHT_IN). Otherwise anyone else's go in Waiting.
     Returns (approved, changes, counts, renamed): renamed, { old uid: new uid } for a new item
     whose Uid somebody else took meanwhile. approved is None if there is still no key."""
     settings = NA_SYSTEMS[system]
@@ -312,6 +328,7 @@ def na_save(system, approved, changes, base, sent, who, is_admin):
     approved_out = copy.deepcopy(approved) if isinstance(approved, dict) else None
     counts = {'added': 0, 'changed': 0, 'removed': 0}
     renamed = {}
+    items_in = is_admin or straight_in                                            # <-- The items go into the record now
 
     if not isinstance(base, dict):
         base = {}
@@ -333,7 +350,7 @@ def na_save(system, approved, changes, base, sent, who, is_admin):
             current = na_get_item(working, spec, target_uid)                     # <-- As it stands now, which is what putting it back must return it to
             na_note(block, item_key, spec, action, copy.deepcopy(current) if action != 'added' else None, record, who)
 
-            if is_admin:
+            if items_in:
                 if approved_out is None:
                     approved_out = na_seed(system, sent, block)
                 na_set_item(approved_out, spec, target_uid, record)
@@ -349,7 +366,7 @@ def na_save(system, approved, changes, base, sent, who, is_admin):
 
             # ADDED AND DELETED BEFORE ANYONE APPROVED IT | It comes to nothing, so it leaves nothing
             touch = block['Touches'].get(who['code'], {}).get('Items', {}).get(item_key)
-            if action == 'removed' and touch and touch.get('Before') is None and na_get_item((approved_out if is_admin else approved) or {}, spec, target_uid) is None:
+            if action == 'removed' and touch and touch.get('Before') is None and na_get_item((approved_out if items_in else approved) or {}, spec, target_uid) is None:
                 del block['Touches'][who['code']]['Items'][item_key]
                 block['Owners'].pop(item_key, None)
                 if not block['Touches'][who['code']]['Items']:
@@ -376,13 +393,19 @@ def na_save(system, approved, changes, base, sent, who, is_admin):
         if tools is not None and not na_same(tools, base.get(settings['Tools'])):
             block['Keys']['Tools'] = copy.deepcopy(tools)
         pins = sent.get(settings['Assets']) or {}
-        known = (approved or {}).get(settings['Assets']) or {}
-        waiting_pins = block['Keys'].setdefault('Assets', {})
-        for asset_id, asset in pins.items():
-            if asset_id not in known and asset_id not in waiting_pins:
-                waiting_pins[asset_id] = copy.deepcopy(asset)                     # <-- A new pin only: changing an approved copy is an admin's
-        if approved is None and not block.get('Base') and any(counts.values()):
-            block['Base'] = na_seed(system, sent, block)                          # <-- Every parameter the page knows, for the first approval
+        if straight_in and approved_out is not None:
+            assets = approved_out.get(settings['Assets']) if isinstance(approved_out.get(settings['Assets']), dict) else {}
+            for asset_id, asset in pins.items():
+                assets.setdefault(asset_id, copy.deepcopy(asset))                 # <-- A new pin only: changing an approved copy is an admin's
+            approved_out[settings['Assets']] = assets
+        elif not straight_in:
+            known = (approved or {}).get(settings['Assets']) or {}
+            waiting_pins = block['Keys'].setdefault('Assets', {})
+            for asset_id, asset in pins.items():
+                if asset_id not in known and asset_id not in waiting_pins:
+                    waiting_pins[asset_id] = copy.deepcopy(asset)                 # <-- A new pin only: changing an approved copy is an admin's
+            if approved is None and not block.get('Base') and any(counts.values()):
+                block['Base'] = na_seed(system, sent, block)                      # <-- Every parameter the page knows, for the first approval
     return approved_out, changes, counts, renamed
 
 # endregion -------------------------------------------------------------------

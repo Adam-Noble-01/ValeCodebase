@@ -502,15 +502,15 @@ Double-click `Start__ValeVision__TestServer__8032__.bat`: the app on <http://loc
 
 `96__Dev__McpServer__Python`, registered in `~/.claude.json` as `valevision3d`: an agent opens a project in the real app on its own sandbox, looks at it, measures it, changes its planting and publishes it through named tools. Real data asks for a confirmation each time, and nothing deletes or forces on the server. Its README lists the tools.
 
-## Placed Assets: Who Can Place What (v2.89.0)
+## Placed Assets: Who Can Place What (v2.89.0, no approval since v2.96.0)
 
-People and plants are on for every project unless an admin has unticked them in Dev Tools > Assets. Staff place them and every change is tracked by name. The project's record holds what is approved and is all a client reads, so a client sees an Employee's work only once an admin has approved it. The changes wait beside it in `ValeVision3D/UserData__SceneAssets/`, which holds staff names and is never served.
+People and plants are on for every project unless an admin has unticked them in Dev Tools > Assets. Staff place them and every change is tracked by name. **Since v2.96.0 a save by any staff member goes straight into the project's record**, which is all a client reads: there is no waiting for an admin (the API's `NA_STAFF_SAVES_GO_STRAIGHT_IN`; False brings the v2.89.0 approval back). Who added each person, plant and path, and when, is kept beside the record in `ValeVision3D/UserData__SceneAssets/`, which holds staff names and is never served, and a right-click on one shows it to staff. Unsaved people and plants are saved as the Drawing Editor or the Layout Editor opens.
 
 | Who | What |
 |---|---|
-| A client link, an Affiliate | Show and Transparency, and only when something approved is there |
-| An Employee, or Management, on a computer or tablet | Places, moves, swaps and deletes anything, saved for approval. Sees everyone's work at once. The Changes tab: Remove My Changes. Phones only look |
-| An AppAdmin | All of that, approved as it is made. Approve, Approve All, Remove Their Changes. Line rules, drawings ticks, Update to Latest, the off switch |
+| A client link, an Affiliate | Show and Transparency, and only when something is placed |
+| An Employee, or Management, on a computer or tablet | Places, moves, swaps and deletes anything; Save puts it in front of clients. A right-click says who added it and when. The Changes tab: Remove My Changes. Phones only look |
+| An AppAdmin | All of that. Remove Their Changes; Approve only for work left waiting from before v2.96.0. Line rules, drawings ticks, Update to Latest, the off switch |
 
 The routes and sums are `Server__Api/Api__ValeVision3D/ValeVision3D__Api__SceneAssets__*.py`, and the page's side is `02__Src__AppModules/22__System__SceneAssets`.
 

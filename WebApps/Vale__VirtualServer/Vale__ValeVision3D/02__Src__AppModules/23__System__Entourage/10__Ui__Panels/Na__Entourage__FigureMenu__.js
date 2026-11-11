@@ -20,6 +20,9 @@
 // - IT DECIDES NOTHING. It is handed what to show, how to draw a picture and what each row does, by
 //   the figure tool or, since 05-Nov-2026, the plants' menu (Adam: "Add the same right click swap for
 //   vegetation too"). Pictures that do not all fit scroll inside it, and the wheel there stays.
+// - WHO ADDED IT AND WHEN sits under the title (v2.96.0). Adam, 11-Nov-2026: "just ensure when you
+//   right click it shows who added that thing into the scene and when so this gives ownership /
+//   accountability". The caller hands the lines over (owner); this file only draws them.
 //
 // INTEGRATION:
 // - Opened by ../20__System__Tools/Na__Entourage__FigureTool__.js and
@@ -29,6 +32,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.96.0)
+// - owner: who added it and when, under the title.
+//
 // 05-Nov-2026 - Version 1.1.0 (ValeVision3D v2.89.0)
 // - Handed its pictures' drawing and size, for plants as well as people. A long grid scrolls.
 //
@@ -148,7 +154,8 @@
     // FUNCTION | Open the Menu at the Pointer
     // ------------------------------------------------------------
     // options: {
-    //   title, x, y, rows : [{ id, label, hint, danger, action }...] above the pictures,
+    //   title, x, y, owner : ['Added by ...', ...] under the title, optional,
+    //   rows : [{ id, label, hint, danger, action }...] above the pictures,
     //   swaps : [{ assetId, name, recipe }...], drawSwap(canvas, swap, size), onSwap(assetId), onPreview(assetId | ''),
     //   thumb : { w, h } and columns, each optional, lastRows : [...] below the pictures, onClose
     // }
@@ -161,7 +168,14 @@
         root.setAttribute('role', 'menu');
         root.addEventListener('contextmenu', (event) => event.preventDefault());
 
-        root.appendChild(Na__EntPopup__El('div', 'na-ent-menu__title', options.title));
+        const title = Na__EntPopup__El('div', 'na-ent-menu__title', options.title);
+        if (options.owner && options.owner.length > 0) {                       // <-- Who added it and when (v2.96.0), above the title's rule
+            const owner = Na__EntPopup__El('div', 'na-ent-menu__owner');
+            owner.id = 'naEntourageMenuOwner';
+            options.owner.forEach((line) => owner.appendChild(Na__EntPopup__El('div', 'na-ent-menu__owner-line', line)));
+            title.appendChild(owner);
+        }
+        root.appendChild(title);
         options.rows.forEach((row) => root.appendChild(Na__EntPopup__Row(row)));
 
         if (options.swaps.length > 0) {

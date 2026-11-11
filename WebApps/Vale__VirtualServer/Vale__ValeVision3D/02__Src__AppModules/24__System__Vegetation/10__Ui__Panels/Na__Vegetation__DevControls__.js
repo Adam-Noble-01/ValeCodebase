@@ -316,7 +316,7 @@
 
         panel.innerHTML = '';
         panel.appendChild(Na__VegDev__El('p', 'na-fp-dev__empty', isOn
-            ? 'On for this project. Its menu is in Tools & Settings. Staff can plant, and clients see what has been approved.'
+            ? 'On for this project. Its menu is in Tools & Settings. Staff can plant, and clients see the plants once saved.'
             : 'Off for this project, for everyone. Nothing loads and nothing draws. Tick it to switch on.'));
 
         if (isOn && sceneData) {

@@ -46,6 +46,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.96.0)
+// - The right-click menu says who added the figure and when, and who changed it last.
+//
 // 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.95.0)
 // - WriteHeightStretch (Jamesification). A carry, its outline and a copy keep the stretch.
 //
@@ -84,7 +87,8 @@
     import { Na__RenderLoop__RequestRender } from '../../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     import { Na__DrawView__GetCamera } from '../../40__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
     import { Na__KeyScope__Is, Na__KeyScope__MODEL } from '../../03__AppUtils/Na__AppUtils__KeyScope__.js';
-    import { Na__EntData__NextUid, Na__EntData__FindFigure } from '../02__Core__Data/Na__Entourage__SceneData__.js';
+    import { Na__EntData__NextUid, Na__EntData__FindFigure, Na__EntData__Work, Na__EntData__IsOnServer } from '../02__Core__Data/Na__Entourage__SceneData__.js';
+    import { Na__SceneChanges__OwnerLines } from '../../22__System__SceneAssets/Na__SceneAssets__ChangesPanel__.js';
     import {
         Na__EntRun__GetLayer,
         Na__EntRun__GetSceneData,
@@ -600,8 +604,12 @@
         const canvasLeft = state.context.renderer.domElement.getBoundingClientRect().left;
         const besideX = edge ? Math.max(x, canvasLeft + edge.x + Na__EntTool__MENU_GAP_PX) : x;
 
+        const work = Na__EntData__Work();                                      // <-- Who added it and when (Adam, 11-Nov-2026: "ownership / accountability")
+        const uid  = figure.Entourage__Figure__Uid;
+
         Na__EntPopup__Open({
             title : here ? here.Asset__Name : figure.Entourage__Figure__AssetId,
+            owner : Na__SceneChanges__OwnerLines(work.summary, 'figure:' + uid, work.me && work.me.code, Na__EntData__IsOnServer(uid)),
             x : besideX, y,
             rows : [
                 { id : 'naEntourageMenuMove', label : 'Move', hint : 'M', action : Na__EntTool__CarrySelected },

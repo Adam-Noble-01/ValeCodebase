@@ -30,6 +30,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.96.0)
+// - The menu says who added the plant (or its path) and when, and who changed it last.
+//
 // 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.89.0)
 // - Initial build.
 //
@@ -46,7 +49,8 @@
     import { Na__VegPick__AtPointer, Na__VegPick__RayAt } from './Na__Vegetation__SurfacePick__.js';
     import { Na__VegOverlay__ToScreen } from './Na__Vegetation__ToolOverlay__.js';
     import { Na__VegTools__Repaint } from './Na__Vegetation__ToolHost__.js';
-    import { Na__VegData__FindPath, Na__VegData__NextUid } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
+    import { Na__VegData__FindPath, Na__VegData__NextUid, Na__VegData__Work, Na__VegData__IsOnServer } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
+    import { Na__SceneChanges__OwnerLines } from '../../22__System__SceneAssets/Na__SceneAssets__ChangesPanel__.js';
     import {
         Na__VegRun__GetContext,
         Na__VegRun__GetLayer,
@@ -337,8 +341,17 @@
             lastRows.unshift({ id : 'naVegetationMenuWholePath', label : 'Select the whole path', action : () => { if (hooks.onPicked) hooks.onPicked('path', state.pathUid); } });
         }
 
+        // WHO ADDED IT AND WHEN | A path's plant is the path's: it was drawn as one (Adam, 11-Nov-2026:
+        // "ownership / accountability")
+        const work = Na__VegData__Work();
+        const kind = state.pathUid ? 'path' : 'plop';
+        const uid  = state.pathUid || found.plant.Vegetation__Plop__Uid;
+        const owner = Na__SceneChanges__OwnerLines(work.summary, kind + ':' + uid, work.me && work.me.code, Na__VegData__IsOnServer(kind, uid));
+        if (state.pathUid && owner.length > 0) owner[0] = owner[0].replace(/^Added /, 'Path added ');
+
         Na__EntPopup__Open({
             title : state.pathUid ? name + ', plant ' + state.number + ' of ' + state.pathUid : name,
+            owner,
             x : besideX, y,
             rows,
             swaps : catalogue

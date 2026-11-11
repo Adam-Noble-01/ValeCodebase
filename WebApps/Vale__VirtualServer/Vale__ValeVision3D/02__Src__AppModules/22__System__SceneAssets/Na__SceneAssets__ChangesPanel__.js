@@ -19,6 +19,10 @@
 // - SAVED FIRST. Remove My Changes means everything, so unsaved work is saved and then put back.
 // - THE SERVER DECIDES. These rows are what the page offers; an Employee asking to remove someone
 //   else's, or to approve, is refused there.
+// - NOTHING WAITS NOW (v2.96.0). Adam, 11-Nov-2026: "Remove this, any entorage added by anyone staff
+//   or above should be updated when saved". A save goes straight into the record, so Approve and the
+//   waiting marks show only for work left waiting from before, until the next save publishes it.
+// - WHO ADDED IT AND WHEN, for the right-click menus of people and plants: OwnerLines.
 //
 // INTEGRATION:
 // - Drawn by ../23__System__Entourage/10__Ui__Panels/Na__Entourage__AssetBrowser__.js and
@@ -30,6 +34,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.96.0)
+// - OwnerLines: who added an item and when, and who changed it last, for the right-click menus.
+//   A person's block no longer says "all approved".
+//
 // 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.89.0)
 // - Initial build.
 //
@@ -138,6 +146,48 @@
             waiting : !!waiting,
             mine    : !!myCode && (code === myCode || (waiting ? waiting.By === myCode : owner.ChangedBy === myCode))
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Who Added an Item and When, for Its Right-Click Menu
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "just ensure when you right click it shows who added that thing into the
+    // scene and when so this gives ownership / accountability". itemKey: 'figure:E0001',
+    // 'plop:A0001', 'path:P0001'. onServer: the item is in what this window last read from the
+    // server. Returns the menu's lines:
+    //   ['Added by Jo Bloggs, 11 Nov 2026, 14:32', 'Last changed by Sam Smith, 12 Nov 2026, 09:05']
+    // An item the server has not got is this window's, not saved yet. One placed before anyone kept
+    // track says so. Empty with no summary (it could not be read): the menu then says nothing.
+    // ------------------------------------------------------------
+    function Na__SceneChanges__OwnerLines(summary, itemKey, myCode, onServer) {
+        if (!summary) return [];
+        const owner = (summary.Owners || {})[itemKey];
+        const name  = (person, code) => (myCode && code === myCode ? 'you' : (person || 'someone'));
+        if (!onServer) return ['Added by you, not saved yet'];
+        if (!owner) return ['Added before who placed what was kept'];
+        const lines = [];
+        if (owner.CreatedBy || owner.CreatedName) {
+            lines.push('Added by ' + name(owner.CreatedName, owner.CreatedBy) + ', ' + Na__SceneChanges__WhenInFull(owner.CreatedAt));
+        } else {
+            lines.push('Added before who placed what was kept');
+        }
+        const changedLater = owner.ChangedAt && owner.ChangedAt !== owner.CreatedAt;
+        if (changedLater && owner.ChangedBy) {
+            lines.push('Last changed by ' + name(owner.ChangedName, owner.ChangedBy) + ', ' + Na__SceneChanges__WhenInFull(owner.ChangedAt));
+        }
+        return lines;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Time with Its Year: 11 Nov 2026, 14:32
+    // ------------------------------------------------------------
+    function Na__SceneChanges__WhenInFull(iso) {
+        const date = new Date(iso);
+        if (!iso || Number.isNaN(date.getTime())) return 'date not known';
+        const hours = String(date.getHours()).padStart(2, '0'), minutes = String(date.getMinutes()).padStart(2, '0');
+        return date.getDate() + ' ' + Na__SceneChanges__MONTHS[date.getMonth()] + ' ' + date.getFullYear() + ', ' + hours + ':' + minutes;
     }
     // ------------------------------------------------------------
 
@@ -264,7 +314,7 @@
         block.appendChild(head);
 
         const total = person.Items.length;
-        const words = total + (total === 1 ? ' change' : ' changes') + (person.Waiting > 0 ? ', ' + person.Waiting + ' waiting for approval' : ', all approved');
+        const words = total + (total === 1 ? ' change' : ' changes') + (person.Waiting > 0 ? ', ' + person.Waiting + ' waiting for approval' : '');   // <-- Since v2.96.0 a save goes straight in, so only work left from before can wait
         block.appendChild(Na__SceneChanges__El('p', 'na-veg-panel__hint', words));
         person.Items.forEach((item) => block.appendChild(Na__SceneChanges__ItemRow(item, options)));
 
@@ -382,6 +432,7 @@
         Na__SceneChanges__Icon,
         Na__SceneChanges__CountWaiting,
         Na__SceneChanges__WhoDid,
+        Na__SceneChanges__OwnerLines,
         Na__SceneChanges__WhoLine,
         Na__SceneChanges__Draw
     };

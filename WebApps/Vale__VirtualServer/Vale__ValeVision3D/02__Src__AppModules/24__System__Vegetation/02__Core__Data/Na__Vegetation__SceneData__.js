@@ -45,6 +45,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.4.0 (ValeVision3D v2.96.0)
+// - IsOnServer, for the right-click menu's who-added-it lines. A staff save goes straight into the
+//   record now (the API's NA_STAFF_SAVES_GO_STRAIGHT_IN).
+//
 // 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
 // - Staff open and save through the placed-assets routes, with who did what alongside. On by default.
 //
@@ -427,6 +431,22 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Has the Server Got This Plant or Path? (It Is in What This Window Last Read)
+    // ------------------------------------------------------------
+    // For the right-click menu's who-added-it lines (v2.96.0). kind: 'plop' or 'path'. One the
+    // server has not got is this window's own, not saved yet.
+    // ------------------------------------------------------------
+    function Na__VegData__IsOnServer(kind, uid) {
+        let read = null;
+        try { read = JSON.parse(Na__VegData__State.base || 'null'); } catch (error) { return false; }
+        if (!read) return false;
+        const list   = kind === 'path' ? read.Vegetation__SceneData__Paths : read.Vegetation__SceneData__Plops;
+        const uidKey = kind === 'path' ? 'Vegetation__Path__Uid' : 'Vegetation__Plop__Uid';
+        return (list || []).some((row) => row && row[uidKey] === uid);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Take What the Server Now Says Is True
     // ------------------------------------------------------------
     // answer: from any of the placed-assets routes. sent: what a save sent, as one string, or
@@ -569,6 +589,7 @@
         Na__VegData__IsDirty,
         Na__VegData__SetDirty,
         Na__VegData__Work,
+        Na__VegData__IsOnServer,
         Na__VegData__TakeAnswer,
         Na__VegData__RemoveAll,
         Na__VegData__Save

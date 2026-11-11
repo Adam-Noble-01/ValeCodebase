@@ -16,6 +16,9 @@
  * - The menu sits over everything, as it opens from the model under the pointer.
  *
  * DEVELOPMENT LOG:
+ * 11-Nov-2026 - Version 1.2.0 (ValeVision3D v2.96.0)
+ * - The right-click menu's who-added-it lines under its title (.na-ent-menu__owner).
+ *
  * 05-Nov-2026 - Version 1.1.0 (ValeVision3D v2.89.0)
  * - A long grid of pictures in the right-click menu scrolls inside it.
  *
@@ -138,6 +141,15 @@
         border-bottom                      : 1px solid rgba(23, 43, 58, 0.12);
         margin-bottom                      : 4px;
         font-weight                        : 600;
+    }
+
+    .na-ent-menu__owner {                                                  /* <-- Who added it and when, under the name (v2.96.0) */
+        margin-top                         : 3px;
+        color                              : #5c6b78;
+        font-size                          : 11px;
+        font-weight                        : 400;
+        line-height                        : 1.35;
+        max-width                          : 260px;
     }
 
     .na-ent-menu__heading {

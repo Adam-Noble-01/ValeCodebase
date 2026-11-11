@@ -303,6 +303,19 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Has the Server Got This Figure? (It Is in What This Window Last Read)
+    // ------------------------------------------------------------
+    // For the right-click menu's who-added-it lines (v2.96.0): a figure the server has not got is
+    // this window's own, not saved yet.
+    // ------------------------------------------------------------
+    function Na__EntData__IsOnServer(uid) {
+        let read = null;
+        try { read = JSON.parse(Na__EntData__State.base || 'null'); } catch (error) { return false; }
+        return !!read && (read.Entourage__SceneData__Figures || []).some((row) => row && row.Entourage__Figure__Uid === uid);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Take What the Server Now Says Is True
     // ------------------------------------------------------------
     // answer: from any of the placed-assets routes. sent: what a save sent, as one string, or
@@ -438,6 +451,7 @@
         Na__EntData__IsDirty,
         Na__EntData__SetDirty,
         Na__EntData__Work,
+        Na__EntData__IsOnServer,
         Na__EntData__TakeAnswer,
         Na__EntData__RemoveAll,
         Na__EntData__Save

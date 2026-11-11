@@ -32,6 +32,9 @@
 //   fetches it: the gate is asked first, and only an author imports the section.
 // - A FAILURE HERE NEVER REACHES THE MODEL. Plants are an extra: if they cannot start,
 //   say so in the console and let the app carry on.
+// - A DRAWING SAVES THEM FIRST (v2.96.0). Unsaved plants are saved as the Drawing Editor or the
+//   Layout Editor opens (Adam, 11-Nov-2026: "to stop people losing their entorage and vegetation
+//   when they make drawings").
 //
 // INTEGRATION:
 // - Initialized from index.html, beside the north system, with the scene and friends.
@@ -44,6 +47,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.4.0 (ValeVision3D v2.96.0)
+// - SaveForDrawing: unsaved plants are saved as the Drawing Editor or the Layout Editor opens.
+//
 // 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.89.0)
 // - On by default, for staff on any project, and only a saved Enabled false turns it off. The layer is
 //   made when first needed. After Remove All the project is as one with no key: on.
@@ -70,6 +76,13 @@
     // MODULE CONSTANTS | The Loading Sequence's Event for This Key
     // ------------------------------------------------------------
     const Na__Vegetation__LOADED_EVENT = 'na-vegetation-scenedata-loaded';
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | The Drawing Pages' Events: Unsaved Work Is Saved as They Open
+    // ------------------------------------------------------------
+    const Na__Vegetation__PAGE_EVENT   = 'na-app-page-changed';                // <-- Na__AppPages__Navigation__: { page, previous }
+    const Na__Vegetation__MODEL_PAGE   = 'model';                              // <-- Its Na__AppPages__MODEL
+    const Na__Vegetation__LAYOUT_EVENT = 'na-layouteditor-mode-changed';       // <-- Na__LayoutEditor__ModeController__: { isActive, sheetId, view }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -195,7 +208,34 @@
         Na__Vegetation__State.armed   = true;
         Na__Vegetation__State.context = context || null;
         window.addEventListener(Na__Vegetation__LOADED_EVENT, Na__Vegetation__OnDataLoaded, { once : true });
+        window.addEventListener(Na__Vegetation__PAGE_EVENT, Na__Vegetation__SaveForDrawing);
+        window.addEventListener(Na__Vegetation__LAYOUT_EVENT, Na__Vegetation__SaveForDrawing);
         if (Na__Vegetation__State.context) Na__Vegetation__OfferDevSection();
+    }
+    // ------------------------------------------------------------
+
+
+    // HANDLER | A Drawing Is Being Made: Save Unsaved Plants First
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "also saved when the drawing tool is used to stop people losing their
+    // entorage and vegetation when they make drawings". The Drawing Editor's page opening
+    // (na-app-page-changed, any page but the Model View) and the Layout Editor opening
+    // (na-layouteditor-mode-changed, isActive) each save what is unsaved, through Save Vegetation
+    // itself, so the button, the undo steps and anyone else's work coming back all behave as a
+    // press would. Nothing unsaved, or nobody who can save (a client), costs one test.
+    // ------------------------------------------------------------
+    async function Na__Vegetation__SaveForDrawing(event) {
+        const detail = (event && event.detail) || {};
+        const drawing = event.type === Na__Vegetation__LAYOUT_EVENT ? detail.isActive === true : (detail.page && detail.page !== Na__Vegetation__MODEL_PAGE);
+        if (!drawing || !Na__Vegetation__State.active) return;
+        try {
+            const data = await import('./02__Core__Data/Na__Vegetation__SceneData__.js');
+            if (!data.Na__VegData__IsDirty()) return;
+            const shell = await import('./10__Ui__Panels/Na__Vegetation__PanelShell__.js');
+            await shell.Na__VegShell__Save();
+        } catch (error) {
+            console.warn('[ValeVision3D Vegetation] Not saved before the drawing opened:', error && error.message);
+        }
     }
     // ------------------------------------------------------------
 

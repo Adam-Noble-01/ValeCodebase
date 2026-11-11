@@ -1,6 +1,39 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.96.0 - 11-Nov-2026 - Staff Saves Go Straight to Clients, a Drawing Saves People and Plants First, and a Right-Click Says Who Added It and When
+### Adam: "Remove this, any entorage added by anyone staff or above should be updated when saved in a similar manner tyo vegetation and also saved when the drawing tool is used to stop people losing their entorage and vegetation when they make drawings. just ensure when you right click it shows who added that thing into the scene and when so this gives ownership / accountability"
+
+**What was wrong:** since v2.89.0 an Employee's or Management's people and plants waited in the changes file until an AppAdmin approved them, so a client never saw them without that extra step. Making a drawing did not save unsaved people or plants first. A person's or plant's right-click menu did not say who had put it there.
+
+**Now:**
+- **A save by any staff member goes straight into the project's record**, for people and plants alike: Save Entourage, Save Vegetation, and their own Remove My Changes. A client sees it as soon as it is saved. Line rules, Enabled and the other settings stay an AppAdmin's: an Employee's are still ignored. Removing someone else's changes stays an AppAdmin's.
+- **Work left waiting from before is published by the next staff save** in that project and system (the answer says how many, `published`). Approve and Approve All still show for an AppAdmin while anything waits, which after that save is nothing.
+- **The switch is kept**, as Adam asked of the Enabled gates on 05-Nov: `NA_STAFF_SAVES_GO_STRAIGHT_IN` in the API's Logic file. False brings back the v2.89.0 approval exactly.
+- **Unsaved people and plants are saved as a drawing is made:** when the Drawing Editor's page opens (Create Drawing, Forward, a saved drawing) and when the Layout Editor opens, through Save Entourage and Save Vegetation themselves. Nothing unsaved, or a client, costs one test.
+- **The right-click menu of a person or plant says who added it and when**, under its name: "Added by Jo Bloggs, 11 Nov 2026, 14:32", then "Last changed by ..." when someone else has changed it since. A plant of a path says "Path added by ...". One not saved yet says "Added by you, not saved yet". One placed before v2.89.0 kept track says "Added before who placed what was kept". It reads the changes file's `Owners`, which already held all of this, and is only ever shown to staff.
+- Save Entourage and Save Vegetation say what they now do; the two Dev Tools lines say clients see them once saved. The Changes tab no longer says "all approved".
+
+**Changed:**
+- API: `ValeVision3D__Api__SceneAssets__Logic__.py` 1.1.0 (`NA_STAFF_SAVES_GO_STRAIGHT_IN`, `na_save`'s `straight_in`), `ValeVision3D__Api__SceneAssets__.py` 1.1.0 (save and revert straight in, `published`). **The API changed: restart `vale@ValeVision3D` after a push.**
+- `22__System__SceneAssets`: `Na__SceneAssets__ChangesPanel__.js` 1.1.0 (`OwnerLines`), `README__SceneAssets__.md`.
+- `23__System__Entourage`: `Na__Entourage__.js` 1.2.0 (`SaveForDrawing`), `Na__Entourage__SceneData__.js` (`IsOnServer`), `Na__Entourage__FigureTool__.js` 1.3.0, `Na__Entourage__FigureMenu__.js` 1.2.0 (`owner`), `Na__Entourage__PanelShell__.js` 1.4.0, `Na__Entourage__Styles__Panels__.css` 1.2.0, `Na__Entourage__DevControls__.js` (one line).
+- `24__System__Vegetation`: `Na__Vegetation__.js` 1.4.0 (`SaveForDrawing`), `Na__Vegetation__SceneData__.js` 1.4.0 (`IsOnServer`), `Na__Vegetation__PlantMenu__.js` 1.1.0, `Na__Vegetation__PanelShell__.js` 1.6.0, `Na__Vegetation__DevControls__.js` (one line).
+- `ValeVision__README__.md`, Placed Assets. No record key changed.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean. `vv3d_api_sandbox.py smoke` OK.
+- The Logic on its own, and the API on the Flask sandbox, 18 checks: an Employee's person goes into the record with its asset pin and nothing waiting; `Owners` names its creator and time; a client link reads it and is still refused who-did-what; Management's move goes in and keeps the creator, naming the last changer; a non-admin's line rules are ignored; a save publishes work left waiting (`published` 1); an Employee is still refused putting back someone else's; Management's own put back reaches the record; an Employee's plant goes in; Approve is still refused to an Employee and answers an AppAdmin.
+- MCP sandbox (headless Edge, a testing server started after the change, `64616__Garnett`, real mouse): as Employee, a Man Walking placed on the terrace; its right-click said "Added by you, not saved yet"; Create Drawing opened the Drawing Editor and the person was then in the record, saved, with nothing waiting. As Management the right-click said "Added by Test Employee, 11 Nov 2026, 15:19"; after Bigger and a save, "Last changed by you". A plant of path P0001 said "Path added before who placed what was kept". A client link drew the person.
+
+**Not checked:**
+- The Layout Editor opening (AppAdmin) saving unsaved work: the same handler, not run.
+- A real GPU, a phone or tablet. The right-click on a stretched (Jamesification) figure.
+- The MCP's `vv3d_scene_changes` still describes "what waits for an admin"; with nothing waiting it simply shows none.
+
+**Live (Adam: "Yes, push it"), 11-Nov-2026 15:32 UTC:** `server-api` compared clean for `Api__ValeVision3D`: a push at 15:09:20 UTC (not this session's) had already sent both API files, mid-job, without a restart, so the old code was still answering (service active since 14:04:39). `vale@ValeVision3D` restarted (active since 15:31:51 UTC, health OK, the new Logic file on disk). Then `valevision3d` scoped to `02__Src__AppModules` (stamp `20261111-153206`, the 13 page files of this job replaced, none added or deleted, nothing else in the list). Three of them checked byte-identical through Cloudflare; the deploy stamp moved to 15:32:06. Not committed. Not looked at in a browser on the live site.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.95.0 - 11-Nov-2026 - Jamesification: a Second Slider Stretches a Figure's Height Only, 1 to 1.50
 ### Adam: "In valevision 3d add a second slider that scales along height axis only name the sider Jamesification and make it only go 1 - 1.50 to stretch peoples height"
 

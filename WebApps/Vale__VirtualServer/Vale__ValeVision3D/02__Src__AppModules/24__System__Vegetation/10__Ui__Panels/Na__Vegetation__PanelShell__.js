@@ -31,6 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.6.0 (ValeVision3D v2.96.0)
+// - A staff save goes straight in: Save Vegetation says so. Saved before a drawing opens (Na__Vegetation__).
+//
 // 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
 // - A panel can carry an icon in its title and be the dropdown sections' panel. Only a panel on the
 //   right shuts Tools & Settings. Closing a panel says so (CLOSED_EVENT).
@@ -287,7 +290,7 @@
             if (result.merged) await Na__VegShell__AfterReplaced();
             const counts = result.counts || {};
             if (!result.approvedNow && (counts.added || counts.changed || counts.removed)) {
-                Na__VegShell__Toast('Saved. An admin will approve it before clients see it.', false);
+                Na__VegShell__Toast('Saved. An admin will approve it before clients see it.', false);   // <-- Only with the API's NA_STAFF_SAVES_GO_STRAIGHT_IN off
             }
         } else {
             Na__VegShell__Toast('Vegetation not saved: ' + ((result && result.error) || 'the server did not answer') + '.', true);
@@ -316,7 +319,7 @@
     // FUNCTION | A Save Vegetation Button
     // ------------------------------------------------------------
     function Na__VegShell__MakeSaveButton() {
-        const button = Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project. Clients see them once an admin has approved them');
+        const button = Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each plant and path you add');
         Na__VegShell__State.saveButtons.add(button);
         Na__VegShell__PaintSave();
         return button;

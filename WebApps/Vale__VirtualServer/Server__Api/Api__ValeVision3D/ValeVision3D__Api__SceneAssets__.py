@@ -12,8 +12,11 @@
 #
 # DESCRIPTION:
 # - THE RECORD ROUTES STAY AT THE ADMIN'S LEVEL. These four are the only way an Employee changes
-#   anything here, and what an Employee sends never reaches the record until an admin approves it.
-#   The sums, and why, are in ./ValeVision3D__Api__SceneAssets__Logic__.py.
+#   anything here. Since v2.96.0 (NA_STAFF_SAVES_GO_STRAIGHT_IN) an Employee's save and own put back
+#   go straight into the record, and a save publishes whatever was left waiting from before; with the
+#   switch off, what an Employee sends waits for an admin's approval as v2.89.0 built it. Approve
+#   stays, for an admin, for anything waiting. The sums, and why, are in
+#   ./ValeVision3D__Api__SceneAssets__Logic__.py.
 # - THE LAST SEGMENT OF EVERY ROUTE IS FIXED (note 14, section 3.2). The system is in the body or
 #   the query. A write resolves through resolve_project_exact, so a path that fell through can
 #   never land on another project.
@@ -34,6 +37,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.96.0)
+# - Staff saves and their own put back go straight into the record; a save publishes what was
+#   left waiting, and says how many (published).
+#
 # 05-Nov-2026 - Version 1.0.0 (ValeVision3D v2.89.0)
 # - Initial build.
 #
@@ -148,21 +155,25 @@ def scene_assets_save(token):
 
     who = who_is_asking()
     admin = is_admin()
+    straight = admin or na_assets.NA_STAFF_SAVES_GO_STRAIGHT_IN
     record_path = vv_shared.project_record_path(folder)
     key = na_assets.NA_SYSTEMS[system]['Key']
+    published = 0
     with Na__Library__Locked(record_path):
         record = vv_shared.read_json_file(str(record_path))
         if record is None:
             return jsonify({'error': f'The record of {folder.name} could not be read'}), 500
         before = record.get(key)
         changes = read_changes(folder)
-        approved, changes, counts, renamed = na_assets.na_save(system, before, changes, body.get('base'), body['object'], who, admin)
-        if admin and approved is not None and not na_assets.na_same(approved, before):
+        approved, changes, counts, renamed = na_assets.na_save(system, before, changes, body.get('base'), body['object'], who, admin, straight)
+        if straight and na_assets.na_system_block(changes, system)['Waiting']:
+            approved, changes, published = na_assets.na_approve(system, approved, changes, who)   # <-- Left waiting from before staff saves went straight in
+        if straight and approved is not None and not na_assets.na_same(approved, before):
             write_record_key(folder, record_path, record, system, approved, who)
         write_changes(folder, changes, who)
 
-    named_activity('settings.save', f"Saved {system.lower()}" + ('' if admin else ', waiting for approval'), folder, counts)
-    return answer_for(system, approved if admin else before, changes, who, counts=counts, renamed=renamed, approvedNow=admin)
+    named_activity('settings.save', f"Saved {system.lower()}" + ('' if straight else ', waiting for approval'), folder, counts)
+    return answer_for(system, approved if straight else before, changes, who, counts=counts, renamed=renamed, approvedNow=straight, published=published)
 
 
 @valevision_scene_assets_api.post('/api/projects/<path:token>/scene-assets/approve')
@@ -208,6 +219,7 @@ def scene_assets_revert(token):
     if of_code != who['code'] and not admin:
         return jsonify({'error': f'Only an {vv_shared.AUTHOR_LEVEL} can remove someone else\'s changes'}), 403
 
+    straight = admin or na_assets.NA_STAFF_SAVES_GO_STRAIGHT_IN                   # <-- Someone else's still needs an admin: refused above
     record_path = vv_shared.project_record_path(folder)
     key = na_assets.NA_SYSTEMS[system]['Key']
     with Na__Library__Locked(record_path):
@@ -216,14 +228,14 @@ def scene_assets_revert(token):
             return jsonify({'error': f'The record of {folder.name} could not be read'}), 500
         before = record.get(key)
         changes = read_changes(folder)
-        approved, changes, restored, left_alone = na_assets.na_revert(system, before, changes, who, of_code, admin)
-        if admin and approved is not None and not na_assets.na_same(approved, before):
+        approved, changes, restored, left_alone = na_assets.na_revert(system, before, changes, who, of_code, straight)
+        if straight and approved is not None and not na_assets.na_same(approved, before):
             write_record_key(folder, record_path, record, system, approved, who)
         write_changes(folder, changes, who)
 
     named_activity('settings.save', f"Put back {len(restored)} {system.lower()} change{'' if len(restored) == 1 else 's'}", folder,
                    {'Put back': len(restored), 'Left alone': len(left_alone)})
-    return answer_for(system, approved if admin else before, changes, who, restored=restored, leftAlone=left_alone)
+    return answer_for(system, approved if straight else before, changes, who, restored=restored, leftAlone=left_alone, approvedNow=straight)
 
 # endregion -------------------------------------------------------------------
 

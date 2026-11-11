@@ -6,19 +6,20 @@ What people and plants share since staff can place them: the page's side of who 
 
 **Built, v2.89.0.** The sums are on the server, in `Server__Api/Api__ValeVision3D/ValeVision3D__Api__SceneAssets__Logic__.py`, whose header is the place to start. This folder only carries the words and draws the tab.
 
-- **The record is what is approved, and it is all a client ever reads.** What is waiting sits beside it, in `<project>/ValeVision3D/UserData__SceneAssets/ValeVision__SceneAssets__Changes__.json`. Staff work on the two laid together.
+- **No approval since v2.96.0.** Adam, 11-Nov-2026: "Remove this, any entorage added by anyone staff or above should be updated when saved". A save by any staff member, and their own Remove My Changes, go straight into the record, and a save publishes anything left waiting from before. The switch is `NA_STAFF_SAVES_GO_STRAIGHT_IN` in the Logic file; False brings back the wait for an admin. Line rules, Enabled and the other settings stay an admin's.
+- **The record is all a client ever reads.** Who did what sits beside it, in `<project>/ValeVision3D/UserData__SceneAssets/ValeVision__SceneAssets__Changes__.json`. Staff work on the two laid together.
+- **Who added it and when** (`Owners` in that file) is shown on the right-click menu of every person and plant (`Na__SceneChanges__OwnerLines`), for "ownership / accountability".
 - **The item is the unit:** a figure, a plop, a path or a palette, by its Uid.
-- **An admin's change is approved as it is made. Anyone else's waits.**
 - **Removing someone's changes** puts each item back as it stood just before they first touched it, except one somebody else has changed since.
 
 ## Who Gets What
 
 | Who | Page asks | Server asks | What |
 |---|---|---|---|
-| A client link, an Affiliate | Neither below | Refused | Reads the record. The section shows only with something approved |
-| Staff on a phone | `Na__DevGate__IsStaff` | Employee | Sees what is waiting too. No rows to place with |
-| Staff on a computer or tablet | `Na__DevGate__CanCreateAssets` | Employee | Places, saves, removes their own |
-| An AppAdmin | `Na__DevGate__IsAuthoringEnabled` | `AUTHOR_LEVEL` | Approves, removes anyone's, line rules, the off switch |
+| A client link, an Affiliate | Neither below | Refused | Reads the record. The section shows only with something placed |
+| Staff on a phone | `Na__DevGate__IsStaff` | Employee | Looks. No rows to place with |
+| Staff on a computer or tablet | `Na__DevGate__CanCreateAssets` | Employee | Places, saves (straight in), removes their own |
+| An AppAdmin | `Na__DevGate__IsAuthoringEnabled` | `AUTHOR_LEVEL` | Removes anyone's, line rules, the off switch; Approve for work left waiting from before v2.96.0 |
 
 ## Files
 
@@ -37,3 +38,4 @@ Each system's data module (`Na__EntData`, `Na__VegData`) calls the routes and ke
 - **A route's last segment is fixed,** and it resolves through `resolve_project_exact`: note 14, section 3.
 - **It stays the one object.** Everything holds the same object, so `TakeAnswer` replaces its contents and never the object.
 - **A key outside the item lists is an admin's.** Add a new setting freely: an Employee's is ignored. Add a new list of items to `NA_SYSTEMS` in the Logic file, or an Employee's work in it is not saved.
+- **A testing server reads the API once.** After changing the Logic or route file, test on a testing server started after the change: one already running answers with the old code (no `published` in a save's answer).

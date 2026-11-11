@@ -28,6 +28,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.4.0 (ValeVision3D v2.96.0)
+// - A staff save goes straight in: Save Entourage says so. Saved before a drawing opens (Na__Entourage__).
+//
 // 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.95.0)
 // - JamesificationSlider: height only, 1 to 1.50.
 //
@@ -262,7 +265,7 @@
             if (result.merged) await Na__EntShell__AfterReplaced();
             const counts = result.counts || {};
             if (!result.approvedNow && (counts.added || counts.changed || counts.removed)) {
-                Na__EntShell__Toast('Saved. An admin will approve it before clients see it.', false);
+                Na__EntShell__Toast('Saved. An admin will approve it before clients see it.', false);   // <-- Only with the API's NA_STAFF_SAVES_GO_STRAIGHT_IN off
             }
         } else {
             Na__EntShell__Toast('Entourage not saved: ' + ((result && result.error) || 'the server did not answer') + '.', true);
@@ -291,7 +294,7 @@
     // FUNCTION | A Save Entourage Button
     // ------------------------------------------------------------
     function Na__EntShell__MakeSaveButton() {
-        const button = Na__EntShell__Button('Save Entourage', 'na-veg-save', Na__EntShell__Save, 'Saves your changes in this project. Clients see them once an admin has approved them');
+        const button = Na__EntShell__Button('Save Entourage', 'na-veg-save', Na__EntShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each person you add');
         Na__EntShell__State.saveButtons.add(button);
         Na__EntShell__PaintSave();
         return button;

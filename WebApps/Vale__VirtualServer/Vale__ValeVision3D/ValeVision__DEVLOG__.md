@@ -16,6 +16,8 @@
 - Picking a stretched figure by its head, a copy keeping the stretch, a figure on a live drawing or sheet, a phone.
 - The MCP tools (`vv3d_entourage_edit`, `vv3d_entourage_get`) do not yet read or write the stretch.
 
+**Live (Adam: "Commit and push"), 11-Nov-2026 15:05 UTC:** `valevision3d` scoped to `02__Src__AppModules/23__System__Entourage` (stamp `20261111-150519`, the 7 entourage files replaced, none added or deleted); the unscoped list also held another session's uncommitted v2.94.2 vegetation files and three Tools menu icons, so they were left on the PC. No API change, so no restart. All 7 files match the PC by SHA-256 through Cloudflare; the deploy stamp moved to `20261111-150519`. On GitHub as `3305e13f`. Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.94.1 - 11-Nov-2026 - The Drawing Editor's Picture Handles Say What They Do: Navy Discs Scale, White Tabs Trim
 ### Adam: "Add better corner handles that are larger, different shaped and visually clearly describe scale drag points or clipping drag points."

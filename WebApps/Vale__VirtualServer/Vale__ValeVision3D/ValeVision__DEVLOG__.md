@@ -14,6 +14,8 @@
 
 **Not checked:** the form in a browser.
 
+**Live (Adam: "Commit and push", as for v2.98.2), 12-Nov-2026 11:37 UTC:** `valevision3d` scoped to `02__Src__AppModules/62__Feature__EmailWorkers` (stamp `20261112-113751`): 1 replaced (`Na__Feature__EmailWorkers__FormOverlay__.js`), none added or deleted. Page only: no API change, no restart. The live file carries the change.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.2 - 12-Nov-2026 - The External Client Sharing Tab Opens With Both Panels Folded
 ### Adam: "make this not unfolded , when you open the  client link sharing tab link it should be like image 02"

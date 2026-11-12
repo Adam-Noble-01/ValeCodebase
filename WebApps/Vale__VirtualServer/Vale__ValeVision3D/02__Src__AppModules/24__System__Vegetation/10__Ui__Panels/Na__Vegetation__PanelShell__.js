@@ -34,6 +34,9 @@
 // 11-Nov-2026 - Version 1.6.0 (ValeVision3D v2.96.0)
 // - A staff save goes straight in: Save Vegetation says so. Saved before a drawing opens (Na__Vegetation__).
 //
+// 11-Nov-2026 - Version 1.5.0 (ValeVision3D v2.94.2)
+// - Undo, Redo and Save Vegetation carry graphics (AddGlyph), in the words' own colour.
+//
 // 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
 // - A panel can carry an icon in its title and be the dropdown sections' panel. Only a panel on the
 //   right shuts Tools & Settings. Closing a panel says so (CLOSED_EVENT).
@@ -142,6 +145,26 @@
         button.type = 'button';
         if (title) button.title = title;
         if (onClick) button.addEventListener('click', onClick);
+        return button;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Put a Graphic Before a Button's Words
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "Undo (Add graphic)  Redo (Add graphic)   Save Vegetation (Add graphic)".
+    // name: 'undo', 'redo' or 'save', a class in the panels' stylesheet that masks the Tools menu's
+    // icon over the words' own colour, so it is white on the red Save and as faint as the words
+    // when the button cannot be used. The words go in a span of their own, for PaintSave.
+    // ------------------------------------------------------------
+    function Na__VegShell__AddGlyph(button, name) {
+        const label = Na__VegShell__El('span', 'na-veg-btn__label', button.textContent);
+        const glyph = Na__VegShell__El('span', 'na-veg-glyph na-veg-glyph--' + name);
+        glyph.setAttribute('aria-hidden', 'true');
+        button.textContent = '';
+        button.appendChild(glyph);
+        button.appendChild(label);
+        button.classList.add('na-veg-btn--glyph');
         return button;
     }
     // ------------------------------------------------------------
@@ -267,7 +290,8 @@
             button.classList.toggle('na-veg-save--saving', state.saving);
             button.classList.toggle('na-veg-save--saved', saved && !state.saving);
             button.disabled = state.saving || (!dirty && !saved);
-            button.textContent = state.saving ? 'Saving...' : (saved ? 'Saved' : 'Save Vegetation');
+            const label = button.querySelector('.na-veg-btn__label') || button;   // <-- The words only: the graphic stays
+            label.textContent = state.saving ? 'Saving...' : (saved ? 'Saved' : 'Save Vegetation');
         });
     }
     // ------------------------------------------------------------
@@ -319,7 +343,7 @@
     // FUNCTION | A Save Vegetation Button
     // ------------------------------------------------------------
     function Na__VegShell__MakeSaveButton() {
-        const button = Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each plant and path you add');
+        const button = Na__VegShell__AddGlyph(Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each plant and path you add'), 'save');
         Na__VegShell__State.saveButtons.add(button);
         Na__VegShell__PaintSave();
         return button;
@@ -477,8 +501,8 @@
         root.appendChild(body);
 
         const foot = Na__VegShell__El('div', 'na-veg-panel__foot');
-        const undo = Na__VegShell__Button('Undo', 'na-veg-undo', () => Na__VegShell__StepHistory(false), 'Ctrl+Z');
-        const redo = Na__VegShell__Button('Redo', 'na-veg-redo', () => Na__VegShell__StepHistory(true), 'Ctrl+Y');
+        const undo = Na__VegShell__AddGlyph(Na__VegShell__Button('Undo', 'na-veg-undo', () => Na__VegShell__StepHistory(false), 'Ctrl+Z'), 'undo');
+        const redo = Na__VegShell__AddGlyph(Na__VegShell__Button('Redo', 'na-veg-redo', () => Na__VegShell__StepHistory(true), 'Ctrl+Y'), 'redo');
         state.undoButtons.add(undo);
         state.redoButtons.add(redo);
         foot.appendChild(undo);

@@ -16,6 +16,10 @@
 //   configure ths feature too."
 // - DRAW: Draw New Path, then click along the planter. Plants appear as you go. Enter or a
 //   double click finishes, Backspace takes back the last point, Escape cancels the lot.
+// - WHAT THE NEXT CLICK ADDS IS SHOWN FIRST (Adam, 11-Nov-2026: "show previews of the assets as
+//   you draw the line otherwise its hard to understand what your doing"). Proxies at their real
+//   size along the rubber band, worked out by the same sums and seed as the real plants, and the
+//   path's first plant under the pointer before the first click. Nothing is built until the click.
 // - EDIT: a click on a path selects it and gives its points grips. Drag a grip; click the
 //   line to add a point; Delete takes out the grip under the pointer, and with none there
 //   the whole path. Dragging shows proxies, and the real plants draw on release, keeping
@@ -49,6 +53,11 @@
 // DEVELOPMENT LOG:
 // 12-Nov-2026 - Version 1.6.0 (ValeVision3D v2.97.0)
 // - A standard palette chosen in the Mix sets the path's plant scale and spacing to its own.
+//
+// 11-Nov-2026 - Version 1.5.0 (ValeVision3D v2.94.2)
+// - Drawing shows the plants the next click adds as proxies, and the first plant before the first
+//   click (its seed is picked when drawing starts). A curved path's rubber band follows its curve.
+// - The hover throttle no longer drops the last move, so the band ends where the pointer stopped.
 //
 // 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
 // - A section of the Vegetation panel: Mount draws into it. Toggle, OpenOn and DrawWith open that
@@ -84,6 +93,8 @@
         Na__VegRun__SyncPlants,
         Na__VegRun__PathPlants,
         Na__VegRun__PaintProxy,
+        Na__VegRun__PaletteItems,
+        Na__VegRun__EnsureRecipe,
         Na__VegRun__PinInUse
     } from '../03__System__SceneLayer/Na__Vegetation__Runtime__.js';
     // ------------------------------------------------------------
@@ -151,8 +162,11 @@
         lastClickX  : 0,
         lastClickY  : 0,
         hoverPoint  : null,                                                    // <-- World metres under the pointer, for the rubber band
+        nextSeed    : 0,                                                       // <-- Picked when drawing starts, so the plants shown before the first click are the ones it makes
         hoverGrip   : -1,
         hoverAt     : 0,
+        hoverLate   : null,                                                    // <-- A move inside the throttle, handled when it ends
+        hoverTimer  : 0,
         dragGrip    : -1,
         dragMoved   : false,
         dragProxies : null,
@@ -281,8 +295,62 @@
         const state = Na__VegLinear__State;
         state.selectedUid = '';
         state.drawingUid  = '__armed__';                                       // <-- The path is made at the first click
+        state.hoverPoint  = null;
+        state.nextSeed    = Math.floor(Math.random() * Na__VegLinear__SEED_RANGE);
+        Na__VegLinear__ReadMix(Na__VegLinear__Defaults().Vegetation__Path__PaletteUid);
         Na__VegLinear__PaintPanel();
         Na__VegTools__Repaint();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read the Recipes of a Mix, So Its Plants Can Be Shown Before Any Is Built
+    // ------------------------------------------------------------
+    function Na__VegLinear__ReadMix(paletteUid) {
+        const unread = Na__VegRun__PaletteItems(paletteUid).filter((item) => !item.recipe);
+        if (unread.length === 0) return;
+        Promise.all(unread.map((item) => Na__VegRun__EnsureRecipe(item.assetId))).then(() => Na__VegTools__Repaint());
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Plants the Next Click Would Add, Worked Out but Not Built
+    // ------------------------------------------------------------
+    // Adam, 11-Nov-2026: "show previews of the assets as you draw the line otherwise its hard to
+    // understand what your doing". The path as it would be with the pointer as its next point, by
+    // the same sums and seed as the real plants, so what is shown is what the click makes. Only
+    // the plants the path does not have yet: the ones already built are on the model. Before the
+    // first click, the path's first plant under the pointer (a path 1 mm long holds exactly it).
+    // Returns { plants, line }: the line in metres, for the rubber band to follow a curve.
+    // ------------------------------------------------------------
+    function Na__VegLinear__Ghosts() {
+        const state = Na__VegLinear__State;
+        const none = { plants : [], line : null };
+        if (!state.drawingUid || !state.hoverPoint) return none;
+        const hoverMm = Na__VegLinear__ToMm(state.hoverPoint);
+        const drawing = Na__VegLinear__Drawing();
+
+        if (!drawing) {
+            const ghost = Object.assign({}, Na__VegLinear__Defaults(), {
+                Vegetation__Path__Uid          : '__ghost__',
+                Vegetation__Path__PointsMm     : [hoverMm, [hoverMm[0] + 1, hoverMm[1], hoverMm[2]]],
+                Vegetation__Path__Seed         : state.nextSeed || 1,
+                Vegetation__Path__Curved       : false,
+                Vegetation__Path__PlantChanges : null
+            });
+            return { plants : Na__VegRun__PathPlants(ghost).slice(0, 1), line : null };
+        }
+
+        const points = drawing.Vegetation__Path__PointsMm;
+        if (points.length === 0) return none;
+        const last = points[points.length - 1];
+        if (last[0] === hoverMm[0] && last[1] === hoverMm[1] && last[2] === hoverMm[2]) return none;   // <-- Just clicked here
+        const ghost = Object.assign({}, drawing, { Vegetation__Path__PointsMm : points.concat([hoverMm]) });
+        const have  = new Set(Na__VegRun__PathPlants(drawing).map((plant) => plant.Vegetation__Plop__Uid));
+        return {
+            plants : Na__VegRun__PathPlants(ghost).filter((plant) => !have.has(plant.Vegetation__Plop__Uid)),
+            line   : drawing.Vegetation__Path__Curved === true ? Na__VegLinear__LineInMetres(ghost) : null
+        };
     }
     // ------------------------------------------------------------
 
@@ -311,7 +379,7 @@
             path.Vegetation__Path__Uid      = uid;
             path.Vegetation__Path__Name     = 'Path ' + uid.replace(/^P0*/, '');
             path.Vegetation__Path__PointsMm = [];
-            path.Vegetation__Path__Seed     = Math.floor(Math.random() * Na__VegLinear__SEED_RANGE);
+            path.Vegetation__Path__Seed     = state.nextSeed || Math.floor(Math.random() * Na__VegLinear__SEED_RANGE);
             delete path.Vegetation__Path__PlantChanges;                        // <-- A new path of its own: another's plants changed by hand are not its
             path.Vegetation__Path__PaletteUid = defaults.Vegetation__Path__PaletteUid || await Na__VegPalUi__Ensure();
             sceneData.Vegetation__SceneData__Paths.push(path);
@@ -550,14 +618,28 @@
         onHover(event) {
             const state = Na__VegLinear__State;
             const now = performance.now();
-            if (now - state.hoverAt < Na__VegLinear__HOVER_MS) return;
+            if (now - state.hoverAt < Na__VegLinear__HOVER_MS) {
+                // THE LAST MOVE IS NEVER DROPPED | Or the band and the plants stop short of
+                // where the pointer came to rest
+                state.hoverLate = { clientX : event.clientX, clientY : event.clientY };
+                if (!state.hoverTimer) {
+                    state.hoverTimer = window.setTimeout(() => {
+                        state.hoverTimer = 0;
+                        const late = state.hoverLate;
+                        state.hoverLate = null;
+                        if (late && Na__VegTools__Current() === Na__VegLinear__Tool) Na__VegLinear__Tool.onHover(late);
+                    }, Na__VegLinear__HOVER_MS);
+                }
+                return;
+            }
             state.hoverAt = now;
+            state.hoverLate = null;
 
             if (state.drawingUid) {
                 const drawing = Na__VegLinear__Drawing();
-                if (!drawing || drawing.Vegetation__Path__PointsMm.length === 0) return;
-                const last = drawing.Vegetation__Path__PointsMm[drawing.Vegetation__Path__PointsMm.length - 1];
-                state.hoverPoint = Na__VegLinear__PointAt(event.clientX, event.clientY, last[1] / 1000);
+                const points  = drawing ? drawing.Vegetation__Path__PointsMm : [];
+                const levelM  = points.length > 0 ? points[points.length - 1][1] / 1000 : 0;   // <-- As the click would land
+                state.hoverPoint = Na__VegLinear__PointAt(event.clientX, event.clientY, levelM);
                 Na__VegTools__Repaint();
                 return;
             }
@@ -626,11 +708,17 @@
                 }
             });
 
-            // THE RUBBER BAND | From the last point to the pointer
+            // THE PLANTS THE NEXT CLICK ADDS | Proxies at their real size, as a drag shows them
+            const ghosts = Na__VegLinear__Ghosts();
+            ghosts.plants.forEach((plant) => Na__VegRun__PaintProxy(pen, plant));
+
+            // THE RUBBER BAND | From the last point to the pointer. A curved path bends as the
+            // next point will bend it, so the band follows the whole curve it would make.
             const drawing = Na__VegLinear__Drawing();
             if (drawing && state.hoverPoint && drawing.Vegetation__Path__PointsMm.length > 0) {
                 const last = drawing.Vegetation__Path__PointsMm[drawing.Vegetation__Path__PointsMm.length - 1];
-                pen.polyline([[last[0] / 1000, last[1] / 1000, last[2] / 1000], [state.hoverPoint.x, state.hoverPoint.y, state.hoverPoint.z]], { colour : pen.LINE, width : 1.5, dash : [6, 5] });
+                const band = ghosts.line || [[last[0] / 1000, last[1] / 1000, last[2] / 1000], [state.hoverPoint.x, state.hoverPoint.y, state.hoverPoint.z]];
+                pen.polyline(band, { colour : pen.LINE, width : 1.5, dash : [6, 5] });
             }
 
             // MID-DRAG | Proxies, so nothing has to be built until it is let go
@@ -707,7 +795,7 @@
         body.appendChild(drawRow);
 
         body.appendChild(Na__VegShell__El('p', 'na-veg-panel__hint', state.drawingUid
-            ? 'Click along the planter. Plants appear as you go. Enter or a double click finishes, Backspace takes back a point.'
+            ? 'Click along the planter. Outlines show the plants the next click adds, and they grow as you go. Enter or a double click finishes, Backspace takes back a point.'
             : (selected
                 ? 'Drag a grip to move a point, click the line to add one, Delete on a grip to take it out.'
                 : 'Click a path on the model to edit it. These rows are what the next path starts from.')));

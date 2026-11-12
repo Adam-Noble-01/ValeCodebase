@@ -22,8 +22,9 @@
 // - THE VEGETATION PANEL OPENS AND SHUTS WITH THIS SECTION, FOR STAFF ON A COMPUTER OR TABLET
 //   (Adam, 06-Nov-2026: "Make it so the entourage assets and vegetation assets panels always open
 //   when the menu section is unfolded ... ensure when the section in the menu is folded the browser
-//   dissapears"). Unfolding opens it on Assets; folding, or its own Close, shuts it, and the two
-//   stay in step. Placing, the Line and Brush Tools, In This Project, Changes and Save are all in
+//   dissapears"). Unfolding opens it with every section folded (Adam, 11-Nov-2026); folding, or its
+//   own Close, shuts it, and the two stay in step. Placing, the Line and Brush Tools, In This Project,
+//   the Change Log and Save are all in
 //   that panel, so this section holds no buttons for them ("this section is pointless, this should
 //   be handled by the specialit menu that pops up"). Closing Tools & Settings itself leaves the
 //   panel open, so the model's right side is clear to work on (Adam's answer).
@@ -47,6 +48,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.2.1 (ValeVision3D v2.94.2)
+// - Notes only: the panel now opens with every section folded (Na__Vegetation__AssetBrowser__.js).
+//
 // 06-Nov-2026 - Version 1.2.0 (ValeVision3D v2.91.0)
 // - Unfolding the section opens the Vegetation panel, folding it shuts it, and the panel closing folds
 //   it. Create New Vegetation, Changes and Save are gone from here: they are in the panel.
@@ -353,7 +357,7 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Open the Panel on Assets
+    // HELPER FUNCTION | Open the Panel, Every Section Folded
     // ------------------------------------------------------------
     // The layer is made here if nothing was planted before: everything in the panel needs it.
     // ------------------------------------------------------------

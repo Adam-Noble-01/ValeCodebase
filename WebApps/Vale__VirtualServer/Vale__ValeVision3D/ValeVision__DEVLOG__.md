@@ -111,6 +111,31 @@
 **Live (Adam: "Commit and push"), 11-Nov-2026 15:05 UTC:** `valevision3d` scoped to `02__Src__AppModules/23__System__Entourage` (stamp `20261111-150519`, the 7 entourage files replaced, none added or deleted); the unscoped list also held another session's uncommitted v2.94.2 vegetation files and three Tools menu icons, so they were left on the PC. No API change, so no restart. All 7 files match the PC by SHA-256 through Cloudflare; the deploy stamp moved to `20261111-150519`. On GitHub as `3305e13f`. Not looked at in a browser on the live site.
 
 # ---------------------------------------------------------
+## ValeVision3D v2.94.2 - 11-Nov-2026 - The Line Tool Shows the Plants a Click Will Add, and the Vegetation Panel Opens Folded with the Tools First
+### Adam: "Make the path tool show previews of the assets as you draw the line otherwise its hard to understand what your doing", then: "When the menu first opens close the vegtation assets as it makes it hard to navigate the menu and move assets here / Vegetation / Line Tool / Brush Tool / Assets / In This Project / Change Log / Undo (Add graphic)  Redo (Add graphic)   Save Vegetation (Add graphic)", then, on Entourage's In This Project: "no but remove the section showing the code thats no longer needed"
+
+**What was wrong:** drawing a path showed only a dashed line from the last point to the pointer; nothing said where plants would land, or how big, until the click built them. The hover throttle also dropped the last pointer move, so the dashed line could stop short of where the pointer came to rest. The Vegetation panel opened with Assets unfolded, a long list of cards that pushed every other section down.
+
+**Now:**
+- **Ghost plants while drawing:** the plants the next click adds are drawn as proxies at their real size and shape along the dashed line, worked out by the same sums and seed as the real ones, so the click builds exactly what was shown (only the plants the path does not have yet: the built ones are on the model). Before the first click, the path's first plant sits under the pointer (its seed is picked when Draw New Path is pressed). A curved path's dashed line follows the curve the next point will make. The last pointer move is always handled, so the line and the ghosts end at the pointer.
+- **The panel opens with every section folded**, in Adam's order: Line Tool, Brush Tool, Assets, In This Project, Change Log (was Changes). A card's Draw Path, a path's Edit and a plant picked on the model still open their own section.
+- **Undo, Redo and Save Vegetation carry graphics:** new `Icon__ToolsMenu__Undo__`, `__Redo__` (the Image Viewer's approved shapes) and `__Save__` (a disk, same weight) in `UiIcons__MenuIcons__ToolsMenu`, masked over each button's text colour, so the icon is white on the red Save and faint when disabled. The footer is a little tighter so the three still sit on one line in the 296 px panel.
+- **What It Saves is gone** from In This Project in both panels: the selected item's saved record, shown as JSON since the prototype, is no longer needed. In Vegetation the selection is headed by its name instead (the asset's name, Stroke N, or the path's name), as a figure already is in Entourage.
+
+**Changed:** `Na__Vegetation__LinearTool__.js` 1.5.0, `Na__Vegetation__AssetBrowser__.js` 1.4.0, `Na__Vegetation__PanelShell__.js` 1.5.0, `Na__Vegetation__Styles__Panels__.css` 1.1.0, `Na__Vegetation__MenuSection__.js` 1.2.1 (notes only), `README__Vegetation__.md`, `Na__Entourage__AssetBrowser__.js` 1.2.1 (two lines, beside v2.95.0's work in the same file); three new SVGs. No record key, no API change.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- Node, `PathModel` on its own, seeds 1 to 399, straight and curved: the ghost before the first click is the same asset and seed as the path's real first plant, at the pointer; the ghosts on the band are exactly the plants the click adds; a zero-length last leg on a curve stays finite.
+- On the MCP sandbox (headless Edge, `60227__Thorpe` as AppAdmin, real mouse): unfolding Vegetation opened the panel with all five sections folded in the new order and the three icons on one line; Draw New Path, then the first plant under the pointer; after the first click six mixed ghosts along the dashed line; the click built six plants where the ghosts stood; the next leg showed only its new plants; Escape left no path. No script errors.
+- Same sandbox: a path drawn and selected in In This Project showed "Path 1", Focus, Edit, Remove and Plant scale, and no record.
+
+**Not checked:**
+- A real GPU, a phone or tablet, Safari (the icons use `-webkit-mask-image` as well).
+- Entourage's In This Project on screen with a figure selected (the change only removes the two lines that drew the record).
+- Otherwise the Entourage panel is unchanged by this release (Adam: "no"): it still opens on Assets, says Changes, and has plain Undo, Redo and Save.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.94.1 - 11-Nov-2026 - The Drawing Editor's Picture Handles Say What They Do: Navy Discs Scale, White Tabs Trim
 ### Adam: "Add better corner handles that are larger, different shaped and visually clearly describe scale drag points or clipping drag points."
 

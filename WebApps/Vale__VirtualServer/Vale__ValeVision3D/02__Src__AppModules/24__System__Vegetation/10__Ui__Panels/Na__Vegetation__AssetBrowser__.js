@@ -18,8 +18,9 @@
 //   picture files to go stale (plan, D13), and a card shows the project's own line rules.
 // - CLICK A CARD, THEN CLICK THE MODEL (NPR's gesture). Escape, or the card again, stops.
 //   The + on a card adds it to the palette last worked on instead.
-// - IN THIS PROJECT. Every path, stroke and single plant, with its record shown, as the demo
-//   did: "What a plop saves". A click on a plant in the model selects it here.
+// - IN THIS PROJECT. Every path, stroke and single plant. A click on a plant in the model selects
+//   it here. Its saved record is no longer shown (Adam, 11-Nov-2026: "remove the section showing
+//   the code thats no longer needed"), and what is selected is headed by its name.
 // - A PLANT'S OWN COPY OF ITS ASSET (plan, D14). Improving the library changes nothing here
 //   until Update to Latest is pressed for that asset.
 // - SIZING WHAT IS PLANTED (Adam, 04-Nov-2026: "Add some controls to be able to size and scale
@@ -37,12 +38,14 @@
 // - ONE PANEL FOR ALL OF IT, AS DROPDOWN SECTIONS (Adam, 06-Nov-2026: "make the new menu on the left
 //   feel more like the sestablished style of the right each with dropdown sections and graphics etc",
 //   "we currently have multiple places for creating things"). The panel is called Vegetation, and
-//   holds Assets, Line Tool, Brush Tool, In This Project and Changes, one open at a time
-//   (../../22__System__SceneAssets/Na__SceneAssets__Hub__.js). The two tools draw into their
-//   section, and are armed on the model only while it is open.
-// - IT OPENS ON ASSETS WHEN VEGETATION IS UNFOLDED IN TOOLS & SETTINGS, AND GOES WHEN IT IS FOLDED
-//   (Adam: "people would expect those sections are the entry point for their respective asset
-//   browsers"). Closing it here folds the menu's section too.
+//   holds Line Tool, Brush Tool, Assets, In This Project and Change Log, in that order (Adam,
+//   11-Nov-2026), one open at a time (../../22__System__SceneAssets/Na__SceneAssets__Hub__.js). The
+//   two tools draw into their section, and are armed on the model only while it is open.
+// - IT OPENS WHEN VEGETATION IS UNFOLDED IN TOOLS & SETTINGS, AND GOES WHEN IT IS FOLDED (Adam:
+//   "people would expect those sections are the entry point for their respective asset browsers").
+//   It opens with every section folded (Adam, 11-Nov-2026: "When the menu first opens close the
+//   vegtation assets as it makes it hard to navigate the menu"); a card's Draw Path, a path's Edit and
+//   a plant picked on the model still open their own section. Closing it here folds the menu's too.
 //
 // INTEGRATION:
 // - Opened and closed by Tools & Settings > Vegetation (Na__Vegetation__MenuSection__.js).
@@ -55,6 +58,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Nov-2026 - Version 1.4.0 (ValeVision3D v2.94.2)
+// - Opens with every section folded. Sections in Adam's order: Line Tool, Brush Tool, Assets, In This
+//   Project, Change Log (was Changes; its key is still 'changes'). In This Project no longer shows
+//   the selected item's saved record: it is headed by its name instead of What It Saves.
+//
 // 06-Nov-2026 - Version 1.3.0 (ValeVision3D v2.91.0)
 // - The panel is Vegetation, as dropdown sections: Assets, Line Tool, Brush Tool, In This Project and
 //   Changes. Open, Close, FoldSection and CurrentSection for the menu section and the tools.
@@ -176,7 +184,7 @@
     // ------------------------------------------------------------
     const Na__VegCards__State = {
         context   : null,
-        tab       : 'assets',                                                  // <-- The open section's key, '' with all folded
+        tab       : '',                                                        // <-- The open section's key, '' with all folded
         hub       : null,                                                      // <-- The sections, while the panel is open
         opening   : null,                                                      // <-- The panel being built: a second ask waits for it
         search    : '',
@@ -836,22 +844,25 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The Record and Actions of What Is Selected
+    // HELPER FUNCTION | The Name and Actions of What Is Selected
+    // ------------------------------------------------------------
+    // Headed by its name, as a figure is in Entourage's panel. The saved record is no longer
+    // shown (Adam, 11-Nov-2026: "remove the section showing the code thats no longer needed").
     // ------------------------------------------------------------
     function Na__VegCards__AppendDetail(holder) {
         const state = Na__VegCards__State;
         const selected = state.selected;
         if (!selected) return;
         const sceneData = Na__VegRun__GetSceneData();
+        const heading = (title) => holder.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', title));
         const actions = Na__VegShell__El('div', 'na-veg-row');
         actions.style.marginTop = '8px';
         actions.appendChild(Na__VegShell__Button('Focus', '', Na__VegCards__FocusSelected, 'Bring it to the middle of the view'));
 
-        let record = null;
         if (selected.kind === 'plop') {
             const plop = Na__VegCards__SelectedPlop();
             if (!plop) return;
-            record = plop;
+            heading(Na__VegCards__AssetName(plop.Vegetation__Plop__AssetId));
             actions.appendChild(Na__VegShell__Button('New Seed', '', async () => {
                 Na__VegShell__BeforeChange('');
                 plop.Vegetation__Plop__Seed = Math.floor(Math.random() * Na__VegCards__SEED_RANGE);
@@ -889,14 +900,14 @@
             holder.appendChild(turn.row);
             Na__VegCards__AppendPlantSize(holder, plop);
         } else if (selected.kind === 'stroke') {
-            record = { Vegetation__Plop__StrokeUid : selected.uid, Plants : Na__VegCards__SelectedPlants().length };
+            heading(selected.uid === Na__VegCards__TEST_ROW ? 'Test row' : 'Stroke ' + selected.uid);
             actions.appendChild(Na__VegShell__Button('Remove', 'na-veg-btn--danger', Na__VegCards__RemoveSelected));
             holder.appendChild(actions);
             Na__VegCards__AppendStrokeScale(holder);
         } else {
             const path = Na__VegData__FindPath(sceneData, selected.uid);
             if (!path) return;
-            record = path;
+            heading(path.Vegetation__Path__Name || 'Path ' + selected.uid);
             actions.appendChild(Na__VegShell__Button('Edit', '', async () => {
                 const tool = await import('../20__System__Tools/Na__Vegetation__LinearTool__.js');
                 await tool.Na__VegLinear__OpenOn(state.context, selected.uid);
@@ -905,9 +916,6 @@
             holder.appendChild(actions);
             Na__VegCards__AppendPathScale(holder, path);
         }
-
-        const text = JSON.stringify(record, null, 1);
-        holder.appendChild(Na__VegShell__El('pre', 'na-veg-record__json', text));
     }
     // ------------------------------------------------------------
 
@@ -1022,10 +1030,7 @@
             });
         }
 
-        if (state.selected) {
-            holder.appendChild(Na__VegShell__El('div', 'na-veg-panel__section', 'What it saves'));
-            Na__VegCards__AppendDetail(holder);
-        }
+        if (state.selected) Na__VegCards__AppendDetail(holder);
         Na__VegCards__AppendPinned(holder);
     }
     // ------------------------------------------------------------
@@ -1287,21 +1292,7 @@
     // ------------------------------------------------------------
     function Na__VegCards__Sections() {
         const state = Na__VegCards__State;
-        return [
-            {
-                key   : 'assets',
-                label : 'Assets',
-                icon  : 'Vegetation',
-                title : 'The library as cards: click a card, then click the model to drop one',
-                mount : (body) => {
-                    const stop = Na__VegCards__ListSection('assets', Na__VegCards__DrawCards)(body);
-                    return () => {
-                        if (state.armedId) Na__VegCards__StopPlacing();        // <-- A card left armed would still drop plants
-                        state.cardEls.clear();
-                        stop();
-                    };
-                }
-            },
+        return [                                                               // <-- Adam's order, 11-Nov-2026: the tools first, then the library
             {
                 key   : 'line',
                 label : 'Line Tool',
@@ -1317,6 +1308,20 @@
                 mount : Na__VegCards__ToolSection('brush', async () => (await import('../20__System__Tools/Na__Vegetation__BushTool__.js')).Na__VegBushTool__Mount)
             },
             {
+                key   : 'assets',
+                label : 'Assets',
+                icon  : 'Vegetation',
+                title : 'The library as cards: click a card, then click the model to drop one',
+                mount : (body) => {
+                    const stop = Na__VegCards__ListSection('assets', Na__VegCards__DrawCards)(body);
+                    return () => {
+                        if (state.armedId) Na__VegCards__StopPlacing();        // <-- A card left armed would still drop plants
+                        state.cardEls.clear();
+                        stop();
+                    };
+                }
+            },
+            {
                 key   : 'project',
                 label : 'In This Project',
                 icon  : 'InThisProject',
@@ -1325,7 +1330,7 @@
             },
             {
                 key   : 'changes',
-                label : 'Changes',
+                label : 'Change Log',
                 icon  : 'Changes',
                 title : 'Who has added, moved or deleted what here, and removing your own changes',
                 mount : Na__VegCards__ListSection('changes', Na__VegCards__DrawChanges)
@@ -1432,17 +1437,19 @@
                 Na__VegCards__WriteHint();
             }
         });
-        await Na__VegCards__ShowTab(tab || 'assets');
+        if (tab) await Na__VegCards__ShowTab(tab);
+        else state.tab = '';                                                   // <-- Every section folded: the panel's rows are its menu
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Open the Panel on Assets, If It Is Not Open
+    // FUNCTION | Open the Panel with Every Section Folded, If It Is Not Open
     // ------------------------------------------------------------
-    // What unfolding Vegetation in Tools & Settings does.
+    // What unfolding Vegetation in Tools & Settings does. Adam, 11-Nov-2026: "When the menu first
+    // opens close the vegtation assets as it makes it hard to navigate the menu".
     // ------------------------------------------------------------
     async function Na__VegCards__Open(context) {
-        await Na__VegCards__Build(context, 'assets');
+        await Na__VegCards__Build(context, '');
     }
     // ------------------------------------------------------------
 
@@ -1464,7 +1471,7 @@
             Na__VegCards__Close();
             return;
         }
-        await Na__VegCards__Build(context, 'assets');
+        await Na__VegCards__Build(context, '');
     }
     // ------------------------------------------------------------
 

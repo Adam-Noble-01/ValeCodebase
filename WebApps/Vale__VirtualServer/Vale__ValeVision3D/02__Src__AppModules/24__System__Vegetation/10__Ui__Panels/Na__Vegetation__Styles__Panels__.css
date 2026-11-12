@@ -21,6 +21,9 @@
  * 12-Nov-2026 - Version 1.2.0 (ValeVision3D v2.97.0)
  * - Plant pictures in a palette (na-veg-palette-pic) and Add a Plant's picture tiles.
  *
+ * 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.94.2)
+ * - Graphics on Undo, Redo and Save Vegetation (na-veg-glyph).
+ *
  * 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.85.0)
  * - Initial build: Stages 3 to 6 of ValeVision__PLAN__VegetationSystem__.md.
  *
@@ -141,7 +144,7 @@
     .na-veg-panel__foot {
         display                            : flex;
         align-items                        : center;
-        gap                                : 6px;
+        gap                                : 4px;
         padding                            : 8px 12px;
         border-top                         : 1px solid var(--na-veg-rule);
     }
@@ -235,6 +238,44 @@
 
     .na-veg-btn--wide {
         width                              : 100%;
+    }
+
+    /* A GRAPHIC BEFORE THE WORDS (Adam, 11-Nov-2026) | The Tools menu's icon as a mask over the
+       words' own colour, so it is white on the red Save and as faint as the words when disabled */
+    .na-veg-btn--glyph {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : 5px;
+        padding                            : 4px 7px 4px 6px;              /* <-- Undo, Redo and Save Vegetation with their graphics still fit the 296 px panel on one line */
+        white-space                        : nowrap;
+    }
+
+    .na-veg-glyph {
+        flex                               : 0 0 auto;
+        width                              : 13px;
+        height                             : 13px;
+        background-color                   : currentColor;
+        -webkit-mask-position              : center;
+        mask-position                      : center;
+        -webkit-mask-size                  : contain;
+        mask-size                          : contain;
+        -webkit-mask-repeat                : no-repeat;
+        mask-repeat                        : no-repeat;
+    }
+
+    .na-veg-glyph--undo {
+        -webkit-mask-image                 : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Undo__.svg');
+        mask-image                         : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Undo__.svg');
+    }
+
+    .na-veg-glyph--redo {
+        -webkit-mask-image                 : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Redo__.svg');
+        mask-image                         : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Redo__.svg');
+    }
+
+    .na-veg-glyph--save {
+        -webkit-mask-image                 : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Save__.svg');
+        mask-image                         : url('../../../01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__Save__.svg');
     }
 
     /* SAVE VEGETATION | As Save Drawing: red when changed, syncing, green */

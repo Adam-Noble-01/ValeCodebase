@@ -1,6 +1,20 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.98.2 - 12-Nov-2026 - The External Client Sharing Tab Opens With Both Panels Folded
+### Adam: "make this not unfolded , when you open the  client link sharing tab link it should be like image 02"
+
+**What was wrong:** choosing the External Client Sharing tab unfolded the Client email panel (since v2.79.3), so the form opened long, with its address box in the way.
+
+**Now:** the tab opens with Client email and Client link both folded, as two cards; the person unfolds the one they want. One open at a time, as before. A panel the person opened stays open if they switch tabs and come back.
+
+**Changed:** `93__Feature__ClientLinks/Na__ClientLinks__ShareTab__.js` 1.1.4 (`show` no longer opens the email panel).
+
+**Checked:** `vv3d_check.py changed`: syntax, 0 undeclared names, the module graph clean.
+
+**Not checked:** the tab in a browser.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.1 - 12-Nov-2026 - Plants and People in Front of a Fog Plane Are Drawn, Each Fogged by Its Own Distance
 ### Adam: "Why is vegatation INFRONT of Fog being blocked by it?" (Corrett 64610, Shot-01), then: "Yes, fix it here"
 

@@ -35,8 +35,9 @@
 //   form clear for the next. Download Email stays, for pasting into Outlook.
 // - TWO BUTTONS, EACH WITH ITS PICTURE (1.1.1): Send email (the paper plane)
 //   and Download Email (the Gold Standards' download: an arrow into a tray).
-// - ONE PANEL OPEN AT A TIME, as Theia's two. The client email panel (first,
-//   green, 1.1.3) opens with the tab; the client link panel is second, navy.
+// - ONE PANEL OPEN AT A TIME, as Theia's two. The client email panel is
+//   first, green (1.1.3); the client link panel second, navy. Both start
+//   folded when the tab opens (1.1.4): the person picks one.
 // - The plain project link (a staff link) stays on the Internal tab.
 // - The server decides who may do what (ValeVision3D__Api__ClientLinks__.py):
 //   Employee and up make links and switch off their own; Management and App
@@ -49,6 +50,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.1.4 (ValeVision3D v2.98.2)
+// - Adam: the tab opens with both panels folded, the email panel no longer
+//   unfolded on show.
+//
 // 28-Oct-2026 - Version 1.1.3 (ValeVision3D v2.79.3)
 // - Adam: the Client email panel first and green (it sends to the client),
 //   the Client link panel second, in navy. The email panel opens with the tab.
@@ -658,13 +663,13 @@
         // ------------------------------------------------------------
 
 
-        // FUNCTION | The Tab Is On Show: open the client link panel the first time, fetch the links afresh
+        // FUNCTION | The Tab Is On Show: both panels folded (Adam, 1.1.4), fetch the links afresh
         // ------------------------------------------------------------
         const show = () => {
-            if (!clientPanel.panel.open && !emailPanel.panel.open) emailPanel.panel.open = true;
             loadLinks();
             showLinkNote();
-            setTimeout(() => (emailPanel.panel.open ? toBox : label).focus(), 0);
+            if (emailPanel.panel.open) setTimeout(() => toBox.focus(), 0);       // <-- A panel the person opened stays open
+            else if (clientPanel.panel.open) setTimeout(() => label.focus(), 0);
         };
         // ------------------------------------------------------------
 

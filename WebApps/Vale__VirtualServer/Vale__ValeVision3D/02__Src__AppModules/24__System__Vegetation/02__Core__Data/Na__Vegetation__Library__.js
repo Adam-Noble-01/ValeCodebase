@@ -19,6 +19,9 @@
 //   the first use of an asset copies its whole recipe into the project's object, and
 //   the project draws from that copy from then on. Improving the library therefore
 //   never changes a finished project.
+// - STANDARD PALETTES (Adam, 12-Nov-2026: "Make this into a standard pallette"). Mixes every
+//   project can start from, in VegetationLibrary__StandardPalettes__.json beside the index. A
+//   project takes a copy, as it does an asset, so editing one here alters no project.
 // - A RECIPE IS DATA. It is read once and handed out as it is, so a caller must not
 //   write to one. A pinned copy is a real copy.
 //
@@ -30,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.1.0 (ValeVision3D v2.97.0)
+// - Na__VegLib__LoadStandardPalettes: the library's standard palettes.
+//
 // 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.83.0)
 // - Initial build: Stage 1 of ValeVision__PLAN__VegetationSystem__.md.
 //
@@ -43,6 +49,7 @@
     // MODULE CONSTANTS | Where the Library Is
     // ------------------------------------------------------------
     const Na__VegLib__INDEX_URL = new URL('../../../53__Vegetation__AssetLibrary/VegetationLibrary__Index__.json', import.meta.url);
+    const Na__VegLib__PALETTES_URL = new URL('../../../53__Vegetation__AssetLibrary/VegetationLibrary__StandardPalettes__.json', import.meta.url);
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -56,6 +63,7 @@
     // ------------------------------------------------------------
     const Na__VegLib__State = {
         cataloguePromise : null,
+        palettesPromise  : null,
         assetPromises    : new Map()
     };
     // ------------------------------------------------------------
@@ -117,6 +125,26 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Standard Palettes, in File Order
+    // ------------------------------------------------------------
+    // Each: Palette__Id, __Name, __Description, __PlantScale, __SpacingMm, __Items
+    // ([{ Item__AssetId, Item__Weight }]). Read once, then held. A library without the
+    // file has none: the tools work as before.
+    // ------------------------------------------------------------
+    function Na__VegLib__LoadStandardPalettes() {
+        if (!Na__VegLib__State.palettesPromise) {
+            Na__VegLib__State.palettesPromise = Na__VegLib__FetchJson(Na__VegLib__PALETTES_URL)
+                .then((file) => file.VegetationLibrary__StandardPalettes__Palettes || [])
+                .catch(() => {
+                    Na__VegLib__State.palettesPromise = null;                  // <-- A later call may retry
+                    return [];
+                });
+        }
+        return Na__VegLib__State.palettesPromise;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Every Asset's Recipe, in Catalogue Order
     // ------------------------------------------------------------
     async function Na__VegLib__LoadAllAssets() {
@@ -171,6 +199,7 @@
         Na__VegLib__LoadCatalogue,
         Na__VegLib__LoadAsset,
         Na__VegLib__LoadAllAssets,
+        Na__VegLib__LoadStandardPalettes,
         Na__VegLib__PinAsset,
         Na__VegLib__ResolveRecipe
     };

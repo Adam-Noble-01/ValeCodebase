@@ -139,7 +139,7 @@
         Na__VegShell__Save,
         Na__VegShell__AfterReplaced
     } from './Na__Vegetation__PanelShell__.js';
-    import { Na__VegPalUi__AddAsset, Na__VegPalUi__OnlyThis } from './Na__Vegetation__PaletteEditor__.js';
+    import { Na__VegPalUi__AddAsset, Na__VegPalUi__OnlyThis, Na__VegPalUi__SetPictureDrawer } from './Na__Vegetation__PaletteEditor__.js';
     import {
         Na__VegTools__Prepare,
         Na__VegTools__Arm,
@@ -1412,6 +1412,7 @@
         Na__VegCards__PaintCount();
         Na__VegTools__SetFallback(Na__VegCards__Tool);                         // <-- Whenever no tool has the clicks, a click selects a plant
         if (!Na__VegTools__Current()) Na__VegTools__Arm(Na__VegCards__Tool);
+        Na__VegPalUi__SetPictureDrawer(Na__VegCards__DrawPicture);             // <-- The palette's plant pictures are the cards' own
         Na__VegPlantMenu__Start(context, {
             hasTheClicks : () => Na__VegTools__Current() === Na__VegCards__Tool && !state.armedId && !state.moving,
             onPicked     : (kind, uid) => {

@@ -47,6 +47,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.6.0 (ValeVision3D v2.97.0)
+// - A standard palette chosen in the Mix sets the path's plant scale and spacing to its own.
+//
 // 06-Nov-2026 - Version 1.4.0 (ValeVision3D v2.91.0)
 // - A section of the Vegetation panel: Mount draws into it. Toggle, OpenOn and DrawWith open that
 //   section, so every way in still works.
@@ -777,8 +780,22 @@
         if (rules.Vegetation__Path__PaletteUid) Na__VegPalUi__SetCurrentUid(rules.Vegetation__Path__PaletteUid);
         Na__VegPalUi__Mount({
             holder : mix,
-            onPick : (paletteUid) => {
-                Na__VegLinear__WriteRule(rules, 'Vegetation__Path__PaletteUid', paletteUid, 'palette');
+            onPick : (paletteUid, layout) => {
+                if (!layout) {
+                    Na__VegLinear__WriteRule(rules, 'Vegetation__Path__PaletteUid', paletteUid, 'palette');
+                    return;
+                }
+                // A STANDARD PALETTE | Its mix comes with the plant scale and spacing it was proven at
+                Na__VegShell__BeforeChange('palette');
+                rules.Vegetation__Path__PaletteUid = paletteUid;
+                rules.Vegetation__Path__PlantScale = layout.plantScale;
+                rules.Vegetation__Path__SpacingMm  = layout.spacingMm;
+                Na__VegShell__MarkChanged();
+                Na__VegLinear__PaintPanel();                                   // <-- The Layout sliders show the new scale and spacing
+                if (Na__VegLinear__Selected()) {
+                    Na__VegTools__Repaint();
+                    Na__VegRun__SyncPlants();
+                }
             }
         }).then((unmount) => { state.unmountPal = unmount; });
 

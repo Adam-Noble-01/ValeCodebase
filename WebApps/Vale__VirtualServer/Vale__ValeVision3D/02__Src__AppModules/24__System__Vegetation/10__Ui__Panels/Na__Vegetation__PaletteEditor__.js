@@ -21,6 +21,14 @@
 // - EACH ITEM HAS A SCALE, on top of the tool's own, for the one plant in a mix that is too big.
 // - AN ASSET WITH A DEFAULT WEIGHT OF 0 STAYS OUT OF THE FIRST MIX: a clipped hedge is not one
 //   plant among others in a bed. A palette of just that plant is one click from its card.
+// - STANDARD PALETTES (Adam, 12-Nov-2026: "Make this into a standard pallette named Small Planting
+//   Bed Shrubs"). The library's mixes are listed under the project's own in the palette list.
+//   Choosing one copies it into the project, marked with Vegetation__Palette__StandardId so a
+//   second choice finds that copy again, and tells the tool its proven plant scale and spacing.
+// - A PICTURE OF EVERY PLANT (Adam, 12-Nov-2026: "Actually show small thumbnail graphics for the
+//   plants used in the pallette as there is no visual representation currently so its horrible
+//   to use"). Each item has its plant drawn small beside its name, by the same code as the cards
+//   (the drawer is handed in by the asset browser), and Add a Plant is a grid of pictures.
 //
 // INTEGRATION:
 // - Used by ../20__System__Tools/Na__Vegetation__LinearTool__.js and
@@ -30,6 +38,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.2.0 (ValeVision3D v2.97.0)
+// - Standard palettes in the palette list, copied in on choice with their plant scale and spacing.
+//   A picture beside each plant, and Add a Plant as picture tiles in place of a list of names.
+//
 // 04-Nov-2026 - Version 1.1.0 (ValeVision3D v2.86.0)
 // - A scale on each item. A palette of one plant, for a card's Draw Path. A default weight of 0.
 //
@@ -59,7 +71,7 @@
         Na__VegRun__EnsureRecipe
     } from '../03__System__SceneLayer/Na__Vegetation__Runtime__.js';
     import { Na__VegData__NextUid, Na__VegData__FindPalette } from '../02__Core__Data/Na__Vegetation__SceneData__.js';
-    import { Na__VegLib__LoadCatalogue, Na__VegLib__LoadAllAssets } from '../02__Core__Data/Na__Vegetation__Library__.js';
+    import { Na__VegLib__LoadCatalogue, Na__VegLib__LoadAllAssets, Na__VegLib__LoadStandardPalettes } from '../02__Core__Data/Na__Vegetation__Library__.js';
     import { Na__VegBrush__SharesOf } from '../01__Core__Engine/Na__Vegetation__BrushModel__.js';
     // ------------------------------------------------------------
 
@@ -76,13 +88,19 @@
     const Na__VegPalUi__FIRST_NAME   = 'Mixed Planting';
     const Na__VegPalUi__ADDED_WEIGHT = 25;
     const Na__VegPalUi__ONLY_WEIGHT  = 100;
+    const Na__VegPalUi__STD_PREFIX   = 'STD:';                                 // <-- A standard palette's option in the list, not yet in the project
+    const Na__VegPalUi__ITEM_PIC     = { w : 58, h : 50 };                // <-- Beside a plant in the mix
+    const Na__VegPalUi__TILE_PIC     = { w : 78, h : 52 };                     // <-- A tile of Add a Plant
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | The Palette Last Worked On, and the Editors on the Page
     // ------------------------------------------------------------
     const Na__VegPalUi__State = {
-        currentUid : '',
-        editors    : new Set()                                                 // <-- Each is a function that draws it again
+        currentUid  : '',
+        editors     : new Set(),                                               // <-- Each is a function that draws it again
+        drawPicture : null,                                                    // <-- (canvas, recipe, size), the cards' own: handed in by the asset browser
+        pictures    : new Map(),                                               // <-- 'assetId|wxh' -> a drawn canvas, copied rather than drawn again
+        addOpen     : true                                                     // <-- Add a Plant unfolded, kept across redraws
     };
     // ------------------------------------------------------------
 
@@ -164,6 +182,37 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Take a Standard Palette into the Project, Found or Copied, and Made Current
+    // ------------------------------------------------------------
+    // A copy made earlier is found by its StandardId and used as it now stands, so a project's
+    // own changes to it are kept. Returns its uid.
+    // ------------------------------------------------------------
+    async function Na__VegPalUi__TakeStandard(standard) {
+        await Na__VegPalUi__Ensure();
+        const sceneData = Na__VegRun__GetSceneData();
+        const palettes  = sceneData.Vegetation__SceneData__Palettes;
+        let palette = palettes.find((row) => row.Vegetation__Palette__StandardId === standard.Palette__Id);
+        if (!palette) {
+            Na__VegShell__BeforeChange('');
+            palette = {
+                Vegetation__Palette__Uid        : Na__VegData__NextUid('PAL', palettes, 'Vegetation__Palette__Uid'),
+                Vegetation__Palette__Name       : standard.Palette__Name,
+                Vegetation__Palette__StandardId : standard.Palette__Id,
+                Vegetation__Palette__Items      : (standard.Palette__Items || []).map((item) => ({
+                    Vegetation__PaletteItem__AssetId : item.Item__AssetId,
+                    Vegetation__PaletteItem__Weight  : item.Item__Weight
+                }))
+            };
+            palettes.push(palette);
+            Na__VegShell__MarkChanged();
+        }
+        for (const item of palette.Vegetation__Palette__Items) await Na__VegRun__EnsureRecipe(item.Vegetation__PaletteItem__AssetId);
+        Na__VegPalUi__State.currentUid = palette.Vegetation__Palette__Uid;
+        return palette.Vegetation__Palette__Uid;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | A Palette of Just One Plant, Found or Made, and Made Current
     // ------------------------------------------------------------
     // Called by a card's Draw Path. Returns its uid.
@@ -197,18 +246,74 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | The Plants' Pictures
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Be Given the Cards' Picture Drawer
+    // ------------------------------------------------------------
+    // The asset browser hands in its own, so a plant looks the same here as on its card.
+    // ------------------------------------------------------------
+    function Na__VegPalUi__SetPictureDrawer(drawPicture) {
+        Na__VegPalUi__State.drawPicture = drawPicture;
+        Na__VegPalUi__State.pictures.clear();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Small Picture of One Plant, Drawn Once and Copied After
+    // ------------------------------------------------------------
+    // Returns the canvas at once; it fills in when the plant's recipe has been read. With no
+    // drawer yet it stays an empty frame, which is all a list needs to keep its shape.
+    // ------------------------------------------------------------
+    function Na__VegPalUi__Picture(assetId, size) {
+        const state  = Na__VegPalUi__State;
+        const canvas = Na__VegShell__El('canvas', 'na-veg-palette-pic');
+        canvas.style.width  = size.w + 'px';
+        canvas.style.height = size.h + 'px';
+        canvas.setAttribute('aria-hidden', 'true');
+        const key   = assetId + '|' + size.w + 'x' + size.h;
+        const paint = (source) => {
+            canvas.width  = source.width;
+            canvas.height = source.height;
+            canvas.getContext('2d').drawImage(source, 0, 0);
+        };
+        if (state.pictures.has(key)) {
+            paint(state.pictures.get(key));
+            return canvas;
+        }
+        if (!state.drawPicture) return canvas;
+        Na__VegRun__EnsureRecipe(assetId).then((recipe) => {
+            if (!recipe || !state.drawPicture) return;
+            let source = state.pictures.get(key);
+            if (!source) {
+                source = document.createElement('canvas');
+                state.drawPicture(source, recipe, size);
+                state.pictures.set(key, source);
+            }
+            paint(source);
+        }).catch(() => {});                                                    // <-- An asset that cannot be read keeps its empty frame; its name still says what it is
+        return canvas;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | The Editor
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Mount a Palette Editor into a Panel
     // ------------------------------------------------------------
-    // options: { holder, onPick(paletteUid) }. onPick is told when another palette is
-    // chosen here, so a tool can move its path or its brush to it. Returns a function that
-    // takes the editor away again.
+    // options: { holder, onPick(paletteUid, layout) }. onPick is told when another palette is
+    // chosen here, so a tool can move its path or its brush to it. layout is given only when a
+    // standard palette is chosen: { plantScale, spacingMm }, what its mix was proven at.
+    // Returns a function that takes the editor away again.
     // ------------------------------------------------------------
     async function Na__VegPalUi__Mount(options) {
         await Na__VegPalUi__Ensure();
         const catalogue = await Na__VegLib__LoadCatalogue();
+        const standards = await Na__VegLib__LoadStandardPalettes();
         const nameOf = (assetId) => {
             const row = catalogue.find((candidate) => candidate.Asset__Id === assetId);
             return row ? row.Asset__Name : assetId;
@@ -226,18 +331,48 @@
             // WHICH PALETTE | A list, a name, and new or delete
             const picker = Na__VegShell__El('select', 'na-veg-field');
             picker.setAttribute('aria-label', 'Palette');
+            const own = Na__VegShell__El('optgroup');
+            own.label = 'In this project';
             palettes.forEach((row) => {
                 const option = Na__VegShell__El('option', '', row.Vegetation__Palette__Name);
                 option.value = row.Vegetation__Palette__Uid;
                 option.selected = row === palette;
-                picker.appendChild(option);
+                own.appendChild(option);
             });
-            picker.addEventListener('change', () => {
-                Na__VegPalUi__State.currentUid = picker.value;
-                if (options.onPick) options.onPick(picker.value);
+            picker.appendChild(own);
+            const notTaken = standards.filter((standard) => !palettes.some((row) => row.Vegetation__Palette__StandardId === standard.Palette__Id));
+            if (notTaken.length > 0) {
+                const library = Na__VegShell__El('optgroup');
+                library.label = 'Standard palettes';
+                notTaken.forEach((standard) => {
+                    const option = Na__VegShell__El('option', '', standard.Palette__Name);
+                    option.value = Na__VegPalUi__STD_PREFIX + standard.Palette__Id;
+                    option.title = standard.Palette__Description || '';
+                    library.appendChild(option);
+                });
+                picker.appendChild(library);
+            }
+            picker.addEventListener('change', async () => {
+                if (picker.value.startsWith(Na__VegPalUi__STD_PREFIX)) {
+                    const standard = standards.find((row) => Na__VegPalUi__STD_PREFIX + row.Palette__Id === picker.value);
+                    const uid = await Na__VegPalUi__TakeStandard(standard);
+                    if (options.onPick) options.onPick(uid, { plantScale : standard.Palette__PlantScale, spacingMm : standard.Palette__SpacingMm });
+                    Na__VegShell__Toast(standard.Palette__Name + ' added to this project, at plant scale ' + Number(standard.Palette__PlantScale).toFixed(2) + ' and ' + Math.round(standard.Palette__SpacingMm) + ' mm spacing.', false);
+                } else {
+                    Na__VegPalUi__State.currentUid = picker.value;
+                    if (options.onPick) options.onPick(picker.value);
+                }
                 Na__VegPalUi__RefreshAll();
             });
             holder.appendChild(picker);
+
+            // WHERE IT CAME FROM | A standard palette's copy says so, with its proven layout
+            const standard = standards.find((row) => row.Palette__Id === palette.Vegetation__Palette__StandardId);
+            if (standard) {
+                const from = Na__VegShell__El('p', 'na-veg-panel__hint', 'From the standard palette ' + standard.Palette__Name + ', made for plant scale ' + Number(standard.Palette__PlantScale).toFixed(2) + ' at ' + Math.round(standard.Palette__SpacingMm) + ' mm spacing. Changes here stay in this project.');
+                from.style.marginTop = '4px';
+                holder.appendChild(from);
+            }
 
             const nameRow = Na__VegShell__El('div', 'na-veg-row');
             nameRow.style.marginTop = '6px';
@@ -294,8 +429,13 @@
             const shareEls = [];
             items.forEach((item, index) => {
                 const row = Na__VegShell__El('div', 'na-veg-palette-item');
+                row.appendChild(Na__VegPalUi__Picture(item.Vegetation__PaletteItem__AssetId, Na__VegPalUi__ITEM_PIC));
+                const side = Na__VegShell__El('div', 'na-veg-palette-item__side');    // <-- Name, share, scale and slider beside the picture
+                row.appendChild(side);
                 const top = Na__VegShell__El('div', 'na-veg-palette-item__top');
-                top.appendChild(Na__VegShell__El('span', 'na-veg-palette-item__name', nameOf(item.Vegetation__PaletteItem__AssetId)));
+                const label = Na__VegShell__El('span', 'na-veg-palette-item__name', nameOf(item.Vegetation__PaletteItem__AssetId));
+                label.title = nameOf(item.Vegetation__PaletteItem__AssetId);
+                top.appendChild(label);
                 const share = Na__VegShell__El('span', 'na-veg-palette-item__share', Math.round(shares[index]) + '%');
                 shareEls.push(share);
                 top.appendChild(share);
@@ -336,7 +476,7 @@
                     await Na__VegRun__SyncPlants();
                 });
                 top.appendChild(out);
-                row.appendChild(top);
+                side.appendChild(top);
 
                 const slider = Na__VegShell__El('input', 'na-veg-slider__input');
                 slider.type = 'range';
@@ -353,27 +493,29 @@
                     shareEls.forEach((el, k) => { el.textContent = Math.round(live[k]) + '%'; });
                 });
                 slider.addEventListener('change', () => { Na__VegRun__SyncPlants(); });
-                row.appendChild(slider);
+                side.appendChild(slider);
                 holder.appendChild(row);
             });
 
-            // ADD WITHOUT THE BROWSER | The + on a card does this too
+            // ADD WITHOUT THE BROWSER | A tile with its picture for each plant not yet in the mix.
+            // The + on a card does this too.
             const missing = catalogue.filter((row) => !items.some((item) => item.Vegetation__PaletteItem__AssetId === row.Asset__Id));
             if (missing.length > 0) {
-                const add = Na__VegShell__El('select', 'na-veg-field');
-                add.style.marginTop = '6px';
-                add.setAttribute('aria-label', 'Add a plant to the palette');
-                const hint = Na__VegShell__El('option', '', 'Add a plant...');
-                hint.value = '';
-                add.appendChild(hint);
+                const add = Na__VegShell__El('details', 'na-veg-palette-add');
+                add.open = Na__VegPalUi__State.addOpen;
+                add.addEventListener('toggle', () => { Na__VegPalUi__State.addOpen = add.open; });
+                add.appendChild(Na__VegShell__El('summary', 'na-veg-palette-add__title', 'Add a plant'));
+                const grid = Na__VegShell__El('div', 'na-veg-palette-add__grid');
                 missing.forEach((row) => {
-                    const option = Na__VegShell__El('option', '', row.Asset__Name);
-                    option.value = row.Asset__Id;
-                    add.appendChild(option);
+                    const tile = Na__VegShell__El('button', 'na-veg-palette-tile');
+                    tile.type  = 'button';
+                    tile.title = 'Add ' + row.Asset__Name + ' to ' + palette.Vegetation__Palette__Name;
+                    tile.appendChild(Na__VegPalUi__Picture(row.Asset__Id, Na__VegPalUi__TILE_PIC));
+                    tile.appendChild(Na__VegShell__El('span', 'na-veg-palette-tile__name', row.Asset__Name));
+                    tile.addEventListener('click', () => { Na__VegPalUi__AddAsset(row.Asset__Id, row.Asset__Name); });
+                    grid.appendChild(tile);
                 });
-                add.addEventListener('change', () => {
-                    if (add.value) Na__VegPalUi__AddAsset(add.value, nameOf(add.value));
-                });
+                add.appendChild(grid);
                 holder.appendChild(add);
             }
         }
@@ -399,6 +541,8 @@
         Na__VegPalUi__SetCurrentUid,
         Na__VegPalUi__AddAsset,
         Na__VegPalUi__OnlyThis,
+        Na__VegPalUi__TakeStandard,
+        Na__VegPalUi__SetPictureDrawer,
         Na__VegPalUi__RefreshAll,
         Na__VegPalUi__Mount
     };

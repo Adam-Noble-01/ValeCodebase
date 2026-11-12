@@ -31,7 +31,7 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 | `10__Ui__Panels/Na__Vegetation__PanelShell__.js` | `Na__VegShell` | One panel a side, the controls, Save, undo keys, the close guard |
 | `10__Ui__Panels/Na__Vegetation__LineworkPanel__.js` | `Na__VegLine` | The demo's Vegetation Linework panel |
 | `10__Ui__Panels/Na__Vegetation__AssetBrowser__.js` | `Na__VegCards` | The Vegetation panel (v2.91.0): its sections, cards drawn live, search, filters, click to place, In This Project, move, turn, remove, Changes |
-| `10__Ui__Panels/Na__Vegetation__PaletteEditor__.js` | `Na__VegPalUi` | A palette's items and their shares, shared by both tools |
+| `10__Ui__Panels/Na__Vegetation__PaletteEditor__.js` | `Na__VegPalUi` | A palette's items, their shares and pictures, shared by both tools; standard palettes copied in on choice (v2.97.0) |
 | `10__Ui__Panels/Na__Vegetation__Styles__Panels__.css` | | The panels |
 | `20__System__Tools/Na__Vegetation__ToolHost__.js` | `Na__VegTools` | One tool armed at a time, the pointer, the door hold, orbit while painting |
 | `20__System__Tools/Na__Vegetation__ToolOverlay__.js` | `Na__VegOverlay` | Tools' aids on a 2D canvas over the model, so they can never print |
@@ -39,7 +39,7 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 | `20__System__Tools/Na__Vegetation__LinearTool__.js` | `Na__VegLinear` | Draw and edit paths, Advanced, Bake. Its rows are the panel's Line Tool section (v2.91.0) |
 | `20__System__Tools/Na__Vegetation__BushTool__.js` | `Na__VegBushTool` | Paint and erase from a palette. Its rows are the panel's Brush Tool section, and Escape folds it (v2.91.0) |
 
-The library itself is `53__Vegetation__AssetLibrary` at the app's root.
+The library itself is `53__Vegetation__AssetLibrary` at the app's root. Its `VegetationLibrary__StandardPalettes__.json` holds the standard palettes, kept by hand (v2.97.0).
 
 ## Rules That Bite
 

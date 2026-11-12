@@ -18,6 +18,9 @@
  *   while a panel is up still comes in front.
  *
  * DEVELOPMENT LOG:
+ * 12-Nov-2026 - Version 1.2.0 (ValeVision3D v2.97.0)
+ * - Plant pictures in a palette (na-veg-palette-pic) and Add a Plant's picture tiles.
+ *
  * 04-Nov-2026 - Version 1.0.0 (ValeVision3D v2.85.0)
  * - Initial build: Stages 3 to 6 of ValeVision__PLAN__VegetationSystem__.md.
  *
@@ -471,6 +474,85 @@
         overflow                           : hidden;
         text-overflow                      : ellipsis;
         white-space                        : nowrap;
+    }
+
+    .na-veg-palette-item {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+    }
+
+    .na-veg-palette-item__side {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+    }
+
+    .na-veg-palette-item .na-veg-palette-item__name {
+        display                            : -webkit-box;
+        -webkit-line-clamp                 : 2;
+        -webkit-box-orient                 : vertical;
+        white-space                        : normal;
+        line-height                        : 1.2;
+    }
+
+    .na-veg-palette-pic {
+        flex                               : 0 0 auto;
+        display                            : block;
+        border                             : 1px solid var(--na-veg-rule);
+        border-radius                      : 4px;
+        background                         : #ffffff;
+    }
+
+    .na-veg-palette-add {
+        margin-top                         : 6px;
+        padding-top                        : 6px;
+        border-top                         : 1px solid var(--na-veg-rule);
+    }
+
+    .na-veg-palette-add__title {
+        cursor                             : pointer;
+        font-weight                        : 600;
+    }
+
+    .na-veg-palette-add__grid {
+        display                            : grid;
+        grid-template-columns              : repeat(3, minmax(0, 1fr));
+        gap                                : 6px;
+        margin-top                         : 6px;
+    }
+
+    .na-veg-palette-tile {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 3px;
+        min-width                          : 0;
+        padding                            : 4px 3px;
+        border                             : 1px solid var(--na-veg-rule);
+        border-radius                      : 6px;
+        background                         : #ffffff;
+        color                              : var(--na-veg-ink);
+        font                               : inherit;
+        font-size                          : 11px;
+        line-height                        : 1.2;
+        cursor                             : pointer;
+    }
+
+    .na-veg-palette-tile:hover {
+        background                         : var(--na-veg-active);
+    }
+
+    .na-veg-palette-tile .na-veg-palette-pic {
+        max-width                          : 100%;
+        border                             : none;
+    }
+
+    .na-veg-palette-tile__name {
+        display                            : -webkit-box;
+        -webkit-line-clamp                 : 2;
+        -webkit-box-orient                 : vertical;
+        overflow                           : hidden;
+        text-align                         : center;
     }
 
     .na-veg-palette-item__share {

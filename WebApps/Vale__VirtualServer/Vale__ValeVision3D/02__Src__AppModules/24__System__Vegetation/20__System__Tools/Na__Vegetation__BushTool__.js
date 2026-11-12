@@ -45,6 +45,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.4.0 (ValeVision3D v2.97.0)
+// - A standard palette chosen sets the brush's plant scale, with density and spacing following.
+//
 // 06-Nov-2026 - Version 1.3.0 (ValeVision3D v2.91.0)
 // - A section of the Vegetation panel: Mount draws into it, Escape folds it. Toggle opens that section.
 //
@@ -506,10 +509,19 @@
         if (brush.Vegetation__Brush__PaletteUid) Na__VegPalUi__SetCurrentUid(brush.Vegetation__Brush__PaletteUid);
         Na__VegPalUi__Mount({
             holder : mix,
-            onPick : async (paletteUid) => {
-                Na__VegBushTool__Brush().Vegetation__Brush__PaletteUid = paletteUid;
+            onPick : async (paletteUid, layout) => {
+                const brush = Na__VegBushTool__Brush();
+                brush.Vegetation__Brush__PaletteUid = paletteUid;
+                if (layout) {
+                    // A STANDARD PALETTE | Takes its plant scale, density and spacing following, as the slider does
+                    const ratio = layout.plantScale / (brush.Vegetation__Brush__PlantScale > 0 ? brush.Vegetation__Brush__PlantScale : 1);
+                    brush.Vegetation__Brush__PlantScale        = layout.plantScale;
+                    brush.Vegetation__Brush__DensityPerSquareM = Math.min(Na__VegBushTool__DENSITY_MAX, Math.round((brush.Vegetation__Brush__DensityPerSquareM / (ratio * ratio)) * 10) / 10);
+                    brush.Vegetation__Brush__MinSpacingMm      = Math.max(Na__VegBushTool__SPACING_MIN, Math.round(brush.Vegetation__Brush__MinSpacingMm * ratio));
+                }
                 Na__VegShell__MarkChanged();
                 await Na__VegBushTool__ReadPaletteRecipes();
+                if (layout) Na__VegBushTool__PaintPanel();                     // <-- The sliders show the new scale, density and spacing
             }
         }).then((unmount) => { state.unmountPal = unmount; });
 

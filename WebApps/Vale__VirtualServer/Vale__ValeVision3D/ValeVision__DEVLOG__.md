@@ -1,6 +1,30 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.97.0 - 12-Nov-2026 - Standard Palettes Every Project Can Use, and a Picture of Every Plant in a Palette
+### Adam: "the arched planter vegetation here in Corrett - 64610 Make this into a standard pallette named Small Planting Bed Shrubs and create and test a variation with medium sized plants", then: "Actually shopw small thumbnail graphics for the plants used in the pallette as there is no visual representation currently so its horrible to use"
+
+**What was wrong:** a palette lived only in the project that made it, so a mix that worked (Corrett's arched planter) could not be reused anywhere else. A palette listed its plants by name alone, cut short in the 296 px panel ("Upright Shrub (No Gr..."), and Add a Plant was a list of names, so nobody could see what they were choosing.
+
+**Now:**
+- **Standard palettes** in the library, `53__Vegetation__AssetLibrary/VegetationLibrary__StandardPalettes__.json`, listed under "Standard palettes" in both tools' palette list. Choosing one copies it into the project (`Vegetation__Palette__StandardId` marks the copy, so choosing it again finds it), and sets the plant scale and spacing it was proven at: the Line Tool on the path or the next path, the Brush Tool its plant scale with density and spacing following. A copy says which standard it came from; changes to it stay in the project.
+- **VVP_0001 Small Planting Bed Shrubs:** Corrett 64610's Path 2 exactly: Upright Shrub (No Grass) 29, Yew Cone 5, Rounded Shrub 64, at 0.45 and 348 mm.
+- **VVP_0002 Medium Planting Bed Shrubs:** the same mix at 0.70 and 540 mm (348 x 0.70 / 0.45).
+- **A picture beside every plant in a palette**, drawn by the cards' own code (the asset browser hands its drawer to the palette editor), and the name now wraps to two lines. **Add a Plant is a grid of picture tiles** in place of a list of names.
+
+**Changed:** `Na__Vegetation__PaletteEditor__.js` 1.2.0, `Na__Vegetation__Library__.js` 1.1.0, `Na__Vegetation__LinearTool__.js` 1.6.0, `Na__Vegetation__BushTool__.js` 1.4.0, `Na__Vegetation__AssetBrowser__.js` (one line, beside v2.94.2's work), `Na__Vegetation__Styles__Panels__.css` 1.2.0, `README__Vegetation__.md`; one new library JSON. A new optional palette key, `Vegetation__Palette__StandardId`; no API change.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- On the MCP sandbox (headless Edge, `64610__Corrett` as AppAdmin, real mouse to open the panel): every palette item and every Add a Plant tile drew its picture (11 canvases); the palette list showed both standards under "Standard palettes".
+- Path 2 moved to Small Planting Bed Shrubs: a new PAL0004 marked VVP_0001, 0.45 and 348 mm, 21 plants, the same bed as before. Then Medium: PAL0005, 0.70 and 540 mm on the sliders, 14 larger plants filling the same planter.
+- The Brush Tool on a fresh page: Small set scale 0.45, density 0.9 to 4.4 per sq m, spacing 650 to 293 mm, shown on its sliders. No script errors. Nothing was saved: Corrett's record is unchanged, on the sandbox and the mirror.
+
+**Not checked:**
+- A real GPU, a phone or tablet, Safari (the tile names use `-webkit-line-clamp`).
+- Re-choosing a standard already copied into a project, from "In this project", does not set its scale and spacing again: on purpose, so a project's own changes stand.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.96.0 - 11-Nov-2026 - Staff Saves Go Straight to Clients, a Drawing Saves People and Plants First, and a Right-Click Says Who Added It and When
 ### Adam: "Remove this, any entorage added by anyone staff or above should be updated when saved in a similar manner tyo vegetation and also saved when the drawing tool is used to stop people losing their entorage and vegetation when they make drawings. just ensure when you right click it shows who added that thing into the scene and when so this gives ownership / accountability"
 

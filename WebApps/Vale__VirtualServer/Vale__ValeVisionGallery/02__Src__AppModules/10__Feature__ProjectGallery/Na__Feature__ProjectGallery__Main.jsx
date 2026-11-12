@@ -308,7 +308,7 @@
                                     />
                                         );
                                     })()}
-                                    {isHandDrawnProject(project) && (
+                                    {shouldShowHandDrawnOverlay(project) && (
                                         <div className="project-card__white-overlay"></div>
                                     )}
                                 </div>

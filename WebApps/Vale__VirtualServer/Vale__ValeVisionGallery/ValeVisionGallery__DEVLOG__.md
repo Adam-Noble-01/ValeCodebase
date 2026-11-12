@@ -1,5 +1,23 @@
 # ValeVision Gallery: DEVLOG
 
+## Version 1.7.1, 11-Nov-2026: Hand Drawn Thumbnails Fade Only Once a Job Is Old
+
+**Asked by Adam:** "In ValeVision gallery remove the white thumbail overlay used on projects that were drawn from hand
+drawings, any for all ongoing jobs and any newer than 3 months." (Brown | Scheme - 03 and Brum ringed.)
+
+**Changes:**
+- The white overlay on a Hand Drawn Concept project's card now shows only when the job is finished (Date Fulfilled
+  set) and its latest schedule date (Date Received or Date Fulfilled) is more than 3 months ago
+  (`shouldShowHandDrawnOverlay`, `HAND_DRAWN_OVERLAY_MIN_AGE_MONTHS`). Ongoing jobs and recent ones show clean, and
+  a recent hand drawn job gains the fade by itself once 3 months have passed.
+- No project record changed: Production Input still says Hand Drawn Concept where it is true.
+- The same rule on the Project Editor's cards.
+- Files: `Na__Feature__ProjectGallery__ImageEffects.js`, `Na__Feature__ProjectGallery__Main.jsx`,
+  `Na__Feature__ProjectEditor__Main.jsx`.
+- Checked: the rule run over every hand-drawn record in the PC library (the ten 2025 jobs keep the fade, Brown
+  Scheme-3 is clean) and on made-up ongoing and boundary dates. Not checked: in a browser; the live Brum record was
+  changed on the server on 10-Nov and is not on the PC, but its Date Fulfilled (10-Nov-2026) makes it clean either way.
+
 ## Version 1.7.0, 30-Oct-2026: AURA Project by Project
 
 **Asked by Adam:** "Make all projects NOT available for Aura unless I enable in the project form per project. I will

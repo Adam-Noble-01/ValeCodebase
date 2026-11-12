@@ -237,7 +237,7 @@
                                             alt={project.displayName || project.projectName}
                                             className="project-card__image"
                                         />
-                                        {isHandDrawnProject(project) && (
+                                        {shouldShowHandDrawnOverlay(project) && (
                                             <div className="project-card__white-overlay"></div>
                                         )}
                                         {project.enabled === false && (

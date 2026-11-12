@@ -20,8 +20,26 @@
         "ValeVision__TestServer__Config__Sandbox": {
             "RootPath"                : "%LOCALAPPDATA%\\ValeVision__TestServer\\Sandbox",
             "RootPathNote"            : "Outside the repo (public) and outside every folder a server serves. It holds generated test accounts and copies of the records below, and is reused between runs. --reset-sandbox deletes and rebuilds it (only a folder that carries the sandbox marker file is ever deleted).",
-            "Projects"                : [ "63403__Thrower", "3047__Doous", "64135__Washington", "64348__Mathison" ],
-            "ProjectsNote"            : "Records copied into the sandbox: each project's ProjectData file, nothing else, so a save here never reaches the real one. A named list, never a pattern, so a project is never copied by accident. A name added here is copied at the next start. Thrower is the vegetation pilot, Doous a MaxEngine project with drawings, Washington the skill's usual example, Mathison a PureEngine project with drawings. Models and pictures still show: the dev server serves library content from the sandbox when it has the file, else from the mirror. Any other project answers 'not found' here.",
+            "Projects"                : [
+                                          "63403__Thrower", "3047__Doous", "64135__Washington", "64348__Mathison", "60227__Thorpe", "3005__Marten",
+                                          "3038__Gordon__Scheme-03", "3038__Gordon__Scheme-04", "41352__Brown", "44371__Gill", "51536__Hamilton", "53538__Brown",
+                                          "55164__Quinn", "55164__Quinn__Scheme-02", "55495__Barrett", "57079__Mordaunt", "57744__King", "57876__Lane",
+                                          "57994__Harris", "57994__Harris__Scheme-02", "59280__Itier", "59443__Moore", "59964__DeLisle", "60834__Clough",
+                                          "60906__Dawson-Smith", "61721__Payne", "61721__Payne__Scheme-02", "61755__Goodson-Hudson", "62084__Rowbotham", "62386__Hardy",
+                                          "62430__Lawrence", "62444__Curtis", "62526__Russell", "62557__Lister", "62609__Bagot", "62639__Yandell",
+                                          "62665__Hevey", "62722__Parkes", "62737__Berry", "62775__Slater", "62780__Steer", "62785__Carey",
+                                          "62841__Smee", "62854__Ribbins", "62902__McLoughlin", "62912__Lamming", "62921__Hendy", "62934__James",
+                                          "62970__Hampson", "63002__Thorpe", "63008__Lee-Smith", "63034__Lorriman", "63072__Armstrong", "63076__Thompson",
+                                          "63086__Matharu", "63148__Marsh", "63184__Beevers", "63231__Sellon", "63232__Davies", "63271__Robson",
+                                          "63295__Majid", "63324__King", "63345__Martin", "63396__Kalson", "63418__Kedia", "63442__Rosalie",
+                                          "63459__Allen", "63476__Lang", "63568__Jones", "63568__Jones__FullVersion", "63569__Flynn", "63570__King",
+                                          "63578__Yates__Orangery", "63578__Yates__Porch", "63592__Bressard-Kayode", "63592__Bressard-Kayode__ParapetOptions", "63592__Bressard-Kayode__Scheme-02", "63684__Brereton",
+                                          "63742__Hanson", "63752__Kay", "63770__Warwick", "63853__Bia", "63918__Ingle", "63945__Ball",
+                                          "63984__Miah", "63986__Hawley", "64014__Byrne", "64033__Negretti", "64076__Martin", "64078__Londos",
+                                          "64135__Holt", "64136__Mudie", "64143__Thorpe", "64322__Walsh", "64435__Harris", "64488__Graf",
+                                          "64561__Falla__Scheme-01", "64561__Falla__Scheme-02", "64616__Garnett"
+                                        ],
+            "ProjectsNote"            : "Records copied into the sandbox: each project's ProjectData file, nothing else, so a save here never reaches the real one. A named list, never a pattern, so a project is never copied by accident. A name added here is copied at the next start. Thrower is the vegetation pilot, Doous a MaxEngine project with drawings, Washington the skill's usual example, Mathison a PureEngine project with drawings, Thorpe the linework density test's model (a ridge cresting on a lantern). Every other Vale project with a model in the library follows (Adam, 10-Nov-2026: \"add these projects to the ValeVision Test server so i can use them for testing\"), so the gallery has real projects to try; Noble Architecture projects (letter-prefixed ids) are never listed. Models and pictures still show: the dev server serves library content from the sandbox when it has the file, else from the mirror. Any other project answers 'not found' here.",
             "AccountEmailDomain"      : "sandbox.test",
             "AccountEmailDomainNote"  : ".test is reserved for testing and never reaches a real mailbox.",
             "Accounts"                : [

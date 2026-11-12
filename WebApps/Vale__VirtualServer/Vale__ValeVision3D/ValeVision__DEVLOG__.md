@@ -32,6 +32,8 @@
 - Video Studio frame exports and Layout Editor 3D pictures: they run the same composer and camera hand-over, but were not run.
 - Below the 50% share a see-through plant's fill is still in the normal pass, so what is seen through it takes the plant's fog, as before this change.
 
+**Live (Adam: "Push all on the GH (main) ensure any branches are pushed and other agents and push to the Vale Server"), 12-Nov-2026 11:23 UTC:** `valevision3d` scoped to `02__Src__AppModules` (stamp `20261112-112359`): 1 added (`Na__FogPlaneSystem__OwnLayers__.js`), 4 replaced, none deleted. Page only: no API change, no restart. `/valevision/` answers 200, the deploy stamp names this push, and the new module is served. A compare of every mapping after it found no other code waiting.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.0 - 12-Nov-2026 - Project Lighting: a Project Can Turn Its Own Sun, So Its 3D View Shades the Faces Its Own Way
 ### Adam: "Add a new dev menu item for per project lighting settings. Add sun position so i can change the direction of the faces shaded (still should be flat but can you see here some faces shad greyer than others? well on a project by project basis Id like a way to control that / Ensure it writes to the project json with a new data object for this and future scene lighting ovberides in my 3 section json style / Ensure you need to confirm a save like with the camera and fog tools / Project is highly modulare make sure you understand the codebase before implenting anything new or touching the existing render / lighting pipelines", then, asked whether a project's lighting should also shade its plans, elevations and sheets: "3D view only", and for the object's shape: "A section per light"
@@ -166,6 +168,8 @@
 - A real GPU, a phone or tablet, Safari (the icons use `-webkit-mask-image` as well).
 - Entourage's In This Project on screen with a figure selected (the change only removes the two lines that drew the record).
 - Otherwise the Entourage panel is unchanged by this release (Adam: "no"): it still opens on Assets, says Changes, and has plain Undo, Redo and Save.
+
+**Live:** already on the server before it was committed (12-Nov-2026: a compare of `valevision3d` found every file of this release there; the vegetation files went up with v2.97.0's push). Committed and on GitHub 12-Nov-2026, with Adam's "Push all on the GH (main)".
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.94.1 - 11-Nov-2026 - The Drawing Editor's Picture Handles Say What They Do: Navy Discs Scale, White Tabs Trim

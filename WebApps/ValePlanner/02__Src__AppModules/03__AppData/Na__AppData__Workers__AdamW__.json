@@ -3654,6 +3654,38 @@
           "endTime": "17:00",
           "title": "Whitecard |  Thorpe",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1794305996825",
+          "date": "2026-11-10",
+          "startTime": "09:15",
+          "endTime": "15:00",
+          "title": "Whitecard |  Brum",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1794326035909",
+          "date": "2026-11-10",
+          "startTime": "16:00",
+          "endTime": "18:00",
+          "title": "Whitecard |  Brown",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1794411775744",
+          "date": "2026-11-11",
+          "startTime": "15:45",
+          "endTime": "18:00",
+          "title": "Whitecard |  Corrett",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1794489556124",
+          "date": "2026-11-12",
+          "startTime": "13:15",
+          "endTime": "16:15",
+          "title": "Whitecard |  Kann",
+          "color": "na-shift-color-cyan"
         }
       ]
     }

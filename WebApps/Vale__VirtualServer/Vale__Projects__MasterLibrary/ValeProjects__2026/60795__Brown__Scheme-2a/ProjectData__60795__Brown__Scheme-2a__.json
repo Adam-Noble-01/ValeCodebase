@@ -1,0 +1,256 @@
+{
+    "projectName": "Brown__Scheme-2a",
+    "projectCode": "60795",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Amy",
+        "designer": "Dan",
+        "additionalNotes": "Easy Job, nothing to report."
+    },
+    "scheduleData": {
+        "dateReceived": "09-Nov-2026",
+        "dateFulfilled": "10-Nov-2026",
+        "timeTaken": 2,
+        "timeAllocated": 2
+    },
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__10-Nov-2026.png",
+        "IMG02__3dView__AltShot____WhitecardImage__10-Nov-2026.png",
+        "IMG03__3dView__Birds-eye-01____WhitecardImage__10-Nov-2026.png",
+        "IMG04__3dView__Birds-eye-02____WhitecardImage__10-Nov-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "valeVision_ModelUrls": [
+        "BrownScheme-2a__01__OrbitHelperCube__MeshModel__.glb",
+        "BrownScheme-2a__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "BrownScheme-2a__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "BrownScheme-2a__TrueVision__MainBuildingModel__Existing__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__10-Nov-2026.png",
+        "IMG02__3dView__AltShot____WhitecardImage__10-Nov-2026.png",
+        "IMG03__3dView__Birds-eye-01____WhitecardImage__10-Nov-2026.png",
+        "IMG04__3dView__Birds-eye-02____WhitecardImage__10-Nov-2026.png"
+    ],
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__10-Nov-2026.png",
+        "IMG02__3dView__AltShot____WhitecardImage__10-Nov-2026.png",
+        "IMG03__3dView__Birds-eye-01____WhitecardImage__10-Nov-2026.png",
+        "IMG04__3dView__Birds-eye-02____WhitecardImage__10-Nov-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__10-Nov-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "10-Nov-2026 at 18:02",
+        "model_name": "BrownScheme-2a__WhiteCardModel__0.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Shot 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 2632.0889,
+                        "y": -7913.5064,
+                        "z": 2400
+                    },
+                    "target": {
+                        "x": 12360.9905,
+                        "y": 9663.2927,
+                        "z": 2400
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.484274,
+                        "y": 0.874917,
+                        "z": 0
+                    },
+                    "fov_degrees": 33.3985,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG02__3dView__AltShot__",
+                "scene_description": "Shot 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 25655.8811,
+                        "y": -4570.3046,
+                        "z": 2500
+                    },
+                    "target": {
+                        "x": 16091.0618,
+                        "y": 9681.6795,
+                        "z": 2500
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": -0.557259,
+                        "y": 0.830339,
+                        "z": 0
+                    },
+                    "fov_degrees": 33.3985,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG03__3dView__Birds-eye-01__",
+                "scene_description": "Birds-eye 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 21911.5736,
+                        "y": 1257.7401,
+                        "z": 12919.8224
+                    },
+                    "target": {
+                        "x": 14613.761,
+                        "y": 12710.5537,
+                        "z": 2423.1653
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": -0.328635,
+                        "y": 0.515743,
+                        "z": 0.791207
+                    },
+                    "direction": {
+                        "x": -0.42518,
+                        "y": 0.667256,
+                        "z": -0.611549
+                    },
+                    "fov_degrees": 39.5978,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG04__3dView__Birds-eye-02__",
+                "scene_description": "Birds-eye 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 4109.031,
+                        "y": 136.1159,
+                        "z": 14325.3817
+                    },
+                    "target": {
+                        "x": 12109.9568,
+                        "y": 11247.22,
+                        "z": 3974.8565
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0.352383,
+                        "y": 0.489364,
+                        "z": 0.797715
+                    },
+                    "direction": {
+                        "x": 0.466144,
+                        "y": 0.647347,
+                        "z": -0.603035
+                    },
+                    "fov_degrees": 39.5978,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            }
+        ]
+    },
+    "projectNameAlias": "Brown | Scheme – 02",
+    "_rev": 5,
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2500,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": 27760,
+            "FogPlane__Config__PlaneA__NormalX": -1,
+            "FogPlane__Config__PlaneA__NormalZ": 0
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -22433,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 25000
+}

@@ -13,11 +13,11 @@
         "timeTaken": "NOT YET REVIEWED"
     },
     "images": [
-        "IMG01__3dView__MainShot____WhitecardImage__06-Nov-2026.png",
-        "IMG02__3dView__View-02__WhitecardImage__06-Nov-2026.png",
-        "IMG03__3dView__View-03__WhitecardImage__06-Nov-2026.png",
-        "IMG04__3dView__BirdsEye-01____WhitecardImage__06-Nov-2026.png",
-        "IMG05__3dView__BirdsEye-02____WhitecardImage__06-Nov-2026.png"
+        "IMG01__3dView__MainShot____WhitecardImage__11-Nov-2026.png",
+        "IMG02__3dView__View-02__WhitecardImage__11-Nov-2026.png",
+        "IMG03__3dView__View-03__WhitecardImage__11-Nov-2026.png",
+        "IMG04__3dView__BirdsEye-01____WhitecardImage__11-Nov-2026.png",
+        "IMG05__3dView__BirdsEye-02____WhitecardImage__11-Nov-2026.png"
     ],
     "ProjectType": "Whitecard",
     "valeVision_ModelUrls": [
@@ -53,23 +53,23 @@
         }
     },
     "allImages": [
-        "IMG01__3dView__MainShot____WhitecardImage__06-Nov-2026.png",
-        "IMG02__3dView__View-02__WhitecardImage__06-Nov-2026.png",
-        "IMG03__3dView__View-03__WhitecardImage__06-Nov-2026.png",
-        "IMG04__3dView__BirdsEye-01____WhitecardImage__06-Nov-2026.png",
-        "IMG05__3dView__BirdsEye-02____WhitecardImage__06-Nov-2026.png"
+        "IMG01__3dView__MainShot____WhitecardImage__11-Nov-2026.png",
+        "IMG02__3dView__View-02__WhitecardImage__11-Nov-2026.png",
+        "IMG03__3dView__View-03__WhitecardImage__11-Nov-2026.png",
+        "IMG04__3dView__BirdsEye-01____WhitecardImage__11-Nov-2026.png",
+        "IMG05__3dView__BirdsEye-02____WhitecardImage__11-Nov-2026.png"
     ],
     "displayImages": [
-        "IMG01__3dView__MainShot____WhitecardImage__06-Nov-2026.png",
-        "IMG02__3dView__View-02__WhitecardImage__06-Nov-2026.png",
-        "IMG03__3dView__View-03__WhitecardImage__06-Nov-2026.png",
-        "IMG04__3dView__BirdsEye-01____WhitecardImage__06-Nov-2026.png",
-        "IMG05__3dView__BirdsEye-02____WhitecardImage__06-Nov-2026.png"
+        "IMG01__3dView__MainShot____WhitecardImage__11-Nov-2026.png",
+        "IMG02__3dView__View-02__WhitecardImage__11-Nov-2026.png",
+        "IMG03__3dView__View-03__WhitecardImage__11-Nov-2026.png",
+        "IMG04__3dView__BirdsEye-01____WhitecardImage__11-Nov-2026.png",
+        "IMG05__3dView__BirdsEye-02____WhitecardImage__11-Nov-2026.png"
     ],
-    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__06-Nov-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__11-Nov-2026__Thumbnail__524p__.webp",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "06-Nov-2026 at 17:50",
-        "model_name": "Thorpe__WhiteCardModel__1.0.0__",
+        "captured_at": "11-Nov-2026 at 12:08",
+        "model_name": "Thorpe__WhiteCardModel__2.1.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",

@@ -31,6 +31,8 @@
 - The Layout Editor's sheet pictures on screen: their sums are covered in Node, not their pictures.
 - Shadows: the sun's shadow camera still covers about 10 m round the origin (note T26), so the tick changes little on most models, as before.
 
+**Live (Adam: "Release it"), 12-Nov-2026 10:48 UTC:** `server-api` scoped to `Api__ValeVision3D`, one file (`ValeVision3D__Api__Activity__.py`, stamp `20261112-104645`), then `vale@ValeVision3D` restarted (active since 10:46:51 UTC, health OK, the new file on disk). Then `valevision3d` as a cut of the engine's own plan: this job's 10 page files, 2 added and 8 replaced, none deleted (stamp `20261112-104828`); before it every replaced live copy was the last committed one and both new files were absent, and the whole plan held nothing else. The README and this DEVLOG stay on the PC. After it, all 10 live copies equal `3e1b4c1c`, the deploy stamp is `20261112-104828`, 980 named imports across 134 live modules resolve against the live copies, and Corrett's page answers 200 with its record 401 signed out (the library gate, so the restarted API answers). Committed on `main` only, not pushed to GitHub. Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.97.0 - 12-Nov-2026 - Standard Palettes Every Project Can Use, and a Picture of Every Plant in a Palette
 ### Adam: "the arched planter vegetation here in Corrett - 64610 Make this into a standard pallette named Small Planting Bed Shrubs and create and test a variation with medium sized plants", then: "Actually shopw small thumbnail graphics for the plants used in the pallette as there is no visual representation currently so its horrible to use"

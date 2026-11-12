@@ -14,6 +14,8 @@
 
 **Not checked:** the tab in a browser.
 
+**Live (Adam: "Commit and push"), 12-Nov-2026 11:35 UTC:** `valevision3d` scoped to `02__Src__AppModules/93__Feature__ClientLinks` (stamp `20261112-113546`): 1 replaced (`Na__ClientLinks__ShareTab__.js`), none added or deleted. Page only: no API change, no restart. The live file is served at 1.1.4 and the deploy stamp names this push.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.1 - 12-Nov-2026 - Plants and People in Front of a Fog Plane Are Drawn, Each Fogged by Its Own Distance
 ### Adam: "Why is vegatation INFRONT of Fog being blocked by it?" (Corrett 64610, Shot-01), then: "Yes, fix it here"

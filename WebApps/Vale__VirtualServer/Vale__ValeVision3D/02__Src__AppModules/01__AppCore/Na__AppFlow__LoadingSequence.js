@@ -95,6 +95,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - ValeVision3D v2.98.0
+// - Reads the project's own lighting (SceneLighting__ProjectOverrides) as the record arrives, before any scene is
+//   dispatched or applied, and hands the lighting setup the app config's Scene__ProjectLighting switch.
+//
 // 05-Nov-2026 - ValeVision3D v2.89.0
 // - Tells the plants' and people's doors for every project, null with no key: staff can place them anywhere.
 //
@@ -305,6 +309,12 @@
         Na__Scene__SetupDefaultSceneLighting,
         Na__Scene__ApplyEnvironmentMap
     } from '../06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The Project's Own Lighting (read as the record arrives, before any scene)
+    // @delegate: ../06__Scene__LightingEffects/Na__Scene__ProjectLighting__.js
+    // ------------------------------------------------------------
+    import { Na__ProjLight__LoadFromRecord } from '../06__Scene__LightingEffects/Na__Scene__ProjectLighting__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Render Engine State (PureEngine / MaxEngine selection)
@@ -745,7 +755,8 @@
             Na__Scene__Main,
             Na__Config__LightingConfig,
             Na__Config__GroundPlane,
-            (Na__FullAppConfig && Na__FullAppConfig.Scene__PerSceneLighting) || null  // <-- Per-scene lighting switch, flight blend and slider ranges
+            (Na__FullAppConfig && Na__FullAppConfig.Scene__PerSceneLighting) || null, // <-- Per-scene lighting switch, flight blend and slider ranges
+            (Na__FullAppConfig && Na__FullAppConfig.Scene__ProjectLighting)  || null  // <-- Project lighting switch (v2.98.0)
         );
 
         // RENDER PIPELINE | Engine-Aware Composer Builder
@@ -850,6 +861,12 @@
                         detail: { renderEngineConfig: projectData.RenderEngine__Config }
                     }));
                 }
+
+                // APPLY THE PROJECT'S OWN LIGHTING (the app default when key absent)
+                // Before any scene is dispatched or the launch scene applied, so
+                // every scene resolves over it; the 3D view only, never a drawing.
+                // @delegate: ../06__Scene__LightingEffects/Na__Scene__ProjectLighting__.js
+                Na__ProjLight__LoadFromRecord(projectData);
 
                 // APPLY PER-PROJECT CROSS SECTION TOOL CONFIG (feature hidden when key absent)
                 if (projectData.CrossSection__Config) {

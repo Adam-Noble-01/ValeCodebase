@@ -68,6 +68,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.1.4 (v2.98.0)
+// - Leaving an elevation with no scene to fly to lights the 3D view its own
+//   way again (Na__SceneLighting__ApplyBase): an elevation keeps the app's
+//   default lighting, the 3D view the project's, now that a project can have
+//   its own. A flight to a scene eases there by itself, as it always did.
+// - The same exit stops a flight in that has not landed yet. It carried on
+//   after the exit, pulled the camera back from the pose the exit had set,
+//   and landed on the drawing's light (found headless on Mathison).
+//
 // 02-Oct-2026 - Version 1.1.3 (v2.71.4)
 // - TrueVision's 1.1.0 depth-fog hook (TrueVision3D v2.94.0). Registering the
 //   drawing view hands the fog layer two closures over the live record - its
@@ -103,6 +112,7 @@
     // MODULE IMPORTS | Render Loop and Math Utilities
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    import { Na__SceneLighting__ApplyBase } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';   // <-- The 3D view's own lighting, back as an elevation leaves
     import {
         Na__Math__ConvertMmToUnits,
         Na__Math__ConvertUnitsToMm
@@ -141,6 +151,7 @@
         Na__DrawView__Transitions__SuspendThreeD,
         Na__DrawView__Transitions__ResumeThreeD,
         Na__DrawView__Transitions__FlyTo,
+        Na__DrawView__Transitions__CancelFlight,
         Na__DrawView__Transitions__RegisterRouter
     } from '../40__System__DrawingViewCore/Na__DrawView__Transitions__.js';
     import {
@@ -698,6 +709,8 @@
         };
 
         if (!targetScene) {
+            Na__DrawView__Transitions__CancelFlight();                           // <-- Left before the flight in had landed: it would carry on, steer the camera and land on the drawing's light
+            Na__SceneLighting__ApplyBase({ requestRender : false });             // <-- The elevation was lit by the app default; the 3D view is lit by the project's (finish asks for the frame)
             finish();
             return true;
         }

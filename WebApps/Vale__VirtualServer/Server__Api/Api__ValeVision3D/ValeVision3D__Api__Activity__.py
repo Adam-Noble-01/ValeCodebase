@@ -33,6 +33,10 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 12-Nov-2026 - Version 1.3.1 (ValeVision3D v2.98.0)
+# - SceneLighting__ProjectOverrides in NA__VV3D__KEYS: a Project Lighting save
+#   reads "Saved project lighting" in the ledger, not "Saved other settings".
+#
 # 11-Nov-2026 - Version 1.3.0 (ValeVision3D v2.94.0)
 # - g.na_vv3d_activity = { 'skip': True } leaves a write out of the ledger: a page layout
 #   save that changed nothing wrote nothing (ValeVision3D__Api__PageLayouts__ 1.2.0).
@@ -114,6 +118,7 @@ NA__VV3D__KEYS           = {
     'GridLine__Grid__Offset__Config'      : ('grid', 'settings.save'),
     'Vegetation__SceneData'               : ('vegetation', 'settings.save'),
     'Entourage__SceneData'                : ('entourage', 'settings.save'),
+    'SceneLighting__ProjectOverrides'     : ('project lighting', 'settings.save'),
     'ValeVison3D__SketchUpCameraData'     : ('SketchUp cameras', 'project.sync'),
     'valeVision_ModelUrls'                : ('3D model files', 'project.sync'),
     'valeVision_ModelUrl'                 : ('3D model files', 'project.sync'),

@@ -1021,6 +1021,19 @@
                     </div>
                 </li>
                 <!-- -------------------------------------------------------- -->
+                <!-- PROJECT LIGHTING (app admins only): this project's sun and fill, saved after a confirm -->
+                <!-- @delegate: ./02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__ProjectLighting__DevMenu__.js -->
+                <!-- -------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naProjectLightingDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naProjectLightingDevToggle" aria-expanded="false">
+                        Project Lighting
+                        <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naProjectLightingDevPanel">
+                        <!-- Controls generated dynamically by Na__Scene__ProjectLighting__DevMenu__.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
                 <!-- CROSS SECTION TOOL (per-project feature gate)            -->
                 <!-- @delegate: ./02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js -->
                 <!-- Ids naCrossSectionToolDev*: naCrossSectionDev* is the Cross Sections drawing panel (48, K2 S4) -->
@@ -1615,6 +1628,7 @@
     import { Na__UiFeature__InitializeNavigationHelpPanel, Na__UiFeature__OpenNavigationHelpPanel } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js';
     import { Na__UiFeature__InitializeNavigationModesDevControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js';
     import { Na__UiFeature__InitializeRenderEngineDevControls, Na__UiFeature__SyncRenderEngineDevRadios } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js';
+    import { Na__ProjLightDev__Initialize } from './02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__ProjectLighting__DevMenu__.js';
     import { Na__UiFeature__InitializeRenderEngineControls, Na__UiFeature__RevealRenderEngineSection } from './02__Src__AppModules/05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js';
     import { Na__UiFeature__InitializeVisualEffectsControls } from './02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
@@ -2464,6 +2478,14 @@
         if (!config) return;
         Na__UiFeature__SyncRenderEngineDevRadios(config.RenderEngine__Active);  // <-- Reflect saved engine in dev radios
     }, { once: true });
+    // ------------------------------------------------------------
+
+    // INITIALIZE PROJECT LIGHTING DEV SECTION (Dev Menu, under Render Engine)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__ProjectLighting__DevMenu__.js
+    // App-admin-only; the module guards internally. The project's lighting
+    // itself is read by the loading sequence for everyone, clients included.
+    Na__ProjLightDev__Initialize({ showToast : Na__UiFeature__ShowToast });
     // ------------------------------------------------------------
 
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);

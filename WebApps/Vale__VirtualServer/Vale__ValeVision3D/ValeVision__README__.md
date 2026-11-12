@@ -547,9 +547,28 @@ People drawn in the plants' line language: flat figures that turn to the camera,
 
 The library is 13 figures converted from the core component library's `60__Scene__Entourage__2D`: six men, six women and a Labrador. The code is `02__Src__AppModules/23__System__Entourage`, whose README has the files and the rules, and the library is `54__Entourage__AssetLibrary`. A new figure is a `.skp` in that folder and one call of the MCP tool `vv3d_entourage_import_skp`. What was baked into a GLB by tags 60 and 61 (Holt's silhouettes) still works by the old camera-follow billboards, and the two routes do not meet.
 
+## Project Lighting (v2.98.0)
+
+A project can turn its own sun, so its 3D view shades the faces its own way: the whitecard stays flat shaded, and which faces read lighter or greyer follows where the sun is. It lights the 3D view and every scene that has no lighting of its own, for staff and clients alike. Plans, elevations and Layout Editor sheet pictures keep the app's default lighting on every project (Adam: "3D view only").
+
+Dev Tools > **Project Lighting**, under Render Engine (app admins only): Rotation, Height, Sun, Ambient and Sun casts shadows, the same controls as a scene's Lighting below. Every change lights the viewport at once; a line says where the sun is (in compass words once North Direction is set). **Save Project Lighting** asks first, as the camera and fog saves do: Save, Overwrite or Clear, whichever the press will do. **Use App Default** and **Undo Changes** are changes like any other until saved.
+
+Stored as one top-level key of `project.json`, a section per light, holding only what differs from the app default (no key at all at the default), saved by PATCH as that one key:
+
+```json
+"SceneLighting__ProjectOverrides": {
+    "SceneLighting__ProjectOverrides__Description"   : "This project's own lighting, set in the Dev menu's Project Lighting ...",
+    "SceneLighting__ProjectOverrides__SchemaVersion" : 1,
+    "SceneLighting__ProjectOverrides__Sun"           : { "SceneLighting__Sun__RotationDeg": 180, "SceneLighting__Sun__HeightDeg": 40 },
+    "SceneLighting__ProjectOverrides__Ambient"       : { "SceneLighting__Ambient__Intensity": 3.1 }
+}
+```
+
+`__Sun` holds `SceneLighting__Sun__RotationDeg`, `__HeightDeg`, `__Intensity` and `__ShadowsEnabled`; `__Ambient` holds `SceneLighting__Ambient__Intensity`. A later lighting override joins as a section of its own. `Scene__ProjectLighting__Enabled` false in the app config ignores every saved project lighting and hides the section; nothing is deleted. The modules are `06__Scene__LightingEffects/Na__Scene__ProjectLighting__.js` (load, working copy, save) and `Na__Scene__ProjectLighting__DevMenu__.js`; the layers themselves are in `Na__Scene__PerSceneLighting__.js`.
+
 ## Per-Scene Lighting (v2.71.0)
 
-Any Presentation Mode scene can carry its own lighting, so a view whose subject faces away from the sun can be lit properly without changing any other scene. Every scene that is not given its own lighting keeps using the default.
+Any Presentation Mode scene can carry its own lighting, so a view whose subject faces away from the sun can be lit properly without changing any other scene. Every scene that is not given its own lighting keeps using the default: the project's lighting when it has its own (above), else the app's.
 
 ### Authoring
 
@@ -557,7 +576,7 @@ Dev Tools > Presentation Mode Scenes > open a scene > **Advanced** > **Lighting*
 
 | Control | What it does |
 | :------ | :----------- |
-| Rotation | Turns the sun about the vertical axis, clockwise seen from above. 0 is the default direction; the slider runs 0 to 360. |
+| Rotation | Turns the sun about the vertical axis, clockwise seen from above. 0 is the app's default direction; the slider runs 0 to 360. |
 | Height | The sun's angle above the horizon. Lower lights the walls more strongly; 90 is straight overhead. |
 | Sun | The strength of the sun (the directional light, the only light that casts shadows). |
 | Ambient | The strength of the even fill light every face receives. |
@@ -593,7 +612,7 @@ An absent key follows the default, and an absent block is the default lighting. 
 ### Where It Applies
 
 - Carousel flights ease the lighting in step with the camera; instant scene applies (page load, the batch walks, Layout Editor 3D viewports) set it at once.
-- Floor plans and elevations always use the default lighting, in the viewer and on Layout Editor sheets.
+- Floor plans and elevations always use the app's default lighting, in the viewer and on Layout Editor sheets, whatever the project's own.
 - Image export, scene thumbnails, Update All Thumbnails and Download All Images render each scene in its own lighting.
 - Shadows switch by strength (`LightShadow.intensity`), never by `castShadow`, so no material recompiles.
 
@@ -601,7 +620,8 @@ An absent key follows the default, and an absent block is the default lighting. 
 
 | Module | Purpose |
 | :----- | :------ |
-| `06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js` | Owns both lights: defaults, resolve, the minimal stored block, flight blend, apply and capture. |
+| `06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js` | Owns both lights: the app default, the project's layer, resolve, the minimal stored block, flight blend, apply and capture. |
+| `06__Scene__LightingEffects/Na__Scene__ProjectLighting__.js`, `Na__Scene__ProjectLighting__DevMenu__.js` | The project's own lighting: its record object and its Dev Tools section (above). |
 | `21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js` | The Advanced > Lighting subsection. |
 | `21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js` | Applies a scene's lighting on an instant apply and eases it over a flight. |
 | `80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs` | Node test of the lighting maths against the shipped app config. |

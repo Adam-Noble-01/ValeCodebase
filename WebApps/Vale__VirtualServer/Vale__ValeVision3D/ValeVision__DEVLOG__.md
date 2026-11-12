@@ -24,6 +24,8 @@
 - A real GPU, a phone or tablet, Safari (the tile names use `-webkit-line-clamp`).
 - Re-choosing a standard already copied into a project, from "In this project", does not set its scale and spacing again: on purpose, so a project's own changes stand.
 
+**Live (Adam: "Commit and push"), 12-Nov-2026 10:43 UTC:** `valevision3d` in two scoped pushes, `02__Src__AppModules/24__System__Vegetation` (the 6 files replaced) and `53__Vegetation__AssetLibrary` (stamp `20261112-104308`, `VegetationLibrary__StandardPalettes__.json` added), nothing deleted. The unscoped list also held another session's uncommitted v2.98.0 project lighting files and `index.html`, so they were left on the PC. Before the push the live copies of the three files shared with v2.94.2 matched the PC's less this job's hunks, by SHA-256; after it all 7 files match the PC. No API change, so no restart. Committed as `5b3f7808`, not pushed to GitHub.Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.96.0 - 11-Nov-2026 - Staff Saves Go Straight to Clients, a Drawing Saves People and Plants First, and a Right-Click Says Who Added It and When
 ### Adam: "Remove this, any entorage added by anyone staff or above should be updated when saved in a similar manner tyo vegetation and also saved when the drawing tool is used to stop people losing their entorage and vegetation when they make drawings. just ensure when you right click it shows who added that thing into the scene and when so this gives ownership / accountability"

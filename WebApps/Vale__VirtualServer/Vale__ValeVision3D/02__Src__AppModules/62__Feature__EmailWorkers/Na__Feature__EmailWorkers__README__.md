@@ -89,7 +89,7 @@ Reply-To the sender
 ## Send Flow
 
 **Internal:** choose the email on its two picture cards (**Project link email**, or **New project notice**: no link, it
-points to the install guide), pick recipients, fill greeting and notes, then **Send email** (v2.79.4). The toast says
+points to the install guide; chosen by default since v2.98.3), pick recipients, fill greeting and notes, then **Send email** (v2.79.4). The toast says
 where it went: "Email successfully sent to derek@..., roger@... and 2 more."
 
 **Client email:**

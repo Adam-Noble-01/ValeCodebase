@@ -11,6 +11,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - New project notice by default (ValeVision3D v2.98.3)
+// - Adam: the Internal tab opens with New project notice chosen, not
+//   Project link email.
+//
 // 28-Oct-2026 - Pictures and one choice (ValeVision3D v2.79.4)
 // - Adam: "Make these easier to understand, use graphics". The Internal tab
 //   picks its email on two picture cards (Project link email: the link icon;
@@ -247,11 +251,11 @@
             typeField.appendChild(card);
             return radio;
         };
-        const typeLink = makeTypeCard('link', 'link', 'Project link email',
-                                      'A button that opens this project in ValeVision 3D.');
-        makeTypeCard('notice', 'bell', 'New project notice',
-                     'Says the project is now in the ValeVision app. No link: it points to the install guide.');
-        typeLink.checked = true;
+        makeTypeCard('link', 'link', 'Project link email',
+                     'A button that opens this project in ValeVision 3D.');
+        const typeNotice = makeTypeCard('notice', 'bell', 'New project notice',
+                                        'Says the project is now in the ValeVision app. No link: it points to the install guide.');
+        typeNotice.checked = true;                                             // <-- The default (Adam, v2.98.3)
         // ------------------------------------------------------------
 
         // ACTIONS | Cancel, Download Email, then Send email on the right (the main one)

@@ -1,6 +1,20 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.98.3 - 12-Nov-2026 - The Internal Sharing Tab Opens With New Project Notice Chosen
+### Adam: "On the Internal Link side Make this the default i.e. new project notice vs project link which is current init default"
+
+**What was wrong:** the Internal Vale Company Sharing tab's "Which email?" opened on Project link email.
+
+**Now:** it opens on New project notice; Project link email is one click away. Download Email and Send email act on the chosen card, as before.
+
+**Changed:** `62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js` (the notice card is checked when the form is built), the module README.
+
+**Checked:** `vv3d_check.py changed`: syntax, 0 undeclared names, the module graph clean.
+
+**Not checked:** the form in a browser.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.2 - 12-Nov-2026 - The External Client Sharing Tab Opens With Both Panels Folded
 ### Adam: "make this not unfolded , when you open the  client link sharing tab link it should be like image 02"
 

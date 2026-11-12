@@ -33,6 +33,11 @@
 //   figure is edge on, so it never draws there.
 // - HIDING. A fat line is never hidden with .visible: the profile pass forces it back on (rule
 //   10). Counts are emptied instead, and the root group's .visible stops the whole walk.
+// - IN FRONT OF FOG, AS THE PLANTS. The root carries userData.Na__FogPlane__IsOwnLayer, so the
+//   fog pass draws the figures alone and fogs them by their own distance: the depth it reads
+//   otherwise has no lines, and from the see-through share no fill, so a figure at the
+//   default 60% against the sky beyond a fog plane was painted out (v2.98.1).
+//   @delegate: ../../29__System__FogPlaneSystem/Na__FogPlaneSystem__OwnLayers__.js
 //
 // FRAMES:
 // - The builder's lines are metres in the figure's own plane, x across, y up. Saved positions
@@ -48,6 +53,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.1.1 (ValeVision3D v2.98.1)
+// - The root is marked for the fog to draw alone and fog by its own distance.
+//
 // 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.95.0)
 // - A figure's height is multiplied by its stretch (Jamesification) as well as its scale, drawn and picked.
 //
@@ -191,6 +199,7 @@
         // the fill among its meshes, and it leaves anything tagged linework out of them.
         const root = new THREE.Group();
         root.name = 'Na__Entourage__Root';
+        root.userData.Na__FogPlane__IsOwnLayer = true;                         // <-- The fog draws the figures alone, by their own distance (see the header)
         const lineGroup = new THREE.Group();
         lineGroup.name = 'Na__Entourage__Lines';
         lineGroup.userData.Na__ModelType = 'linework';                         // <-- Export line weights reach what is under this tag (T14)

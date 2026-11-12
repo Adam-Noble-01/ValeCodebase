@@ -79,6 +79,12 @@
 //   render with an override material), so the wall's edges show through. Nor is it then
 //   in AO's passes, so AO reads the wall alone and the mark above stops: kept, it cut the
 //   wall's own shadow out behind every plant and left dashes in the gaps (Mathison, Max).
+// - IN FRONT OF FOG (Adam, 12-Nov-2026: "Why is vegatation INFRONT of Fog being blocked by
+//   it?"). The fog reads the normal pass's depth, which never has the lines and, from the
+//   see-through share, has no fill either, so a hedge against the sky beyond a fog plane was
+//   fogged as if it were the sky. The root carries userData.Na__FogPlane__IsOwnLayer, and the
+//   fog pass draws the plants alone and fogs them by their own distance (v2.98.1).
+//   @delegate: ../../29__System__FogPlaneSystem/Na__FogPlaneSystem__OwnLayers__.js
 //
 // INTEGRATION:
 // - Driven by Na__Vegetation__Runtime__.js in the app, and by the test bench in
@@ -92,6 +98,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.3.1 (ValeVision3D v2.98.1)
+// - The root is marked for the fog to draw alone and fog by its own distance.
+//
 // 05-Nov-2026 - Version 1.3.0 (ValeVision3D v2.88.0)
 // - The render hook goes through host.addRenderHook when there is one, as figures want that slot too. The test bench, with no host, is as it was.
 //
@@ -414,6 +423,7 @@
         // tagged linework out of them.
         const root = new THREE.Group();
         root.name = 'Na__Vegetation__Root';
+        root.userData.Na__FogPlane__IsOwnLayer = true;                         // <-- The fog draws the plants alone, by their own distance (see the header)
         const lineGroup = new THREE.Group();
         lineGroup.name = 'Na__Vegetation__Lines';
         lineGroup.userData.Na__ModelType = 'linework';                         // <-- Export line weights reach what is under this tag (T14)

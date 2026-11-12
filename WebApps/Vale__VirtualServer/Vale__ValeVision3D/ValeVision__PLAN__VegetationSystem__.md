@@ -178,7 +178,7 @@ The prototype stays where it is as the test bench, importing the real modules on
 | Depth? | Log depth, with its own small bias (0.00003), because the model's 0.00015 is 15 cm at 150 m |
 | Profile lines? | The fill's normals face the camera, so the Sobel draws nothing on a bush. Proven in the demo through the real composer. Since Stage 2 the whole fill shares one instanced normal, pixel-identical to one per vertex, so a camera move costs 3 numbers |
 | Sections? | Materials read `Na__SectionClipping__GetClipList()`: a section cuts plants as it cuts the model |
-| Fog? | The fill writes depth, so fog planes fall on it unchanged |
+| Fog? | The fill writes depth, so fog planes fall on it unchanged. **Not from the see-through share (v2.85.0):** the fill then leaves the normal pass, whose depth the fog reads, and a hedge against the sky was fogged as the sky. Since v2.98.1 the fog draws plants and people alone and fogs them by their own distance (`29__System__FogPlaneSystem/Na__FogPlaneSystem__OwnLayers__.js`) |
 | Line weight in exports? | `SetExportScales` only reaches lines under a linework root (T14), so the plants' lines sit under a group marked `Na__ModelType: 'linework'`, with their base widths on userData |
 | Detail in exports? | Detail thresholds are measured against the line weight, not raw pixels, so a 6000 px still shows the same picture as the screen, only sharper |
 | Boot timing? | The door listens before the sequence starts (T8), and reads state rather than relying on a one-shot event |

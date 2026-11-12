@@ -1,6 +1,38 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.98.1 - 12-Nov-2026 - Plants and People in Front of a Fog Plane Are Drawn, Each Fogged by Its Own Distance
+### Adam: "Why is vegatation INFRONT of Fog being blocked by it?" (Corrett 64610, Shot-01), then: "Yes, fix it here"
+
+**What was wrong:** the fog works out each pixel's distance from the depth the profile line normal pass leaves, on both engines. Fat lines are never in that pass, and from the see-through share (50%) a plant's or figure's fill leaves it too, so that the walls' edges show through it. So the fog measured whatever was behind a plant, not the plant. Corrett's hedge, standing against the sky beyond fog plane A, vanished at 50% Transparency and above, leaving scraps of its lower outline where nearer ground was behind it; a figure, which starts at 60%, vanished the same way; and at any transparency the sky side of every plant outline was fogged off, so hedge tops drew at about half weight. Garnett starts its plants at 60% in its record, so its viewers saw it. The vegetation plan's "The fill writes depth, so fog planes fall on it unchanged" stopped being true at v2.85.0, with transparency.
+
+**Now:**
+- **The fog draws the plants and people alone first,** with their own materials and transparency, through the camera the fog was handed and at the composer's own samples, then fogs them by their own depth and the model behind them by its own: out = Pm (1 - fP) + A fP fog + (1 - fB) (C - Pm) + (1 - A) fB fog, Pm being the layer drawn alone and A its share. A see-through hedge in front of a plane now looks as it does with the fog off, while a far line seen through it stays fogged.
+- **Every picture has it, with no chain changed:** the live view, custom-size stills and their tiles, thumbnails and video frames all run the composer and hand the fog its camera first, and the draw happens inside the fog pass.
+- **Nothing is drawn or held without fog,** an active plane and a plant or figure to draw. Switching the fog off, as a drawing does, gives the memory back. A project with no planting or people draws exactly as before.
+- **The mark is `userData.Na__FogPlane__IsOwnLayer`** on the vegetation and entourage roots; anything else drawn outside the normal pass can carry it.
+
+**Changed:**
+- New: `29__System__FogPlaneSystem/Na__FogPlaneSystem__OwnLayers__.js` 1.0.0 (draws the marked roots alone into a target matching the composer's buffers, and releases it).
+- `Na__FogPlaneSystem__FogShaderEffect.js` 1.2.0 (the layer uniforms; the fog sum a function used for both depths; the pass's render draws the layers first; each pass keeps the camera it is handed; switching off releases), `Na__FogPlaneSystem__SystemLogic.js` 1.1.1 (the pass is given the scene).
+- `Na__Vegetation__SceneLayer__.js` 1.3.1 and `Na__Entourage__SceneLayer__.js` 1.1.1 (the root carries the mark).
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- MCP sandbox, headless Edge on the graphics card, Corrett 64610 Shot-01 and Shot-02 with plants at 0, 45, 50 and 60%: the hedge in front of fog plane A draws at every share, as with the fog off but with the far ground line behind it still fogged; at 0% the outline's sky side is back (999 px on Shot-01, nothing else moved). The same on MaxEngine.
+- Garnett 64616, plants at its own 60%: the tops of the left bed's planting against the sky now draw.
+- A figure placed on Corrett's sandbox copy only, at its default 60%, on the path with the sky behind: painted out before, drawn now; at 0% its outline's sky side is back. The sandbox copy was put back afterwards.
+- A 4800 x 2700 still through the tiled export, and a thumbnail through its own camera: the hedge and the figure stay, no seams between tiles.
+- No planting or people, Washington (PureEngine) and Falla Scheme-02 (MaxEngine): pixel for pixel the old shader's picture on the same page, 0 px on all six views. Fog off: unchanged.
+- Memory: the layer is two textures while there is fog with plants or people to draw; fog off gives them back, 11, 13, 11 over three cycles. A first build kept one each cycle, through the samplers still bound to the disposed target: fixed.
+- Cost at 1600 x 900: 11.2 ms a frame with the layer, 11.1 ms without.
+
+**Not checked:**
+- A phone or tablet: the layer target is the composer's size, two more full-size textures while fog and planting are both on.
+- Video Studio frame exports and Layout Editor 3D pictures: they run the same composer and camera hand-over, but were not run.
+- Below the 50% share a see-through plant's fill is still in the normal pass, so what is seen through it takes the plant's fog, as before this change.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.0 - 12-Nov-2026 - Project Lighting: a Project Can Turn Its Own Sun, So Its 3D View Shades the Faces Its Own Way
 ### Adam: "Add a new dev menu item for per project lighting settings. Add sun position so i can change the direction of the faces shaded (still should be flat but can you see here some faces shad greyer than others? well on a project by project basis Id like a way to control that / Ensure it writes to the project json with a new data object for this and future scene lighting ovberides in my 3 section json style / Ensure you need to confirm a save like with the camera and fog tools / Project is highly modulare make sure you understand the codebase before implenting anything new or touching the existing render / lighting pipelines", then, asked whether a project's lighting should also shade its plans, elevations and sheets: "3D view only", and for the object's shape: "A section per light"
 

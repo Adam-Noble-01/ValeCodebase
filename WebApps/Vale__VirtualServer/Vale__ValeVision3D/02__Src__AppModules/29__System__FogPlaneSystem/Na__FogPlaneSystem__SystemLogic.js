@@ -20,6 +20,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Nov-2026 - Version 1.1.1 (ValeVision3D v2.98.1)
+// - The fog pass is given the scene, where it finds the plants and people it
+//   fogs by their own distance (Na__FogPlaneSystem__OwnLayers__.js).
+//
 // 22-Oct-2026 - Version 1.1.0 (thumbnails whited out by fog, v2.76.4)
 // - UpdatePerFrame applies the camera constraint before the shader uniforms,
 //   so a frame the constraint pushes back is fogged from where it was pushed to.
@@ -368,7 +372,7 @@
         Na__FogPlane__SysFogPass = Na__FogPlane__CreateFogPass({
             ...effectConfig,
             FogPlane__Falloff__Config__DefaultMm: Na__FogPlane__SysFalloffMm
-        });
+        }, scene);                                                           // <-- Where it finds the plants and people it fogs by their own distance
 
         Na__FogPlane__InitializePlaneCreation(
             scene, camera, renderer, controls, modelRoot,

@@ -27,6 +27,8 @@
 - The slider moved by hand with the mouse: the test set its value and sent its input and change events.
 - Dev Tools > Assets > Vegetation and Entourage still have their own Start with plants showing and Starting transparency rows, which write the same keys straight away; they were left as they were.
 
+**Live (Adam: "Commit and push"), 13-Nov-2026 13:53 UTC:** the API first, `server-api` scoped to `Api__ValeVision3D`: 1 replaced (`ValeVision3D__Api__SceneAssets__Logic__.py`), then `vale@ValeVision3D` restarted (active since 13:52:58 UTC, health ok, the server copy holds `StartKeys`). Then `valevision3d` scoped to `02__Src__AppModules` (stamp `20261113-135315`): 6 replaced (both menu sections, both panel shells, both AppConfigs), none added or deleted, and nothing else was waiting. `/valevision/` answers 200, the deploy stamp names this push and lists the changed files, and the live copies carry the change.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.3 - 12-Nov-2026 - The Internal Sharing Tab Opens With New Project Notice Chosen
 ### Adam: "On the Internal Link side Make this the default i.e. new project notice vs project link which is current init default"

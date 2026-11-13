@@ -37,6 +37,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - Cap outlines take the 3D view's own size and follow na-viewport-size-changed:
+//   the view now stops under the top bar, not at the window's edges.
+//
 // 02-Oct-2026 - Drawing adapter export RenderDepthInto (v2.71.4)
 // - Additive export RenderDepthInto(camera) for Na__DrawView__SectionAdapter__,
 //   the depth fog's cut-face pre-pass: the cap root alone (fills and outlines,
@@ -64,6 +68,7 @@
 
     // MODULE IMPORTS | Three.js Core and Fat Lines
     // ------------------------------------------------------------
+    import { Na__ViewportSize__Get, Na__ViewportSize__EVENT } from '../01__AppCore/Na__AppCore__ViewportSize__.js';
     import * as THREE from 'three';
     import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
@@ -596,7 +601,8 @@
             linewidth  : Na__Sect__LineWidthPx,
             worldUnits : false
         });
-        outlineMaterial.resolution.set(window.innerWidth, window.innerHeight);
+        const viewSize = Na__ViewportSize__Get();                            // <-- The 3D view's box (under the top bar), not the window
+        outlineMaterial.resolution.set(viewSize.width, viewSize.height);
         const outlineMesh = new LineSegments2(new LineSegmentsGeometry(), outlineMaterial);
         outlineMesh.name = `Na__CrossSectionView__CapOutline__${Na__Sect__NextId}`;
         outlineMesh.userData.naCrossSectionHelper = true;
@@ -1724,9 +1730,10 @@
         });
 
         // RESIZE | Fat line materials need the viewport resolution
-        window.addEventListener('resize', () => {
+        window.addEventListener(Na__ViewportSize__EVENT, () => {            // <-- The 3D view's box changed (window, tab strip, header)
+            const viewSize = Na__ViewportSize__Get();
             for (let i = 0; i < Na__Sect__Sections.length; i++) {
-                Na__Sect__Sections[i].outlineMesh.material.resolution.set(window.innerWidth, window.innerHeight);
+                Na__Sect__Sections[i].outlineMesh.material.resolution.set(viewSize.width, viewSize.height);
             }
         });
 

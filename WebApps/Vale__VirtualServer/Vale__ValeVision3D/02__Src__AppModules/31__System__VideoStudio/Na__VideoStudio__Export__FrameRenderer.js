@@ -71,6 +71,10 @@
 //   out of the video. A frame-by-frame render is not a viewport, so the
 //   device's frame rate never decides what it shows.
 //
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - The live size goes back without an inline style (setSize false), so the 3D
+//   view keeps following its stylesheet box under the top bar.
+//
 // =============================================================================
 
 
@@ -510,7 +514,7 @@
                 }
 
                 renderer.setPixelRatio(savedPixelRatio);
-                renderer.setSize(savedSize.x, savedSize.y);
+                renderer.setSize(savedSize.x, savedSize.y, false);            // <-- false: the stylesheet owns the canvas's box
 
                 if (typeof composer.setPixelRatio === 'function') {
                     composer.setPixelRatio(savedPixelRatio);                  // <-- Restore in lockstep with the renderer

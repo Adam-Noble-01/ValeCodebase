@@ -41,6 +41,11 @@
 //   drawing planes were not drawn at all; after a switch back from MaxEngine they
 //   were drawn but entered the normal and colour passes and spoilt the lines.
 //
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - Render targets, profile lines and FXAA are sized to the 3D view's own box
+//   (Na__ViewportSize__Get), which now stops under the top bar, not the window.
+//
+
 // =============================================================================
 
 
@@ -56,6 +61,7 @@
     import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
     import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     import { Na__RenderEffect__ProfileLines__Create } from '../Na__RenderEffect__ProfileLines__.js';
+    import { Na__ViewportSize__Get } from '../../01__AppCore/Na__AppCore__ViewportSize__.js';
     // ------------------------------------------------------------
 
 
@@ -63,8 +69,9 @@
     // ------------------------------------------------------------
     function Na__RenderPipeline__PureEngine__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass, orbitTarget) {
         const pixelRatio = renderer.getPixelRatio();
-        const width      = window.innerWidth * pixelRatio;
-        const height     = window.innerHeight * pixelRatio;
+        const viewSize   = Na__ViewportSize__Get();                          // <-- The 3D view's box (under the top bar), not the window
+        const width      = viewSize.width * pixelRatio;
+        const height     = viewSize.height * pixelRatio;
 
         // HELPER LAYER SETUP | Layer 1 = authoring helpers (compass, drawing planes), drawn by the scene render
         camera.layers.enable(1);                                           // <-- Without this nothing on layer 1 is drawn on a session that never built MaxEngine
@@ -95,7 +102,7 @@
         const profileLinesEnabled = profileLinesConfig
             && profileLinesConfig.RenderEffect__ProfileLines__Enabled === true;
         if (profileLinesEnabled) {
-            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, window.innerWidth, window.innerHeight, orbitTarget);
+            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, viewSize.width, viewSize.height, orbitTarget);
             profileLines.pass.material.depthWrite = false;
             profileLines.pass.material.depthTest  = false;
             composer.addPass(profileLines.pass);
@@ -164,8 +171,8 @@
         const fxaaPass = new ShaderPass(FXAAShader);
         fxaaPass.material.depthWrite = false;
         fxaaPass.material.depthTest  = false;
-        fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
-        fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.x = 1 / (viewSize.width * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.y = 1 / (viewSize.height * pixelRatio);
         composer.addPass(fxaaPass);
 
         function setFxaaSize(w, h) {

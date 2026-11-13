@@ -95,6 +95,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - The resize handler follows the 3D view's own box (Na__ViewportSize__Watch) instead of the window, and sizes
+//   the renderer without an inline style: the canvas now runs from the underside of the top bar to the bottom of
+//   the window, where it used to run 60 px off the bottom.
+//
 // 12-Nov-2026 - ValeVision3D v2.98.0
 // - Reads the project's own lighting (SceneLighting__ProjectOverrides) as the record arrives, before any scene is
 //   dispatched or applied, and hands the lighting setup the app config's Scene__ProjectLighting switch.
@@ -286,6 +291,11 @@
     // MODULE IMPORTS | Three.js GLTF Loader
     // ------------------------------------------------------------
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The 3D View's Box (under the top bar to the bottom of the window)
+    // ------------------------------------------------------------
+    import { Na__ViewportSize__Watch } from './Na__AppCore__ViewportSize__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Render Pipeline Engines (PureEngine = default, MaxEngine = opt-in PBR)
@@ -1934,14 +1944,12 @@
 
         Na__RenderLoop__RequestRenderOnce();
 
-        // RESIZE HANDLER
-        window.addEventListener('resize', () => {
-            const width  = window.innerWidth;
-            const height = window.innerHeight;
-
+        // RESIZE HANDLER | The 3D view's own box, not the window: it starts under the top bar
+        // @delegate: ./Na__AppCore__ViewportSize__.js
+        Na__ViewportSize__Watch((width, height) => {
             Na__Camera__Main.aspect = width / height;
             Na__Camera__Main.updateProjectionMatrix();
-            Na__Renderer__Main.setSize(width, height);
+            Na__Renderer__Main.setSize(width, height, false);                // <-- false: an inline style would pin the box off the stylesheet
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
                 Na__RenderComposer__Main.setSize(width, height);
                 Na__RenderPipeline__State.setProfileLinesSize(width, height);

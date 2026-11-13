@@ -29,6 +29,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - Line resolution starts at the 3D view's own size, which now stops under the top
+//   bar, not at the window's bottom edge.
+//
 // 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.95.0)
 // - SizeOf counts the height stretch (Jamesification).
 //
@@ -44,6 +48,7 @@
 
     // MODULE IMPORTS | Three.js
     // ------------------------------------------------------------
+    import { Na__ViewportSize__Get } from '../../01__AppCore/Na__AppCore__ViewportSize__.js';
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
@@ -255,12 +260,13 @@
 
         if (!state.layer) {
             const config = await Na__EntData__LoadConfig();
+            const viewSize = Na__ViewportSize__Get();                        // <-- The 3D view's box (under the top bar), not the window
             state.layer = Na__EntLayer__Create({
                 scene             : context.scene,
                 lineRules         : sceneData.Entourage__SceneData__LineRules,
                 lineColour        : context.lineColour,
                 wallColour        : context.wallColour,
-                resolution        : new THREE.Vector2(window.innerWidth, window.innerHeight),
+                resolution        : new THREE.Vector2(viewSize.width, viewSize.height),
                 seeThroughPercent : config.Entourage__Transparency__Config.Entourage__Transparency__SeeThroughFromPercent,
                 host              : {
                     addRenderHook : (hook) => Na__SceneHooks__Add(context.scene, hook),

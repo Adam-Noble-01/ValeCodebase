@@ -36,6 +36,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - ValeVision3D v2.98.5
+// - Line resolution refreshes on na-viewport-size-changed, after the renderer has
+//   taken the 3D view's new size (a window resize ran before it).
+//
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
@@ -48,6 +52,7 @@
 
     // MODULE IMPORTS | Three.js
     // ------------------------------------------------------------
+    import { Na__ViewportSize__EVENT } from '../01__AppCore/Na__AppCore__ViewportSize__.js';
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
@@ -920,7 +925,7 @@
         Na__VsViz__Scene    = scene;
         Na__VsViz__Renderer = renderer;
 
-        window.addEventListener('resize', Na__VideoStudio__PathVisualizer__UpdateResolution);
+        window.addEventListener(Na__ViewportSize__EVENT, Na__VideoStudio__PathVisualizer__UpdateResolution);  // <-- After the renderer has taken the 3D view's new size
 
         console.log('[ValeVision3D] Video Studio path visualizer initialized.');
     }

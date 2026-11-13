@@ -29,6 +29,7 @@
 
     // MODULE IMPORTS | Three.js Core
     // ------------------------------------------------------------
+    import { Na__ViewportSize__Get, Na__ViewportSize__EVENT } from '../01__AppCore/Na__AppCore__ViewportSize__.js';
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
@@ -138,7 +139,8 @@
             gapSize     : isDashed ? gapSize  : undefined
         });
 
-        mat.resolution.set(window.innerWidth, window.innerHeight);           // <-- Required for LineMaterial
+        const viewSize = Na__ViewportSize__Get();                            // <-- The 3D view's box (under the top bar), not the window
+        mat.resolution.set(viewSize.width, viewSize.height);                 // <-- Required for LineMaterial
         return mat;
     }
     // ------------------------------------------------------------
@@ -167,7 +169,8 @@
             opacity     : 0.85,
             depthWrite  : false
         });
-        material.resolution.set(window.innerWidth, window.innerHeight);
+        const viewSize = Na__ViewportSize__Get();
+        material.resolution.set(viewSize.width, viewSize.height);
 
         const marker = new LineSegments2(geometry, material);
         marker.name = 'Na__GridLineOriginMarker';
@@ -190,7 +193,7 @@
         Na__GridLine__Group.name = 'Na__GridLineGroup';
         scene.add(Na__GridLine__Group);
 
-        window.addEventListener('resize', Na__GridLine__OnResize);
+        window.addEventListener(Na__ViewportSize__EVENT, Na__GridLine__OnResize);  // <-- The 3D view's box changed (window, tab strip, header)
     }
     // ------------------------------------------------------------
 
@@ -199,9 +202,10 @@
     // ------------------------------------------------------------
     function Na__GridLine__OnResize() {
         if (!Na__GridLine__Group) return;
+        const viewSize = Na__ViewportSize__Get();
         Na__GridLine__Group.traverse((child) => {
             if (child.material && child.material.resolution) {
-                child.material.resolution.set(window.innerWidth, window.innerHeight);
+                child.material.resolution.set(viewSize.width, viewSize.height);
             }
         });
     }

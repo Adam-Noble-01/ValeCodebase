@@ -1,6 +1,41 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.98.6 - 13-Nov-2026 - The Sun Casts No Shadows Unless a Project or a Scene Ticks Them On
+### Adam: "This sun cast shadows default make it always = FALSE but can be toggled back on so off becomes the default", pointing at Kann's (64562) Project Lighting with Sun casts shadows ticked
+
+(In progress: entry completed below once checked.)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.98.5 - 13-Nov-2026 - The 3D View Fits Between the Top Bar and the Bottom of the Window
+### Adam: "Yes I noticed the same the top and the bottom seem truncated so fix that ... so just make the updates required to keep the canvas in the correct height bounds i.e. base of window and underside of top bar", then, shown the hidden strip: "wow yes lots was covered up! i didnt realise"
+
+**What was wrong:** comparing Kann's (64562) eight synced SketchUp pictures with the app showed every shot 60 px low with its bottom edge missing. Cloud Sync was not at fault: the record held the model's cameras exactly, and the app projects them as SketchUp does. `index.html` sized the renderer to the whole window, `setSize(innerWidth, innerHeight)`, which also writes that size onto the canvas as an inline style, over the stylesheet's `calc(100vh - header)`. The canvas starts under the 60 px top bar, so it ran 60 px off the bottom of the window (48 px on an upright phone): every view sat low, its bottom 60 px never seen, and the Image Export safe frame, which measures the window less the header, was drawn on a different box from the render.
+
+**Now:**
+- **The 3D view runs from the underside of the top bar (and any Layout Editor tab strip) to the bottom of the window,** and the camera is centred in it. A SketchUp scene opens as its picture: the whole height of the shot, nothing cut at the top or bottom. A window wider than 3:2 still shows more at the sides than the picture, as it always has.
+- **`01__AppCore/Na__AppCore__ViewportSize__.js` 1.0.0 (new):** `Na__ViewportSize__Get` reads the canvas's box as the stylesheet places it; `Na__ViewportSize__Watch` follows it with a ResizeObserver, so a window resize, a phone toolbar, the tab strip or a header height change all reach the renderer, and announces each change as `na-viewport-size-changed`. It runs once as it is attached, so a window resized while the model loaded is caught.
+- **The renderer is sized with `setSize(w, h, false)` everywhere,** never an inline size, so the stylesheet keeps the box: at boot, in the resize handler, and where the still and video exporters put the live size back.
+- **Everything sized to the window now takes the view's size:** both engines' composer targets, profile lines and FXAA, ambient occlusion, the line resolutions of the grid, the section caps, the Video Studio path, plants and people, and the old 2D elevation camera. The grid, the section caps, the video path and the 2D elevation follow `na-viewport-size-changed` in place of the window's resize.
+- **Stylesheets:** a `100dvh` line after each `100vh` one (the visible height on a phone), and an upright phone's canvas, which starts under its bar, now ends at the bottom of the screen instead of a bar's height below it.
+
+**Changed:**
+- New: `Na__AppCore__ViewportSize__.js` 1.0.0.
+- `index.html`, `Na__AppFlow__LoadingSequence.js`, `Na__RenderPipeline__PureEngine__Setup.js`, `Na__RenderPipeline__MaxEngine__Setup.js`, `Na__RenderEffect__AmbientOcclusion__.js`, `Na__GridLineSysem__GridCreationLogic.js`, `Na__CrossSectionView__SystemLogic.js`, `Na__VideoStudio__Viewport__PathVisualizer.js`, `Na__Vegetation__Runtime__.js`, `Na__Entourage__Runtime__.js`, `Na__ElevationView__SystemLogic.js` (folder 91), `Na__ImageExport__StaticExport__TiledRenderer.js`, `Na__VideoStudio__Export__FrameRenderer.js`, `Na__CoreUi__Styles__RenderCanvas__.css`, `Na__Feature__PhoneUi__Stylesheet__.css`.
+- TrueVision 3D has the same fix as its v2.184.1.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax and JSON clean, 0 undeclared names (modules and the inline script), the whole module graph resolves.
+- MCP sandbox, Kann, 1500 x 1000: the canvas from 60 px to the bottom of the window (gap 0), drawing buffer 1500 x 940, no inline size, the camera's aspect the box's. A point 5 m above the view line 20 m out lands at 0.5372 of the half-height from the view's centre, as in SketchUp, and the centre is at y 530, midway between the bar and the bottom.
+- All eight scenes fitted against their synced 6000 x 4000 pictures (edge maps, scale and shift): before, scale 1.00 and 60 px low on every one; after, scale 1.00 to 1.01 and 0 px on every one.
+- An upright phone (390 x 800): the canvas from the 48 px bar to the bottom of the screen, buffer 390 x 752. At run time, the tab strip set to 120 px: the renderer went to 1500 x 820 with two `na-viewport-size-changed` events, and back to 940.
+
+**Not checked:**
+- A real browser window dragged to a new size by hand (the headless window cannot be dragged: the resize path was driven by the tab strip and a synthetic resize event).
+- The Layout Editor's 3D snapshots, a still and a video export after the change, MaxEngine, and a phone on its side.
+- Scenes saved in ValeVision itself were framed through the old canvas, so they now sit about 30 px higher and show a little more at the top and bottom than when they were saved.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.4 - 13-Nov-2026 - Save Captures Show and Transparency, and Every Viewer Opens a Project With Them
 ### Adam: "Whatever this value is set to (60% in this case) this should be captured at save for entourage and vegetation and be the value for each indifivauaL project model is loaded with so different jobs can have different transparency applied that the viewer then loads with for ewach job / currently it seems to load with whatever the user has their slider set to? there dosnt seems to be a way to capture and save", then, asked who captures it: "Any staff who can save", and whether the Show tick works the same way: "Also captured at save"
 

@@ -86,6 +86,7 @@
     html.na-phone-ui #renderCanvas {
         top                                : 0;
         height                             : 100vh;
+        height                             : 100dvh;                       /* <-- The visible height: the renderer follows this box (v2.98.5) */
     }
 
     /* THE PULL TAB | Hangs under the bar: tap or drag it down to bring the bar back */
@@ -168,6 +169,8 @@
 
         html.na-phone-ui #renderCanvas {
             top                            : var(--Vale_HeaderHeight);
+            height                         : calc(100vh - var(--Vale_HeaderHeight));    /* <-- Under the bar to the bottom of the screen, */
+            height                         : calc(100dvh - var(--Vale_HeaderHeight));   /*     not a screen tall and off the bottom (v2.98.5) */
         }
     }
 

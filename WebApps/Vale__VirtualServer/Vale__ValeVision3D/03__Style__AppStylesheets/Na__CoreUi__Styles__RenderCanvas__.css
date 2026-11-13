@@ -4,9 +4,15 @@
 
 /* Three.js Render Canvas - Full Screen 3D Viewport */
 /* ----------------------------------------------------------------- */
+/* THIS BOX IS THE 3D VIEW: from the underside of the top bar (and any  */
+/* Layout Editor tab strip) to the bottom of the window. The renderer   */
+/* follows it (Na__AppCore__ViewportSize__.js) and never writes an      */
+/* inline size over it: until v2.98.5 one did, and the canvas ran 60 px */
+/* off the bottom of the window.                                        */
 #renderCanvas {
     width                              : 100vw;                                   /* <-- Full viewport width */
     height                             : calc(100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)));  /* <-- Viewport height minus header */
+    height                             : calc(100dvh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px))); /* <-- The visible height where dvh is known (a phone's toolbar shown or hidden) */
     touch-action                       : none;
     outline                            : none;
     display                            : block;

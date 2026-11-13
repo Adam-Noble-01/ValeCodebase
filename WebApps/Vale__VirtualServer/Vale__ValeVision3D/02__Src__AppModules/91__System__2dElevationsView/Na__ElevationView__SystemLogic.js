@@ -29,6 +29,7 @@
 
     // MODULE IMPORTS | Three.js Core
     // ------------------------------------------------------------
+    import { Na__ViewportSize__Get, Na__ViewportSize__EVENT } from '../01__AppCore/Na__AppCore__ViewportSize__.js';
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
@@ -639,7 +640,8 @@
     // FUNCTION | Create Orthographic Camera Aligned to Elevation Normal
     // ------------------------------------------------------------
     function Na__Elev__CreateOrthoCamera() {
-        const aspect      = window.innerWidth / window.innerHeight;                     // <-- Viewport aspect ratio
+        const viewSize    = Na__ViewportSize__Get();                                    // <-- The 3D view's box (under the top bar), not the window
+        const aspect      = viewSize.width / viewSize.height;                           // <-- Viewport aspect ratio
         const camDistance  = Na__Elev__CfgCameraDistance();
         Na__Elev__OrthoHalfHeight = Na__Elev__CfgOrthoHalfHeight();                     // <-- Reset frustum height from config
 
@@ -691,7 +693,8 @@
     function Na__Elev__UpdateOrthoFrustum() {
         if (!Na__Elev__OrthoCamera) return;
 
-        const aspect = window.innerWidth / window.innerHeight;
+        const viewSize = Na__ViewportSize__Get();
+        const aspect = viewSize.width / viewSize.height;
         const halfW  = Na__Elev__OrthoHalfHeight * aspect;
         const halfH  = Na__Elev__OrthoHalfHeight;
 
@@ -974,7 +977,7 @@
 
         Na__ElevOffsetPlane__LoadGridOrigin();                                          // <-- Load project grid origin for plane anchoring
 
-        window.addEventListener('resize', Na__Elev__OnWindowResize);
+        window.addEventListener(Na__ViewportSize__EVENT, Na__Elev__OnWindowResize);  // <-- The 3D view's box changed (window, tab strip, header)
         console.log('[ValeVision3D] Elevation View system initialized');
     }
     // ------------------------------------------------------------

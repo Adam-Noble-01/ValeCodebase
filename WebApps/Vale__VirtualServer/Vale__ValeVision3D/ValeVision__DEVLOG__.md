@@ -24,6 +24,8 @@
 
 **Not checked:** a real GPU, a phone or tablet, a MaxEngine project, a Layout Editor sheet on screen, a real save.
 
+**Live (Adam: "Ship both"), 13-Nov-2026 17:14 UTC:** `valevision3d` scoped to `02__Src__AppModules`, 2 files replaced (the app config and the Shadow Mask pass), none added or deleted (stamp `20261113-171438`); the compare before it held nothing else. No API change, so no restart. After it `/valevision/` answers 200, the deploy stamp's latest push is `20261113-171438`, and both live copies equal `a276cf90` (the live config's `ShadowsEnabled` is false). The README and this DEVLOG stay on the PC. Committed on `main` only, not pushed to GitHub. Not looked at in a browser on the live site.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.5 - 13-Nov-2026 - The 3D View Fits Between the Top Bar and the Bottom of the Window
 ### Adam: "Yes I noticed the same the top and the bottom seem truncated so fix that ... so just make the updates required to keep the canvas in the correct height bounds i.e. base of window and underside of top bar", then, shown the hidden strip: "wow yes lots was covered up! i didnt realise"

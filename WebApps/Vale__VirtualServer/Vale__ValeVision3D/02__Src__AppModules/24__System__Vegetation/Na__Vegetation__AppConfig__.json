@@ -2,7 +2,7 @@
     "Vegetation__AppConfig__Meta": {
         "Meta__FileName"    : "Na__Vegetation__AppConfig__.json",
         "Meta__Description" : "The vegetation system's defaults. A project's Vegetation__SceneData is born with a full copy of these, and from then on the project's own values win. Plants are never loaded on a project that is not enabled, so nor is this file.",
-        "Meta__Version"     : "1.4.0",
+        "Meta__Version"     : "1.4.1",
         "Meta__Created"     : "04-Nov-2026",
         "Meta__Author"      : "Adam Noble - Noble Architecture",
 
@@ -11,7 +11,7 @@
     },
 
     "Vegetation__SceneData__Config": {
-        "Vegetation__SceneData__Description"                : "What a project's object starts with. ShowByDefault and DefaultTransparencyPercent are where a viewer starts on a device that has not chosen.",
+        "Vegetation__SceneData__Description"                : "What a project's object starts with. ShowByDefault and DefaultTransparencyPercent are where every viewer opens the project: staff set them by moving Show and Transparency and saving (v2.98.4).",
         "Vegetation__SceneData__SchemaVersion"              : 1,
         "Vegetation__SceneData__EnabledByDefault"           : true,
         "Vegetation__SceneData__EnabledByDefaultNote"       : "On for every project unless an admin has unticked it in Dev Tools (Adam, 05-Nov-2026: 'make the admin ticked on boxes on by default now ... keep those gates so i can disable though'). Only a saved Enabled false turns a project off.",

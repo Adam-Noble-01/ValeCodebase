@@ -37,6 +37,10 @@
 #   to what is approved, and there is nothing to wait for and nothing to put back.
 # - AN ADMIN'S CHANGE IS APPROVED AS IT IS MADE, and supersedes anything waiting on that item.
 # - THE FILE HOLDS NAMES. It is never sent to a client link, and the record never holds a name.
+# - WHERE VIEWERS START IS ANY STAFF SAVE'S (13-Nov-2026, v2.98.4). Adam: "this should be captured
+#   at save for entourage and vegetation", then "Any staff who can save". While staff saves go
+#   straight in, a save's Show and Transparency (each system's StartKeys) go into the record from
+#   anyone, checked by na_start_value. Line rules, Enabled and the rest stay an admin's.
 #
 # THE CHANGES FILE (machine written, in <project>/ValeVision3D/UserData__SceneAssets/):
 #   { "SceneAssets__Changes__SchemaVersion": 1,
@@ -55,6 +59,9 @@
 # -----------------------------------------------------------------------------
 #
 # DEVELOPMENT LOG:
+# 13-Nov-2026 - Version 1.2.0 (ValeVision3D v2.98.4)
+# - StartKeys and na_start_value: a staff save's Show and Transparency go into the record.
+#
 # 11-Nov-2026 - Version 1.1.0 (ValeVision3D v2.96.0)
 # - NA_STAFF_SAVES_GO_STRAIGHT_IN, and na_save's straight_in: staff saves go into the record.
 #
@@ -78,11 +85,13 @@ NA_HISTORY_LIMIT  = 1000                                                        
 # A SAVE BY ANY STAFF GOES STRAIGHT IN (Adam, 11-Nov-2026: "Remove this, any entorage added by anyone
 # staff or above should be updated when saved"). An Employee's people and plants, their own put back
 # and the pins they need are written to the record as an admin's are. False brings back the wait for
-# an admin's approval exactly as v2.89.0 built it. Line rules, Enabled and the rest stay an admin's.
+# an admin's approval exactly as v2.89.0 built it. Line rules, Enabled and the rest stay an admin's,
+# except where viewers start (StartKeys), which any staff save sets while this is on.
 NA_STAFF_SAVES_GO_STRAIGHT_IN = True
 
 # WHAT EACH SYSTEM HOLDS | Its record key, and its lists of items: the list's key, the Uid's key, the
-# word for a person, the letter a new Uid starts with, and the keys that say what an item is
+# word for a person, the letter a new Uid starts with, and the keys that say what an item is. StartKeys:
+# where every viewer opens the project, which any staff save sets, with the kind each must be
 NA_SYSTEMS = {
     'Entourage': {
         'Key'   : 'Entourage__SceneData',
@@ -92,6 +101,7 @@ NA_SYSTEMS = {
         'Tools' : 'Entourage__SceneData__Tools',
         'Assets': 'Entourage__SceneData__Assets',
         'NamedAssets': [('Entourage__SceneData__Figures', 'Entourage__Figure__AssetId')],
+        'StartKeys': {'Entourage__SceneData__ShowByDefault': 'show', 'Entourage__SceneData__DefaultTransparencyPercent': 'percent'},
     },
     'Vegetation': {
         'Key'   : 'Vegetation__SceneData',
@@ -103,6 +113,7 @@ NA_SYSTEMS = {
         'Tools' : 'Vegetation__SceneData__Tools',
         'Assets': 'Vegetation__SceneData__Assets',
         'NamedAssets': [('Vegetation__SceneData__Plops', 'Vegetation__Plop__AssetId')],
+        'StartKeys': {'Vegetation__SceneData__ShowByDefault': 'show', 'Vegetation__SceneData__DefaultTransparencyPercent': 'percent'},
     },
 }
 
@@ -133,6 +144,16 @@ def na_system_block(changes, system):
 def na_same(a, b):
     """Are two records the same, whatever order their keys came in?"""
     return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
+def na_start_value(kind, value):
+    """A start value a staff save sent, as the record keeps it, or None if it is not one:
+    'show' a true or false, 'percent' a whole number 0 to 100."""
+    if kind == 'show':
+        return value if isinstance(value, bool) else None
+    if kind == 'percent' and isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 100:
+        return int(round(value))
+    return None
 
 
 def na_items(scene, spec):
@@ -392,6 +413,19 @@ def na_save(system, approved, changes, base, sent, who, is_admin, straight_in=Fa
         tools = sent.get(settings['Tools'])
         if tools is not None and not na_same(tools, base.get(settings['Tools'])):
             block['Keys']['Tools'] = copy.deepcopy(tools)
+
+        # WHERE VIEWERS START | Any staff save's, while saves go straight in (Adam, 13-Nov-2026)
+        if straight_in:
+            starts = {}
+            for key, kind in (settings.get('StartKeys') or {}).items():
+                value = na_start_value(kind, sent.get(key))
+                if key in sent and value is not None and not na_same(base.get(key), sent[key]):
+                    starts[key] = value
+            if starts and approved_out is None:
+                approved_out = na_seed(system, sent, block)
+            for key, value in starts.items():
+                approved_out[key] = value
+
         pins = sent.get(settings['Assets']) or {}
         if straight_in and approved_out is not None:
             assets = approved_out.get(settings['Assets']) if isinstance(approved_out.get(settings['Assets']), dict) else {}

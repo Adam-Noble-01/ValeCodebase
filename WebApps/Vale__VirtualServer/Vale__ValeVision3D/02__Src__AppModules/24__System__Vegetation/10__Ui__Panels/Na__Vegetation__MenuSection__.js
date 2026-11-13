@@ -32,9 +32,14 @@
 //   project, here as before (Adam's answer: they stay in this menu).
 // - THESE ROWS ARE NEVER IN A CLIENT'S PAGE. They are built here, for staff only, and the panel is
 //   fetched the first time the section is unfolded. The layer is made then too, with no plants yet.
-// - EACH DEVICE REMEMBERS ITS OWN CHOICE, per project (plan, D19). The project's own
-//   ShowByDefault and DefaultTransparencyPercent are where a device starts until it has
-//   chosen, and a viewer choosing changes nothing in the file.
+// - EVERY VIEWER OPENS THE PROJECT AS IT WAS SAVED (Adam, 13-Nov-2026: "this should be captured
+//   at save for entourage and vegetation and be the value for each indifivauaL project model is
+//   loaded with"). The project's own ShowByDefault and DefaultTransparencyPercent are where every
+//   device starts, every time; devices no longer remember (that was plan D19), and an old choice
+//   a device kept is forgotten here. Moving the two rows changes this visit's view at once.
+// - STAFF CAPTURE THEM WITH SAVE (Adam's answers: "Any staff who can save", and the Show tick
+//   "Also captured at save"). For anyone with the panel, moving a row holds it in the project's
+//   object and lights Save Vegetation. Anyone else's move is for this visit only.
 //
 // INTEGRATION:
 // - Loaded by Na__Vegetation__.js on an enabled project, and by nothing else.
@@ -48,6 +53,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - Version 1.3.0 (ValeVision3D v2.98.4)
+// - Every viewer starts from the project's Show and Transparency; staff capture them with Save.
+//   The device memory is gone, and an old one is forgotten.
+//
 // 11-Nov-2026 - Version 1.2.1 (ValeVision3D v2.94.2)
 // - Notes only: the panel now opens with every section folded (Na__Vegetation__AssetBrowser__.js).
 //
@@ -69,7 +78,7 @@
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Markup Ids and the Device's Memory
+    // MODULE CONSTANTS | Markup Ids, and the Old Device Memory to Forget
     // ------------------------------------------------------------
     const Na__VegMenu__ITEM_ID       = 'naVegetationMenuItem';
     const Na__VegMenu__TOGGLE_ID     = 'naVegetationToggle';
@@ -79,7 +88,7 @@
     const Na__VegMenu__VALUE_ID      = 'naVegetationTransparencyValue';
     const Na__VegMenu__DEV_ROWS_ID   = 'naVegetationDevRows';
     const Na__VegMenu__HUB_ID        = 'naVegetationAssetsPanel';               // <-- The Vegetation panel on the left (Na__Vegetation__AssetBrowser__.js)
-    const Na__VegMenu__STORAGE_STEM  = 'ValeVision3D__Vegetation__';            // <-- Followed by the project's id: this device's choice for that project
+    const Na__VegMenu__STORAGE_STEM  = 'ValeVision3D__Vegetation__';            // <-- Followed by the project's id: what a device chose before v2.98.4, now forgotten
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -104,49 +113,46 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | This Device's Memory
+// REGION | Where Every Viewer Starts, and Holding It for the Next Save
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | The Key for This Project on This Device
+    // HELPER FUNCTION | Forget What This Device Chose Before v2.98.4 (storage can throw)
     // ------------------------------------------------------------
-    function Na__VegMenu__StorageKey() {
-        const params = new URLSearchParams(window.location.search);
-        return Na__VegMenu__STORAGE_STEM + (params.get('project') || params.get('project-folder') || 'none');
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Read What This Device Chose, or Null (storage can throw)
-    // ------------------------------------------------------------
-    function Na__VegMenu__ReadChoice() {
+    function Na__VegMenu__ForgetOldChoice() {
         try {
-            const text = window.localStorage.getItem(Na__VegMenu__StorageKey());
-            return text ? JSON.parse(text) : null;
-        } catch (error) {
-            return null;
-        }
+            const params = new URLSearchParams(window.location.search);
+            window.localStorage.removeItem(Na__VegMenu__STORAGE_STEM + (params.get('project') || params.get('project-folder') || 'none'));
+        } catch (error) { /* nothing was kept, or nothing can be */ }
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Remember What This Device Chose
-    // ------------------------------------------------------------
-    function Na__VegMenu__WriteChoice(shown, transparencyPercent) {
-        try {
-            window.localStorage.setItem(Na__VegMenu__StorageKey(), JSON.stringify({ shown, transparencyPercent }));
-        } catch (error) { /* a device that cannot remember starts from the project's values each time */ }
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Where This Device Starts on This Project
+    // FUNCTION | Where Every Viewer Starts on This Project: as It Was Saved
     // ------------------------------------------------------------
     function Na__VegMenu__StartingState(sceneData) {
-        const choice = Na__VegMenu__ReadChoice();
+        Na__VegMenu__ForgetOldChoice();
         return {
-            shown               : choice && typeof choice.shown === 'boolean' ? choice.shown : sceneData.Vegetation__SceneData__ShowByDefault !== false,
-            transparencyPercent : choice && Number.isFinite(choice.transparencyPercent) ? choice.transparencyPercent : (sceneData.Vegetation__SceneData__DefaultTransparencyPercent || 0)
+            shown               : sceneData.Vegetation__SceneData__ShowByDefault !== false,
+            transparencyPercent : sceneData.Vegetation__SceneData__DefaultTransparencyPercent || 0
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Hold the Two Rows in the Project's Object, for the Next Save
+    // ------------------------------------------------------------
+    // Only for someone with the panel, whose Save Vegetation writes them; the server takes them from
+    // any staff save. Undo and Redo leave them alone (Na__VegHist__KEYS).
+    // ------------------------------------------------------------
+    function Na__VegMenu__HoldForSave(shown, transparencyPercent) {
+        const data = Na__VegMenu__State.data;
+        const sceneData = data ? data.Na__VegData__Current() : null;
+        if (!sceneData) return;
+        const percent = Math.round(transparencyPercent);
+        if (sceneData.Vegetation__SceneData__ShowByDefault === shown && sceneData.Vegetation__SceneData__DefaultTransparencyPercent === percent) return;
+        sceneData.Vegetation__SceneData__ShowByDefault              = shown;
+        sceneData.Vegetation__SceneData__DefaultTransparencyPercent = percent;
+        data.Na__VegData__SetDirty(true);
     }
     // ------------------------------------------------------------
 
@@ -193,7 +199,7 @@
         show.addEventListener('change', async () => {
             const runtime = await Na__VegMenu__Runtime();
             runtime.Na__VegRun__SetShown(show.checked);
-            Na__VegMenu__WriteChoice(show.checked, Number(slider.value));
+            Na__VegMenu__HoldForSave(show.checked, Number(slider.value));
         });
 
         slider.addEventListener('input', async () => {
@@ -203,7 +209,7 @@
             runtime.Na__VegRun__SetTransparency(percent);
         });
         slider.addEventListener('change', () => {
-            Na__VegMenu__WriteChoice(show.checked, Number(slider.value));
+            Na__VegMenu__HoldForSave(show.checked, Number(slider.value));
         });
     }
     // ------------------------------------------------------------

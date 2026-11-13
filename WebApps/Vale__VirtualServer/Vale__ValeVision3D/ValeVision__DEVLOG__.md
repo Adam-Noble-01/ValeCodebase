@@ -1,6 +1,33 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.98.4 - 13-Nov-2026 - Save Captures Show and Transparency, and Every Viewer Opens a Project With Them
+### Adam: "Whatever this value is set to (60% in this case) this should be captured at save for entourage and vegetation and be the value for each indifivauaL project model is loaded with so different jobs can have different transparency applied that the viewer then loads with for ewach job / currently it seems to load with whatever the user has their slider set to? there dosnt seems to be a way to capture and save", then, asked who captures it: "Any staff who can save", and whether the Show tick works the same way: "Also captured at save"
+
+**What was wrong:** each device remembered its own Show tick and Transparency slider per project (plan D19), and that beat the project's own starting values, so a project opened at whatever that device last chose. The project's values could only be set in Dev Tools > Assets, by an app admin, and moving the slider never reached a save: Save stayed greyed, and the server dropped both values from anyone below app admin.
+
+**Now:**
+- **Every viewer opens a project with its saved Show and Transparency,** clients and phones included, for Vegetation and Entourage alike. Devices no longer remember anything; an old remembered choice is forgotten the first time the project opens. Moving the slider or the tick still changes the view at once, for this visit.
+- **Staff capture them with Save.** For anyone who has the Vegetation or Entourage panel (Employee and up, on a computer or tablet), moving the slider or the Show tick holds the new value in the project's object and lights Save Vegetation or Save Entourage. The save writes them as `__ShowByDefault` and `__DefaultTransparencyPercent`, the keys Dev Tools already set. Unsaved, they raise the leave-site question and are saved as a drawing opens, like any other unsaved planting. Undo and Redo leave them alone.
+- **The server takes them from any staff save** while staff saves go straight in (`NA_STAFF_SAVES_GO_STRAIGHT_IN`): a Show that is true or false and a whole number 0 to 100, anything else dropped. Line rules and Enabled stay an admin's.
+
+**Changed:**
+- `24__System__Vegetation/10__Ui__Panels/Na__Vegetation__MenuSection__.js` 1.3.0 and `23__System__Entourage/10__Ui__Panels/Na__Entourage__MenuSection__.js` 1.3.0 (the starting state is the project's; the rows are held for the next save; the old device memory is forgotten).
+- `Na__Vegetation__PanelShell__.js` 1.6.1 and `Na__Entourage__PanelShell__.js` 1.4.1 (the Save buttons' hover text says they save Show and Transparency too).
+- `Server__Api/Api__ValeVision3D/ValeVision3D__Api__SceneAssets__Logic__.py` 1.2.0 (`StartKeys` per system, `na_start_value`).
+- Both modules' AppConfig descriptions (Vegetation 1.4.1, Entourage 1.2.1) and READMEs, the MCP server's `transparency_percent` descriptions and README, the Vegetation plan's D19 and the Entourage plan's E11 marked superseded.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- The server's merge on its own, nine cases: an Employee's save writes Show and Transparency; their line rules and Enabled are still dropped; 150% and a Show of "yes" are dropped; with staff saves waiting for approval nothing changes; a start value this window did not touch leaves another person's saved value alone; a project with no key yet is seeded; an admin's save as before; 59.6 is kept as 60; the same for Entourage.
+- MCP sandbox (own port, Garnett 64616 copy, record at 60% and 60%): as an Employee the page opened at the record's 60%; a remembered choice of 10% planted in the old storage key was ignored and removed. Unfolding Vegetation, moving the slider to 25 lit Save Vegetation; the real Save wrote 25 into the record (rev 20), the plants unchanged. Entourage at 35 with Show unticked, saved by Save Entourage: the record holds false and 35 (rev 21). A new device opening the real client link then drew the plants at 25% (fill and lines at 0.75 opacity) with the slider at 25.
+
+**Not checked:**
+- A phone, and the leave-site question after only moving the slider (it rides on the same unsaved flag as any planting change).
+- The slider moved by hand with the mouse: the test set its value and sent its input and change events.
+- Dev Tools > Assets > Vegetation and Entourage still have their own Start with plants showing and Starting transparency rows, which write the same keys straight away; they were left as they were.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.3 - 12-Nov-2026 - The Internal Sharing Tab Opens With New Project Notice Chosen
 ### Adam: "On the Internal Link side Make this the default i.e. new project notice vs project link which is current init default"
 

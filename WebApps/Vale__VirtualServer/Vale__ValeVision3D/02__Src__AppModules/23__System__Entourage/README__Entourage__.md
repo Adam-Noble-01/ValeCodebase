@@ -21,7 +21,7 @@ Adam, 05-Nov-2026: "the plants on that look amazing, so human entourage needs to
 | `03__System__SceneLayer/Na__Entourage__SceneLayer__.js` | `Na__EntLayer` | The objects in the scene, written turned to the eye, the render hook, the pick |
 | `03__System__SceneLayer/Na__Entourage__Runtime__.js` | `Na__EntRun` | Joins the layer to the app, and keeps its figures the same as the project's object |
 | `10__Ui__Panels/Na__Entourage__DevControls__.js` | `Na__EntDev` | Its part of Dev Tools > Assets: the switch, where a viewer starts, Remove All |
-| `10__Ui__Panels/Na__Entourage__MenuSection__.js` | `Na__EntMenu` | The Tools & Settings section; device memory; unfolding it opens the Entourage panel for staff and folding it shuts it (v2.91.0); an admin's rows for an admin (v2.89.0: on by default, `../22__System__SceneAssets` for who placed what) |
+| `10__Ui__Panels/Na__Entourage__MenuSection__.js` | `Na__EntMenu` | The Tools & Settings section; every viewer opens at the project's saved Show and Transparency, and staff capture them with Save (v2.98.4); unfolding it opens the Entourage panel for staff and folding it shuts it (v2.91.0); an admin's rows for an admin (v2.89.0: on by default, `../22__System__SceneAssets` for who placed what) |
 | `10__Ui__Panels/Na__Entourage__PanelShell__.js` | `Na__EntShell` | One panel a side, the controls, Save, undo keys, the close guard |
 | `10__Ui__Panels/Na__Entourage__AssetBrowser__.js` | `Na__EntCards` | The Entourage panel (v2.91.0): its sections, cards drawn live, search, filters, drag from a card, In This Project, Changes |
 | `10__Ui__Panels/Na__Entourage__FigurePicture__.js` | `Na__EntPic` | One figure on a small canvas, for a card and the menu |

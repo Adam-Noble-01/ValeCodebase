@@ -31,6 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - Version 1.6.1 (ValeVision3D v2.98.4)
+// - Save Vegetation's hover text: it saves Show Vegetation and Transparency as everyone will open it.
+//
 // 11-Nov-2026 - Version 1.6.0 (ValeVision3D v2.96.0)
 // - A staff save goes straight in: Save Vegetation says so. Saved before a drawing opens (Na__Vegetation__).
 //
@@ -343,7 +346,7 @@
     // FUNCTION | A Save Vegetation Button
     // ------------------------------------------------------------
     function Na__VegShell__MakeSaveButton() {
-        const button = Na__VegShell__AddGlyph(Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each plant and path you add'), 'save');
+        const button = Na__VegShell__AddGlyph(Na__VegShell__Button('Save Vegetation', 'na-veg-save', Na__VegShell__Save, 'Saves your changes in this project, for everyone, clients included, with Show Vegetation and Transparency as everyone will open it. Your name and the time are kept on each plant and path you add'), 'save');
         Na__VegShell__State.saveButtons.add(button);
         Na__VegShell__PaintSave();
         return button;

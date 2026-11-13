@@ -282,7 +282,7 @@ def Na__VegEdit__NewPath(scene, spec):
            'target': NA_TARGET_SCHEMA,
            'confirm_real_data': {'type': 'boolean'},
            'dry_run': {'type': 'boolean'},
-           'transparency_percent': {'type': 'number', 'minimum': 0, 'maximum': 100, 'description': 'Where a viewer starts on a device that has not chosen. A device that has moved the slider keeps its own.'},
+           'transparency_percent': {'type': 'number', 'minimum': 0, 'maximum': 100, 'description': 'Where every viewer opens the project. Staff also set it by moving the slider and saving.'},
            'show_by_default': {'type': 'boolean'},
            'palettes': {'type': 'array', 'description': 'Change or add palettes. A palette with items has them replaced whole.',
                         'items': {'type': 'object', 'properties': {

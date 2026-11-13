@@ -27,8 +27,14 @@
 //   whole project, here as before (Adam's answer: they stay in this menu).
 // - THESE ROWS ARE NEVER IN A CLIENT'S PAGE. They are built here, for staff only, and the panel is
 //   fetched the first time the section is unfolded. The layer is made then too, if nobody is placed yet.
-// - EACH DEVICE REMEMBERS ITS OWN CHOICE, per project. The project's own ShowByDefault and
-//   DefaultTransparencyPercent are where a device starts until it has chosen.
+// - EVERY VIEWER OPENS THE PROJECT AS IT WAS SAVED (Adam, 13-Nov-2026: "this should be captured
+//   at save for entourage and vegetation and be the value for each indifivauaL project model is
+//   loaded with"). The project's own ShowByDefault and DefaultTransparencyPercent are where every
+//   device starts, every time; devices no longer remember, and an old choice a device kept is
+//   forgotten here. Moving the two rows changes this visit's view at once.
+// - STAFF CAPTURE THEM WITH SAVE (Adam's answers: "Any staff who can save", and the Show tick
+//   "Also captured at save"). For anyone with the panel, moving a row holds it in the project's
+//   object and lights Save Entourage. Anyone else's move is for this visit only.
 //
 // INTEGRATION:
 // - Loaded by ../Na__Entourage__.js on an enabled project, and by nothing else.
@@ -42,6 +48,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - Version 1.3.0 (ValeVision3D v2.98.4)
+// - Every viewer starts from the project's Show and Transparency; staff capture them with Save.
+//   The device memory is gone, and an old one is forgotten.
+//
 // 06-Nov-2026 - Version 1.2.0 (ValeVision3D v2.91.0)
 // - Unfolding the section opens the Entourage panel, folding it shuts it, and the panel closing folds
 //   it. Entourage Assets, Changes and Save are gone from here: they are in the panel.
@@ -59,7 +69,7 @@
 // REGION | Module Constants and Variables
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Markup Ids and the Device's Memory
+    // MODULE CONSTANTS | Markup Ids, and the Old Device Memory to Forget
     // ------------------------------------------------------------
     const Na__EntMenu__ITEM_ID      = 'naEntourageMenuItem';
     const Na__EntMenu__TOGGLE_ID    = 'naEntourageToggle';
@@ -69,7 +79,7 @@
     const Na__EntMenu__VALUE_ID     = 'naEntourageTransparencyValue';
     const Na__EntMenu__DEV_ROWS_ID  = 'naEntourageDevRows';
     const Na__EntMenu__HUB_ID       = 'naEntourageAssetsPanel';                // <-- The Entourage panel on the left (Na__Entourage__AssetBrowser__.js)
-    const Na__EntMenu__STORAGE_STEM = 'ValeVision3D__Entourage__';             // <-- Followed by the project's id: this device's choice for that project
+    const Na__EntMenu__STORAGE_STEM = 'ValeVision3D__Entourage__';             // <-- Followed by the project's id: what a device chose before v2.98.4, now forgotten
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | What Has Been Wired
@@ -87,49 +97,46 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | This Device's Memory
+// REGION | Where Every Viewer Starts, and Holding It for the Next Save
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | The Key for This Project on This Device
+    // HELPER FUNCTION | Forget What This Device Chose Before v2.98.4 (storage can throw)
     // ------------------------------------------------------------
-    function Na__EntMenu__StorageKey() {
-        const params = new URLSearchParams(window.location.search);
-        return Na__EntMenu__STORAGE_STEM + (params.get('project') || params.get('project-folder') || 'none');
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Read What This Device Chose, or Null (storage can throw)
-    // ------------------------------------------------------------
-    function Na__EntMenu__ReadChoice() {
+    function Na__EntMenu__ForgetOldChoice() {
         try {
-            const text = window.localStorage.getItem(Na__EntMenu__StorageKey());
-            return text ? JSON.parse(text) : null;
-        } catch (error) {
-            return null;
-        }
+            const params = new URLSearchParams(window.location.search);
+            window.localStorage.removeItem(Na__EntMenu__STORAGE_STEM + (params.get('project') || params.get('project-folder') || 'none'));
+        } catch (error) { /* nothing was kept, or nothing can be */ }
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Remember What This Device Chose
-    // ------------------------------------------------------------
-    function Na__EntMenu__WriteChoice(shown, transparencyPercent) {
-        try {
-            window.localStorage.setItem(Na__EntMenu__StorageKey(), JSON.stringify({ shown, transparencyPercent }));
-        } catch (error) { /* a device that cannot remember starts from the project's values each time */ }
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Where This Device Starts on This Project
+    // FUNCTION | Where Every Viewer Starts on This Project: as It Was Saved
     // ------------------------------------------------------------
     function Na__EntMenu__StartingState(sceneData) {
-        const choice = Na__EntMenu__ReadChoice();
+        Na__EntMenu__ForgetOldChoice();
         return {
-            shown               : choice && typeof choice.shown === 'boolean' ? choice.shown : sceneData.Entourage__SceneData__ShowByDefault !== false,
-            transparencyPercent : choice && Number.isFinite(choice.transparencyPercent) ? choice.transparencyPercent : (sceneData.Entourage__SceneData__DefaultTransparencyPercent || 0)
+            shown               : sceneData.Entourage__SceneData__ShowByDefault !== false,
+            transparencyPercent : sceneData.Entourage__SceneData__DefaultTransparencyPercent || 0
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Hold the Two Rows in the Project's Object, for the Next Save
+    // ------------------------------------------------------------
+    // Only for someone with the panel, whose Save Entourage writes them; the server takes them from
+    // any staff save. Undo and Redo leave them alone.
+    // ------------------------------------------------------------
+    function Na__EntMenu__HoldForSave(shown, transparencyPercent) {
+        const data = Na__EntMenu__State.data;
+        const sceneData = data ? data.Na__EntData__Current() : null;
+        if (!sceneData) return;
+        const percent = Math.round(transparencyPercent);
+        if (sceneData.Entourage__SceneData__ShowByDefault === shown && sceneData.Entourage__SceneData__DefaultTransparencyPercent === percent) return;
+        sceneData.Entourage__SceneData__ShowByDefault              = shown;
+        sceneData.Entourage__SceneData__DefaultTransparencyPercent = percent;
+        data.Na__EntData__SetDirty(true);
     }
     // ------------------------------------------------------------
 
@@ -176,7 +183,7 @@
         show.addEventListener('change', async () => {
             const runtime = await Na__EntMenu__Runtime();
             runtime.Na__EntRun__SetShown(show.checked);
-            Na__EntMenu__WriteChoice(show.checked, Number(slider.value));
+            Na__EntMenu__HoldForSave(show.checked, Number(slider.value));
         });
 
         slider.addEventListener('input', async () => {
@@ -186,7 +193,7 @@
             runtime.Na__EntRun__SetTransparency(percent);
         });
         slider.addEventListener('change', () => {
-            Na__EntMenu__WriteChoice(show.checked, Number(slider.value));
+            Na__EntMenu__HoldForSave(show.checked, Number(slider.value));
         });
     }
     // ------------------------------------------------------------

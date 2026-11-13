@@ -26,7 +26,7 @@ Adam, 04-Nov-2026: "Use a similar proxy / rendered asset system as to keep asset
 | `03__System__SceneLayer/Na__Vegetation__FrameBudget__.js` | `Na__VegBudget` | What may be redrawn this frame, and how: full, moving or settling. No three.js |
 | `03__System__SceneLayer/Na__Vegetation__Runtime__.js` | `Na__VegRun` | Joins the layer to the app, and keeps its plants the same as the project's object |
 | `10__Ui__Panels/Na__Vegetation__DevControls__.js` | `Na__VegDev` | The Dev section: the one switch, where a viewer starts, Remove All |
-| `10__Ui__Panels/Na__Vegetation__MenuSection__.js` | `Na__VegMenu` | The Tools & Settings section; device memory; unfolding it opens the Vegetation panel for staff and folding it shuts it (v2.91.0); an admin's rows for an admin (v2.89.0: on by default, `../22__System__SceneAssets` for who planted what) |
+| `10__Ui__Panels/Na__Vegetation__MenuSection__.js` | `Na__VegMenu` | The Tools & Settings section; every viewer opens at the project's saved Show and Transparency, and staff capture them with Save (v2.98.4); unfolding it opens the Vegetation panel for staff and folding it shuts it (v2.91.0); an admin's rows for an admin (v2.89.0: on by default, `../22__System__SceneAssets` for who planted what) |
 | `20__System__Tools/Na__Vegetation__PlantMenu__.js` | `Na__VegPlantMenu` | Right-click a plant while the Vegetation panel is open: move, size, copy, swap, delete. A plant of a path changes alone |
 | `10__Ui__Panels/Na__Vegetation__PanelShell__.js` | `Na__VegShell` | One panel a side, the controls, Save, undo keys, the close guard |
 | `10__Ui__Panels/Na__Vegetation__LineworkPanel__.js` | `Na__VegLine` | The demo's Vegetation Linework panel |

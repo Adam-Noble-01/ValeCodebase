@@ -42,7 +42,7 @@ Adam's words, 05-Nov-2026:
 | E08 | One JSON file per asset, its points as a string | The API rewrites a record with `json.dumps(indent=4)`, which would spread a list of points over thousands of lines. A string keeps a pinned person about 3 KB |
 | E09 | A project pins its own copy of each asset it uses; Update to Latest is a click | As plants: improving the library never changes a finished project |
 | E10 | Save is an explicit Save Entourage button, with undo and redo | As plants |
-| E11 | Viewers' Show and Transparency are remembered per device | As plants |
+| E11 | Viewers' Show and Transparency are remembered per device | As plants. **Superseded 13-Nov-2026 (v2.98.4), as D19:** every viewer opens at the record's values, and any staff save captures them |
 | E12 | Scale runs 0.50 to 1.50, Bigger and Smaller by 10% | A person scaled to 3 is not a person. NPR's clamp is 0.5 to 2 |
 | E13 | Plants and people share one layer on a sheet, each with its own tick | One image over the linework, so a person stands among the planting, and far less new code in the Layout Editor |
 

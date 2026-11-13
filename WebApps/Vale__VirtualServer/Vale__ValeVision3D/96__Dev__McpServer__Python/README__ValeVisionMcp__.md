@@ -94,7 +94,7 @@ Agents never sign in on real data. The real record is written with the API's own
 - **Tools run one at a time, on one thread.** Playwright's sync API belongs to the thread that started it, and only one job may ever talk to the server.
 - **The server is reached only through the Server Manager's engine,** never ssh. A gateway refusal is final for now: say so, do not retry.
 - **Nothing here deletes on the server or forces a push.** Those take the person's own word, through the `vgh-app-server` skill. An API push is not here: it needs a service restart.
-- **A device keeps its own Show and Transparency.** `vv3d_vegetation_edit`'s `transparency_percent` is where a device starts until it has moved the slider, so a person who has moved it on a project still sees their own value. A new browser context here is always a new device.
+- **Every viewer opens a project at its saved Show and Transparency** (v2.98.4). `transparency_percent` and `show_by_default` on `vv3d_vegetation_edit` and `vv3d_entourage_edit` set them, as a staff member does by moving the slider or tick and saving. Devices no longer remember a choice.
 - **The plant sums are the app's own modules, in Node.** `Na__ValeVisionMcp__VegetationSums__.mjs` imports them. There is no copy to keep in step.
 - **`Na__ValeVisionMcp__PageHelpers__.js` goes on an agent's page only.** Nothing in the app loads it. It reaches the app by importing the same module URLs, which gives the same instances.
 - **The 404 for `/ValeApps__DeployStamp__.json` on the testing server is expected:** only the live server has that file.

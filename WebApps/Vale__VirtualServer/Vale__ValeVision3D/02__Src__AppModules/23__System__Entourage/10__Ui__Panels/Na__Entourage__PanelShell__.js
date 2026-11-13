@@ -28,6 +28,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - Version 1.4.1 (ValeVision3D v2.98.4)
+// - Save Entourage's hover text: it saves Show Entourage and Transparency as everyone will open it.
+//
 // 11-Nov-2026 - Version 1.4.0 (ValeVision3D v2.96.0)
 // - A staff save goes straight in: Save Entourage says so. Saved before a drawing opens (Na__Entourage__).
 //
@@ -294,7 +297,7 @@
     // FUNCTION | A Save Entourage Button
     // ------------------------------------------------------------
     function Na__EntShell__MakeSaveButton() {
-        const button = Na__EntShell__Button('Save Entourage', 'na-veg-save', Na__EntShell__Save, 'Saves your changes in this project, for everyone, clients included. Your name and the time are kept on each person you add');
+        const button = Na__EntShell__Button('Save Entourage', 'na-veg-save', Na__EntShell__Save, 'Saves your changes in this project, for everyone, clients included, with Show Entourage and Transparency as everyone will open it. Your name and the time are kept on each person you add');
         Na__EntShell__State.saveButtons.add(button);
         Na__EntShell__PaintSave();
         return button;

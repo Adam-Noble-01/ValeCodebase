@@ -54,7 +54,7 @@ Adam's words, 04-Nov-2026:
 | D16 | A path saves its rules, not its plants | It is the rules-and-seed idea again: a path of any length costs about 1.6 KB (measured, four points) and stays editable |
 | D17 | A brush stroke saves its plants | They depend on the surface under the pointer at that moment, and can then be edited one by one |
 | D18 | Save is an explicit Save Vegetation button | As Save Drawing: red when changed, syncing, green. Closing with unsaved changes asks first. Undo and redo for the session |
-| D19 | Viewers' on/off and transparency are remembered per device | `localStorage`, per project. Devs set the project's starting values in the record |
+| D19 | Viewers' on/off and transparency are remembered per device | `localStorage`, per project. Devs set the project's starting values in the record. **Superseded 13-Nov-2026 (v2.98.4):** every viewer opens at the record's values, and any staff save captures Show and Transparency (Adam: "captured at save ... the value for each indifivauaL project model is loaded with") |
 | D20 | Plants belong to ValeVision only | Adam asked for this system "for ValeVision 3D". No TrueVision parity, recorded as VV-only in the registry |
 | D21 | No sun shadows from plants at first | The sketch has none, and they need their own shadow-only geometry. Revisit once seen on a real project |
 | D22 | Palettes are saved per project | Simple and self-contained. Starter palettes can ship in the library later |

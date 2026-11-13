@@ -239,7 +239,7 @@ def Na__EntEdit__PinNamed(scene):
            'confirm_real_data': {'type': 'boolean'},
            'dry_run': {'type': 'boolean'},
            'enabled': {'type': 'boolean', 'description': 'The Dev Tools switch. true makes the key, every parameter in it, on a project that has none.'},
-           'transparency_percent': {'type': 'number', 'minimum': 0, 'maximum': 100, 'description': 'Where a viewer starts on a device that has not chosen. A device that has moved the slider keeps its own.'},
+           'transparency_percent': {'type': 'number', 'minimum': 0, 'maximum': 100, 'description': 'Where every viewer opens the project. Staff also set it by moving the slider and saving.'},
            'show_by_default': {'type': 'boolean'},
            'show_on_live_drawings': {'type': 'boolean'},
            'line_rules': {'type': 'object', 'description': 'Any keys of Entourage__SceneData__LineRules, or of its Entourage__LineRules__Advanced, by their full names.'},

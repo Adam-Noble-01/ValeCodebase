@@ -2,15 +2,20 @@
     "projectName": "Holt",
     "projectCode": "64135",
     "productionData": {
-        "input": "NOT YET REVIEWED",
+        "input": "VizDpt SketchUp Model",
         "conceptArtist": "House",
         "designer": "Gary",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "additionalNotes": "Elevated from Whitecard to Max Model for use in Theia, fully furnished model with many assets modelled and banked."
     },
     "scheduleData": {
-        "dateReceived": "NOT YET REVIEWED",
+        "dateReceived": "01-Oct-2026",
         "dateFulfilled": "02-Oct-2026",
-        "timeTaken": "NOT YET REVIEWED"
+        "timeTaken": 10,
+        "timeAllocated": 4,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 6
+        }
     },
     "images": [
         "IMG01__3dView__MainShot__Far____WhitecardImage__07-Oct-2026.png",
@@ -1643,5 +1648,5 @@
         ],
         "VideoStudio__Config__LastVideoNumber": 4
     },
-    "_rev": 40
+    "_rev": 41
 }

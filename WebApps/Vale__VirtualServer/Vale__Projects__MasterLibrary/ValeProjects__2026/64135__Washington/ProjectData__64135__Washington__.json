@@ -447,7 +447,7 @@
             "timeAdjustments__DesignDevelopment": 2
         },
         "timeAllocated": 6,
-        "timeTaken": 6
+        "timeTaken": 12
     },
     "thumbnailImage": "IMG01__3dView__MainShot__Far____WhitecardImage__02-Oct-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -830,5 +830,5 @@
             }
         ]
     },
-    "_rev": 2
+    "_rev": 3
 }

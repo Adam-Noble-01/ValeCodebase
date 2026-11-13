@@ -1,0 +1,1585 @@
+{
+    "projectName": "Kann",
+    "projectCode": "64562",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Anna",
+        "designer": "Steve",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "13-Nov-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__13-Nov-2026.png",
+        "IMG02__3dView__BirdsEye-01____WhitecardImage__13-Nov-2026.png",
+        "IMG03__3dView__BirdsEye-02____WhitecardImage__13-Nov-2026.png",
+        "IMG04__3dView__Lightwell____WhitecardImage__13-Nov-2026.png",
+        "IMG05__3dView__GardenSteps____WhitecardImage__13-Nov-2026.png",
+        "IMG06__3dView__MainDoors____WhitecardImage__13-Nov-2026.png",
+        "IMG07__3dView__UpperGarden____WhitecardImage__13-Nov-2026.png",
+        "IMG08__3dView__TopDown____WhitecardImage__13-Nov-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "valeVision_ModelUrls": [
+        "Kann__01__OrbitHelperCube__MeshModel__.glb",
+        "Kann__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "Kann__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "Kann__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "Kann__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "Kann__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "Kann__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "Kann__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "Kann__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__13-Nov-2026.png",
+        "IMG02__3dView__BirdsEye-01____WhitecardImage__13-Nov-2026.png",
+        "IMG03__3dView__BirdsEye-02____WhitecardImage__13-Nov-2026.png",
+        "IMG04__3dView__Lightwell____WhitecardImage__13-Nov-2026.png",
+        "IMG05__3dView__GardenSteps____WhitecardImage__13-Nov-2026.png",
+        "IMG06__3dView__MainDoors____WhitecardImage__13-Nov-2026.png",
+        "IMG07__3dView__UpperGarden____WhitecardImage__13-Nov-2026.png",
+        "IMG08__3dView__TopDown____WhitecardImage__13-Nov-2026.png"
+    ],
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__13-Nov-2026.png",
+        "IMG02__3dView__BirdsEye-01____WhitecardImage__13-Nov-2026.png",
+        "IMG03__3dView__BirdsEye-02____WhitecardImage__13-Nov-2026.png",
+        "IMG04__3dView__Lightwell____WhitecardImage__13-Nov-2026.png",
+        "IMG05__3dView__GardenSteps____WhitecardImage__13-Nov-2026.png",
+        "IMG06__3dView__MainDoors____WhitecardImage__13-Nov-2026.png",
+        "IMG07__3dView__UpperGarden____WhitecardImage__13-Nov-2026.png",
+        "IMG08__3dView__TopDown____WhitecardImage__13-Nov-2026.png"
+    ],
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__13-Nov-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "13-Nov-2026 at 13:14",
+        "model_name": "Kann__WhiteCardModel__0.3.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Full Context",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 4130.3773,
+                        "y": -7342.0902,
+                        "z": 7611.2731
+                    },
+                    "target": {
+                        "x": 8572.858,
+                        "y": 17965.194,
+                        "z": 7611.8782
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": -4e-06,
+                        "y": -2.3e-05,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.172898,
+                        "y": 0.98494,
+                        "z": 2.4e-05
+                    },
+                    "fov_degrees": 49.9098,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG02__3dView__BirdsEye-01__",
+                "scene_description": "Bird's-eye 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 1418.7072,
+                        "y": 3336.6053,
+                        "z": 17817.7659
+                    },
+                    "target": {
+                        "x": 11033.9029,
+                        "y": 18777.7453,
+                        "z": -329.2304
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0.373329,
+                        "y": 0.599532,
+                        "z": 0.707946
+                    },
+                    "direction": {
+                        "x": 0.374216,
+                        "y": 0.600957,
+                        "z": -0.706267
+                    },
+                    "fov_degrees": 49.9098,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG03__3dView__BirdsEye-02__",
+                "scene_description": "Bird's-eye 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -113.1824,
+                        "y": 14900.1493,
+                        "z": 13791.6397
+                    },
+                    "target": {
+                        "x": 16867.5751,
+                        "y": 15089.9353,
+                        "z": -5490.7909
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0.75041,
+                        "y": 0.008387,
+                        "z": 0.660919
+                    },
+                    "direction": {
+                        "x": 0.660878,
+                        "y": 0.007386,
+                        "z": -0.750457
+                    },
+                    "fov_degrees": 49.9098,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG04__3dView__Lightwell__",
+                "scene_description": "Lightwell",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 5055.6852,
+                        "y": 17829.5651,
+                        "z": 1531.8403
+                    },
+                    "target": {
+                        "x": 20259.4393,
+                        "y": -2883.7188,
+                        "z": 1531.8403
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.591718,
+                        "y": -0.806145,
+                        "z": 0
+                    },
+                    "fov_degrees": 65.4705,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG05__3dView__GardenSteps__",
+                "scene_description": "Garden Steps",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 9427.198,
+                        "y": 15371.6238,
+                        "z": 1024.1368
+                    },
+                    "target": {
+                        "x": 10009.0848,
+                        "y": 7497.4972,
+                        "z": 1024.1368
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.073698,
+                        "y": -0.997281,
+                        "z": 0
+                    },
+                    "fov_degrees": 65.4705,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG06__3dView__MainDoors__",
+                "scene_description": "Main Doors",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 4821.5921,
+                        "y": 13826.1905,
+                        "z": 1395
+                    },
+                    "target": {
+                        "x": 12327.1562,
+                        "y": 14013.8089,
+                        "z": 1314.8504
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": 0.010671,
+                        "y": 0.000267,
+                        "z": 0.999943
+                    },
+                    "direction": {
+                        "x": 0.999631,
+                        "y": 0.024988,
+                        "z": -0.010675
+                    },
+                    "fov_degrees": 65.4705,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG07__3dView__UpperGarden__",
+                "scene_description": "Upper Garden",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 11074.8221,
+                        "y": 5086.5404,
+                        "z": 3751.8763
+                    },
+                    "target": {
+                        "x": 10922.5276,
+                        "y": 10944.435,
+                        "z": 3750.1564
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": -8e-06,
+                        "y": 0.000293,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": -0.025989,
+                        "y": 0.999662,
+                        "z": -0.000294
+                    },
+                    "fov_degrees": 65.4705,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            },
+            {
+                "scene_name": "IMG08__3dView__TopDown__",
+                "scene_description": "Top Down",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 10983.2846,
+                        "y": 11256.6152,
+                        "z": 17259.2831
+                    },
+                    "target": {
+                        "x": 8080.9604,
+                        "y": 11301.6331,
+                        "z": -8270.4791
+                    },
+                    "target_source": "scene",
+                    "up": {
+                        "x": -0.993479,
+                        "y": 0.01541,
+                        "z": 0.11297
+                    },
+                    "direction": {
+                        "x": -0.112956,
+                        "y": 0.001752,
+                        "z": -0.993598
+                    },
+                    "fov_degrees": 49.9098,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "section_planes": null
+            }
+        ]
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": 24810,
+            "FogPlane__Config__PlaneA__NormalX": -1,
+            "FogPlane__Config__PlaneA__NormalZ": 0
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -15503,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    },
+    "_rev": 8,
+    "Vegetation__SceneData": {
+        "Vegetation__SceneData__SchemaVersion": 1,
+        "Vegetation__SceneData__Enabled": true,
+        "Vegetation__SceneData__ShowByDefault": true,
+        "Vegetation__SceneData__DefaultTransparencyPercent": 60,
+        "Vegetation__SceneData__ShowOnLiveDrawings": false,
+        "Vegetation__SceneData__LineRules": {
+            "Vegetation__LineRules__LineWeightPx": 0.8,
+            "Vegetation__LineRules__InnerWeightShare": 0.8,
+            "Vegetation__LineRules__InnerArcsFactor": 1,
+            "Vegetation__LineRules__HooksFactor": 1,
+            "Vegetation__LineRules__CurlsFactor": 1,
+            "Vegetation__LineRules__PenLiftsFactor": 1,
+            "Vegetation__LineRules__ScallopSizeFactor": 1,
+            "Vegetation__LineRules__SmallBumpsFactor": 1,
+            "Vegetation__LineRules__Advanced": {
+                "Vegetation__LineRulesAdvanced__SegmentPx": 4,
+                "Vegetation__LineRulesAdvanced__LodSkipPx": 1,
+                "Vegetation__LineRulesAdvanced__LodInnerArcsPx": 6,
+                "Vegetation__LineRulesAdvanced__LodHooksPx": 3,
+                "Vegetation__LineRulesAdvanced__LodCurlsPx": 5,
+                "Vegetation__LineRulesAdvanced__LodBladesPx": 7,
+                "Vegetation__LineRulesAdvanced__FillWallShare": 1,
+                "Vegetation__LineRulesAdvanced__FillTone": 0.975,
+                "Vegetation__LineRulesAdvanced__DepthBias": 3e-05
+            }
+        },
+        "Vegetation__SceneData__Tools": {
+            "Vegetation__Tools__Linear": {
+                "Vegetation__Path__PaletteUid": "PAL0001",
+                "Vegetation__Path__PlantScale": 1,
+                "Vegetation__Path__SpacingMm": 1150,
+                "Vegetation__Path__Curved": false,
+                "Vegetation__Path__Advanced": {
+                    "Vegetation__PathAdvanced__RotationVariationDeg": 12,
+                    "Vegetation__PathAdvanced__ScaleVariationPercent": 10,
+                    "Vegetation__PathAdvanced__HeightVariationPercent": 8,
+                    "Vegetation__PathAdvanced__SpacingVariationPercent": 15,
+                    "Vegetation__PathAdvanced__SideOffsetMm": 60,
+                    "Vegetation__PathAdvanced__DepthAcrossMm": 0,
+                    "Vegetation__PathAdvanced__HeightFitMm": 0,
+                    "Vegetation__PathAdvanced__AlignToPath": true,
+                    "Vegetation__PathAdvanced__FitLastPlant": true
+                }
+            },
+            "Vegetation__Tools__Brush": {
+                "Vegetation__Brush__PaletteUid": "",
+                "Vegetation__Brush__PlantScale": 1,
+                "Vegetation__Brush__RadiusMm": 900,
+                "Vegetation__Brush__DensityPerSquareM": 0.9,
+                "Vegetation__Brush__RotationVariationDeg": 180,
+                "Vegetation__Brush__ScaleVariationPercent": 10,
+                "Vegetation__Brush__MaxSlopeDeg": 35,
+                "Vegetation__Brush__MinSpacingMm": 650,
+                "Vegetation__Brush__SameHeightOnly": true,
+                "Vegetation__Brush__SameHeightMm": 200
+            },
+            "Vegetation__Tools__Place": {
+                "Vegetation__Place__PlantScale": 1
+            }
+        },
+        "Vegetation__SceneData__Assets": {
+            "VVL_07_1001": {
+                "Asset__Id": "VVL_07_1001",
+                "Asset__Name": "Rounded Shrub",
+                "Asset__Description": "A rounded evergreen mound with large billows, in the manner of the hand drawn shrubs. The everyday planter shrub.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "04-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "100",
+                    "Identity__Item": 1,
+                    "Identity__Name": "RoundedShrub",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 10,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 900,
+                    "Placement__DefaultWeight": 50
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "evergreen",
+                        "mound",
+                        "rounded",
+                        "planter"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1350,
+                    "Size__DepthMm": 1150,
+                    "Size__HeightMm": 1080,
+                    "Size__JitterShare": 0.1
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Mound",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 70,
+                    "Masses__ScallopChordMaxMm": 250,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 75,
+                    "Clumps__RadiusMaxMm": 155,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 26,
+                    "Nubs__RadiusMaxMm": 52
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.22,
+                    "Line__InteriorSpanDeg": 95,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 1,
+                    "Line__CurlChance": 0.26,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.42,
+                    "Line__CuspHookMinMm": 45,
+                    "Line__CuspHookMaxMm": 150,
+                    "Line__SpurShare": 0.14
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 1,
+                    "Tufts__CountMax": 3,
+                    "Tufts__HeightMinMm": 300,
+                    "Tufts__HeightMaxMm": 480,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_1002": {
+                "Asset__Id": "VVL_07_1002",
+                "Asset__Name": "Rounded Shrub (No Grass)",
+                "Asset__Description": "A rounded evergreen mound with large billows, in the manner of the hand drawn shrubs, with no grass tufts at its foot. The everyday planter shrub where the bed should read clean.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "100",
+                    "Identity__Item": 2,
+                    "Identity__Name": "RoundedShrub",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 10,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 900,
+                    "Placement__DefaultWeight": 50
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "evergreen",
+                        "mound",
+                        "rounded",
+                        "planter"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1350,
+                    "Size__DepthMm": 1150,
+                    "Size__HeightMm": 1080,
+                    "Size__JitterShare": 0.1
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Mound",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 70,
+                    "Masses__ScallopChordMaxMm": 250,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 75,
+                    "Clumps__RadiusMaxMm": 155,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 26,
+                    "Nubs__RadiusMaxMm": 52
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.22,
+                    "Line__InteriorSpanDeg": 95,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 1,
+                    "Line__CurlChance": 0.26,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.42,
+                    "Line__CuspHookMinMm": 45,
+                    "Line__CuspHookMaxMm": 150,
+                    "Line__SpurShare": 0.14
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 300,
+                    "Tufts__HeightMaxMm": 480,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_1011": {
+                "Asset__Id": "VVL_07_1011",
+                "Asset__Name": "Upright Shrub",
+                "Asset__Description": "A taller, looser shrub with a broken outline: smaller clumps, leaf tips on the edge and deep notches. Lifts the rhythm of a planter run.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "04-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "101",
+                    "Identity__Item": 1,
+                    "Identity__Name": "UprightShrub",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 12,
+                    "Placement__HeightVariationPercent": 10,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 700,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "upright",
+                        "tall",
+                        "loose",
+                        "leafy"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1050,
+                    "Size__DepthMm": 950,
+                    "Size__HeightMm": 1500,
+                    "Size__JitterShare": 0.12
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Upright",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.58,
+                    "Masses__ScallopSkew": 1.4,
+                    "Masses__TipShare": 0.45
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 120,
+                    "Clumps__Skew": 1.35,
+                    "Clumps__Spacing": 0.9,
+                    "Clumps__ReachMin": 0.98,
+                    "Clumps__ReachMax": 1.3,
+                    "Clumps__ScallopDepth": 0.26,
+                    "Clumps__TipShare": 0.45,
+                    "Clumps__Ellipse": 0.12,
+                    "Clumps__Wobble": 0.02
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.4,
+                    "Nubs__RadiusMinMm": 22,
+                    "Nubs__RadiusMaxMm": 42
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.12,
+                    "Line__InteriorSpanDeg": 80,
+                    "Line__TailChance": 0.7,
+                    "Line__TailMinRad": 0.3,
+                    "Line__TailMaxRad": 1.25,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.62,
+                    "Line__BreakChance": 0.08,
+                    "Line__CuspHookChance": 0.5,
+                    "Line__CuspHookMinMm": 40,
+                    "Line__CuspHookMaxMm": 130,
+                    "Line__SpurShare": 0.26
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 1,
+                    "Tufts__HeightMinMm": 260,
+                    "Tufts__HeightMaxMm": 420,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 7,
+                    "Tufts__BladeWidthMm": 30
+                }
+            },
+            "VVL_07_1012": {
+                "Asset__Id": "VVL_07_1012",
+                "Asset__Name": "Upright Shrub (No Grass)",
+                "Asset__Description": "A taller, looser shrub with a broken outline: smaller clumps, leaf tips on the edge and deep notches, with no grass tufts at its foot. Lifts the rhythm of a planter run.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "101",
+                    "Identity__Item": 2,
+                    "Identity__Name": "UprightShrub",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 12,
+                    "Placement__HeightVariationPercent": 10,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 700,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "shrub",
+                        "upright",
+                        "tall",
+                        "loose",
+                        "leafy"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1050,
+                    "Size__DepthMm": 950,
+                    "Size__HeightMm": 1500,
+                    "Size__JitterShare": 0.12
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Upright",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.58,
+                    "Masses__ScallopSkew": 1.4,
+                    "Masses__TipShare": 0.45
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 120,
+                    "Clumps__Skew": 1.35,
+                    "Clumps__Spacing": 0.9,
+                    "Clumps__ReachMin": 0.98,
+                    "Clumps__ReachMax": 1.3,
+                    "Clumps__ScallopDepth": 0.26,
+                    "Clumps__TipShare": 0.45,
+                    "Clumps__Ellipse": 0.12,
+                    "Clumps__Wobble": 0.02
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.4,
+                    "Nubs__RadiusMinMm": 22,
+                    "Nubs__RadiusMaxMm": 42
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.12,
+                    "Line__InteriorSpanDeg": 80,
+                    "Line__TailChance": 0.7,
+                    "Line__TailMinRad": 0.3,
+                    "Line__TailMaxRad": 1.25,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.62,
+                    "Line__BreakChance": 0.08,
+                    "Line__CuspHookChance": 0.5,
+                    "Line__CuspHookMinMm": 40,
+                    "Line__CuspHookMaxMm": 130,
+                    "Line__SpurShare": 0.26
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 260,
+                    "Tufts__HeightMaxMm": 420,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 7,
+                    "Tufts__BladeWidthMm": 30
+                }
+            },
+            "VVL_07_1021": {
+                "Asset__Id": "VVL_07_1021",
+                "Asset__Name": "Low Border Drift",
+                "Asset__Description": "A low spreading mass for long planter beds, with strap leaf tufts at its foot. Its proxy stretches to the bed: the length changes how many clumps it has, never how big they are.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "04-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "102",
+                    "Identity__Item": 1,
+                    "Identity__Name": "LowBorderDrift",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 8,
+                    "Placement__ScaleVariationPercent": 6,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": true,
+                    "Placement__StretchAlongPath": true,
+                    "Placement__MinSpacingMm": 1200,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "border",
+                        "drift",
+                        "low",
+                        "spreading",
+                        "planter",
+                        "strap leaf"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1800,
+                    "Size__DepthMm": 680,
+                    "Size__HeightMm": 640,
+                    "Size__JitterShare": 0.06
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Run",
+                    "Masses__CountMin": 2,
+                    "Masses__CountMax": 3,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 115,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 20,
+                    "Nubs__RadiusMaxMm": 38
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.16,
+                    "Line__InteriorSpanDeg": 85,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 0.95,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.4,
+                    "Line__CuspHookMinMm": 38,
+                    "Line__CuspHookMaxMm": 125,
+                    "Line__SpurShare": 0.12
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 3,
+                    "Tufts__CountMax": 5,
+                    "Tufts__HeightMinMm": 320,
+                    "Tufts__HeightMaxMm": 540,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_1022": {
+                "Asset__Id": "VVL_07_1022",
+                "Asset__Name": "Low Border Drift (No Grass)",
+                "Asset__Description": "A low spreading mass for long planter beds, with no strap leaf tufts at its foot. Its proxy stretches to the bed: the length changes how many clumps it has, never how big they are.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "06-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "102",
+                    "Identity__Item": 2,
+                    "Identity__Name": "LowBorderDrift",
+                    "Identity__Variant": "Var-02"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 8,
+                    "Placement__ScaleVariationPercent": 6,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": true,
+                    "Placement__StretchAlongPath": true,
+                    "Placement__MinSpacingMm": 1200,
+                    "Placement__DefaultWeight": 25
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "border",
+                        "drift",
+                        "low",
+                        "spreading",
+                        "planter",
+                        "no grass"
+                    ],
+                    "Catalogue__Season": "AllYear",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1800,
+                    "Size__DepthMm": 680,
+                    "Size__HeightMm": 640,
+                    "Size__JitterShare": 0.06
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Run",
+                    "Masses__CountMin": 2,
+                    "Masses__CountMax": 3,
+                    "Masses__ScallopChordMinMm": 55,
+                    "Masses__ScallopChordMaxMm": 190,
+                    "Masses__ScallopDepth": 0.5,
+                    "Masses__ScallopSkew": 1.35,
+                    "Masses__TipShare": 0
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 55,
+                    "Clumps__RadiusMaxMm": 115,
+                    "Clumps__Skew": 1.25,
+                    "Clumps__Spacing": 0.86,
+                    "Clumps__ReachMin": 0.96,
+                    "Clumps__ReachMax": 1.2,
+                    "Clumps__ScallopDepth": 0.2,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.08,
+                    "Clumps__Wobble": 0.015
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.3,
+                    "Nubs__RadiusMinMm": 20,
+                    "Nubs__RadiusMaxMm": 38
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.16,
+                    "Line__InteriorSpanDeg": 85,
+                    "Line__TailChance": 0.55,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 0.95,
+                    "Line__CurlChance": 0.3,
+                    "Line__CurlAmount": 0.58,
+                    "Line__BreakChance": 0.05,
+                    "Line__CuspHookChance": 0.4,
+                    "Line__CuspHookMinMm": 38,
+                    "Line__CuspHookMaxMm": 125,
+                    "Line__SpurShare": 0.12
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 320,
+                    "Tufts__HeightMaxMm": 540,
+                    "Tufts__BladesMin": 5,
+                    "Tufts__BladesMax": 8,
+                    "Tufts__BladeWidthMm": 34
+                }
+            },
+            "VVL_07_1031": {
+                "Asset__Id": "VVL_07_1031",
+                "Asset__Name": "Mophead Hydrangea",
+                "Asset__Description": "A soft ornamental shrub carrying big round flower heads over its leaves: a loose mound with bold circles in the outline and through the middle, for a border or a large planter.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "04-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "07",
+                    "Identity__Type": "Shrubs",
+                    "Identity__Family": "103",
+                    "Identity__Item": 1,
+                    "Identity__Name": "MopheadHydrangea",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "BallCluster",
+                    "Generator__Version": 1
+                },
+                "Asset__Proxy": {
+                    "Proxy__Shape": "Dome",
+                    "Proxy__RingCount": 5,
+                    "Proxy__SectorCount": 10
+                },
+                "Asset__Placement": {
+                    "Placement__RotationVariationDeg": 180,
+                    "Placement__ScaleVariationPercent": 12,
+                    "Placement__HeightVariationPercent": 8,
+                    "Placement__AlignToPath": false,
+                    "Placement__StretchAlongPath": false,
+                    "Placement__MinSpacingMm": 1100,
+                    "Placement__DefaultWeight": 15
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "ornamental",
+                        "flowering",
+                        "hydrangea",
+                        "mound",
+                        "border",
+                        "planter"
+                    ],
+                    "Catalogue__Season": "Summer",
+                    "Catalogue__BotanicalName": null
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 1300,
+                    "Size__DepthMm": 1200,
+                    "Size__HeightMm": 1050,
+                    "Size__JitterShare": 0.08
+                },
+                "Asset__Masses": {
+                    "Masses__Layout": "Mound",
+                    "Masses__CountMin": 4,
+                    "Masses__CountMax": 6,
+                    "Masses__ScallopChordMinMm": 60,
+                    "Masses__ScallopChordMaxMm": 170,
+                    "Masses__ScallopDepth": 0.42,
+                    "Masses__ScallopSkew": 1.3,
+                    "Masses__TipShare": 0.1
+                },
+                "Asset__Clumps": {
+                    "Clumps__RadiusMinMm": 88,
+                    "Clumps__RadiusMaxMm": 148,
+                    "Clumps__Skew": 0.9,
+                    "Clumps__Spacing": 1.02,
+                    "Clumps__ReachMin": 0.94,
+                    "Clumps__ReachMax": 1.08,
+                    "Clumps__ScallopDepth": 0.24,
+                    "Clumps__TipShare": 0,
+                    "Clumps__Ellipse": 0.06,
+                    "Clumps__Wobble": 0.02
+                },
+                "Asset__Nubs": {
+                    "Nubs__Share": 0.42,
+                    "Nubs__RadiusMinMm": 20,
+                    "Nubs__RadiusMaxMm": 42
+                },
+                "Asset__Line": {
+                    "Line__InteriorChance": 0.62,
+                    "Line__InteriorSpanDeg": 150,
+                    "Line__TailChance": 0.46,
+                    "Line__TailMinRad": 0.2,
+                    "Line__TailMaxRad": 0.9,
+                    "Line__CurlChance": 0.34,
+                    "Line__CurlAmount": 0.6,
+                    "Line__BreakChance": 0.06,
+                    "Line__CuspHookChance": 0.34,
+                    "Line__CuspHookMinMm": 30,
+                    "Line__CuspHookMaxMm": 95,
+                    "Line__SpurShare": 0.1
+                },
+                "Asset__Tufts": {
+                    "Tufts__CountMin": 0,
+                    "Tufts__CountMax": 0,
+                    "Tufts__HeightMinMm": 0,
+                    "Tufts__HeightMaxMm": 0,
+                    "Tufts__BladesMin": 0,
+                    "Tufts__BladesMax": 0,
+                    "Tufts__BladeWidthMm": 0
+                }
+            }
+        },
+        "Vegetation__SceneData__Plops": [],
+        "Vegetation__SceneData__Paths": [
+            {
+                "Vegetation__Path__PaletteUid": "PAL0003",
+                "Vegetation__Path__PlantScale": 0.7,
+                "Vegetation__Path__SpacingMm": 540,
+                "Vegetation__Path__Curved": false,
+                "Vegetation__Path__Advanced": {
+                    "Vegetation__PathAdvanced__RotationVariationDeg": 12,
+                    "Vegetation__PathAdvanced__ScaleVariationPercent": 10,
+                    "Vegetation__PathAdvanced__HeightVariationPercent": 8,
+                    "Vegetation__PathAdvanced__SpacingVariationPercent": 15,
+                    "Vegetation__PathAdvanced__SideOffsetMm": 60,
+                    "Vegetation__PathAdvanced__DepthAcrossMm": 0,
+                    "Vegetation__PathAdvanced__HeightFitMm": 0,
+                    "Vegetation__PathAdvanced__AlignToPath": true,
+                    "Vegetation__PathAdvanced__FitLastPlant": true
+                },
+                "Vegetation__Path__Uid": "P0001",
+                "Vegetation__Path__Name": "Path 1",
+                "Vegetation__Path__PointsMm": [
+                    [
+                        7884,
+                        345,
+                        -12035
+                    ],
+                    [
+                        4767,
+                        345,
+                        -12058
+                    ]
+                ],
+                "Vegetation__Path__Seed": 498742899
+            }
+        ],
+        "Vegetation__SceneData__Palettes": [
+            {
+                "Vegetation__Palette__Uid": "PAL0001",
+                "Vegetation__Palette__Name": "Mixed Planting",
+                "Vegetation__Palette__Items": [
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1002",
+                        "Vegetation__PaletteItem__Weight": 20
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1011",
+                        "Vegetation__PaletteItem__Weight": 38
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1012",
+                        "Vegetation__PaletteItem__Weight": 25
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1022",
+                        "Vegetation__PaletteItem__Weight": 25
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1031",
+                        "Vegetation__PaletteItem__Weight": 15
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_2021",
+                        "Vegetation__PaletteItem__Weight": 25
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_2001",
+                        "Vegetation__PaletteItem__Weight": 25
+                    }
+                ]
+            },
+            {
+                "Vegetation__Palette__Uid": "PAL0002",
+                "Vegetation__Palette__Name": "Small Planting Bed Shrubs",
+                "Vegetation__Palette__StandardId": "VVP_0001",
+                "Vegetation__Palette__Items": [
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1012",
+                        "Vegetation__PaletteItem__Weight": 29
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_2021",
+                        "Vegetation__PaletteItem__Weight": 5
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1001",
+                        "Vegetation__PaletteItem__Weight": 64
+                    }
+                ]
+            },
+            {
+                "Vegetation__Palette__Uid": "PAL0003",
+                "Vegetation__Palette__Name": "Medium Planting Bed Shrubs",
+                "Vegetation__Palette__StandardId": "VVP_0002",
+                "Vegetation__Palette__Items": [
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1012",
+                        "Vegetation__PaletteItem__Weight": 29
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_2021",
+                        "Vegetation__PaletteItem__Weight": 5
+                    },
+                    {
+                        "Vegetation__PaletteItem__AssetId": "VVL_07_1002",
+                        "Vegetation__PaletteItem__Weight": 40
+                    }
+                ]
+            }
+        ]
+    },
+    "Entourage__SceneData": {
+        "Entourage__SceneData__SchemaVersion": 1,
+        "Entourage__SceneData__Enabled": true,
+        "Entourage__SceneData__ShowByDefault": true,
+        "Entourage__SceneData__DefaultTransparencyPercent": 60,
+        "Entourage__SceneData__ShowOnLiveDrawings": false,
+        "Entourage__SceneData__LineRules": {
+            "Entourage__LineRules__LineWeightPx": 0.6,
+            "Entourage__LineRules__InnerWeightShare": 0.55,
+            "Entourage__LineRules__HooksFactor": 1,
+            "Entourage__LineRules__PenLiftsFactor": 1,
+            "Entourage__LineRules__SmoothingPasses": 2,
+            "Entourage__LineRules__Advanced": {
+                "Entourage__LineRulesAdvanced__CornerDeg": 50,
+                "Entourage__LineRulesAdvanced__CornerSpanMm": 24,
+                "Entourage__LineRulesAdvanced__PenLiftEveryMm": 700,
+                "Entourage__LineRulesAdvanced__PenLiftGapMm": 24,
+                "Entourage__LineRulesAdvanced__HookNotchDeg": 55,
+                "Entourage__LineRulesAdvanced__HookChance": 0.8,
+                "Entourage__LineRulesAdvanced__HookMinMm": 50,
+                "Entourage__LineRulesAdvanced__HookMaxMm": 130,
+                "Entourage__LineRulesAdvanced__FillWallShare": 1,
+                "Entourage__LineRulesAdvanced__FillTone": 0.975,
+                "Entourage__LineRulesAdvanced__DepthBias": 3e-05
+            }
+        },
+        "Entourage__SceneData__Tools": {
+            "Entourage__Tools__Place": {
+                "Entourage__Place__Scale": 1
+            }
+        },
+        "Entourage__SceneData__Assets": {
+            "VVL_60_0326": {
+                "Asset__Id": "VVL_60_0326",
+                "Asset__Name": "Woman in a Skirt, Arms Folded",
+                "Asset__Description": "Flat silhouette of a woman, 1.62 m tall and 515 mm wide. Always turns to face the camera, as it does in SketchUp.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "05-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "60",
+                    "Identity__Type": "People",
+                    "Identity__Family": "032",
+                    "Identity__Item": 6,
+                    "Identity__Name": "Woman",
+                    "Identity__Variant": "Var-06"
+                },
+                "Asset__Source": {
+                    "Source__SketchUpFile": "60_0326__SceneEntourage__SilhouettePerson__Woman__1.62m-Height__Var-06__.skp",
+                    "Source__Note": "Converted from the core component library, which stays the master of this drawing. Its grey material is left behind: the app fills a figure with the walls' own brightness."
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "FlatFigure",
+                    "Generator__Version": 1
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "person",
+                        "woman",
+                        "standing",
+                        "skirt",
+                        "arms folded"
+                    ]
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 515,
+                    "Size__HeightMm": 1620
+                },
+                "Asset__Figure": {
+                    "Figure__Kind": "Silhouette",
+                    "Figure__OutlineMm": "91.8,1620 60.5,1602.1 -2.2,1602.1 -11.2,1593.2 -15.7,1579.7 -24.6,1570.8 -38.1,1543.9 -41.1,1538 -40.3,1514.8 -35.8,1496.9 -31.4,1479 -29.1,1418.6 -15.7,1396.2 -13.4,1385 -4.5,1360.4 -3.7,1344 -38.1,1338.1 -51.5,1329.1 -87.4,1324.6 -96.3,1315.7 -105.3,1293.3 -114.2,1284.4 -117.2,1278.4 -118.7,1266.5 -136.6,1237.4 -143.3,1232.9 -150.1,1212.8 -153.1,1206.8 -168,1177 -171,1171 -178.4,1156.1 -181.4,1147.9 -194.9,1130 -197.8,1121.8 -203.8,1105.3 -212.8,1096.4 -212.8,1087.5 -227.7,1071 -235.2,1062.8 -241.2,1057.6 -257.6,1040.5 -239.7,1002.4 -228.5,989 -221.8,984.5 -203.8,975.6 -174,974.1 -165.8,971.1 -156.8,959.9 -161.3,937.5 -163.5,926.4 -172.5,912.9 -174.7,901.7 -176.9,890.5 -187.4,869.7 -190.4,861.5 -193.4,853.3 -197.1,839.1 -199.3,827.9 -208.3,810 -206.1,798.8 -197.8,793.6 -174,772.7 -174.7,660.1 -174.7,646.7 -170.2,633.2 -165.8,619.8 -152.3,577.3 -143.3,552.7 -138.9,532.5 -134.4,505.7 -134.4,490 -136.6,469.9 -139.6,463.9 -143.3,436.3 -147.8,409.5 -152.3,373.7 -154.6,358 -157.5,352.1 -156.8,320 -134.4,315.5 -107.5,311 -71.7,306.6 -58.2,302.1 -56,268.5 -59,262.5 -58.2,223.8 -53.8,190.2 -49.3,158.9 -44.8,91.7 -42.6,62.6 -51.5,49.2 -98.5,47 -106.8,41.8 -112,33.5 -108.3,10.4 -91.8,0 14.2,1.5 20.2,8.9 22.4,105.2 26.9,167.8 26.9,237.2 22.4,257.3 20.2,273 13.4,286.4 11.2,304.3 20.2,313.2 50,319.2 56,322.2 72.4,320.7 71.7,293.1 71.7,279.7 76.2,248.4 80.6,226 85.1,199.1 89.6,181.2 94.1,96.2 94.1,2.2 157.5,1.5 163.5,6.7 165.8,47 161.3,71.6 156.8,91.7 152.3,172.3 147.8,302.1 143.4,333.4 138.9,355.8 138.9,507.9 143.4,557.1 147.8,597.4 152.3,660.1 156.8,803.3 161.3,857 163.5,935.3 154.6,953.2 156.1,974.1 171,977.1 178.4,983 183.7,991.2 188.9,999.4 193.4,1008.4 209.8,1032.3 215.8,1039.7 227.7,1054.6 230.7,1060.6 230.7,1069.5 241.2,1081.5 246.4,1089.7 251.6,1097.9 256.1,1106.8 257.6,1279.9 248.6,1293.3 230.7,1302.3 224.7,1305.2 212.8,1311.2 206.8,1314.2 190.4,1324.6 184.4,1327.6 172.5,1333.6 166.5,1336.6 160.5,1350 163.5,1356 176.9,1369.4 187.4,1390.3 193.4,1397.7 197.1,1405.2 208.3,1418.6 206.1,1438.8 201.6,1472.3 197.1,1492.5 194.9,1539.5 185.9,1552.9 176.9,1559.6 169.5,1563.3 162,1569.3 150.1,1575.2 123.2,1602.1 100.8,1620"
+                }
+            },
+            "VVL_60_0305": {
+                "Asset__Id": "VVL_60_0305",
+                "Asset__Name": "Man Holding a Folder",
+                "Asset__Description": "Flat silhouette of a man, 1.77 m tall and 632 mm wide. Always turns to face the camera, as it does in SketchUp.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "05-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "60",
+                    "Identity__Type": "People",
+                    "Identity__Family": "030",
+                    "Identity__Item": 5,
+                    "Identity__Name": "Man",
+                    "Identity__Variant": "Var-05"
+                },
+                "Asset__Source": {
+                    "Source__SketchUpFile": "60_0305__SceneEntourage__SilhouettePerson__Man__1.77m-Height__Var-05__.skp",
+                    "Source__Note": "Converted from the core component library, which stays the master of this drawing. Its grey material is left behind: the app fills a figure with the walls' own brightness."
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "FlatFigure",
+                    "Generator__Version": 1
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "person",
+                        "man",
+                        "standing",
+                        "folder",
+                        "carrying"
+                    ]
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 632,
+                    "Size__HeightMm": 1770
+                },
+                "Asset__Figure": {
+                    "Figure__Kind": "Silhouette",
+                    "Figure__OutlineMm": "86.8,1735.7 79.4,1740.6 47.5,1765.1 10.6,1767.5 -1.6,1770 -8.2,1766.7 -26.2,1760.2 -32.8,1756.9 -42.6,1752 -54,1743.8 -63.9,1738.9 -75.3,1725.8 -75.3,1706.2 -78.6,1699.7 -82.7,1684.1 -87.6,1659.6 -87.6,1615.4 -82.7,1576.2 -77,1521.3 -104.8,1505 -119.5,1505 -129.4,1495.2 -137.6,1493.5 -146.6,1490.3 -155.6,1487 -168.7,1485.4 -178.5,1475.5 -188.3,1475.5 -208,1465.7 -217.8,1451 -217.8,1436.3 -221.1,1429.7 -227.6,1406.8 -230.9,1400.3 -235.8,1390.5 -239.9,1370 -247.3,1343 -257.1,1328.3 -259.6,1306.2 -268.6,1280.9 -271.8,1271.9 -275.1,1262.9 -279.2,1237.5 -289,1203.2 -293.9,1183.5 -298,1153.3 -301.3,1144.3 -304.6,1135.3 -306.2,1117.3 -316.1,1097.7 -313.6,1073.1 -303.8,1058.4 -298.9,1043.7 -293.1,1032.2 -259.6,965.2 -220.2,886.6 -210.4,722.2 -205.5,663.3 -200.6,614.3 -195.7,545.6 -190.8,501.4 -190.8,403.2 -195.7,349.3 -195.7,310 -190.8,270.7 -185.9,221.7 -180.9,182.4 -176,103.9 -171.1,59.7 -167,39.3 -150.7,31.1 -144.1,22.9 -141.7,8.2 -132.7,0 -36,0.8 -36,96.5 -36,194.7 -40.9,209.4 -43.4,275.6 -48.3,327.2 -53.2,388.5 -54,423.7 -50.8,430.2 -43.4,467 -39.3,492.4 -36,498.9 -33.6,575 -28.7,599.5 -24.6,654.3 -14.7,657.6 -1.6,641.2 0.8,621.6 3.3,597.1 13.1,582.4 13.1,567.6 22.9,552.9 30.3,521 30.3,491.6 32.7,449.9 29.5,443.3 25.4,413.1 15.6,368.9 10.6,339.4 5.7,285.5 0.8,167.7 -4.1,89.2 -4.1,74.4 -4.1,0.8 49.9,0.8 64.7,0.8 153.1,0.8 177.7,0.8 217.8,4.9 217,20.4 194.9,27.8 153.1,47.4 144.1,50.7 133.5,62.2 132.6,75.2 144.1,78.5 148.2,172.6 153.1,256 155.6,361.5 165.4,376.2 167.8,427.8 172.8,457.2 177.7,491.6 177.7,540.6 172.8,570.1 167.8,599.5 162.9,641.2 158,663.3 153.1,702.6 150.7,842.5 175.2,832.6 193.2,834.3 194.9,847.4 206.3,865.4 209.6,871.9 209.6,886.6 221.1,909.5 224.3,916.1 235.8,953.7 239.1,960.2 248.9,979.9 251.4,992.1 256.3,1006.9 258.7,1019.1 268.6,1033.9 270.2,1051.9 275.1,1061.7 280.8,1070.7 289.8,1105.8 294.8,1115.7 300.5,1124.7 304.6,1140.2 307.9,1146.7 315.2,1173.7 316.1,1194.2 293.1,1205.6 286.6,1208.9 253.8,1225.3 247.3,1228.5 209.6,1244.9 199.8,1254.7 189.9,1254.7 170.3,1269.4 170.3,1279.2 180.1,1294 177.7,1330.8 172.8,1384.8 170.3,1426.5 160.5,1441.2 135.9,1446.1 129.4,1449.4 96.6,1465.7 72,1470.6 57.3,1480.5 57.3,1505 68.8,1518.1 80.2,1526.3 90.1,1531.2 101.5,1554.1 108.1,1591.7 111.3,1598.2 118.7,1630.1 123.6,1689 126.1,1706.2 117.9,1712.7 109.7,1719.3"
+                }
+            },
+            "VVL_60_0306": {
+                "Asset__Id": "VVL_60_0306",
+                "Asset__Name": "Man Standing, Looking Aside",
+                "Asset__Description": "Flat silhouette of a man, 1.72 m tall and 436 mm wide. Always turns to face the camera, as it does in SketchUp.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "05-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "60",
+                    "Identity__Type": "People",
+                    "Identity__Family": "030",
+                    "Identity__Item": 6,
+                    "Identity__Name": "Man",
+                    "Identity__Variant": "Var-06"
+                },
+                "Asset__Source": {
+                    "Source__SketchUpFile": "60_0306__SceneEntourage__SilhouettePerson__Man__1.72m-Height__Var-06__.skp",
+                    "Source__Note": "Converted from the core component library, which stays the master of this drawing. Its grey material is left behind: the app fills a figure with the walls' own brightness."
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "FlatFigure",
+                    "Generator__Version": 1
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "person",
+                        "man",
+                        "standing",
+                        "jacket"
+                    ]
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 436,
+                    "Size__HeightMm": 1720
+                },
+                "Asset__Figure": {
+                    "Figure__Kind": "Silhouette",
+                    "Figure__OutlineMm": "-38.6,1720 -99.9,1720 -132.9,1696.4 -151.8,1682.3 -158.1,1679.2 -169.1,1671.3 -180.1,1654 -182.5,1618.7 -187.2,1590.4 -189.5,1573.9 -177,1567.6 -170.7,1562.1 -163.6,1540.9 -158.9,1522.1 -153.4,1511.1 -144.7,1493.8 -135.3,1489.1 -118.8,1470.2 -118.8,1444.3 -125.1,1438.8 -140.8,1431 -149.4,1427.8 -177.8,1409 -183.2,1402.7 -187.2,1387.8 -191.9,1354.8 -196.6,1321.8 -196.6,1251.1 -196.6,1232.3 -201.3,1199.3 -206.1,1175.7 -215.5,1133.3 -217.8,820 -184.8,796.4 -180.1,787 -180.1,768.1 -183.2,761.8 -184.8,744.5 -184.8,721 -180.1,711.6 -177.8,607.9 -168.3,506.6 -163.6,478.3 -158.9,435.9 -154.2,412.3 -149.4,365.2 -144.7,336.9 -142.4,99 -129.8,88 -128.2,80.1 -137.7,70.7 -143.9,67.5 -165.9,56.5 -175.4,56.5 -189.5,47.1 -208.4,42.4 -217.8,33 -217.8,23.6 -208.4,9.4 -177.8,7.1 -55.1,2.4 60.5,0 72.3,9.4 80.9,12.6 88.8,16.5 91.9,25.1 95.8,54.2 114.7,68.3 114.7,82.5 118.7,139.8 121.8,146.1 124.2,205 128.9,256.8 129.7,273.3 128.9,388.8 124.2,454.7 124.2,492.4 128.9,539.6 133.6,605.5 138.3,666.8 143,779.9 145.4,796.4 171.5,809.1 187.5,833.1 196.7,861.2 201.8,889.7 205.1,918.5 207.8,947.4 210.4,976.3 212.6,1005.2 214.6,1034.2 216.2,1063.2 217.3,1092.2 217.8,1121.2 217.8,1150.2 217.4,1179.2 216.6,1208.3 215.6,1237.3 214,1266.3 211.5,1295.2 207.6,1323.9 202,1352.4 187.8,1380.7 185.5,1397.2 178.4,1427.8 169,1432.5 162.7,1435.7 140.7,1442 134.4,1445.1 117.1,1446.7 93.5,1460.8 67.5,1467.9 48.7,1472.6 29.8,1477.3 21.2,1482.8 10.2,1486 14.9,1529.9 18,1536.2 20.4,1548 25.1,1581 25.1,1623.4 20.4,1642.2 15.7,1663.5 13.3,1687 1.5,1691.7 -3.2,1698.8 -11.9,1704.3 -29.2,1710.6"
+                }
+            },
+            "VVL_60_0301": {
+                "Asset__Id": "VVL_60_0301",
+                "Asset__Name": "Man Walking",
+                "Asset__Description": "Flat silhouette of a man, 1.80 m tall and 628 mm wide. Always turns to face the camera, as it does in SketchUp.",
+                "Asset__Meta": {
+                    "Meta__Version": "1.0.0",
+                    "Meta__Created": "05-Nov-2026",
+                    "Meta__Author": "Adam Noble - Noble Architecture",
+                    "Meta__Status": "Active"
+                },
+                "Asset__Identity": {
+                    "Identity__CollectionCode": "60",
+                    "Identity__Type": "People",
+                    "Identity__Family": "030",
+                    "Identity__Item": 1,
+                    "Identity__Name": "Man",
+                    "Identity__Variant": "Var-01"
+                },
+                "Asset__Source": {
+                    "Source__SketchUpFile": "60_0301__SceneEntourage__SilhouettePerson__Man__1.8m-Height__Var-01__.skp",
+                    "Source__Note": "Converted from the core component library, which stays the master of this drawing. Its grey material is left behind: the app fills a figure with the walls' own brightness."
+                },
+                "Asset__Generator": {
+                    "Generator__Name": "FlatFigure",
+                    "Generator__Version": 1
+                },
+                "Asset__Catalogue": {
+                    "Catalogue__Keywords": [
+                        "person",
+                        "man",
+                        "walking",
+                        "casual"
+                    ]
+                },
+                "Asset__Size": {
+                    "Size__WidthMm": 628,
+                    "Size__HeightMm": 1800
+                },
+                "Asset__Figure": {
+                    "Figure__Kind": "Silhouette",
+                    "Figure__OutlineMm": "-45.6,26.1 -44,17.4 -44,1.6 -4.4,1.6 -0.4,7.1 10.3,4.8 16.2,0 78,0 95.5,15.8 106.6,28.5 112.9,55.4 114.9,66.5 119.2,77.6 120.8,109.2 125.6,123.5 132.7,159.1 142.2,197.1 151.7,277.8 156.5,339.6 156.5,510.6 161.2,529.5 166,558 175.5,605.5 180.3,667.3 185,738.5 189.8,767 194.5,862 195.3,891.3 201.7,895.2 199.3,985.5 194.5,1009.2 189.8,1080.5 184.2,1181 189.8,1185 196.9,1180.2 201.7,1168.3 204,1128 213.5,1061.5 223.1,990.2 227.8,938 230.2,873.9 232.6,866.8 231.8,780.5 241.3,777.3 246.8,781.3 250.8,796.3 256.3,800.3 263.5,797.9 263.5,790.8 260.3,782.1 250.8,763.1 250.8,752 266.6,756.7 274.6,763.1 284.1,772.6 287.2,781.3 289.6,788.4 299.9,794.7 306.2,807.4 308.6,833.5 304.7,877 313.4,881 311,888.1 313.4,961.7 314.2,983.1 313.4,1018.7 308.6,1090 303.9,1130.3 299.1,1180.2 294.4,1204 289.6,1223 287.2,1239.6 281.3,1249.1 287.2,1258.6 280.1,1294.2 270.6,1329.8 265.8,1346.4 263.5,1372.6 256.3,1386.8 253.9,1405.8 234.9,1443.8 234.9,1453.3 218.3,1472.3 192.2,1491.3 182.6,1491.3 149.4,1510.3 139.8,1510.3 111.3,1524.5 105,1526.1 108.2,1556.2 112.9,1565.7 119.2,1583.1 135.1,1591 135.1,1605.3 125.6,1624.3 128,1645.7 128,1697.9 124,1717.7 131.9,1722.4 144.6,1738.3 144.6,1752.5 138.3,1760.4 127.2,1768.3 120.8,1781 106.6,1781 100.2,1784.2 82.8,1785.8 73.3,1795.2 16.2,1795.2 6.7,1800 -21.8,1785.8 -31.3,1776.2 -37.6,1773.1 -48.7,1765.2 -64.6,1738.3 -67.8,1731.9 -71.7,1678.9 -69.3,1652.8 -59.8,1633.8 -59.8,1614.8 -48.7,1598.9 -50.3,1557.8 -67.8,1537.2 -75.7,1532.5 -88.3,1529.3 -102.6,1529.3 -120,1518.2 -137.5,1511.9 -148.6,1508.7 -157.3,1505.5 -173.9,1491.3 -195.3,1481.8 -207.2,1472.3 -208.8,1464.4 -235.7,1420 -235.7,1410.5 -245.2,1396.3 -245.2,1382.1 -278.5,1315.6 -281.7,1288.7 -271.4,1282.3 -266.6,1275.2 -271.4,1256.2 -278.5,1220.6 -281.7,1214.2 -283.3,1196.8 -286.4,1190.5 -288,1158.8 -291.2,1152.5 -302.3,1097.1 -305.5,1090.8 -309.4,1061.5 -314.2,1014 -314.2,881 -307,876.2 -304.7,862 -302.3,816.9 -290.4,799.1 -284.9,786.8 -265.8,767.8 -256.3,766.2 -250,764.6 -231,755.1 -213.5,756.7 -213.5,767.8 -231,783.6 -238.1,788.4 -250,807.4 -247.6,833.5 -240.5,826.4 -228.6,802.6 -221.5,797.9 -208.8,799.5 -207.2,816.9 -221.5,835.9 -223.8,847.8 -226.2,869.1 -236.9,888.1 -235.7,921.4 -226.2,935.6 -224.6,948.3 -221.5,954.6 -219.9,972 -216.7,978.4 -210.4,1024.3 -207.2,1030.6 -205.6,1086 -202.4,1092.3 -200.9,1105 -192.9,1120.8 -190.6,1137.5 -188.2,1158.8 -178.7,1173.1 -171.6,1199.2 -162,1201.6 -157.3,1161.2 -157.3,1037.7 -159.7,997.4 -162.8,991 -166.8,947.5 -167.6,875.5 -152.5,871.5 -157.3,743.3 -152.5,719.5 -147.8,683.9 -143,669.7 -140.7,655.4 -131.1,636.4 -128.8,610.3 -121.6,579.4 -112.1,560.4 -109.7,536.7 -105,522.4 -102.6,508.2 -93.1,493.9 -90.7,474.9 -88.3,451.2 -78.8,432.2 -77.3,425.9 -88.3,413.2 -90.7,401.3 -88.3,389.4 -86,363.3 -76.5,332.4 -67,289.7 -61.4,278.6 -57.5,258.8 -47.9,225.6 -45.6,213.7 -36,194.7 -36,180.5 -20.2,155.2 -24.2,121.1 -24.2,102.1 -29.7,98.2 -33.7,64.1 -36,52.2 -34.5,45.9 -42.4,34.8"
+                }
+            }
+        },
+        "Entourage__SceneData__Figures": [
+            {
+                "Entourage__Figure__Uid": "E0001",
+                "Entourage__Figure__AssetId": "VVL_60_0326",
+                "Entourage__Figure__Seed": 718411832,
+                "Entourage__Figure__PositionMm": [
+                    12161,
+                    1675,
+                    -6719
+                ]
+            },
+            {
+                "Entourage__Figure__Uid": "E0002",
+                "Entourage__Figure__AssetId": "VVL_60_0306",
+                "Entourage__Figure__Seed": 895184205,
+                "Entourage__Figure__PositionMm": [
+                    6823,
+                    1675,
+                    -10525
+                ]
+            },
+            {
+                "Entourage__Figure__Uid": "E0003",
+                "Entourage__Figure__AssetId": "VVL_60_0301",
+                "Entourage__Figure__Seed": 600093700,
+                "Entourage__Figure__PositionMm": [
+                    9348,
+                    -205,
+                    -13985
+                ]
+            }
+        ]
+    },
+    "SceneLighting__ProjectOverrides": {
+        "SceneLighting__ProjectOverrides__Description": "This project's own lighting, set in the Dev menu's Project Lighting. It lights the 3D view and every scene without lighting of its own; plans, elevations and sheet pictures keep the app's default. Only the settings that differ from the app's default lighting (Scene__Default__LightingConfig) are stored, a section per light; anything absent follows the default. Sun RotationDeg turns the sun clockwise seen from above from the app's default direction; HeightDeg is its angle above the horizon.",
+        "SceneLighting__ProjectOverrides__SchemaVersion": 1,
+        "SceneLighting__ProjectOverrides__Sun": {
+            "SceneLighting__Sun__RotationDeg": 54
+        }
+    }
+}

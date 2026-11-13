@@ -343,7 +343,7 @@
             }
         ]
     },
-    "_rev": 6,
+    "_rev": 7,
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,

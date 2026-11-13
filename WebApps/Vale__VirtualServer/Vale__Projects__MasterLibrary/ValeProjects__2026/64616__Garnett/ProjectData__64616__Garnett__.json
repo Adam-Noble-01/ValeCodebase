@@ -2,15 +2,21 @@
     "projectName": "Garnett",
     "projectCode": "64616",
     "productionData": {
-        "input": "NOT YET REVIEWED",
+        "input": "Hand Drawn Concept",
         "conceptArtist": "Jo",
         "designer": "Jo",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "additionalNotes": "A complex job with new assets to model and highly detailed host dwelling."
     },
     "scheduleData": {
-        "dateReceived": "NOT YET REVIEWED",
+        "dateReceived": "30-Oct-2026",
         "dateFulfilled": "04-Nov-2026",
-        "timeTaken": "NOT YET REVIEWED"
+        "timeTaken": 7,
+        "timeAllocated": 5,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 1,
+            "timeAdjustments__AdditionalContext": 1
+        }
     },
     "images": [
         "IMG01__3dView__MainShot__11__WhitecardImage__05-Nov-2026.png",
@@ -1434,7 +1440,7 @@
         ],
         "Vegetation__SceneData__Plops": []
     },
-    "_rev": 19,
+    "_rev": 20,
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,

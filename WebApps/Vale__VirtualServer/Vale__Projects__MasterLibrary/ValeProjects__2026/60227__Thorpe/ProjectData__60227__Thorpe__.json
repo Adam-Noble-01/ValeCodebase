@@ -2,15 +2,16 @@
     "projectName": "Thorpe",
     "projectCode": "60227",
     "productionData": {
-        "input": "NOT YET REVIEWED",
+        "input": "Hand Drawn Concept",
         "conceptArtist": "Steph",
         "designer": "Gary",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "additionalNotes": "Nothing to report"
     },
     "scheduleData": {
-        "dateReceived": "NOT YET REVIEWED",
+        "dateReceived": "05-Nov-2026",
         "dateFulfilled": "06-Nov-2026",
-        "timeTaken": "NOT YET REVIEWED"
+        "timeTaken": 3,
+        "timeAllocated": 3
     },
     "images": [
         "IMG01__3dView__MainShot____WhitecardImage__11-Nov-2026.png",
@@ -298,6 +299,6 @@
             "FogPlane__Config__PlaneB__NormalZ": 0
         }
     },
-    "_rev": 2,
+    "_rev": 3,
     "Navmode__OrbitMaxDistanceMm": 50000
 }

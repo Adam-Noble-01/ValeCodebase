@@ -35,6 +35,8 @@
 - The Layout Editor's 3D snapshots, a still and a video export after the change, MaxEngine, and a phone on its side.
 - Scenes saved in ValeVision itself were framed through the old canvas, so they now sit about 30 px higher and show a little more at the top and bottom than when they were saved.
 
+**Live (Adam: "Commit and push"), 13-Nov-2026 14:30 UTC:** found already live when this session came to push: the deploy stamp's push `20261113-143035` (account `adam`, very likely the Server Manager) carried this release's 16 web files and nothing else, `index.html` included. `engine compare valevision3d` afterwards showed them identical; its only two differences, `Na__AppConfig__Main.json` and `Na__ExportRenderLayers__Pass__ShadowMask__.js`, are another session's open work (changed 14:43 local) and were not pushed. `/valevision/` answers 200, and its live `index.html` and canvas stylesheet carry the change. No API change, so no restart.
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.4 - 13-Nov-2026 - Save Captures Show and Transparency, and Every Viewer Opens a Project With Them
 ### Adam: "Whatever this value is set to (60% in this case) this should be captured at save for entourage and vegetation and be the value for each indifivauaL project model is loaded with so different jobs can have different transparency applied that the viewer then loads with for ewach job / currently it seems to load with whatever the user has their slider set to? there dosnt seems to be a way to capture and save", then, asked who captures it: "Any staff who can save", and whether the Show tick works the same way: "Also captured at save"

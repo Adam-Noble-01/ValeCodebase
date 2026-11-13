@@ -551,7 +551,7 @@ The library is 13 figures converted from the core component library's `60__Scene
 
 A project can turn its own sun, so its 3D view shades the faces its own way: the whitecard stays flat shaded, and which faces read lighter or greyer follows where the sun is. It lights the 3D view and every scene that has no lighting of its own, for staff and clients alike. Plans, elevations and Layout Editor sheet pictures keep the app's default lighting on every project (Adam: "3D view only").
 
-Dev Tools > **Project Lighting**, under Render Engine (app admins only): Rotation, Height, Sun, Ambient and Sun casts shadows, the same controls as a scene's Lighting below. Every change lights the viewport at once; a line says where the sun is (in compass words once North Direction is set). **Save Project Lighting** asks first, as the camera and fog saves do: Save, Overwrite or Clear, whichever the press will do. **Use App Default** and **Undo Changes** are changes like any other until saved.
+Dev Tools > **Project Lighting**, under Render Engine (app admins only): Rotation, Height, Sun, Ambient and Sun casts shadows, the same controls as a scene's Lighting below. **Sun casts shadows is off by default** (v2.98.6, `Scene__Default__LightingConfig__ShadowsEnabled` false): tick it to give a project's 3D view the sun's shadows, which saves `SceneLighting__Sun__ShadowsEnabled` true; plans, elevations and sheet pictures have none. Every change lights the viewport at once; a line says where the sun is (in compass words once North Direction is set). **Save Project Lighting** asks first, as the camera and fog saves do: Save, Overwrite or Clear, whichever the press will do. **Use App Default** and **Undo Changes** are changes like any other until saved.
 
 Stored as one top-level key of `project.json`, a section per light, holding only what differs from the app default (no key at all at the default), saved by PATCH as that one key:
 
@@ -580,7 +580,7 @@ Dev Tools > Presentation Mode Scenes > open a scene > **Advanced** > **Lighting*
 | Height | The sun's angle above the horizon. Lower lights the walls more strongly; 90 is straight overhead. |
 | Sun | The strength of the sun (the directional light, the only light that casts shadows). |
 | Ambient | The strength of the even fill light every face receives. |
-| Sun casts shadows | Untick to fade the sun's shadows out for this scene. |
+| Sun casts shadows | Off by default (v2.98.6). Tick to give this scene the sun's shadows; untick to fade them out where the project's lighting has them on. |
 
 Every change lights the viewport straight away: that is the preview. **Save Lighting** writes it to the project, **Use Default** puts every control back, and a double-click on a slider puts that one setting back. Update Scene and Add Scene From Camera also capture whatever lighting the viewport is showing.
 

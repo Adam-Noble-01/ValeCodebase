@@ -18,9 +18,16 @@
 //   shadow map settings is changed: the export reads the shadow maps the live
 //   viewport has already produced.
 // - Availability is conditional and checked before any state is mutated. The
-//   pass reports itself unavailable when the renderer has shadows switched off
-//   or the scene has no shadow-casting light, rather than quietly exporting a
-//   uniformly white image that looks like a valid result.
+//   pass reports itself unavailable when the renderer has shadows switched off,
+//   the scene has no shadow-casting light, or every such light has its shadows
+//   faded to nothing, rather than quietly exporting a uniformly white image
+//   that looks like a valid result.
+// - THE SUN'S SHADOWS ARE OFF BY DEFAULT (v2.98.6). The lighting core keeps
+//   castShadow on and switches shadows by LightShadow.intensity, and
+//   ShadowMaterial's mask is multiplied by that strength (three r184,
+//   getShadowMask), so a sun at strength 0 still counts as a caster but draws
+//   white. Such a light does not count here; the reason says where to tick the
+//   shadows back on.
 // - The multi-model loader sets castShadow and receiveShadow on every loaded
 //   mesh, so no per-object flag has to be forced. If a future model arrives
 //   with those flags cleared the pass degrades to "everything lit", which the
@@ -29,6 +36,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Nov-2026 - Version 1.0.1 (ValeVision3D v2.98.6)
+// - A light whose shadows are faded to strength 0 no longer counts as a
+//   caster: with the app default's shadows off, the pass would otherwise have
+//   exported a plain white image as if it were a mask.
+//
 // 19-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Export Render Layers system.
 //
@@ -63,10 +75,20 @@
         }
 
         let castingLights = 0;
+        let fadedLights   = 0;                                               // <-- Casters whose shadows are faded to nothing (strength 0)
         scene.traverse((object) => {
-            if (object.isLight && object.castShadow === true && object.visible !== false) castingLights++;
+            if (!object.isLight || object.castShadow !== true || object.visible === false) return;
+            const strength = (object.shadow && typeof object.shadow.intensity === 'number') ? object.shadow.intensity : 1;
+            if (strength > 0) castingLights++;
+            else fadedLights++;
         });
 
+        if (castingLights === 0 && fadedLights > 0) {
+            return {
+                available : false,
+                reason    : 'The sun casts no shadows in this view. Tick Sun casts shadows in Project Lighting, or in the scene\'s Lighting, to export a shadow mask.'
+            };
+        }
         if (castingLights === 0) {
             return { available: false, reason: 'This scene has no visible shadow-casting light.' };
         }

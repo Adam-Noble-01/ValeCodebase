@@ -2,9 +2,27 @@
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.6 - 13-Nov-2026 - The Sun Casts No Shadows Unless a Project or a Scene Ticks Them On
-### Adam: "This sun cast shadows default make it always = FALSE but can be toggled back on so off becomes the default", pointing at Kann's (64562) Project Lighting with Sun casts shadows ticked
+### Adam: "This sun cast shadows default make it always = FALSE but can be toggled back on so off becomes the default", pointing at Kann's (64562) Project Lighting with Sun casts shadows ticked, then "once confirmed in ValeVision / Build the same lighting section of menu into TrueVision 3D's Dev Menu"
 
-(In progress: entry completed below once checked.)
+**What was wrong:** the app default had the sun casting shadows (`Scene__Default__LightingConfig__ShadowsEnabled` true), so every project's 3D view, every scene without lighting of its own and every plan, elevation and sheet picture had them unless someone unticked Sun casts shadows; Kann had to save `ShadowsEnabled` false to lose them.
+
+**Now:**
+- **Sun casts shadows is off by default.** Project Lighting and a scene's Lighting fold open unticked. Ticking it gives the sun's shadows back: Project Lighting saves `SceneLighting__Sun__ShadowsEnabled` true (after the usual confirm), a scene's fold `Scene__Lighting__ShadowsEnabled` true. Use App Default, Undo Changes and a scene's Use Default work as before.
+- **Plans, elevations and Layout Editor sheet pictures**, which always use the app default, have no sun shadows on any project.
+- **Saved lighting needs nothing.** Records store only what differs, so Corrett's (Rotation 117) now has no shadows, and Kann's saved `ShadowsEnabled` false now says what the default says (a re-save drops it). A scene that saved `ShadowsEnabled` false stays off.
+- **Pictures already made keep their look until they are made again.** A Layout Editor 3D picture stored on a sheet keeps its key, so it shows its shadows on screen until it next re-renders; a PDF always renders afresh, so it has none. Keys were left alone on purpose: TrueVision's web viewer shows clients the stored pictures by key, and a changed key would blank them there. A scene's carousel card keeps the light it was captured with until Update Scene.
+- **Export Render Layers, Shadow Mask.** A sun with its shadows faded to 0 still counted as a caster, so the pass would now have exported a plain white image as if it were a mask. It reads unavailable instead: "The sun casts no shadows in this view. Tick Sun casts shadows in Project Lighting, or in the scene's Lighting, to export a shadow mask."
+- MaxEngine projects lose the sun's shadows too unless their Project Lighting ticks them on. Ambient occlusion is untouched. Shadows still reach only about 10 m round the model's origin when on (note T26).
+- TrueVision 3D already had the same Project Lighting section (its v2.184.0, 12-Nov-2026); its v2.184.2 takes this default.
+
+**Changed:** `Na__AppConfig__Main.json` (`Scene__Default__LightingConfig__ShadowsEnabled` false, its description); `71__System__ExportRenderLayers/01__SystemModules/Na__ExportRenderLayers__Pass__ShadowMask__.js` 1.0.1 (a caster at strength 0 does not count, with its own reason); `ValeVision__README__.md` (Project Lighting, the scene Lighting table). No API change, no service worker change.
+
+**Checked:**
+- `vv3d_check.py changed`: syntax, JSON, 0 undeclared names, the whole module graph clean.
+- Node, the real lighting core, project lighting module and shadow mask check against this config, 29 checks: the app default's shadow strength is 0 and the sun starts at 0; a scene without lighting has none, one ticked on has them and saves the flag alone; Kann's record loads at rotation 54 with nothing pending and would re-save as RotationDeg alone; Corrett loads with none, ticking gives full strength and a pending save that sends RotationDeg 117 and ShadowsEnabled true; a drawing and an approach pose stay at 0; Use App Default then Save sends `_unset`; stored picture keys unchanged; the shadow mask is unavailable at strength 0 with the new reason, available at 1, and keeps its two old reasons.
+- MCP sandbox (headless Edge, AppAdmin, real mouse), `64610__Corrett`: Dev Tools > Project Lighting opened at Rotation 117 with Sun casts shadows unticked, Undo and Save greyed; ticking it took the sun's shadow strength to 1, enabled Save and said "Changes not saved yet"; unticking put it back with nothing pending. Closer-01 with and without shadows differs by about 18,600 pixels, mostly edge noise and thin frame shadows. Export Render Layers showed the Shadow Mask row unavailable with the new reason, its tick disabled. No script errors (the deploy stamp 404 is the sandbox's own). Nothing saved; no real record touched.
+
+**Not checked:** a real GPU, a phone or tablet, a MaxEngine project, a Layout Editor sheet on screen, a real save.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.98.5 - 13-Nov-2026 - The 3D View Fits Between the Top Bar and the Bottom of the Window

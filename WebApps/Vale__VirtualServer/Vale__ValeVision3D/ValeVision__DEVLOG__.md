@@ -1,6 +1,31 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.99.0 - 17-Nov-2026 - Four New Plants from Adam's Border Photos, and the Flowering Wall Border Palette
+### Adam, with two reference photos of a border against a rendered gable: "You're going to make some new vegetation assets for TrueVision and ValeVision at the same time. The first one is this small flowery bush ... we need to create lavender, a bush like this, and a grass like this. I'm effectively trying to recreate this, so once you've made it, recreate this as a brush palette as well. Once the assets are made, we'll also need the corresponding proxies for the Sketchup 2D link."
+
+**What was missing:** BallCluster and ClippedForm could draw none of the four: no flower head reading apart from the leaves (inner lines are thinned to a few arcs on purpose, so a head inside the outline was invisible), no spike on a stem, no grass without a body, no clear stems under a raised canopy. A card drew only the front half of a plant's blades, over its balls. A standard palette could not set the Bush Tool's density.
+
+**Now:**
+- **Four assets**, the same files as TrueVision 3D v2.189.0: `VVL_07_1041` Annabelle Hydrangea (a leafy mound carrying 16 to 22 round heads high on it, a fine floret edge and mostly an arc inside each), `VVL_07_1051` Lavender (a cushion and 24 to 32 spikes of small whorls on slender stems, tallest in the middle), `VVL_07_1061` Multi-Stem Shrub (four to six stems, some forking, into an open lobed canopy from a third of the height, 2.5 m), `VVL_07_3001` Arching Grass (40 to 55 fine blades from a tight crown, arching out at the edge; the first `Grasses` asset).
+- **Four generators**, version 1 each: `FloweringMound`, `SpikedClump`, `GrassFountain`, `MultiStem`, reading the new optional blocks `Asset__Heads`, `Asset__Spikes`, `Asset__Fountain`, `Asset__Stems` (schema; a `Vase` canopy layout). The build util (1.1.0) refuses an asset naming one without its block.
+- **Inked balls** (bush builder 1.2.0, contour drawer 1.3.0): a head or whorl draws its whole outline inside the plant at the inner weight, a leaf in front of one shows its edge there, and a spike leaves the drawing whole once its bottom whorl is under 1.6 px. Stems are fitted with the balls they meet.
+- **Cards** (asset browser 1.5.0): a plant whose blades grow from inside it paints its blades first, furthest first, then its balls over them. Every other card as before.
+- **`VVP_0003` Flowering Wall Border** (standard palettes 1.1.0): hydrangea 34, lavender 34, grass 24, multi-stem 8, plant scale 1.00, 650 mm on a path, and its own brush, 2.4 a square metre and 450 mm apart (`Palette__BrushDensityPerSquareM`, `Palette__BrushMinSpacingMm`), which the Bush Tool (1.5.0) takes when it is chosen (palette editor 1.3.0).
+- **SketchUp proxies:** Cloud Sync's Sync Vegetation tab builds each from `Asset__Proxy` and `Asset__Size`: a dome at the plant's size, the house proxy for every plant, the standard bay's included. No plugin change.
+
+**Changed:** `24__System__Vegetation/01__Core__Engine/Na__Vegetation__BushBuilder__.js` 1.2.0, `Na__Vegetation__Contour__.js` 1.3.0, `10__Ui__Panels/Na__Vegetation__AssetBrowser__.js` 1.5.0, `Na__Vegetation__PaletteEditor__.js` 1.3.0, `20__System__Tools/Na__Vegetation__BushTool__.js` 1.5.0, `Na__Vegetation__AppConfig__.json` 1.5.0, `README__Vegetation__.md`; `53__Vegetation__AssetLibrary`: the four assets (new), index, schema, standard palettes, build util. No API change, no service worker change.
+
+**Checked:**
+- `vv3d_check.py changed`: 16 changed files, syntax and JSON clean, every import and imported name resolves, the boot graph (322 modules) takes none of these modules.
+- Engine hash, in Node, every ball, table, blade and drawn line of the eleven assets before this (6 seeds, 4 plop variants, 4 views): `39fd60a48826a363a509bfa9158494a0` before and after, here and in TrueVision. All fifteen: `7cd2e83037ee8d69bf7977ffff7c0a47` in both apps. The engine files differ from TrueVision's only by header and port note, as before.
+- `validate` and `index --check`: 15 assets, no error, current; the library is byte-identical to TrueVision's.
+- The look through the shared scene layer in a test page (seeds, distances, a border laid out as the photo, a brush stroke of the palette), and on TrueVision's sandbox (NP03, in page memory, nothing saved).
+- The proxies built in a scratch SketchUp 2026 window by Cloud Sync's own `na_definition` from this library: each on `05__ValeVision__VegetationProxies`, stamped with its asset, at its size, all found by `na_collect_proxies`.
+
+**Not checked:** this app in a browser (the same engine was drawn by TrueVision's sandbox); the panels by hand; a Sync Vegetation round trip (this PC has no Server Manager mirror at the sync map's path, so the tab lists no assets here).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.98.6 - 13-Nov-2026 - The Sun Casts No Shadows Unless a Project or a Scene Ticks Them On
 ### Adam: "This sun cast shadows default make it always = FALSE but can be toggled back on so off becomes the default", pointing at Kann's (64562) Project Lighting with Sun casts shadows ticked, then "once confirmed in ValeVision / Build the same lighting section of menu into TrueVision 3D's Dev Menu"
 

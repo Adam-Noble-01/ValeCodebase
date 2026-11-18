@@ -34,6 +34,12 @@ DESCRIPTION:
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+18-Nov-2026 - Version 0.17.0
+- Tab 06, User analytics (page): GET /api/activity takes &limit= (the newest events sent at most; up to the
+  engine's NA__ACTIVITY__LIMIT_MAX, 400,000), so tab 06 can count every live day. Tab 05 still gets 20,000.
+- Serves 04__Lib__ThirdParty__VersionLocked (D3 7.9.0, the page's one vendored library). Its README, licence and
+  package.json are never served: only the MIME list's file types are.
+
 28-Oct-2026 - Version 0.15.0
 - POST /api/restart (Restart manager in the header, Restart now in the version banner): a detached
   pythonw copy with --silent --log-file --restart takes over the port; its output goes to the log
@@ -133,13 +139,14 @@ from pathlib import Path
 # -----------------------------------------------------------------------------
 
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
-NA__SERVER__VERSION               = "0.16.2"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
+NA__SERVER__VERSION               = "0.17.0"                                # <-- Keep equal to Vsm.PageVersion in Ui__Core__.js
 NA__SERVER__DEFAULT_PORT          = 8020
 NA__SERVER__ENTRY_FILE            = "VirtualServerManager__App__.html"
 NA__SERVER__ROOT_FILES            = (NA__SERVER__ENTRY_FILE,                   # <-- Served from the app root
                                      "VirtualServerManager__Pwa__Manifest__.webmanifest",
                                      "VirtualServerManager__Pwa__ServiceWorker__.js")
-NA__SERVER__STATIC_DIRS           = ("01__AppAssets", "02__Src__AppModules", "03__Style__AppStylesheets")
+NA__SERVER__STATIC_DIRS           = ("01__AppAssets", "02__Src__AppModules", "03__Style__AppStylesheets",
+                                     "04__Lib__ThirdParty__VersionLocked")     # <-- 0.17.0: D3 for tab 06 (.js only: the MIME list hides its README and licence)
 NA__SERVER__MIME                  = {".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
                                      ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png",
                                      ".ico": "image/x-icon", ".webmanifest": "application/manifest+json"}
@@ -576,11 +583,12 @@ class Na__Server__Handler(BaseHTTPRequestHandler):
                 return self.Na__Handler__Json(Na__Server__Routes())
             if path == "/api/users":
                 return self.Na__Handler__Json(Na__Engine.Na__Users__Payload(Na__Engine.Na__Config__Load()))
-            if path == "/api/activity":                                         # <-- ?days=7, or ?month=2025-09 (an archived one is unzipped)
+            if path == "/api/activity":                                         # <-- ?days=7, or ?month=2025-09 (an archived one is unzipped); &limit= (tab 06)
                 q = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
-                days = q.get("days", "7")
+                days, limit = q.get("days", "7"), q.get("limit", "")
                 res = Na__Engine.Na__Activity__Payload(Na__Engine.Na__Config__Load(), int(days) if days.isdigit() else 7,
-                                                       q.get("month", ""))
+                                                       q.get("month", ""),
+                                                       int(limit) if limit.isdigit() else Na__Engine.NA__ACTIVITY__UI_LIMIT)
                 return self.Na__Handler__Json({**res, "fetch": NA__SERVER__ACTIVITY_FETCH})
             if path == "/api/tree":
                 Na__Live.touch()

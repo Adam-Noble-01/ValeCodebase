@@ -53,6 +53,12 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   18-Nov-2026 - Version 0.17.0
+   - Activity.Shared: the ledger's words (who is who, the kinds, the Insights
+     features, Hide my actions) for tab 06, User analytics, so both tabs count
+     alike. Activity.ShowInLedger({ find, app, who, period, hideMe }): tab 06's
+     Show in ledger opens this tab on the same events.
+
    28-Oct-2026 - Version 0.13.0
    - Insights, the fourth view (above). New action kinds for ValeVision 3D's
      menu actions and visits and Theia's watch time (ValeShared__Activity__ 1.2.0):
@@ -1374,6 +1380,65 @@
     Activity.Show = function() {
         var first = !Vsm__Data;
         Activity.Load().then(function() { if (first || Vsm__Data) Vsm__FetchIfStale(); });
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Shared With Tab 06, User Analytics (0.17.0)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Ledger's Words, So Both Tabs Count Alike
+    // ------------------------------------------------------------
+    // Who is who (a person, a device, an IP), the action kinds, the features
+    // Insights counts, and Hide my actions (the PC's person and the browsers
+    // they signed in on, remembered in Vsm__ActivityMyDevices).
+    // ------------------------------------------------------------
+    Activity.Shared = {
+        Kinds         : Vsm__Kinds,
+        Features      : Vsm__InsFeatures,
+        Kind          : Vsm__Kind,
+        KindLabel     : Vsm__KindLabel,
+        WhoKey        : Vsm__WhoKey,
+        WhoName       : Vsm__WhoName,
+        ProjectText   : Vsm__ProjectText,
+        MeCode        : Vsm__MeCode,
+        IsMine        : Vsm__IsMine,
+        LearnMyDevices: Vsm__LearnMyDevices
+    };
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Open the Ledger on Tab 06's Events: { find, app, who, period, hideMe }
+    // ------------------------------------------------------------
+    // The app, audience and period lists are filled from the data on load: a
+    // choice they do not list yet is added for now, and kept when they refill.
+    // Hide my actions is set for this view only (not remembered).
+    // ------------------------------------------------------------
+    Activity.ShowInLedger = function(o) {
+        var pick = function(id, value) {
+            var sel = Vsm.El(id);
+            value = value || '';
+            if (value && !Array.prototype.some.call(sel.options, function(op) { return op.value === value; })) {
+                var op = document.createElement('option');
+                op.value = value;
+                op.textContent = value.replace(/^m:/, '');
+                sel.appendChild(op);
+            }
+            sel.value = value;
+        };
+        Vsm.El('Vsm__ActSearch').value = o.find || '';
+        Vsm.El('Vsm__ActView').value = 'ledger';
+        Vsm.Store('ActivityView', 'ledger');
+        Vsm.El('Vsm__ActKind').value = '';
+        pick('Vsm__ActApp', o.app);
+        pick('Vsm__ActWho', o.who);
+        if (o.period) pick('Vsm__ActDays', o.period);
+        if (o.hideMe != null) Vsm.El('Vsm__ActHideMe').checked = !!o.hideMe;
+        Vsm__Selected = null;
+        Vsm.SetTab('activity');
     };
     // ------------------------------------------------------------
 

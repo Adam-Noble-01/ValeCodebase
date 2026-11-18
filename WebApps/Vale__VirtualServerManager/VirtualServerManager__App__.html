@@ -47,6 +47,7 @@
         <button class="Vsm__Tab" role="tab" data-tab="urls"><span class="Vsm__TabNum">03</span>URL configurator</button>
         <button class="Vsm__Tab" role="tab" data-tab="users"><span class="Vsm__TabNum">04</span>User accounts</button>
         <button class="Vsm__Tab" role="tab" data-tab="activity"><span class="Vsm__TabNum">05</span>User activity</button>
+        <button class="Vsm__Tab" role="tab" data-tab="analytics"><span class="Vsm__TabNum">06</span>User analytics</button>
     </nav>
 
     <div id="Vsm__Offline" class="Vsm__Offline" hidden>
@@ -254,6 +255,40 @@
         <div id="Vsm__ActInsTip" class="Vsm__InsTip" role="tooltip" hidden></div>
     </section>
 
+    <!-- TAB 06 | USER ANALYTICS (0.17.0: D3 charts of the same ledger) -->
+    <section id="Vsm__TabAnalytics" class="Vsm__Panel is-wide is-analytics" role="tabpanel" hidden>
+        <div class="Vsm__ExplorerBar">
+            <span id="Vsm__AnaPill" class="Vsm__Pill is-light">Loading&hellip;</span>
+            <button id="Vsm__BtnAnaFetch" class="Vsm__BtnPrimary" title="One read-only connection: brings the server's new activity lines to this PC">Fetch from server</button>
+            <select id="Vsm__AnaPeriod" class="Vsm__Select" title="Period">
+                <option value="1">Today</option>
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last 12 months</option>
+                <option value="0">Everything not archived</option>
+            </select>
+            <select id="Vsm__AnaApp" class="Vsm__Select" title="App"><option value="">All apps</option></select>
+            <select id="Vsm__AnaWho" class="Vsm__Select" title="Audience"><option value="">Everyone</option></select>
+            <input id="Vsm__AnaSearch" class="Vsm__Search" type="search" placeholder="Find a person, project, device, IP or action&hellip;">
+            <label class="Vsm__Check" title="Leave out everything you did: signed in as you, and your own client-link tests from the browsers you have signed in on. Never by IP: the office address is shared"><input type="checkbox" id="Vsm__AnaHideMe" checked> Hide my actions</label>
+            <span id="Vsm__AnaChips" class="Vsm__AnaChips"></span>
+            <button id="Vsm__BtnAnaLedger" class="Vsm__BtnSmall" title="Open tab 05 on these events">Show in ledger</button>
+            <span class="Vsm__Spacer"></span>
+            <span id="Vsm__AnaCounts" class="Vsm__Muted"></span>
+        </div>
+        <div class="Vsm__Legend">
+            <span><i class="Vsm__InsKey is-staff"></i><b>Staff</b> signed in with a Vale account.</span>
+            <span><i class="Vsm__InsKey is-client"></i><b>Clients</b> no sign-in: someone on a client link or a public page, one per device.</span>
+            <span><b>&#9650; &#9660;</b> against the same length of time just before.</span>
+            <span><b>Narrow</b> drag across Activity for days; click a person, project, link, app or device.</span>
+            <span><b>Table</b> on each card lists its numbers.</span>
+        </div>
+        <div id="Vsm__AnaErrors" class="Vsm__UrlErrors"></div>
+        <div id="Vsm__AnaBody" class="Vsm__Ana"></div>
+        <div id="Vsm__AnaTip" class="Vsm__AnaTip" role="tooltip" hidden></div>
+    </section>
+
     <div id="Vsm__Modal" class="Vsm__Modal" hidden>
         <div class="Vsm__ModalBox" role="dialog" aria-modal="true">
             <div id="Vsm__ModalBody"></div>
@@ -268,5 +303,8 @@
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Urls__.js"></script>
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Users__.js"></script>
     <script src="02__Src__AppModules/VirtualServerManager__Ui__Activity__.js"></script>
+    <script src="04__Lib__ThirdParty__VersionLocked/01__Vendor__D3__v7.9.0/dist/d3.min.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__AnalyticsCharts__.js"></script>
+    <script src="02__Src__AppModules/VirtualServerManager__Ui__Analytics__.js"></script>
 </body>
 </html>

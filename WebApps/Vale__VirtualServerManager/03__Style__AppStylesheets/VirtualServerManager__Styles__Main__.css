@@ -5,8 +5,8 @@
    FILE       : VirtualServerManager__Styles__Main__.css
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Styles for the manager PWA: header, tabs, live explorer, parity
-                matrix, URL configurator, user accounts, user activity, modals (Vale
-                brand palette).
+                matrix, URL configurator, user accounts, user activity, user
+                analytics (D3 charts, 0.17.0), modals (Vale brand palette).
                 Panels are content-sized (only the users table fills the width);
                 every table shares one sort-header style (.Vsm__SortTh)
    CREATED    : 06-Oct-2026
@@ -38,6 +38,11 @@
         --Vsm_Muted                        : #8a96a0;
         --Vsm_InsClient                    : #2a78d6;                      /* <-- Insights: clients (data palette slot 1) */
         --Vsm_InsStaff                     : #eb6834;                      /* <-- Insights: staff (slot 2; the pair checked colour-blind safe on white) */
+        --Vsm_AnaCritical                  : #d03b3b;                      /* <-- Tab 06: refusals only, always with the icon (reserved status red) */
+        --Vsm_AnaGood                      : #006300;                      /* <-- Tab 06: a change for the better (success text) */
+        --Vsm_AnaZero                      : #f1f3f5;                      /* <-- Tab 06: a heatmap cell with nothing in it */
+        --Vsm_AnaGrid                      : #eef1f4;                      /* <-- Tab 06: gridlines (hairline) */
+        --Vsm_AnaAxis                      : #c3c9cf;                      /* <-- Tab 06: the baseline */
         --Vsm_Radius                       : 8px;
         --Vsm_Mono                         : "Cascadia Mono", Consolas, "Courier New", monospace;
         --Vsm_Font                         : "Open Sans", "Segoe UI", system-ui, sans-serif;
@@ -561,5 +566,198 @@
         background: var(--Vale_PrimaryBrand); color: #fff; font-size: 12px; line-height: 1.45; white-space: pre-line;
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
     }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   REGION | Tab 06 - User Analytics (0.17.0): sections, cards, tiles, D3 charts
+   -----------------------------------------------------------------------------
+   The same two series as tab 05's Insights: clients (--Vsm_InsClient, blue) and
+   staff (--Vsm_InsStaff, orange), checked colour-blind safe on white. Magnitude
+   uses each one's own light-to-dark ramp (Vsm.Charts); a refusal wears the
+   reserved critical red, always with its icon. Columns are at most 24px and list
+   bars 12px, 2px apart, rounded only at the data end; gridlines are solid
+   hairlines; numbers and names stay in the text colours.
+   The page holds its own scroll so the filter row stays on screen.
+   ----------------------------------------------------------------------------- */
+
+    .Vsm__Panel.is-analytics { display: flex; flex-direction: column; }
+    .Vsm__Ana {
+        flex: 1 1 auto; min-height: 0; overflow: auto; scrollbar-gutter: stable; padding: 0 24px 40px;
+        transition: opacity 0.2s;
+    }
+    .Vsm__Ana.is-loading { opacity: 0.55; }                                 /* <-- Refetch keeps the frame: no flash, no jump */
+
+    .Vsm__AnaNav {
+        position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+        padding: 10px 0 8px; background: var(--Vale_BackgroundLight);
+    }
+    .Vsm__AnaNav button { padding: 3px 10px; font-size: 12px; border-radius: 999px; }
+    .Vsm__AnaNav .Vsm__Muted { margin-left: 6px; font-size: 12px; }
+
+    .Vsm__AnaSection {
+        display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 20px 0 10px; padding-bottom: 6px;
+        border-bottom: 1px solid var(--Vale_BorderLight); scroll-margin-top: 48px;
+    }
+    .Vsm__AnaSection h2 { margin: 0; font-size: 15px; }
+    .Vsm__AnaSection span { font-size: 12px; color: var(--Vale_TextSecondary); }
+
+    .Vsm__AnaGrid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; align-items: start; }
+    .Vsm__AnaCard {
+        grid-column: span 6; min-width: 0; padding: 12px 14px 14px; background: #fff;
+        border: 1px solid var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+    }
+    .Vsm__AnaCard.is-12 { grid-column: 1 / -1; }
+    .Vsm__AnaCard.is-4  { grid-column: span 4; }
+    .Vsm__AnaCard.is-8  { grid-column: span 8; }
+    @media (max-width: 1250px) { .Vsm__AnaCard, .Vsm__AnaCard.is-4, .Vsm__AnaCard.is-8 { grid-column: 1 / -1; } }
+
+    .Vsm__AnaHead { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .Vsm__AnaHead h3 { margin: 0; font-size: 13.5px; }
+    .Vsm__AnaHead p { margin: 2px 0 0; font-size: 12px; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaTools { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .Vsm__AnaTools button[aria-pressed="true"] { background: var(--Vale_BrandSoft); border-color: var(--Vale_PrimaryBrand); }
+    .Vsm__AnaKeys { display: inline-flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaKeys span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .Vsm__AnaKey { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+    .Vsm__AnaKey.is-line { width: 14px; height: 2px; border-radius: 1px; }
+    .Vsm__AnaKey.is-client { background: var(--Vsm_InsClient); }
+    .Vsm__AnaKey.is-staff { background: var(--Vsm_InsStaff); }
+    .Vsm__AnaKey.is-critical { background: var(--Vsm_AnaCritical); }
+
+    .Vsm__AnaEmpty { padding: 14px 4px; font-size: 12.5px; color: var(--Vsm_Muted); }
+    .Vsm__AnaEmpty.is-error { color: var(--Vsm_Bad); font-weight: 600; }
+    .Vsm__AnaNote { margin: 10px 0 0; font-size: 12px; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaFigs { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 10px; font-size: 12px; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaFigs b { display: block; font-size: 17px; font-weight: 600; color: var(--Vale_TextPrimary); }
+
+    /* Filter row: chips for what a click or a drag narrowed */
+    .Vsm__AnaChips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+    .Vsm__AnaChips:empty { display: none; }
+    .Vsm__AnaChip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px 2px 10px; border-radius: 999px;
+        background: var(--Vale_BrandSoft); color: var(--Vale_PrimaryBrand); font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .Vsm__AnaChip button { padding: 0 6px; border: 0; background: transparent; font-size: 14px; line-height: 18px; color: inherit; }
+    .Vsm__AnaChip button:hover { color: var(--Vsm_Bad); }
+
+    /* Stat tiles: label, value, change against the period before, sparkline */
+    .Vsm__AnaTiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }   /* <-- 8 tiles: 4 by 2, one row of 8 on a wide screen */
+    @media (min-width: 1800px) { .Vsm__AnaTiles { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+    @media (max-width: 900px) { .Vsm__AnaTiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .Vsm__AnaTile {
+        display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 2px 8px; padding: 10px 12px;
+        background: #fff; border: 1px solid var(--Vale_BorderLight); border-radius: var(--Vsm_Radius);
+    }
+    .Vsm__AnaTile > span { grid-column: 1 / -1; font-size: 12px; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaTile > b { grid-column: 1; grid-row: 2; font-size: 24px; font-weight: 600; line-height: 1.15; color: var(--Vale_TextPrimary); white-space: nowrap; }
+    .Vsm__AnaTile > svg { grid-column: 2; grid-row: 2; align-self: end; }
+    .Vsm__AnaTile > small { grid-column: 1 / -1; font-size: 11.5px; line-height: 1.4; color: var(--Vale_TextSecondary); }
+    .Vsm__AnaDelta { font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .Vsm__AnaDelta.is-good { color: var(--Vsm_AnaGood); }
+    .Vsm__AnaDelta.is-bad { color: var(--Vsm_AnaCritical); }
+    .Vsm__AnaDelta.is-flat { color: var(--Vale_TextSecondary); font-weight: 400; }
+    .Vsm__AnaStatus { display: inline-flex; align-items: center; gap: 4px; }
+    .Vsm__AnaStatus.is-critical { color: var(--Vsm_AnaCritical); }
+    .Vsm__AnaStatus.is-good { color: var(--Vsm_AnaGood); }
+
+    /* D3 charts (SVG) */
+    .Vsm__AnaSvg { display: block; max-width: 100%; overflow: visible; }
+    .Vsm__AnaSvg text { font-family: var(--Vsm_Font); font-size: 11px; fill: var(--Vale_TextSecondary); }
+    .Vsm__AnaSvg text.is-strong { fill: var(--Vale_TextPrimary); font-weight: 600; }
+    .Vsm__AnaSvg text.is-name { fill: var(--Vale_TextPrimary); font-size: 12px; cursor: pointer; }
+    .Vsm__AnaSvg text.is-name:hover { text-decoration: underline; }
+    .Vsm__AnaSvg .is-grid { stroke: var(--Vsm_AnaGrid); stroke-width: 1; shape-rendering: crispEdges; }
+    .Vsm__AnaSvg .is-base { stroke: var(--Vsm_AnaAxis); stroke-width: 1; shape-rendering: crispEdges; }
+    .Vsm__AnaSvg .is-client { fill: var(--Vsm_InsClient); }
+    .Vsm__AnaSvg .is-staff { fill: var(--Vsm_InsStaff); }
+    .Vsm__AnaSvg .is-critical { fill: var(--Vsm_AnaCritical); }
+    .Vsm__AnaSvg .is-hover { fill: rgba(23, 43, 58, 0.06); pointer-events: none; }
+    .Vsm__AnaSvg .is-range { fill: rgba(23, 43, 58, 0.05); pointer-events: none; }
+    .Vsm__AnaSvg .is-cross { stroke: var(--Vale_TextSecondary); stroke-width: 1; pointer-events: none; shape-rendering: crispEdges; }
+    .Vsm__AnaSvg .is-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .Vsm__AnaSvg .is-line.is-client { stroke: var(--Vsm_InsClient); }
+    .Vsm__AnaSvg .is-line.is-staff { stroke: var(--Vsm_InsStaff); }
+    .Vsm__AnaSvg .is-dot { stroke: #fff; stroke-width: 2; }
+    .Vsm__AnaSvg .is-cell:hover { stroke: var(--Vale_PrimaryBrand); stroke-width: 1.5; }
+    .Vsm__AnaSvg .is-hit { fill: transparent; }
+    .Vsm__AnaSvg .is-spark { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+    .Vsm__AnaSvg .is-spark.is-prev { stroke: #b8c1c9; }
+    .Vsm__AnaSvg .is-spark.is-now { stroke: var(--Vale_PrimaryBrand); }
+    .Vsm__AnaSvg .is-spark-dot { fill: var(--Vale_PrimaryBrand); stroke: #fff; stroke-width: 2; }
+    .Vsm__AnaBrush .selection { fill: rgba(23, 43, 58, 0.07); stroke: var(--Vale_PrimaryBrand); stroke-width: 1; shape-rendering: crispEdges; }
+    .Vsm__AnaBrush .overlay { cursor: crosshair; }
+
+    /* Bar lists (HTML, D3 data joins): name, bar, figure */
+    .Vsm__AnaBars { display: grid; gap: 1px; }
+    .Vsm__AnaBar, .Vsm__AnaBarsHead, .Vsm__AnaMeter {
+        display: grid; grid-template-columns: minmax(96px, 36%) minmax(48px, 1fr) minmax(64px, auto); gap: 10px; align-items: center;
+    }
+    .Vsm__AnaBar, .Vsm__AnaMeter { padding: 3px 4px; border-radius: 4px; font-size: 12.5px; }
+    .Vsm__AnaBar.is-click, .Vsm__AnaMeter.is-click { cursor: pointer; }
+    .Vsm__AnaBar:hover, .Vsm__AnaBar:focus-visible, .Vsm__AnaMeter:hover { background: #f6f9fc; outline: none; }
+    .Vsm__AnaBar.is-active { background: var(--Vale_BrandSoft); }
+    .Vsm__AnaBarsHead {
+        padding: 0 4px 4px; font-size: 11px; color: var(--Vale_TextSecondary); text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .Vsm__AnaBarsHead span:last-child { text-align: right; }
+    .Vsm__AnaLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .Vsm__AnaLabel .Vsm__Muted { font-size: 11.5px; }
+    .Vsm__AnaNum { font-size: 12px; color: var(--Vale_TextSecondary); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+    .Vsm__AnaNum b { color: var(--Vale_TextPrimary); font-weight: 600; }
+    .Vsm__AnaTrack { display: flex; gap: 2px; height: 12px; min-width: 0; }
+    .Vsm__AnaSeg { flex: 0 0 auto; height: 100%; }
+    .Vsm__AnaSeg.is-end { border-radius: 0 4px 4px 0; }
+    .Vsm__AnaSeg.is-client { background: var(--Vsm_InsClient); }
+    .Vsm__AnaSeg.is-staff { background: var(--Vsm_InsStaff); }
+    .Vsm__AnaSeg.is-critical { background: var(--Vsm_AnaCritical); }
+
+    /* Meters: a ratio against its whole, the track a lighter step of the fill's own ramp */
+    .Vsm__AnaMeterTrack { height: 8px; border-radius: 4px; overflow: hidden; }
+    .Vsm__AnaMeterTrack.is-staff { background: #fbe0d2; }
+    .Vsm__AnaMeterTrack.is-client { background: #dce9fa; }
+    .Vsm__AnaMeterFill { display: block; height: 100%; border-radius: 4px; }
+    .Vsm__AnaMeterTrack.is-staff .Vsm__AnaMeterFill { background: var(--Vsm_InsStaff); }
+    .Vsm__AnaMeterTrack.is-client .Vsm__AnaMeterFill { background: var(--Vsm_InsClient); }
+
+    /* Butterfly: staff to the left, clients to the right, the feature between */
+    .Vsm__AnaFly {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 230px) minmax(0, 1fr); gap: 1px 10px; align-items: center;
+        font-size: 12.5px;
+    }
+    .Vsm__AnaFly > .is-head { font-size: 11px; color: var(--Vale_TextSecondary); text-transform: uppercase; letter-spacing: 0.4px; padding-bottom: 4px; }
+    .Vsm__AnaFly > .is-head.is-left { text-align: right; }
+    .Vsm__AnaFly > .is-head.is-mid { text-align: center; }
+    .Vsm__AnaFlyName { text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 0; }
+    .Vsm__AnaFlySide { display: flex; align-items: center; gap: 6px; min-width: 0; height: 22px; }
+    .Vsm__AnaFlySide.is-left { flex-direction: row-reverse; }
+    .Vsm__AnaFlySide .Vsm__AnaSeg { height: 12px; }
+    .Vsm__AnaFlySide.is-left .Vsm__AnaSeg { border-radius: 4px 0 0 4px; }
+    .Vsm__AnaFlySide.is-right .Vsm__AnaSeg { border-radius: 0 4px 4px 0; }
+    .Vsm__AnaFlySide .Vsm__AnaNum { min-width: 34px; text-align: left; }
+    .Vsm__AnaFlySide.is-left .Vsm__AnaNum { text-align: right; }
+
+    /* Hover tip: one for the tab, values first, a short line key per series */
+    .Vsm__AnaTip {
+        position: fixed; z-index: 2500; max-width: 340px; padding: 8px 10px; pointer-events: none; font-size: 12px; line-height: 1.45;
+        background: #fff; color: var(--Vale_TextPrimary); border: 1px solid var(--Vale_BorderLight); border-radius: 8px;
+        box-shadow: 0 10px 28px rgba(23, 43, 58, 0.18);
+    }
+    .Vsm__AnaTipHead { font-weight: 600; margin-bottom: 4px; }
+    .Vsm__AnaTipRow { display: grid; grid-template-columns: 16px auto minmax(0, 1fr); gap: 6px; align-items: center; }
+    .Vsm__AnaTipRow b { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .Vsm__AnaTipRow span:last-child { color: var(--Vale_TextSecondary); }
+    .Vsm__AnaTipKey { width: 14px; height: 2px; border-radius: 1px; }
+    .Vsm__AnaTipKey.is-client { background: var(--Vsm_InsClient); }
+    .Vsm__AnaTipKey.is-staff { background: var(--Vsm_InsStaff); }
+    .Vsm__AnaTipKey.is-critical { background: var(--Vsm_AnaCritical); }
+    .Vsm__AnaTipKey.is-navy { background: var(--Vale_PrimaryBrand); }
+    .Vsm__AnaTipNote { margin-top: 5px; color: var(--Vale_TextSecondary); font-size: 11.5px; }
+
+    /* Table twin of every chart */
+    .Vsm__AnaTableWrap { max-height: 420px; overflow: auto; border: 1px solid var(--Vale_BorderLight); border-radius: 6px; }
+    .Vsm__AnaTableWrap .Vsm__Table th { position: sticky; top: 0; background: #f7f9fa; z-index: 1; white-space: nowrap; }
+    .Vsm__AnaTableWrap .Vsm__Table td.is-num, .Vsm__AnaTableWrap .Vsm__Table th.is-num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* endregion ------------------------------------------------------------------- */

@@ -9,3 +9,9 @@
 WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.md text eol=lf
 WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.html text eol=lf
 WebApps/Whitecardopedia/Projects/**/10__StatementDocs/**/*.json text eol=lf
+
+# The Server Manager's vendored, version-locked libraries stay byte for byte on
+# every checkout (18-Nov-2026): their Vale__VersionLock__README__.md records the
+# hashes checked against the npm registry and cdnjs, which a CRLF checkout
+# (core.autocrlf=true) would no longer match.
+WebApps/Vale__VirtualServerManager/04__Lib__ThirdParty__VersionLocked/** -text

@@ -19,6 +19,9 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   18-Nov-2026 - Version 0.17.0
+   - Sixth tab: user analytics (Vsm.Analytics, charts by Vsm.Charts on the vendored D3 7.9.0).
+
    28-Oct-2026 - Version 0.15.0
    - Restart manager (header) and the version banner's Restart now / Reload page: Vsm.Restart
      posts /api/restart and knows the next copy by its pid (up to 30 s). Jobs wait meanwhile.
@@ -54,7 +57,7 @@
     // MODULE VARIABLES | Shared State
     // ------------------------------------------------------------
     var Vsm = window.Vsm = {
-        PageVersion: '0.16.2',                                               // <-- Must match the local server's version
+        PageVersion: '0.17.0',                                               // <-- Must match the local server's version
         State      : null,                                                     // <-- Last /api/state payload
         Running    : false,                                                    // <-- A job request is in flight
         Restarting : false,                                                    // <-- Restart manager: waiting for the next copy
@@ -565,9 +568,11 @@
         Vsm.El('Vsm__TabUrls').hidden = name !== 'urls';
         Vsm.El('Vsm__TabUsers').hidden = name !== 'users';
         Vsm.El('Vsm__TabActivity').hidden = name !== 'activity';
+        Vsm.El('Vsm__TabAnalytics').hidden = name !== 'analytics';
         if (Vsm.Urls && name === 'urls') Vsm.Urls.Show();
         if (Vsm.Users && name === 'users') Vsm.Users.Show();
         if (Vsm.Activity && name === 'activity') Vsm.Activity.Show();
+        if (Vsm.Analytics && name === 'analytics') Vsm.Analytics.Show();
         if (Vsm.Explorer) { if (name === 'explorer') Vsm.Explorer.Show(); else Vsm.Explorer.Hide(); }
     };
     // ------------------------------------------------------------
@@ -611,8 +616,9 @@
         if (Vsm.Urls) Vsm.Urls.Init();
         if (Vsm.Users) Vsm.Users.Init();
         if (Vsm.Activity) Vsm.Activity.Init();
+        if (Vsm.Analytics) Vsm.Analytics.Init();
         var wanted = new URLSearchParams(window.location.search).get('tab') || Vsm.Store('Tab');   // <-- Start-menu shortcuts pass ?tab=
-        Vsm.SetTab(['matrix', 'urls', 'users', 'activity'].indexOf(wanted) >= 0 ? wanted : 'explorer');
+        Vsm.SetTab(['matrix', 'urls', 'users', 'activity', 'analytics'].indexOf(wanted) >= 0 ? wanted : 'explorer');
         Vsm.Refresh();
         Vsm.RegisterServiceWorker();
     };

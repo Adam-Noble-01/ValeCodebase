@@ -63,6 +63,11 @@ USAGE (CLI, used by Claude):
 -----------------------------------------------------------------------------
 
 DEVELOPMENT LOG:
+18-Nov-2026 - Version 0.17.0
+- Na__Activity__Payload(limit=): the newest events sent at most, NA__ACTIVITY__UI_LIMIT (20,000) by default as
+  before, up to NA__ACTIVITY__LIMIT_MAX (400,000); the payload says which limit it used. Tab 06 (User analytics)
+  asks for every live day, which would pass 20,000 events within about four months at Nov-2026 rates.
+
 05-Nov-2026 - Version 0.16.0
 - An app route's target may sit in a folder of apps (Vale__UtilityApps/MiniApp__DistoImageMapper),
   not only at the top of the mirror. Its deploy stamp names its files by the route as well.
@@ -247,7 +252,8 @@ NA__USERS__HISTORY_KEEP           = 30                                         #
 NA__ACTIVITY__DIR                 = "UserData__ActivityLedger"                 # <-- Under NA__USERS__DIR: written by every app API
 NA__ACTIVITY__FILE                = re.compile(r"^ValeActivity__Ledger__(\d{4}-\d{2}-\d{2})__\.jsonl$")
 NA__ACTIVITY__UI_LIMIT            = 20000                                      # <-- Newest events sent to tab 05 at most
-NA__ACTIVITY__ARCHIVE_DIR         = "00__Archive"                              # <-- In the ledger folder: the APIs' year zips
+NA__ACTIVITY__LIMIT_MAX           = 400000                                     # <-- Most a caller may ask for (tab 06 asks for every live day: ~60,000 a year at Nov-2026 rates)
+NA__ACTIVITY__ARCHIVE_DIR        = "00__Archive"                              # <-- In the ledger folder: the APIs' year zips
 NA__ACTIVITY__ARCHIVE             = re.compile(r"^ServerLogs__(\d{4})__Archived__\.zip$")
 NA__ACTIVITY__KEEP_DAYS           = 365                                        # <-- As ValeShared__Activity__: a year live, then zipped
 NA__ACTIVITY__CACHE               = "ServerLogs__AuditCache"                   # <-- Under BackupRoot: archived months unzipped to audit
@@ -2983,9 +2989,13 @@ def Na__Activity__Read(paths: list) -> tuple:
     return events, bad
 # ---------------------------------------------------------------
 
-# FUNCTION | Tab 05 Payload: the Last <days> Days, or One Month (an archived one unzipped first; no connection)
+# FUNCTION | Tab 05 and 06 Payload: the Last <days> Days, or One Month (an archived one unzipped first; no connection)
 # ------------------------------------------------------------
-def Na__Activity__Payload(cfg: dict, days: int = 7, month: str = "") -> dict:
+# limit: the newest events sent at most. Tab 05 keeps NA__ACTIVITY__UI_LIMIT; tab 06
+# (User analytics) asks for every live day, up to NA__ACTIVITY__LIMIT_MAX.
+# ------------------------------------------------------------
+def Na__Activity__Payload(cfg: dict, days: int = 7, month: str = "", limit: int = NA__ACTIVITY__UI_LIMIT) -> dict:
+    limit = max(1, min(int(limit or NA__ACTIVITY__UI_LIMIT), NA__ACTIVITY__LIMIT_MAX))
     files = Na__Activity__Files(cfg)
     archived = Na__Activity__ArchivedMonths(cfg)
     since, source, cache = Na__Activity__Since(days), "live", ""
@@ -3002,7 +3012,7 @@ def Na__Activity__Payload(cfg: dict, days: int = 7, month: str = "") -> dict:
         month = ""
         events, bad = Na__Activity__Read([f for d, f in files if not since or d >= since])
     events.sort(key=lambda e: str(e.get("Utc")))
-    truncated = max(0, len(events) - NA__ACTIVITY__UI_LIMIT)
+    truncated = max(0, len(events) - limit)
     live = {}
     for d, _f in files:
         live[d[:7]] = live.get(d[:7], 0) + 1
@@ -3021,7 +3031,7 @@ def Na__Activity__Payload(cfg: dict, days: int = 7, month: str = "") -> dict:
     mapping = Na__Activity__Mapping(cfg)
     rel = f"{NA__USERS__DIR}/{NA__ACTIVITY__DIR}"
     return {"ok": True, "days": days if not month else None, "since": since if not month else "", "month": month,
-            "source": source, "cache": cache, "events": events[truncated:], "truncated": truncated, "bad_lines": bad,
+            "source": source, "cache": cache, "events": events[truncated:], "truncated": truncated, "limit": limit, "bad_lines": bad,
             "files": {"count": len(files), "bytes": sum(f.stat().st_size for _d, f in files),
                       "first": files[0][0] if files else "", "last": files[-1][0] if files else ""},
             "months": months, "archives": zips, "keep_days": NA__ACTIVITY__KEEP_DAYS,

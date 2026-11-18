@@ -1,5 +1,47 @@
 # Vale Virtual Server Manager: DEVLOG
 
+## Version 0.17.0, 18-Nov-2026: Tab 06, User Analytics (D3)
+
+**Asked:** "Build a User Analytics tab which contains charts, visuals etc for robust at a glance analytics for both
+Vale Staff and external users. Use a decent library like D3 but download a authored vendored version locked version
+and save it in the project in my style." Objective: "the most robust server analytics chart dashboard ever for the
+Vale Server".
+
+**The library:** D3 7.9.0 in `04__Lib__ThirdParty__VersionLocked/01__Vendor__D3__v7.9.0/` (`dist/d3.min.js` loaded,
+`dist/d3.js` kept for reading, the ISC licence, `package.json`, the upstream README), with `Vale__VersionLock__README__.md`
+and the folder's `Vale__Dependencies__VersionLock__README__.md`, as ValeVision 3D and Lantern Designer pin three.js.
+- Downloaded from the npm registry and checked twice: the tarball against the registry's sha512 and sha1, and both
+  `dist` files against cdnjs's SRI hashes.
+- 7.9.1 and 7.9.2 were left out on purpose: both appeared on 03-Nov-2026 from a new CI publishing pipeline, 15 days
+  before. 7.9.0 is the release its author published himself (12-Mar-2024).
+
+**The page** (`Ui__Analytics__.js`, `Ui__AnalyticsCharts__.js`, `App__.html`, the CSS):
+- Sixth tab, *User analytics*: 12 sections, 24 cards, 8 headline tiles (README, tab 06).
+- The same two colours as Insights for the two audiences (staff orange, clients blue; colour-blind checks: CVD dE
+  24.7, normal-vision dE 33.6). Heatmaps and the staff strip use each audience's own light-to-dark ramp (lightness
+  checked monotone); the journeys use the client blue as an ordinal ramp stepped evenly in Lab (each step at least
+  0.06 lighter, the lightest at least 2:1 on white). Refusals wear the reserved critical red with a ⚠, never beside the
+  staff orange (the two failed the normal-vision floor, dE 10.8, so they never share a chart).
+- Marks: columns at most 24 px, list bars 12 px, 2 px gaps, only the data end rounded; hairline grid; text never in a
+  series colour. One hover tip (values first, line keys), on keyboard focus too. Every card has a table twin.
+- The 3D load-time trend is on a log scale: one 4½-minute load (a background tab) flattened the daily medians to the
+  floor on a linear scale.
+- Cards draw independently: one that throws says so in its own card.
+
+**Shared with tab 05** (`Ui__Activity__.js` 0.17.0): `Vsm.Activity.Shared` (who is who, the kinds, the Insights
+features, Hide my actions) and `Vsm.Activity.ShowInLedger({ find, app, who, period, hideMe })`.
+
+**The server** (`LocalServer__.py` 0.17.0, `SyncEngine__.py` 0.17.0): `GET /api/activity` takes `&limit=` (the engine's
+`Na__Activity__Payload(limit=)`, up to `NA__ACTIVITY__LIMIT_MAX` 400,000; tab 05 still gets 20,000), and the local
+server serves `04__Lib__ThirdParty__VersionLocked` (`.js` only: the README and licence answer 404).
+
+**Checked** in a sandbox copy on port 8027 (its own gateway state and sync ledger, a fake ssh that always fails),
+reading the real ledger: every period (today, 7, 30, 90 days, 12 months, everything, October) draws with no card
+errors in 21 to 41 ms; the 4 to 11 Nov headline numbers match a separate Python count of the raw ledger exactly
+(543 against 553 events, 6 against 4 staff, 16 against 35 client devices, 10 against 17 opens, median load 1.2 against
+1.3 s, 3 refused); one designer's 295 events in 30 days match tab 05 through *Show in ledger*; a search that matches
+nothing leaves tidy empty cards; 1100 px stacks the cards.
+
 ## Version 0.16.2, 06-Nov-2026: Exports Listed in Insights
 
 **Asked:** report Download Image, the Drawing Editor PDF and the Layout Editor sheet PDF, and no other export.

@@ -99,12 +99,12 @@ So:
   `/srv/vale-sync/backups/<stamp>/` (used by *Undo last push*); on the PC it goes to
   `90__ServerBackups\collect__<date>\`.
 
-## The Five Tabs
+## The Six Tabs
 
 **Layout and sorting.**
 - **Tabs 01 to 03** are centred, and only as wide as their content. Columns fit their widest entry
   and text boxes fit their text.
-- **Tabs 04 and 05** (the users and activity tables) use the full width.
+- **Tabs 04 to 06** (the users and activity tables, the analytics) use the full width.
 - **Every table grows with its rows**, and scrolls only past the screen height.
 - **Every table sorts the same way:** click a column header to sort, again to reverse (▲ / ▼). Blanks
   stay last. The explorer and users tables remember your choice; the dialog tables (push, collect,
@@ -289,6 +289,33 @@ So:
   images ZIP, Open in ValeVision 3D, searches and the gallery mode. The *Tools, reports, prints*
   action filter picks these out.
 
+**06 User analytics** (0.17.0): the same ledger in charts, for Vale staff and for outside visitors at a glance.
+- **The data** is tab 05's, read with no connection: every live day at once (`/api/activity?days=0&limit=400000`,
+  where tab 05 takes the newest 20,000). An archived month loads on its own when picked. *Fetch from server* is tab
+  05's fetch, and runs by itself when the copy is 5 minutes old while the tab is open.
+- **Two audiences, one colour each, on every chart:** staff (signed in, orange) and clients (no sign-in: someone on
+  a client link or a public page, counted by device, blue). Who is who, the features and *Hide my actions* are tab
+  05's own (`Vsm.Activity.Shared`), so both tabs count alike. *Hide my actions* is **on** here by default: the
+  developer's own testing (about 70% of the ledger in Nov-2026) would drown the picture.
+- **One filter row** scopes every chart: period (today, 7, 30, 90 days, 12 months, everything, a month), app,
+  audience (or one account type), a search, *Hide my actions*. **Drag across Activity** (or click a day) to narrow
+  every chart to those days; **click** a person, department, project, link, platform, browser, country or IP to narrow
+  to it. Each narrowing is a chip (× takes it off). *Show in ledger* opens tab 05 on the same events.
+- **Compared with the period before** (▲ ▼, green when better, red when worse): the same length of time just
+  before, or the month before. Shown only when this PC's ledger covers all of it, otherwise "no earlier data".
+- **Sections:** At a glance (8 tiles with sparklines: staff signed in, client visitors, client link opens, clients
+  exploring, video watched, events, the median 3D model load, refused), Over time (events and people per day), When
+  (weekday by hour, staff and clients apart), Apps (one row each, with a trend), Staff (who used the apps day by day,
+  departments and account types, accounts not seen), Clients and guests (journeys through ValeVision 3D and Theia,
+  visit length, new and returning devices, client links), Projects, What people do (the share of staff and of client
+  devices that used each feature), Devices and places (platforms, browsers, countries, installed app or browser),
+  Performance (load-time spread, the daily median on a log scale), Security (refused sign-ins and links, from where,
+  passwords set), About these numbers.
+- **Every card has a Table button** (its numbers as a sortable table). A card that cannot draw says so; the rest
+  carry on. If D3 did not load, the tab says so and the other tabs are unaffected.
+- **The charts** are D3 7.9.0, vendored and version-locked in `04__Lib__ThirdParty__VersionLocked/01__Vendor__D3__v7.9.0/`
+  (checked against the npm registry and cdnjs hashes; its README says how to upgrade).
+
 Header: connection state (key loaded, cooldown, logins in the last 10 minutes) and live server
 stats (load, memory, disk, nginx, uptime). *Server status* gives the full report.
 
@@ -314,13 +341,16 @@ stats (load, memory, disk, nginx, uptime). *Server status* gives the full report
 
 | File | Purpose |
 |---|---|
-| `VirtualServerManager__App__.html` | The PWA shell (five tabs) |
+| `VirtualServerManager__App__.html` | The PWA shell (six tabs) |
 | `02__Src__AppModules/VirtualServerManager__Ui__Core__.js` | API, header, modals, settings, status, tabs, service-worker registration |
 | `02__Src__AppModules/VirtualServerManager__Ui__Explorer__.js` | Tab 01: the live server explorer |
 | `02__Src__AppModules/VirtualServerManager__Ui__Matrix__.js` | Tab 02: the parity matrix, push / collect / undo / seed |
 | `02__Src__AppModules/VirtualServerManager__Ui__Urls__.js` | Tab 03: the URL configurator |
 | `02__Src__AppModules/VirtualServerManager__Ui__Users__.js` | Tab 04: user accounts |
-| `02__Src__AppModules/VirtualServerManager__Ui__Activity__.js` | Tab 05: user activity (ledger, generated links, people and devices) |
+| `02__Src__AppModules/VirtualServerManager__Ui__Activity__.js` | Tab 05: user activity (ledger, generated links, people and devices); `Vsm.Activity.Shared` lends its words to tab 06 |
+| `02__Src__AppModules/VirtualServerManager__Ui__Analytics__.js` | Tab 06: user analytics (the model, the filter row, the sections and cards) |
+| `02__Src__AppModules/VirtualServerManager__Ui__AnalyticsCharts__.js` | Tab 06's chart kit on D3 (`Vsm.Charts`): columns with a brush, lines, heatmaps, bar lists, funnels, histograms, the staff strip, meters, sparklines, tip, table twin |
+| `04__Lib__ThirdParty__VersionLocked/` | Vendored, version-locked libraries (D3 7.9.0); only their `.js` files are served |
 | `03__Style__AppStylesheets/VirtualServerManager__Styles__Main__.css` | Styles (Vale palette) |
 | `01__AppAssets/` | App icons (PNG, maskable, ICO) |
 | `VirtualServerManager__Pwa__Manifest__.webmanifest`, `VirtualServerManager__Pwa__ServiceWorker__.js` | Installable app; the shell opens even before the server is up |

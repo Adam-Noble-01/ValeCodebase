@@ -255,3 +255,6 @@ WebApps/Vale__VirtualServer/**/.*.lock
 WebApps/ValeSpec/Na__ValeSpecServer__Startup.log
 WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
 WebApps/ValePlanner/02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json
+WebApps/Vale__VirtualServerManager/01__AppData/VirtualServerManager__SyncLedger__.json
+WebApps/ValeSpec/Na__ValeSpecServer__Startup.log
+WebApps/ValePlanner/Na__ValePlannerServer__Startup.log

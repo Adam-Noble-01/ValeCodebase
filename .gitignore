@@ -258,3 +258,10 @@ WebApps/ValePlanner/02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature_
 WebApps/Vale__VirtualServerManager/01__AppData/VirtualServerManager__SyncLedger__.json
 WebApps/ValeSpec/Na__ValeSpecServer__Startup.log
 WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
+
+# VALE INTERNAL EMAILS (vgh-internal-emails). Each email folder in WebApps/Vale__Presentations
+# (NN__EmailTo<Audience>__DD-Mmm-YYYY) holds the email, its spec and its pictures. This
+# repository is public: the pictures are tracked (GitHub Pages serves them to the email), the
+# email and its spec stay on this PC (internal words, live Theia client links).
+WebApps/Vale__Presentations/*__EmailTo*/*.html
+WebApps/Vale__Presentations/*__EmailTo*/*.json

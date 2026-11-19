@@ -98,11 +98,11 @@
                         "y": 0.660111,
                         "z": 0.006084
                     },
-                    "fov_degrees": 35.0,
+                    "fov_degrees": 35,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
+                    "aspect_ratio": 0,
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -119,14 +119,14 @@
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 46500.0,
-                        "y": 1000.0,
-                        "z": 1700.0
+                        "x": 46500,
+                        "y": 1000,
+                        "z": 1700
                     },
                     "target": {
-                        "x": 35500.0,
-                        "y": 12500.0,
-                        "z": 1900.0
+                        "x": 35500,
+                        "y": 12500,
+                        "z": 1900
                     },
                     "target_source": "scene",
                     "up": {
@@ -139,11 +139,11 @@
                         "y": 0.722585,
                         "z": 0.012567
                     },
-                    "fov_degrees": 35.0,
+                    "fov_degrees": 35,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
+                    "aspect_ratio": 0,
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -160,31 +160,31 @@
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 33350.0,
-                        "y": -7000.0,
-                        "z": 1600.0
+                        "x": 33350,
+                        "y": -7000,
+                        "z": 1600
                     },
                     "target": {
-                        "x": 33350.0,
-                        "y": 10000.0,
-                        "z": 1750.0
+                        "x": 33350,
+                        "y": 10000,
+                        "z": 1750
                     },
                     "target_source": "scene",
                     "up": {
-                        "x": 0.0,
+                        "x": 0,
                         "y": -0.008823,
                         "z": 0.999961
                     },
                     "direction": {
-                        "x": 0.0,
+                        "x": 0,
                         "y": 0.999961,
                         "z": 0.008823
                     },
-                    "fov_degrees": 35.0,
+                    "fov_degrees": 35,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
+                    "aspect_ratio": 0,
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -201,14 +201,14 @@
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 52000.0,
-                        "y": -9000.0,
-                        "z": 15000.0
+                        "x": 52000,
+                        "y": -9000,
+                        "z": 15000
                     },
                     "target": {
-                        "x": 35500.0,
-                        "y": 14000.0,
-                        "z": 1500.0
+                        "x": 35500,
+                        "y": 14000,
+                        "z": 1500
                     },
                     "target_source": "scene",
                     "up": {
@@ -221,11 +221,11 @@
                         "y": 0.7334,
                         "z": -0.430474
                     },
-                    "fov_degrees": 35.0,
+                    "fov_degrees": 35,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
+                    "aspect_ratio": 0,
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -242,14 +242,14 @@
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 44000.0,
-                        "y": -30500.0,
-                        "z": 11500.0
+                        "x": 44000,
+                        "y": -30500,
+                        "z": 11500
                     },
                     "target": {
-                        "x": 35500.0,
-                        "y": -1500.0,
-                        "z": 2800.0
+                        "x": 35500,
+                        "y": -1500,
+                        "z": 2800
                     },
                     "target_source": "scene",
                     "up": {
@@ -262,11 +262,11 @@
                         "y": 0.922174,
                         "z": -0.276652
                     },
-                    "fov_degrees": 35.0,
+                    "fov_degrees": 35,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
+                    "aspect_ratio": 0,
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -278,5 +278,24 @@
                 "section_planes": null
             }
         ]
-    }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 10000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -43580,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": 24045,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    },
+    "_rev": 3,
+    "Navmode__OrbitMaxDistanceMm": 40000
 }

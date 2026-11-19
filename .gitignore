@@ -265,3 +265,4 @@ WebApps/ValePlanner/Na__ValePlannerServer__Startup.log
 # email and its spec stay on this PC (internal words, live Theia client links).
 WebApps/Vale__Presentations/*__EmailTo*/*.html
 WebApps/Vale__Presentations/*__EmailTo*/*.json
+WebApps/Vale__Presentations/*__EmailTo*/*.pdf
